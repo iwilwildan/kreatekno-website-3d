@@ -1,0 +1,10 @@
+{
+  "name": "kreatekno-solusi",
+  "private": true,
+  "description": "Solusi page prototype: Baca (catalogue + detail) and a Three.js Tonton take per solution. Build: npm ci && node build.mjs",
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.186.1"
+  }
+}

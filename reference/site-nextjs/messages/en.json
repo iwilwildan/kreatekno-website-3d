@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "siteName": "Kreatekno",
+    "home": {
+      "title": "AI Assistants & WhatsApp Automation for SMEs | Kreatekno",
+      "description": "AI assistants and WhatsApp automation for SMEs: chat replies, sales recaps and payment reminders on autopilot. Based in Pekanbaru, serving all of Indonesia."
+    },
+    "portfolio": {
+      "title": "AI Automation & WhatsApp Chatbot Portfolio | Kreatekno",
+      "description": "AI automation and WhatsApp chatbot projects we built for SMEs, with the problem, the solution and the results."
+    },
+    "articles": {
+      "title": "Business Automation & AI Articles for SMEs | Kreatekno",
+      "description": "Practical guides to admin automation, WhatsApp chatbots and AI for SMEs, written in plain language for business owners."
+    },
+    "about": {
+      "title": "About Kreatekno | AI Automation Team from Pekanbaru",
+      "description": "Meet the small team behind Kreatekno. We build AI assistants and WhatsApp automation for SMEs and stay with you until it runs."
+    },
+    "privacy": {
+      "title": "Privacy Policy | Kreatekno",
+      "description": "How Kreatekno collects, uses and protects data from WhatsApp conversations and visits to this website."
+    }
+  },
+  "nav": {
+    "skip": "Skip to content",
+    "home": "Kreatekno, go to the home page",
+    "main": "Main navigation",
+    "open": "Open menu",
+    "close": "Close menu",
+    "services": "Services",
+    "how": "How it works",
+    "portfolio": "Portfolio",
+    "articles": "Articles",
+    "about": "About"
+  },
+  "lang": {
+    "label": "Bahasa / Language",
+    "id": "ID",
+    "en": "EN",
+    "idName": "Bahasa Indonesia",
+    "enName": "English"
+  },
+  "cta": {
+    "free": "Free consultation",
+    "meet": "Meet in person",
+    "services": "See services",
+    "portfolio": "View portfolio",
+    "about": "About us"
+  },
+  "wa": {
+    "chat": "Hi Kreatekno, I'd like a consultation about automating my business.",
+    "meet": "Hi Kreatekno, I'd like to schedule an in-person meeting in Pekanbaru."
+  },
+  "home": {
+    "hero": {
+      "kicker": "AI assistants and automation for SMEs",
+      "headline": "AI handles the repetitive work. Your team levels up.",
+      "body": "Kreatekno builds AI assistants and automation systems for your business, then trains your team until they're confident using them."
+    },
+    "services": {
+      "title": "Four ways we help your business",
+      "assistants": {
+        "title": "AI assistants & automation",
+        "body": "Assistants that serve your customers, prepare recaps and invoices, and answer your team's questions from your SOPs."
+      },
+      "strategy": {
+        "title": "AI strategy consulting",
+        "body": "We map the work most worth automating, then build a plan that fits your budget."
+      },
+      "content": {
+        "title": "Content & design",
+        "body": "Graphic design, social media content, paid ads, plus video and animation for your brand."
+      },
+      "training": {
+        "title": "AI & digital training",
+        "body": "AI, social media and marketing training for your team, at your place or in public classes.",
+        "tag": "E-courses coming soon"
+      }
+    },
+    "useCase": {
+      "title": "What AI can do for your business",
+      "intro": "Pick your type of business to see examples.",
+      "note": "Tell us which work you'd like to automate.",
+      "tabs": "Type of business",
+      "industries": {
+        "retail": {
+          "name": "Retail & F&B",
+          "uses": [
+            {
+              "label": "Customers",
+              "text": "Questions about the menu, stock and orders are answered automatically, day and night."
+            },
+            {
+              "label": "Admin & finance",
+              "text": "Orders log themselves, and the owner gets a daily recap at 9 pm."
+            },
+            {
+              "label": "Content",
+              "text": "Promo ideas, caption drafts and a weekly posting schedule, prepared for your team."
+            },
+            {
+              "label": "Team knowledge",
+              "text": "A new hire asks about recipe measurements, and the assistant answers from the kitchen SOP."
+            }
+          ]
+        },
+        "clinic": {
+          "name": "Clinics",
+          "uses": [
+            {
+              "label": "Patients",
+              "text": "Questions about doctor schedules and bookings are answered automatically, even outside clinic hours."
+            },
+            {
+              "label": "Admin & finance",
+              "text": "Check-up reminders go to patients the day before, with a confirmation link."
+            },
+            {
+              "label": "Content",
+              "text": "Health tips and the weekly doctor schedule, prepared for your team."
+            },
+            {
+              "label": "Team knowledge",
+              "text": "New staff ask what BPJS patients need to register, and the assistant answers from the registration SOP."
+            }
+          ]
+        },
+        "property": {
+          "name": "Property",
+          "uses": [
+            {
+              "label": "Buyers",
+              "text": "Questions about units, prices and site visits are answered any time."
+            },
+            {
+              "label": "Admin & finance",
+              "text": "Buyer leads land in a spreadsheet, and the sales team is notified right away."
+            },
+            {
+              "label": "Content",
+              "text": "New listings, mortgage tips and a posting schedule, prepared every week."
+            },
+            {
+              "label": "Team knowledge",
+              "text": "A new salesperson asks about the minimum down payment, and the assistant answers from the latest price list."
+            }
+          ]
+        },
+        "logistics": {
+          "name": "Logistics",
+          "uses": [
+            {
+              "label": "Customers",
+              "text": "Shipment status questions are answered automatically from tracking data."
+            },
+            {
+              "label": "Admin & finance",
+              "text": "Delivery status and invoices are summarised automatically every afternoon."
+            },
+            {
+              "label": "Content",
+              "text": "Route updates, shipping deals and packing tips, prepared for your team."
+            },
+            {
+              "label": "Team knowledge",
+              "text": "A new courier asks how to pack fragile items, and the assistant answers from the warehouse SOP."
+            }
+          ]
+        }
+      }
+    },
+    "journey": {
+      "kicker": "How it works",
+      "title": "From the first chat to a confident team",
+      "talk": {
+        "title": "Talk",
+        "body": "Free, in person in Pekanbaru or online. Tell us which work takes the most time."
+      },
+      "map": {
+        "title": "Map and plan",
+        "body": "We pick the work most worth automating, then you get a clear quote."
+      },
+      "build": {
+        "title": "Build and test",
+        "body": "The system is tested on your own business data before you use it."
+      },
+      "launch": {
+        "title": "Launch, train, support",
+        "body": "Your team is trained until they're comfortable, and we keep monitoring the system."
+      }
+    },
+    "testimonials": {
+      "title": "What our clients say",
+      "stamp": "SAMPLE",
+      "photo": "[Photo]",
+      "quote": "“[Real client quote, 1 to 3 sentences]”",
+      "name": "[Name], [role]",
+      "business": "[Business], [city]"
+    },
+    "articles": {
+      "title": "Reading for business owners",
+      "category": "Category:",
+      "read": "Read article",
+      "all": "See all articles",
+      "admin": {
+        "category": "Automation",
+        "title": "5 SME admin tasks you can automate"
+      },
+      "service": {
+        "category": "AI",
+        "title": "AI assistants for customer service: when you need one, and when you don't"
+      },
+      "team": {
+        "category": "Team",
+        "title": "How to prepare your team to work with AI"
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "help": "Still have questions? Ask us directly.",
+      "close": "Close",
+      "items": [
+        {
+          "q": "Will AI replace my staff?",
+          "a": "No. AI takes the repetitive work. Your staff keep the decisions and handle everything that needs a human touch."
+        },
+        {
+          "q": "How reliable is the AI?",
+          "a": "The assistant only answers from data you approve. When it isn't sure, the work goes to your team. Before launch, the system is tested on your business data."
+        },
+        {
+          "q": "Do I need to understand technology?",
+          "a": "No. You just explain the work. We build it, test it and train your team."
+        },
+        {
+          "q": "Will my team be trained?",
+          "a": "Yes. Your team is trained until they're comfortable with the system. Further training in AI, social media and marketing is also available."
+        },
+        {
+          "q": "Can we keep the numbers and apps we already use?",
+          "a": "Yes. We connect the assistant to the numbers and apps your team already uses, and we handle the verification."
+        },
+        {
+          "q": "How much does it cost?",
+          "a": "Flexible and based on your needs. You get a clear quote after the free consultation."
+        },
+        {
+          "q": "Is my business data safe?",
+          "a": "Your data is only used to run your system. Access is restricted, and you remain the owner of your data."
+        },
+        {
+          "q": "Can we meet in person?",
+          "a": "Yes. We're based in Pekanbaru and happy to visit your business."
+        }
+      ]
+    },
+    "about": {
+      "title": "About Kreatekno",
+      "body": "Kreatekno is a technology team from Pekanbaru that helps SMEs work smarter with AI. We believe technology should help teams level up, not replace them. That's why we build, train and support, like a colleague sitting next to you.",
+      "registered": "PT Kreatekno Kreatif Teknologi, a registered company",
+      "based": "Based in Pekanbaru, serving all of Indonesia",
+      "free": "Free consultation and mapping",
+      "payment": "Flexible payment",
+      "link": "Get to know us"
+    },
+    "practice": {
+      "label": "Team levelling up",
+      "body": "The repetitive work changes hands. Your team moves on to work that matters more."
+    },
+    "cta": {
+      "title": "Tell us the one task you'd most like to automate.",
+      "body": "We'll map a solution with you for free, over chat or at the same table in Pekanbaru."
+    },
+    "footer": {
+      "epilogue": "The shop is closed. Its assistant is still tidying up tomorrow's work."
+    }
+  },
+  "pages": {
+    "soon": "This page comes in the next build step.",
+    "back": "Back to the home page",
+    "portfolio": {
+      "title": "Portfolio"
+    },
+    "articles": {
+      "title": "Articles"
+    },
+    "about": {
+      "title": "About Kreatekno"
+    },
+    "privacy": {
+      "title": "Privacy Policy"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This address doesn't exist or has moved."
+  },
+  "footer": {
+    "tagline": "AI assistants, automation and training for SMEs.",
+    "pages": "Pages",
+    "home": "Home",
+    "privacy": "Privacy Policy",
+    "contact": "Contact",
+    "city": "Pekanbaru, Riau, Indonesia",
+    "address": "Full address coming soon",
+    "follow": "Follow us",
+    "copyright": "© 2026 PT Kreatekno Kreatif Teknologi. Automate You."
+  }
+}

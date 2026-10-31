@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kreatekno K0 ke K2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* One fixed 3D stage; a tall scroll track drives the take; a small HUD floats top-left */
+:root{
+  --bg:#efe9f3; --fg:#1f1a2e; --muted:#5d5670; --panel:rgba(255,255,255,.86); --line:rgba(31,26,46,.14); --accent:#5b3fb8;
+  --font-ui:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --font-num:ui-monospace,"Cascadia Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15121d;--fg:#f1edf8;--muted:#b4adc6;--panel:rgba(24,20,33,.84);--line:rgba(255,255,255,.16);--accent:#b3a1f2;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15121d;--fg:#f1edf8;--muted:#b4adc6;--panel:rgba(24,20,33,.84);--line:rgba(255,255,255,.16);--accent:#b3a1f2;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);margin:0}
+#stage{position:fixed;inset:0;z-index:0}
+#stage canvas{display:block;width:100%;height:100%}
+#track{height:500vh}
+.hud{position:fixed;z-index:2;top:calc(12px + env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.45;
+  max-width:min(260px,calc(100vw - 24px));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hud b{font-weight:600}
+.hud .row{display:flex;justify-content:space-between;gap:12px;font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.hud .k{color:var(--muted);font-family:var(--font-ui)}
+.hud .bar{height:3px;background:var(--line);border-radius:2px;margin:8px 0 6px;overflow:hidden}
+.hud .bar i{display:block;height:100%;width:0;background:var(--accent)}
+.hud button{font:inherit;font-size:12px;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer;margin-top:6px;min-height:32px}
+.hud button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hud[hidden]{display:none}
+.hint{position:fixed;z-index:2;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;transition:opacity .4s}
+#err{position:fixed;inset:auto 16px 16px;z-index:3;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+</style>
+</head>
+<body>
+<div id="stage" aria-label="Scene 3D: billboard di atap COMPANY, kamera turun ke pintu, lalu masuk ke dalam toko"></div>
+<div id="track"></div>
+<div class="hud" id="hud">
+  <div><b>K0 &rarr; K2</b> <span class="k">tahap 2: lokasi</span></div>
+  <div class="bar"><i id="prog"></i></div>
+  <div class="row"><span class="k">Keyframe</span><span id="kf">K0</span></div>
+  <div class="row"><span class="k">FPS</span><span id="fps">-</span></div>
+  <div class="row"><span class="k">Draw call</span><span id="calls">-</span></div>
+  <div class="row"><span class="k">Segitiga</span><span id="tris">-</span></div>
+  <div class="row"><span class="k">Pixel ratio</span><span id="dpr">-</span></div>
+  <div class="row"><span class="k">AO</span><span id="ao">-</span></div>
+  <button id="quality" type="button">Mode hemat: mati</button>
+</div>
+<div class="hint" id="hint">Scroll ke bawah</div>
+<div id="err" hidden></div>
+
+<script type="module">/*BUNDLE*/</script>
+<script>
+addEventListener('error', e => { const el = document.getElementById('err'); el.hidden = false; el.textContent = 'Scene gagal dimuat: ' + (e.message || 'error'); });
+</script>
+</body>
+</html>

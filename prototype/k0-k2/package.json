@@ -1,0 +1,13 @@
+{
+  "name": "kreatekno-k0-k2",
+  "private": true,
+  "description": "Three.js take K0 -> K2 for the Home stage (prototype). Build: npm ci && sh build.sh",
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.186.1",
+    "three-mesh-bvh": "0.9.16",
+    "@pixiv/three-vrm-springbone": "3.5.5",
+    "opentype.js": "2.0.0",
+    "@fontsource/nunito": "5.3.0"
+  }
+}

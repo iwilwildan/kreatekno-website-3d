@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "siteName": "Kreatekno",
+    "home": {
+      "title": "Asisten AI & Otomasi WhatsApp untuk UMKM | Kreatekno",
+      "description": "Asisten AI dan otomasi WhatsApp untuk UMKM: balas chat, rekap penjualan, dan pengingat tagihan otomatis. Berbasis di Pekanbaru, melayani seluruh Indonesia."
+    },
+    "portfolio": {
+      "title": "Portofolio Otomasi AI & Chatbot WhatsApp | Kreatekno",
+      "description": "Contoh proyek otomasi AI dan chatbot WhatsApp yang kami bangun untuk UMKM, lengkap dengan masalah, solusi, dan hasilnya."
+    },
+    "articles": {
+      "title": "Artikel Otomasi Bisnis & AI untuk UMKM | Kreatekno",
+      "description": "Panduan praktis otomasi admin, chatbot WhatsApp, dan AI untuk UMKM, ditulis dengan bahasa sederhana untuk pemilik usaha."
+    },
+    "about": {
+      "title": "Tentang Kreatekno | Tim Otomasi AI dari Pekanbaru",
+      "description": "Kenali tim kecil di balik Kreatekno. Kami membangun asisten AI dan otomasi WhatsApp untuk UMKM dan mendampingi sampai sistem berjalan."
+    },
+    "privacy": {
+      "title": "Kebijakan Privasi | Kreatekno",
+      "description": "Cara Kreatekno mengumpulkan, memakai, dan melindungi data dari percakapan WhatsApp dan kunjungan ke website ini."
+    }
+  },
+  "nav": {
+    "skip": "Lewati ke konten",
+    "home": "Kreatekno, ke beranda",
+    "main": "Navigasi utama",
+    "open": "Buka menu",
+    "close": "Tutup menu",
+    "services": "Layanan",
+    "how": "Cara kerja",
+    "portfolio": "Portofolio",
+    "articles": "Artikel",
+    "about": "Tentang"
+  },
+  "lang": {
+    "label": "Bahasa / Language",
+    "id": "ID",
+    "en": "EN",
+    "idName": "Bahasa Indonesia",
+    "enName": "English"
+  },
+  "cta": {
+    "free": "Konsultasi gratis",
+    "meet": "Ketemu langsung",
+    "services": "Lihat layanan",
+    "portfolio": "Lihat portofolio",
+    "about": "Tentang kami"
+  },
+  "wa": {
+    "chat": "Halo Kreatekno, saya mau konsultasi otomasi untuk bisnis saya.",
+    "meet": "Halo Kreatekno, saya mau jadwalkan ketemu langsung di Pekanbaru."
+  },
+  "home": {
+    "hero": {
+      "kicker": "Asisten AI dan otomasi untuk UMKM",
+      "headline": "AI mengurus pekerjaan berulang. Tim Anda naik kelas.",
+      "body": "Kreatekno membangun asisten AI dan sistem otomasi untuk usaha Anda, lalu melatih tim Anda sampai mahir memakainya."
+    },
+    "services": {
+      "title": "Empat cara kami membantu usaha Anda",
+      "assistants": {
+        "title": "Asisten AI & otomasi",
+        "body": "Asisten yang melayani pelanggan, membuat rekap dan tagihan, serta menjawab pertanyaan tim dari SOP Anda."
+      },
+      "strategy": {
+        "title": "Konsultasi strategi AI",
+        "body": "Kami petakan pekerjaan yang paling layak diotomatiskan, lalu menyusun rencana yang sesuai anggaran Anda."
+      },
+      "content": {
+        "title": "Konten & desain",
+        "body": "Desain grafis, konten media sosial, iklan berbayar, serta video dan animasi untuk brand Anda."
+      },
+      "training": {
+        "title": "Pelatihan AI & digital",
+        "body": "Pelatihan AI, media sosial, dan marketing untuk tim Anda, di tempat Anda atau di kelas umum.",
+        "tag": "E-course segera hadir"
+      }
+    },
+    "useCase": {
+      "title": "Apa yang bisa dikerjakan AI di usaha Anda",
+      "intro": "Pilih jenis usaha Anda untuk melihat contohnya.",
+      "note": "Ceritakan pekerjaan yang ingin Anda otomatiskan.",
+      "tabs": "Jenis usaha",
+      "industries": {
+        "retail": {
+          "name": "Retail & F&B",
+          "uses": [
+            {
+              "label": "Pelanggan",
+              "text": "Pertanyaan menu, stok, dan pesanan dijawab otomatis, siang maupun malam."
+            },
+            {
+              "label": "Admin & keuangan",
+              "text": "Pesanan tercatat sendiri, rekap harian sampai ke pemilik setiap pukul 21.00."
+            },
+            {
+              "label": "Konten",
+              "text": "Ide promo, draf caption, dan jadwal posting mingguan disiapkan untuk tim."
+            },
+            {
+              "label": "Pengetahuan tim",
+              "text": "Karyawan baru bertanya takaran resep, asisten menjawab dari SOP dapur."
+            }
+          ]
+        },
+        "clinic": {
+          "name": "Klinik",
+          "uses": [
+            {
+              "label": "Pasien",
+              "text": "Pertanyaan jadwal dokter dan booking dijawab otomatis, termasuk di luar jam praktik."
+            },
+            {
+              "label": "Admin & keuangan",
+              "text": "Pengingat jadwal kontrol dikirim ke pasien sehari sebelumnya, lengkap dengan tautan konfirmasi."
+            },
+            {
+              "label": "Konten",
+              "text": "Edukasi kesehatan dan jadwal dokter mingguan disiapkan untuk tim."
+            },
+            {
+              "label": "Pengetahuan tim",
+              "text": "Staf baru bertanya syarat pendaftaran pasien BPJS, asisten menjawab dari SOP pendaftaran."
+            }
+          ]
+        },
+        "property": {
+          "name": "Properti",
+          "uses": [
+            {
+              "label": "Calon pembeli",
+              "text": "Pertanyaan unit, harga, dan jadwal survei lokasi dijawab kapan saja."
+            },
+            {
+              "label": "Admin & keuangan",
+              "text": "Data calon pembeli masuk ke spreadsheet, dan tim sales langsung diberi tahu."
+            },
+            {
+              "label": "Konten",
+              "text": "Listing baru, tips KPR, dan jadwal posting disiapkan setiap minggu."
+            },
+            {
+              "label": "Pengetahuan tim",
+              "text": "Sales baru bertanya DP minimal, asisten menjawab dari price list terbaru."
+            }
+          ]
+        },
+        "logistics": {
+          "name": "Logistik",
+          "uses": [
+            {
+              "label": "Pelanggan",
+              "text": "Pertanyaan status kiriman dijawab otomatis dari data resi."
+            },
+            {
+              "label": "Admin & keuangan",
+              "text": "Status pengiriman dan tagihan direkap otomatis setiap sore."
+            },
+            {
+              "label": "Konten",
+              "text": "Info rute, promo ongkir, dan tips packing disiapkan untuk tim."
+            },
+            {
+              "label": "Pengetahuan tim",
+              "text": "Kurir baru bertanya cara mengemas barang pecah belah, asisten menjawab dari SOP gudang."
+            }
+          ]
+        }
+      }
+    },
+    "journey": {
+      "kicker": "Cara kerja",
+      "title": "Dari ngobrol sampai tim Anda mahir",
+      "talk": {
+        "title": "Ngobrol",
+        "body": "Gratis, tatap muka di Pekanbaru atau online. Ceritakan pekerjaan yang paling menyita waktu."
+      },
+      "map": {
+        "title": "Petakan dan rancang",
+        "body": "Kami pilih pekerjaan yang paling layak diotomatiskan, lalu Anda menerima penawaran yang jelas."
+      },
+      "build": {
+        "title": "Bangun dan uji",
+        "body": "Sistem dicoba dengan data usaha Anda sendiri sebelum dipakai."
+      },
+      "launch": {
+        "title": "Luncurkan, latih, dampingi",
+        "body": "Tim Anda dilatih sampai nyaman, dan sistem terus kami pantau."
+      }
+    },
+    "testimonials": {
+      "title": "Kata mereka yang sudah bekerja bersama kami",
+      "stamp": "CONTOH",
+      "photo": "[Foto]",
+      "quote": "“[Kutipan klien nyata, 1 sampai 3 kalimat]”",
+      "name": "[Nama], [peran]",
+      "business": "[Nama usaha], [kota]"
+    },
+    "articles": {
+      "title": "Bacaan untuk pemilik usaha",
+      "category": "Kategori:",
+      "read": "Baca artikel",
+      "all": "Lihat semua artikel",
+      "admin": {
+        "category": "Otomasi",
+        "title": "5 pekerjaan admin UMKM yang bisa diotomatiskan"
+      },
+      "service": {
+        "category": "AI",
+        "title": "Asisten AI untuk layanan pelanggan: kapan perlu, kapan belum"
+      },
+      "team": {
+        "category": "Tim",
+        "title": "Cara menyiapkan tim Anda bekerja bersama AI"
+      }
+    },
+    "faq": {
+      "title": "Pertanyaan yang sering muncul",
+      "help": "Belum terjawab? Tanya langsung.",
+      "close": "Tutup",
+      "items": [
+        {
+          "q": "Apakah AI akan menggantikan staf saya?",
+          "a": "Tidak. AI mengambil pekerjaan berulang. Staf Anda tetap mengambil keputusan dan melayani hal yang butuh sentuhan manusia."
+        },
+        {
+          "q": "Seberapa andal AI-nya?",
+          "a": "Asisten hanya menjawab dari data yang Anda setujui. Kalau ragu, pekerjaan diteruskan ke tim Anda. Sebelum dipakai, sistem diuji dengan data usaha Anda."
+        },
+        {
+          "q": "Apakah saya harus paham teknologi?",
+          "a": "Tidak. Anda cukup menjelaskan pekerjaannya. Kami yang membangun, menguji, dan melatih tim Anda."
+        },
+        {
+          "q": "Apakah tim saya dilatih?",
+          "a": "Ya. Tim Anda dilatih sampai nyaman memakai sistemnya. Pelatihan lanjutan untuk AI, media sosial, dan marketing juga tersedia."
+        },
+        {
+          "q": "Bisa memakai nomor dan aplikasi yang sudah kami pakai?",
+          "a": "Bisa. Kami hubungkan asisten ke nomor dan aplikasi yang sudah dipakai tim Anda, termasuk mengurus verifikasinya."
+        },
+        {
+          "q": "Berapa biayanya?",
+          "a": "Fleksibel dan disesuaikan dengan kebutuhan. Anda menerima penawaran yang jelas setelah konsultasi gratis."
+        },
+        {
+          "q": "Apakah data usaha saya aman?",
+          "a": "Data hanya dipakai untuk menjalankan sistem Anda. Akses dibatasi, dan Anda tetap pemilik datanya."
+        },
+        {
+          "q": "Bisa ketemu langsung?",
+          "a": "Bisa. Kami berbasis di Pekanbaru dan senang datang ke tempat usaha Anda."
+        }
+      ]
+    },
+    "about": {
+      "title": "Tentang Kreatekno",
+      "body": "Kreatekno adalah tim teknologi dari Pekanbaru yang membantu UMKM bekerja lebih cerdas dengan AI. Kami percaya teknologi seharusnya membuat tim naik kelas, bukan menggantikan mereka. Karena itu kami membangun, melatih, dan mendampingi, seperti rekan kerja yang duduk di samping Anda.",
+      "registered": "PT Kreatekno Kreatif Teknologi, badan usaha resmi",
+      "based": "Berbasis di Pekanbaru, melayani seluruh Indonesia",
+      "free": "Konsultasi dan pemetaan gratis",
+      "payment": "Pembayaran fleksibel",
+      "link": "Kenali kami lebih jauh"
+    },
+    "practice": {
+      "label": "Praktik naik kelas",
+      "body": "Pekerjaan berulang berpindah tangan. Tim pindah ke pekerjaan yang lebih bernilai."
+    },
+    "cta": {
+      "title": "Yuk, ceritakan satu pekerjaan yang paling ingin Anda otomatiskan.",
+      "body": "Kami bantu petakan solusinya, gratis. Lewat chat, atau duduk satu meja dengan kami di Pekanbaru."
+    },
+    "footer": {
+      "epilogue": "Toko sudah tutup. Asistennya masih merapikan pekerjaan untuk besok."
+    }
+  },
+  "pages": {
+    "soon": "Halaman ini dibangun di tahap berikutnya.",
+    "back": "Kembali ke beranda",
+    "portfolio": {
+      "title": "Portofolio"
+    },
+    "articles": {
+      "title": "Artikel"
+    },
+    "about": {
+      "title": "Tentang Kreatekno"
+    },
+    "privacy": {
+      "title": "Kebijakan Privasi"
+    }
+  },
+  "notFound": {
+    "title": "Halaman tidak ditemukan",
+    "body": "Alamat ini tidak ada atau sudah dipindah."
+  },
+  "footer": {
+    "tagline": "Asisten AI, otomasi, dan pelatihan untuk UMKM.",
+    "pages": "Halaman",
+    "home": "Beranda",
+    "privacy": "Kebijakan Privasi",
+    "contact": "Kontak",
+    "city": "Pekanbaru, Riau, Indonesia",
+    "address": "Alamat lengkap menyusul",
+    "follow": "Ikuti kami",
+    "copyright": "© 2026 PT Kreatekno Kreatif Teknologi. Automate You."
+  }
+}
