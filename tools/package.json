@@ -1,0 +1,14 @@
+{
+  "name": "kreatekno-tools",
+  "private": true,
+  "description": "Local tools: render stills, bake AO and review shots of the site (render/), camera solver (camera-solve/). Not shipped.",
+  "type": "module",
+  "scripts": {
+    "bake-ao": "node render/bake-ao.mjs",
+    "stills": "node render/stills.mjs",
+    "shots": "node render/shots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
+  }
+}

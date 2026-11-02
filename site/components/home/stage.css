@@ -1,0 +1,228 @@
+/*
+ * The Home take. Base rules are the stacked version (reduced motion, no JavaScript): each keyframe still is a
+ * section of its own, the hero copy sits on the first one. The film (sticky stage, 3D) lives in the media query
+ * below, the same condition HomeTake checks before loading the world.
+ */
+
+/* one column; the hero copy shares the first row with the K0 still */
+.take-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 100%;
+}
+.take-still {
+  display: block;
+  position: relative;
+}
+.take-still[data-still="K0"],
+.hero-head,
+.hero-body {
+  grid-area: 1 / 1;
+}
+.take-still img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.take-still[data-still="K0"] {
+  height: 100svh;
+  min-height: 560px;
+}
+.take-still[data-still="K0"] img {
+  height: 100%;
+  object-fit: cover;
+}
+.take-canvas {
+  display: none;
+}
+
+/* stacked: headline at the top of the K0 still, body and buttons as a card at its bottom */
+.hero-head {
+  position: relative;
+  align-self: start;
+  width: 100%;
+  margin: calc(var(--nav-top) + var(--nav-h) + 6svh) auto 0;
+  max-width: var(--container-site);
+  padding-inline: 24px;
+}
+.hero-body {
+  position: relative;
+  align-self: end;
+  justify-self: start;
+  margin: 0 4% 3%;
+  max-width: 36rem;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: rgb(255 255 255 / 0.88);
+  box-shadow: 0 18px 40px -28px rgb(19 25 81 / 0.6);
+}
+.hero-kicker {
+  display: block;
+  margin-bottom: 0.5em;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-purple-deep);
+}
+.hero-title {
+  display: block;
+  max-width: 16ch;
+  font-size: clamp(2rem, 5vw, 4rem);
+  color: var(--color-navy);
+}
+.hero-text {
+  font-size: 1.0625rem;
+  color: var(--color-ink);
+}
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .take {
+    height: calc((var(--take) + 1) * 100lvh);
+  }
+  .take-stage {
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 100lvh;
+    overflow: hidden;
+    background: var(--color-sky-low);
+  }
+  .take-still,
+  .take-still[data-still="K0"] {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    min-height: 0;
+  }
+  .take-still img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* K1 to K2.2 stills only exist for the no-WebGL fallback (lazy, so they load only when shown) */
+  .take-still:not([data-still="K0"]) {
+    display: none;
+    opacity: 0;
+  }
+  .take[data-mode="stills"] .take-still {
+    display: block;
+  }
+  .take-canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 500ms var(--ease-out);
+  }
+  .take-canvas[data-live] {
+    opacity: 1;
+  }
+
+  /* copy on the billboard: placed by placeHero / the world with matrix3d, sized in px (BOX_W) */
+  .hero-head,
+  .hero-body {
+    position: absolute;
+    inset: 0 auto auto 0;
+    max-width: none;
+    margin: 0;
+    transform-origin: 0 0;
+    backface-visibility: hidden;
+  }
+  .hero-head {
+    display: flex;
+    align-items: center;
+    padding: 18px 26px 6px;
+    opacity: calc(1 - var(--hero-out, 0) * var(--hero-fade, 0));
+  }
+  .hero-body {
+    padding: 2px 26px 16px;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .hero-kicker {
+    margin-bottom: 0.4em;
+    font-size: 12px;
+  }
+  .hero-title {
+    max-width: none;
+    font-size: 34px;
+    line-height: 1.04;
+  }
+  .hero-text {
+    font-size: 14.5px;
+    line-height: 1.42;
+  }
+  .hero-ctas {
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .hero-ctas .btn {
+    --t-btn: 0.8125rem;
+    min-height: 38px;
+    padding-block: 4px;
+  }
+  .hero-ctas .knob {
+    width: 28px;
+    height: 28px;
+  }
+  /* once the hero has left, its buttons can't be reached by tab or tap */
+  .take[data-hero-gone] .hero-body,
+  .take[data-hero-gone][data-mode="stills"] .hero-head {
+    visibility: hidden !important;
+  }
+  /* the stills fallback has no billboard that moves away, so the headline fades out instead */
+  .take[data-mode="stills"] {
+    --hero-fade: 1;
+  }
+
+  @media (max-aspect-ratio: 1/1) {
+    .hero-head {
+      padding: 10px 16px 8px;
+    }
+    .hero-kicker {
+      font-size: 8.5px;
+    }
+    .hero-title {
+      font-size: 21px;
+    }
+    /* phones: body and buttons stay a card in the bottom band, above the browser's toolbar */
+    .hero-body {
+      inset: auto 4% calc(3% + 100lvh - 100svh);
+      width: auto !important;
+      height: auto !important;
+      transform: none !important;
+      padding: 18px;
+      border-radius: var(--radius-card);
+      background: rgb(255 255 255 / 0.88);
+      box-shadow: 0 18px 40px -28px rgb(19 25 81 / 0.6);
+      backdrop-filter: blur(12px);
+      opacity: calc(1 - var(--hero-out, 0));
+      visibility: visible !important;
+    }
+    .hero-text {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .hero-ctas {
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .hero-ctas .btn {
+      --t-btn: 0.9375rem;
+      min-height: 44px;
+    }
+    .hero-ctas .knob {
+      width: 34px;
+      height: 34px;
+    }
+  }
+}

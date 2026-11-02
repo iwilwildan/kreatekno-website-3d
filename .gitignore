@@ -14,3 +14,7 @@ Thumbs.db
 # Reference media from the Kreatekno team: copied locally, never committed (see refs/README.md)
 refs/*
 !refs/README.md
+
+# Python
+__pycache__/
+*.pyc

@@ -13,7 +13,7 @@ Rebuild kreatekno.com dengan Three.js: story Home 18 beat dan Solusi Tonton diba
 5. Semua dari kode, tanpa model 3D eksternal. Karakter vinyl toy dibuat semirip mungkin dengan turnaround. Fisika gerak tanpa engine.
 6. Prioritas referensi kalau bertentangan: keyframe > video > Master Lokasi > dokumen tim. Beat tanpa keyframe dirancang dari dokumen tim dan Master Lokasi, lalu direview tim.
 7. Copy: ikuti `docs/SITE-BRIEF.md` bagian 2 ("Anda", tanpa kalimat ambigu, tanpa em dash, teks yang terlihat tidak menyebut nama platform, CTA "Konsultasi gratis"). Copy Home ada di dokumen tim dan `reference/site-nextjs/messages/`.
-8. Library yang sudah disetujui: three 0.186.1, three-mesh-bvh 0.9.16, @pixiv/three-vrm-springbone 3.5.5, esbuild 0.28.2; untuk tool lokal: opentype.js 2.0.0, OpenCV, SciPy. Tidak dipakai: detect-gpu, skill three.js komunitas. Library baru harus disetujui user dulu.
+8. Library yang sudah disetujui: three 0.186.1, three-mesh-bvh 0.9.16, @pixiv/three-vrm-springbone 3.5.5, esbuild 0.28.2; untuk tool lokal: opentype.js 2.0.0, OpenCV, SciPy, Playwright 1.64.1. Situs (tahap 1): versi di `site/package.json`. Tidak dipakai: detect-gpu, skill three.js komunitas. Library baru harus disetujui user dulu.
 9. `refs/` tidak pernah di-commit. Commit dan push hanya kalau user minta.
 10. Tiap sesi kerja menambah entri bertanggal di log `PLAN.md` (apa yang berubah, apa yang dicek, apa yang belum).
 11. Skill desain di `.claude/skills/` boleh dipakai; launcher biner Impeccable tidak dijalankan, hanya panduan tertulisnya.
