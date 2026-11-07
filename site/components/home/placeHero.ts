@@ -6,12 +6,23 @@
 // The client runtime then calls `placeAnchors` with the live quads from the world every rendered frame.
 
 export type Quad = [[number, number], [number, number], [number, number], [number, number]];
+type StillAnchors = {
+  w: number;
+  h: number;
+  K0: Record<string, Quad>;
+} & {
+  /**
+   * Copy on other stills (stills fallback): the leaflet on K3, the binder's page on K4, the journey's panels on
+   * K5a.2–K5a.4 (on 9:16 also K5a.2b, K5a.3b, K5a.4b).
+   */
+  [still: string]: Record<string, Quad> | number;
+};
 export type StillsData = {
-  /** Width / height of each anchor. */
+  /** Width / height of each billboard anchor. */
   aspect: Record<string, number>;
-  /** Normalised quads (0..1 of the still) of each anchor on the K0 still, per format. */
-  pc: { w: number; h: number; K0: Record<string, Quad> };
-  hp: { w: number; h: number; K0: Record<string, Quad> };
+  /** Normalised quads (0..1 of the still) of each anchor on the keyframe stills, per format. */
+  pc: StillAnchors;
+  hp: StillAnchors;
 };
 
 /** CSS width of the anchored boxes; the text inside is styled at this size (≈ on-screen size at K0). */
@@ -31,6 +42,7 @@ export function placeHero(root: HTMLElement, data: StillsData) {
     ox = (W - still.w * s) / 2,
     oy = (H - still.h * s) / 2;
   root.querySelectorAll<HTMLElement>("[data-anchor]").forEach((el) => {
+    if (el.hasAttribute("data-fade")) return;
     const name = (portrait ? el.dataset.portrait : el.dataset.landscape) || "";
     const q = still.K0[name];
     if (!name || !q) {
@@ -73,14 +85,18 @@ export function placeHero(root: HTMLElement, data: StillsData) {
   });
 }
 
+// one query object for the page (placeAnchors runs every rendered frame; matchMedia() each time showed in profiles)
+let portraitMQ: MediaQueryList | undefined;
+
 /** Same placement with live quads from the world (null = anchor off screen, so the copy hides). */
 export function placeAnchors(
   root: HTMLElement,
   quads: Record<string, Quad | null>,
   aspect: Record<string, number>,
   toMatrix: (q: Quad, w: number, h: number) => string,
+  props?: { fade: Record<string, number>; sizes: Record<string, { w: number; h: number }> },
 ) {
-  const portrait = matchMedia(PORTRAIT_QUERY).matches;
+  const portrait = (portraitMQ ??= matchMedia(PORTRAIT_QUERY)).matches;
   root.querySelectorAll<HTMLElement>("[data-anchor]").forEach((el) => {
     const name = (portrait ? el.dataset.portrait : el.dataset.landscape) || "";
     if (!name) {
@@ -88,10 +104,59 @@ export function placeAnchors(
       return;
     }
     const q = quads[name];
+    // copy on the props of beats 3–4: boxed at its on-screen size at the hold (sharp text there), faded by the
+    // world, out of reach (tab, tap, screen reader focus) while hidden
+    if (el.hasAttribute("data-fade")) {
+      const size = props?.sizes[name],
+        o = props?.fade[name] ?? 0;
+      if (!q || !size || o < 0.01) {
+        el.style.cssText = "visibility:hidden";
+        return;
+      }
+      el.dataset.shape = size.w < size.h ? "portrait" : "landscape";
+      el.style.cssText = `width:${size.w.toFixed(1)}px;height:${size.h.toFixed(1)}px;visibility:visible;opacity:${o.toFixed(3)};transform:${toMatrix(q, size.w, size.h)}`;
+      return;
+    }
     const w = portrait ? BOX_W.portrait : BOX_W.landscape,
       h = w / aspect[name];
     el.style.cssText = q
       ? `width:${w}px;height:${h}px;transform:${toMatrix(q, w, h)}`
       : `width:${w}px;height:${h}px;visibility:hidden`;
   });
+}
+
+/**
+ * CSS matrix3d that maps a w × h box onto the quad (corners TL, TR, BL, BR, in px): the square-to-quad homography
+ * of placeHero, for the stills fallback where the world (and its quadToMatrix3d) is not loaded.
+ */
+export function quadMatrix3d(q: Quad, w: number, h: number) {
+  const [[x0, y0], [x1, y1], [x3, y3], [x2, y2]] = q;
+  const dx1 = x1 - x2,
+    dx2 = x3 - x2,
+    dy1 = y1 - y2,
+    dy2 = y3 - y2,
+    sx = x0 - x1 + x2 - x3,
+    sy = y0 - y1 + y2 - y3,
+    den = dx1 * dy2 - dx2 * dy1 || 1e-9,
+    g = (sx * dy2 - dx2 * sy) / den,
+    k = (dx1 * sy - sx * dy1) / den;
+  const m = [
+    (x1 - x0 + g * x1) / w,
+    (y1 - y0 + g * y1) / w,
+    0,
+    g / w,
+    (x3 - x0 + k * x3) / h,
+    (y3 - y0 + k * y3) / h,
+    0,
+    k / h,
+    0,
+    0,
+    1,
+    0,
+    x0,
+    y0,
+    0,
+    1,
+  ];
+  return `matrix3d(${m.map((v) => +v.toFixed(9)).join(",")})`;
 }

@@ -366,7 +366,7 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       }
     }
   }
-  // neighbours: yellow end house on the left, the mint fruit shop and the laundry on the right
+  // neighbour on the left: the yellow end house
   {
     const ny = E.xfL - 0.05,
       yw = 2.7,
@@ -377,61 +377,11 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
     X.add(G.box(yw - 0.6, 2.6, 0.04), mat("#e3d8c6"), mtx([ny - yw / 2, 1.4, 0.03]));
     for (const x of [ny - 0.75, ny - 1.95])
       X.add(G.box(0.7, 1.15, 0.04), mat("#c9cdd7", { roughness: 0.3 }), mtx([x, 5.0, 0.03]));
-    const mx0 = E.xfR + 0.06,
-      mw = 7.0,
-      MH = 8.0;
-    X.add(G.box(mw, MH, 6), mat(C.mint), mtx([mx0 + mw / 2, MH / 2, -3.06]));
-    for (const x of [mx0 + 0.32, mx0 + mw - 0.32]) {
-      X.add(G.rbox(0.64, MH - 0.6, 0.2, 0.06), mat(C.mintLight), mtx([x, (MH - 0.6) / 2, 0.06]));
-      X.add(G.rbox(0.72, 0.7, 0.26, 0.08), mat(C.mintLight), mtx([x, 0.35, 0.08]));
-      X.add(G.rbox(0.72, 0.5, 0.26, 0.08), mat(C.mintLight), mtx([x, 3.4, 0.08]));
-    }
-    X.add(G.rbox(mw, 0.5, 0.34, 0.08), mat(C.mintLight), mtx([mx0 + mw / 2, MH - 0.3, 0.1]));
-    X.add(G.rbox(mw - 1.6, 1.7, 0.08, 0.05), mat("#fbfbfb"), mtx([mx0 + mw / 2, 5.4, 0.05]));
-    X.add(G.box(mw - 1.4, 2.6, 0.04), mat("#5f6b68"), mtx([mx0 + mw / 2, 1.35, -0.4]));
-    const r = rng(7),
-      fruit = ["#f2a33a", "#e94d3d", "#f4d24a", "#7cc35a", "#f28a2e"];
-    for (let i = 0; i < 6; i++) {
-      const x = mx0 + 1.1 + i * 0.85;
-      X.add(G.rbox(0.72, 0.42, 0.5, 0.04), mat("#d9a066"), mtx([x, 0.45, 0.05]));
-      for (let k = 0; k < 6; k++)
-        X.add(
-          G.sph(0.08, 10, 8),
-          mat(fruit[Math.floor(r() * fruit.length)], { roughness: 0.5 }),
-          mtx([x - 0.24 + (k % 3) * 0.24, 0.72, -0.08 + Math.floor(k / 3) * 0.2]),
-          { occ: false },
-        );
-    }
-    const lx0 = mx0 + mw + 0.05,
-      lw = 7.0;
-    X.add(G.box(lw, 7.8, 6), mat("#efd9bd"), mtx([lx0 + lw / 2, 3.9, -3]));
-    X.add(G.rbox(lw, 0.5, 0.34, 0.08), mat("#f6e6d0"), mtx([lx0 + lw / 2, 7.5, 0.1]));
+    // the fruit shop, the laundry and the rest of the row are in ./row
   }
   // pavement (AO plane), kerb, road with a dashed centre line
   {
-    const tiles = canvasTex(
-      512,
-      512,
-      (g, w, h) => {
-        g.fillStyle = C.pave;
-        g.fillRect(0, 0, w, h);
-        const r = rng(3);
-        for (let i = 0; i < 1400; i++) {
-          g.fillStyle = `rgba(120,100,130,${0.025 + r() * 0.03})`;
-          g.fillRect(r() * w, r() * h, 2, 2);
-        }
-        g.strokeStyle = "rgba(120,108,150,.7)";
-        g.lineWidth = 5;
-        g.strokeRect(0, 0, w, h);
-        g.strokeStyle = "rgba(255,255,255,.35)";
-        g.lineWidth = 3;
-        g.beginPath();
-        g.moveTo(4, 6);
-        g.lineTo(w - 4, 6);
-        g.stroke();
-      },
-      { repeat: [11, 1.2] },
-    );
+    const tiles = canvasTex(512, 512, drawPaveTiles, { repeat: [11, 1.2] });
     aoPlane(
       ao,
       "ext-pave",
@@ -455,9 +405,12 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       slope = 0.43,
       hx = (x: number) => 8.4 + slope * (x + 11.2);
     const shape = new THREE.Shape();
+    // it ends at x 5: the diagonal on COMPANY (K0–K2) is kept whole (checked from x 5 on), and out on the row of
+    // shophouses (beat 5, where the sun is higher) it casts nothing
+    const xe = 5;
     shape.moveTo(-28, -1);
-    shape.lineTo(30, -1);
-    shape.lineTo(30, hx(30));
+    shape.lineTo(xe, -1);
+    shape.lineTo(xe, hx(xe));
     shape.lineTo(-28, hx(-28));
     shape.closePath();
     const caster = new THREE.Mesh(
@@ -469,7 +422,58 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
     caster.material.shadowSide = THREE.DoubleSide;
     ext.add(caster);
   }
+  // what shows through the open door while the room behind it is not drawn (beat 5, camera outside): the lit
+  // front room in soft shapes (warm wall, the orange counter, a pendant lamp)
+  const backdrop = new THREE.Mesh(
+    new THREE.PlaneGeometry(2 * dw + 0.2, doorH + 0.1),
+    new THREE.MeshBasicMaterial({
+      map: canvasTex(256, 256, (g, w, h) => {
+        const gr = g.createLinearGradient(0, 0, 0, h);
+        gr.addColorStop(0, "#f2e4e6");
+        gr.addColorStop(0.62, "#efdcd8");
+        gr.addColorStop(0.63, "#e9d3c9");
+        gr.addColorStop(1, "#dcc2bb");
+        g.fillStyle = gr;
+        g.fillRect(0, 0, w, h);
+        g.fillStyle = "#ef6b2c";
+        g.fillRect(w * 0.3, h * 0.55, w * 0.42, h * 0.14);
+        g.fillStyle = "#fbf7f8";
+        g.fillRect(w * 0.28, h * 0.53, w * 0.46, h * 0.03);
+        g.fillStyle = "#f2742f";
+        g.beginPath();
+        g.moveTo(w * 0.46, h * 0.12);
+        g.lineTo(w * 0.56, h * 0.12);
+        g.lineTo(w * 0.6, h * 0.2);
+        g.lineTo(w * 0.42, h * 0.2);
+        g.fill();
+      }),
+    }),
+  );
+  backdrop.position.set(0, (doorH + 0.1) / 2, -1.6);
+  backdrop.visible = false;
+  ext.add(backdrop);
   X.build();
 
-  return { group: ext, batch: X, hinge };
+  return { group: ext, batch: X, hinge, leafL, backdrop };
+}
+
+/** The paving tiles (one tile per texture; the pavement repeats it every 30 / 11 m along the street). */
+export const PAVE_TILE = { x: 30 / 11, z: 1.7 / 1.2 };
+export function drawPaveTiles(g: CanvasRenderingContext2D, w: number, h: number) {
+  g.fillStyle = C.pave;
+  g.fillRect(0, 0, w, h);
+  const r = rng(3);
+  for (let i = 0; i < 1400; i++) {
+    g.fillStyle = `rgba(120,100,130,${0.025 + r() * 0.03})`;
+    g.fillRect(r() * w, r() * h, 2, 2);
+  }
+  g.strokeStyle = "rgba(120,108,150,.7)";
+  g.lineWidth = 5;
+  g.strokeRect(0, 0, w, h);
+  g.strokeStyle = "rgba(255,255,255,.35)";
+  g.lineWidth = 3;
+  g.beginPath();
+  g.moveTo(4, 6);
+  g.lineTo(w - 4, 6);
+  g.stroke();
 }

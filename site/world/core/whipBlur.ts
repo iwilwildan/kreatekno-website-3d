@@ -33,18 +33,38 @@ export function createWhipBlur(renderer: THREE.WebGLRenderer) {
   const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   const size = new THREE.Vector2();
 
-  /** Renders the scene smeared by `amount` (fraction of the screen width, signed: + = image moving right). */
-  const render = (scene: THREE.Scene, camera: THREE.Camera, amount: number) => {
+  const target = () => {
     renderer.getDrawingBufferSize(size);
     if (!rt || rt.width !== size.x || rt.height !== size.y) {
       rt?.dispose();
       // no MSAA: the blur hides the edges anyway, and the target stays small on phones
       rt = new THREE.WebGLRenderTarget(size.x, size.y, { type: THREE.HalfFloatType, depthBuffer: true });
     }
-    renderer.setRenderTarget(rt);
+    return rt;
+  };
+  /**
+   * Gets the whip ready before it is first needed: the target allocated, the pass compiled, and the scene's
+   * shaders compiled for drawing into a render target (another variant of each: linear output, no tone mapping),
+   * all in the background. Otherwise the first frame of the whip compiles them and stalls (±1 s measured).
+   */
+  const warm = (scene: THREE.Scene, camera: THREE.Camera) => {
+    const t = target();
+    renderer.initRenderTarget(t);
+    const prev = renderer.getRenderTarget();
+    renderer.setRenderTarget(t);
+    // compileAsync builds the programs right away (for the current target) and only waits for them afterwards
+    const sceneReady = renderer.compileAsync(scene, camera);
+    renderer.setRenderTarget(prev);
+    return Promise.all([sceneReady, renderer.compileAsync(quadScene, quadCam)]);
+  };
+
+  /** Renders the scene smeared by `amount` (fraction of the screen width, signed: + = image moving right). */
+  const render = (scene: THREE.Scene, camera: THREE.Camera, amount: number) => {
+    const t = target();
+    renderer.setRenderTarget(t);
     renderer.render(scene, camera);
     renderer.setRenderTarget(null);
-    material.uniforms.tDiffuse.value = rt.texture;
+    material.uniforms.tDiffuse.value = t.texture;
     material.uniforms.dir.value.set(amount, 0);
     renderer.render(quadScene, quadCam);
   };
@@ -54,5 +74,13 @@ export function createWhipBlur(renderer: THREE.WebGLRenderer) {
     material.dispose();
     quad.geometry.dispose();
   };
-  return { render, dispose };
+  /** Draws the pass once into a 1-pixel scissor of the screen (its first draw would otherwise land in the whip). */
+  const warmPass = () => {
+    material.uniforms.tDiffuse.value = target().texture;
+    renderer.setScissorTest(true);
+    renderer.setScissor(0, 0, 1, 1);
+    renderer.render(quadScene, quadCam);
+    renderer.setScissorTest(false);
+  };
+  return { render, warm, warmPass, target, dispose };
 }

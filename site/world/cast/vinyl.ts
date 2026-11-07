@@ -12,7 +12,11 @@ export function vinylMaterial(
   { wrap = 0.35 }: { wrap?: number } = {},
 ) {
   // the roughness canvas is grey, so its green channel (what three reads) is the roughness
-  const m = new THREE.MeshStandardMaterial({ map, roughnessMap, roughness: 1, metalness: 0 });
+  return withWrap(new THREE.MeshStandardMaterial({ map, roughnessMap, roughness: 1, metalness: 0 }), wrap);
+}
+
+/** Adds the wrap lighting to a standard material (none when wrap is 0). */
+export function withWrap(m: THREE.MeshStandardMaterial, wrap: number) {
   m.onBeforeCompile = (s) => {
     if (wrap > 0) {
       const chunk = THREE.ShaderChunk.lights_physical_pars_fragment;
@@ -26,6 +30,6 @@ export function vinylMaterial(
         );
     }
   };
-  m.customProgramCacheKey = () => `vinyl${wrap}`;
+  m.customProgramCacheKey = () => `vinyl${wrap}${m.vertexColors ? "c" : ""}`;
   return m;
 }

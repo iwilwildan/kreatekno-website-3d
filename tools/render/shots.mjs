@@ -17,7 +17,8 @@ const browser = await launch();
 if (what === "compare" || what === "all") {
   const proto = pathToFileURL(join(ROOT, "prototype", "k0-k2-3d.html")).href;
   for (const [fmt, vp] of Object.entries(VP))
-    for (const k of KEYS) {
+    // the prototype only has beats 1–2
+    for (const k of KEYS.filter((k) => k !== "K3" && k !== "K4")) {
       const site = await open(browser, `${BASE}/?shot&fmt=${fmt}&k=${k}`, vp);
       await waitWorld(site.page);
       writeDataUrl(join(OUT, `site_${fmt}_${k}.png`), await site.page.evaluate(() => window.__world.canvasPNG()));

@@ -56,4 +56,14 @@ export function toWebp(png, webp, quality = 80) {
 }
 
 export const FORMATS = { pc: { width: 1600, height: 900 }, hp: { width: 720, height: 1280 } };
-export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2"];
+export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6"];
+/**
+ * Stills of beats 5a–5b on 9:16 taken where the camera stops on a panel (screens into the take), not at the
+ * hold's middle (between two panels there); "b" keys are the second panel of a hold (9:16 only).
+ */
+export const HP_AT = { "K5a.2": 15.25, "K5a.2b": 15.63, "K5a.3": 16.35, "K5a.3b": 16.73, "K5a.4": 17.45, "K5a.4b": 17.83 };
+/** The journey copy recorded on each still (stills fallback), per format. */
+export const JOURNEY = {
+  pc: { "K5a.2": ["intro", "talk"], "K5a.3": ["map", "build"], "K5a.4": ["launch", "cta"] },
+  hp: { "K5a.2": ["intro"], "K5a.2b": ["talk"], "K5a.3": ["map"], "K5a.3b": ["build"], "K5a.4": ["launch"], "K5a.4b": ["cta"] },
+};

@@ -131,8 +131,10 @@ export type WalkExtra = {
   head?: [number, number];
   breathe?: number;
   /** `pole` (where the elbow points) is in the member's own frame. */
-  reachL?: { at: THREE.Vector3; weight: number; pole: THREE.Vector3 };
+  reachL?: Reach;
+  reachR?: Reach;
 };
+type Reach = { at: THREE.Vector3; weight: number; pole: THREE.Vector3 };
 
 const _q = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
 
@@ -175,11 +177,14 @@ export function walkPose(m: CastMember, s: Stride, x: WalkExtra = {}) {
     rig.ik("thigh" + n, "shin" + n, "foot" + n, targets[n], pole);
     rig.level("foot" + n, s[n].yaw == null ? 0 : s[n].yaw! - yaw);
   }
-  const r = x.reachL;
-  if (r && r.weight > 0) {
-    const names = ["upperArmL", "lowerArmL", "handL"].map((b) => rig.bone(b));
+  for (const [n, r] of [
+    ["L", x.reachL],
+    ["R", x.reachR],
+  ] as const) {
+    if (!r || r.weight <= 0) continue;
+    const names = ["upperArm" + n, "lowerArm" + n, "hand" + n].map((b) => rig.bone(b));
     names.forEach((b, i) => _q[i].copy(b.quaternion));
-    rig.ik("upperArmL", "lowerArmL", "handL", r.at, mesh.localToWorld(r.pole.clone()));
+    rig.ik("upperArm" + n, "lowerArm" + n, "hand" + n, r.at, mesh.localToWorld(r.pole.clone()));
     if (r.weight < 1) names.forEach((b, i) => b.quaternion.copy(_q[i].slerp(b.quaternion, r.weight)));
     rig.root.updateMatrixWorld(true);
   }

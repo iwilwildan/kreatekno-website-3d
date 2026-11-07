@@ -1,11 +1,12 @@
-// Set E, the sky (K0): gradient dome, low-poly clouds and the pigeons (posed; they fly in tahap 4).
+// Set E, the sky (K0): gradient dome, low-poly clouds and the pigeons (posed; they fly in tahap 4). The cloud
+// shape is also used for the rain clouds over the staff in COMPANY (cast/acts.ts).
 // One set of clouds and birds per keyframe format, matched to the team's 16:9 and 9:16 frames.
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { clean, rng, type Kit } from "../core/kit";
 import { DATA, type Fmt } from "../takes/home/data";
 
-function cloudGeo(seed: number) {
+export function cloudGeo(seed: number) {
   const r = rng(seed),
     parts: THREE.BufferGeometry[] = [];
   const blobs = [

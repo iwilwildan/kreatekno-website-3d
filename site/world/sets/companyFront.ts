@@ -14,6 +14,56 @@ export const CASHIER_FLOOR = { h: 0.25, d: 0.8 };
 /** Nearest layout step (0 = pc keyframes … LAYOUT_STEPS = hp keyframes) for a format blend 0..1. */
 export const layoutStep = (t: number) => Math.round(t * LAYOUT_STEPS);
 
+/** Solved room measures blended for layout step `step` (room frame), and the room's offset into the world. */
+function layoutParams(step: number) {
+  const t = step / LAYOUT_STEPS;
+  const P: Record<string, number> = {},
+    pc = DATA.int.pc,
+    hp = DATA.int.hp;
+  for (const k in pc) P[k] = lerp(pc[k], hp[k], t);
+  const B0 = P.izB;
+  for (const i of [1, 2, 3]) P["lz" + i] = B0 + P["ld" + i];
+  P.czF = B0 + P.cd;
+  P.s1z = B0 + P.s1d;
+  P.s2z = B0 + P.s2d;
+  for (const k of ["D1", "D2", "D3", "D4"]) P[k + "z"] = B0 + P[k + "d"];
+  const off = [0, 1, 2].map((i) => lerp(DATA.intOffset.pc[i], DATA.intOffset.hp[i], t)) as Vec3;
+  return { P, off };
+}
+
+/**
+ * The till counter of layout step `step` in world space (beats 3–4 happen on its top): x range and centre of the
+ * top, its height, the z of its middle and front edge, Bu Dewi's spot behind it, the aisle between Nadia's and
+ * Fajar's desks, and the back and right walls.
+ */
+export function counterFrame(step: number) {
+  const { P, off } = layoutParams(step);
+  const x0 = P.cxL + off[0],
+    x1 = P.cxR + off[0],
+    zMid = P.czF - 0.3 + off[2];
+  return {
+    x0,
+    x1,
+    cx: (x0 + x1) / 2,
+    top: P.ch,
+    zMid,
+    zFront: zMid + 0.35,
+    dewi: new THREE.Vector3(
+      (P.cxL + P.cxR) / 2 + (DATA.figs.dewi.x - (DATA.int.pc.cxL + DATA.int.pc.cxR) / 2) + off[0],
+      CASHIER_FLOOR.h,
+      P.czF - 0.6 - CASHIER_FLOOR.d / 2 + off[2],
+    ),
+    // the middle gap between Bayu's and Nadia's desks (Heru walks through it to the counter)
+    gapX: (P.D2x + P.D3x) / 2 + off[0],
+    gapZ: (P.D2z + P.D3z) / 2 + off[2],
+    aisleX: (P.D3x + P.D4x) / 2 + off[0],
+    aisleZ: (P.D3z + P.D4z) / 2 + off[2],
+    backZ: P.izB + off[2],
+    rightX: P.ixR + off[0],
+  };
+}
+export type CounterFrame = ReturnType<typeof counterFrame>;
+
 export function createCompanyFront(kit: Kit) {
   const { mat, canvasTex } = kit;
   const E = DATA.ext;
@@ -58,18 +108,7 @@ export function createCompanyFront(kit: Kit) {
 
   /** Builds the room for layout step `step`; its AO planes are appended to `ao`. */
   return function build(step: number, ao: AoTarget[]) {
-    const t = step / LAYOUT_STEPS;
-    const P: Record<string, number> = {},
-      pc = DATA.int.pc,
-      hp = DATA.int.hp;
-    for (const k in pc) P[k] = lerp(pc[k], hp[k], t);
-    const B0 = P.izB;
-    for (const i of [1, 2, 3]) P["lz" + i] = B0 + P["ld" + i];
-    P.czF = B0 + P.cd;
-    P.s1z = B0 + P.s1d;
-    P.s2z = B0 + P.s2d;
-    for (const k of ["D1", "D2", "D3", "D4"]) P[k + "z"] = B0 + P[k + "d"];
-    const off = [0, 1, 2].map((i) => lerp(DATA.intOffset.pc[i], DATA.intOffset.hp[i], t)) as Vec3;
+    const { P, off } = layoutParams(step);
     const grp = new THREE.Group();
     grp.position.set(...off);
     grp.updateMatrixWorld(true);
@@ -296,13 +335,50 @@ export function createCompanyFront(kit: Kit) {
         B.add(G.rbox(0.07, 0.16, 0.04, 0.01), mat(C.black), L([-0.18, h + 0.1, -0.02]));
         B.add(G.rbox(0.24, 0.015, 0.16, 0.006), mat(C.black), L([-0.18, h + 0.01, -0.02]));
       }
-      if (items.includes("stack"))
-        for (let i = 0; i < 11; i++)
+      // order slips piling up (the manual work of beat 2): a tall stack getting messier toward the top, a second
+      // pile in front and loose slips on the desk
+      if (items.includes("stack")) {
+        for (let i = 0; i < 17; i++) {
+          const mess = 0.4 + (i / 16) * 1.6;
           B.add(
             G.box(0.27, 0.022, 0.21),
             mat(i % 3 ? C.paper : "#f2eef0"),
-            L([0.36 + Math.sin(i * 2.3) * 0.012, h + 0.012 + i * 0.023, 0.04], [0, Math.sin(i * 1.7) * 0.1, 0]),
+            L(
+              [0.36 + Math.sin(i * 2.3) * 0.012 * mess, h + 0.012 + i * 0.023, 0.04 + Math.cos(i * 1.3) * 0.01 * mess],
+              [0, Math.sin(i * 1.7) * 0.1 * mess, 0],
+            ),
             { occ: i === 0 },
+          );
+        }
+        for (let i = 0; i < 6; i++)
+          B.add(
+            G.box(0.25, 0.022, 0.19),
+            mat(i % 2 ? C.paper : "#f2eef0"),
+            L([0.12 + Math.sin(i * 3.1) * 0.02, h + 0.012 + i * 0.023, 0.2], [0, 0.35 + Math.sin(i * 2.2) * 0.2, 0]),
+            { occ: i === 0 },
+          );
+        for (const [x, z, r] of [
+          [0.06, 0.06, -0.5],
+          [0.24, -0.16, 0.9],
+          [0.5, 0.2, 0.3],
+        ])
+          B.add(G.box(0.2, 0.003, 0.14), mat(C.paper), L([x, h + 0.003, z], [0, r, 0]), { occ: false });
+      }
+      // crumpled sheets: ideas that did not work
+      if (items.includes("crumpled"))
+        for (const [x, z, sc] of [
+          [0.3, 0.16, 1],
+          [0.38, 0.06, 0.85],
+          [0.31, -0.03, 0.9],
+          [-0.33, 0.14, 0.8],
+        ])
+          B.add(
+            crumple(x * 31 + z * 17),
+            mat(C.paper, { roughness: 0.75 }),
+            L([x, h + 0.03 * sc, z], [x, z * 5, 0], sc),
+            {
+              occ: false,
+            },
           );
       if (items.includes("laptop")) {
         const al = mat("#9b9ba6", { roughness: 0.35, metalness: 0.4 });
@@ -316,6 +392,24 @@ export function createCompanyFront(kit: Kit) {
           L([-0.12, h + 0.05, -0.02], [0.1, 0, 0]),
         );
         B.add(G.box(0.36, 0.01, 0.26), mat(C.paper), L([-0.12, h + 0.09, -0.02], [0.1, 0, 0]), { occ: false });
+        // the tray overflowing with price lists, and folders waiting beside it
+        for (let i = 0; i < 4; i++)
+          B.add(
+            G.box(0.3, 0.004, 0.22),
+            mat(i % 2 ? C.paper : "#f2eef0"),
+            L(
+              [-0.12 + Math.sin(i * 2.7) * 0.03, h + 0.1 + i * 0.012, -0.02 + Math.cos(i * 1.9) * 0.025],
+              [0.1, Math.sin(i * 1.4) * 0.25, 0],
+            ),
+            { occ: false },
+          );
+        for (let i = 0; i < 4; i++)
+          B.add(
+            G.rbox(0.24, 0.02, 0.31, 0.006),
+            mat(i % 2 ? "#7c4fd0" : C.chair, { roughness: 0.55 }),
+            L([0.1 + Math.sin(i * 2.1) * 0.015, h + 0.011 + i * 0.021, -0.18], [0, -0.3 + Math.sin(i * 1.3) * 0.18, 0]),
+            { occ: i === 0 },
+          );
         B.add(G.rbox(0.3, 0.018, 0.21, 0.01), mat(C.black, { roughness: 0.3 }), L([0.36, h + 0.01, 0.08], [0, 0.2, 0]));
         B.add(G.box(0.26, 0.004, 0.17), mat("#e9edf4", { roughness: 0.2 }), L([0.36, h + 0.021, 0.08], [0, 0.2, 0]), {
           occ: false,
@@ -330,8 +424,56 @@ export function createCompanyFront(kit: Kit) {
     };
     desk("D1", "monitor");
     desk("D2", "monitor stack");
-    desk("D3", "laptop");
+    desk("D3", "laptop crumpled");
     desk("D4", "tray");
+    // large-format printer and three framed prints on the right wall (seen from the door), beside Fajar's desk
+    // (Master 11b), toward the front. Kept forward of the part of the wall that K2 and K2.2 see (pc and hp; the
+    // narrow 9:16 room is the limit), so the approved keyframes stay as they are; the camera finds them at K2.4,
+    // looking back toward the door. Only materials the room already has, so it adds no draw call.
+    {
+      const pz = P.D4z + 3.0,
+        wx = P.ixR,
+        grey = mat("#c9cbd6", { roughness: 0.75 }),
+        shell = mat("#f2eef0"),
+        dark = mat(C.black, { roughness: 0.4 }),
+        L = 1.3;
+      // cabinet on four feet, the printing unit on top with its paper slot facing the room, the roll behind it
+      for (const [dx, dz] of [
+        [-0.22, -0.55],
+        [-0.22, 0.55],
+        [0.22, -0.55],
+        [0.22, 0.55],
+      ])
+        B.add(G.cyl(0.025, 0.03, 0.05, 10), dark, mtx([wx - 0.34 + dx, 0.025, pz + dz]));
+      B.add(G.rbox(0.52, 0.56, L - 0.1, 0.02), grey, mtx([wx - 0.34, 0.33, pz]));
+      B.add(G.rbox(0.62, 0.4, L, 0.05), shell, mtx([wx - 0.36, 0.81, pz]));
+      B.add(G.box(0.006, 0.025, L - 0.24), dark, mtx([wx - 0.672, 0.72, pz]), { occ: false });
+      B.add(G.rbox(0.03, 0.06, 0.16, 0.008), dark, mtx([wx - 0.66, 0.92, pz + L / 2 - 0.14]), { occ: false });
+      // a print coming out of the slot
+      B.add(G.box(0.16, 0.002, L - 0.34), mat(C.paper), mtx([wx - 0.74, 0.69, pz], [0, 0, -0.35]), {
+        occ: false,
+      });
+      B.add(
+        G.cyl(0.075, 0.075, L - 0.12, 20),
+        mat(C.paper, { roughness: 0.6 }),
+        mtx([wx - 0.24, 1.08, pz], [Math.PI / 2, 0, 0]),
+      );
+      for (const s of [-1, 1])
+        B.add(
+          G.cyl(0.045, 0.045, 0.04, 14),
+          mat("#3b3a40"),
+          mtx([wx - 0.24, 1.08, pz + s * (L / 2 - 0.04)], [Math.PI / 2, 0, 0]),
+        );
+      // orange frames with white prints, toward the back from the printer
+      for (const [i, dz] of [0.2, -0.27, -0.74].entries()) {
+        const z = pz + dz,
+          y = 1.78 - i * 0.02;
+        B.add(G.rbox(0.03, 0.6, 0.4, 0.008), mat(C.base), mtx([wx - 0.015, y, z]));
+        B.add(G.box(0.006, 0.52, 0.32), mat(C.paper), mtx([wx - 0.031, y, z]), {
+          occ: false,
+        });
+      }
+    }
     // pendant lamps (glow + a warm point light each)
     const lampLights: THREE.PointLight[] = [];
     for (const i of [1, 2, 3]) {
@@ -429,3 +571,18 @@ export function createCompanyFront(kit: Kit) {
   };
 }
 export type CompanyFront = ReturnType<ReturnType<typeof createCompanyFront>>;
+
+/** A crumpled paper ball: an icosphere with its corners pushed in and out (deterministic from `seed`). */
+function crumple(seed: number) {
+  const g = new THREE.IcosahedronGeometry(0.03, 1),
+    p = g.attributes.position as THREE.BufferAttribute,
+    v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    // the same corner appears in several faces: offset by its position so they stay joined
+    const k = 0.75 + 0.45 * Math.abs(Math.sin(v.x * 91 + v.y * 57 + v.z * 33 + seed));
+    p.setXYZ(i, v.x * k, v.y * k, v.z * k);
+  }
+  g.computeVertexNormals();
+  return g;
+}

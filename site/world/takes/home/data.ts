@@ -6,6 +6,8 @@ import raw from "./data.json";
 import type { KeyName } from "./timing";
 
 export type { KeyName };
+/** Keyframes with a solved camera (K2.4, K3 and K4 are framed in ./counter, K4.1 onward in ./outside). */
+export type SolvedKey = "K0" | "K1" | "K2" | "K2.1" | "K2.2";
 export type Cam = { pos: Vec3; quat: [number, number, number, number]; fov: number };
 export type Fmt = "pc" | "hp";
 type PerFmt<T> = Record<Fmt, T>;
@@ -14,7 +16,7 @@ export type HomeData = {
   ext: Record<string, number>;
   int: PerFmt<Record<string, number>>;
   intOffset: PerFmt<Vec3>;
-  cams: PerFmt<Record<KeyName, Cam>>;
+  cams: PerFmt<Record<SolvedKey, Cam>>;
   heru: { k1: Vec3; height: number };
   figs: Record<"sinta" | "bayu" | "nadia" | "fajar" | "dewi", { x: number; z: number; head: number; seated: boolean }>;
   heruK2: PerFmt<Vec3>;

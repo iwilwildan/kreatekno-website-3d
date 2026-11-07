@@ -2,12 +2,16 @@
 // way down (K0 → K1), a follow through the door (K1 → K2), a dolly in over Heru's head that pans left to Sinta
 // and Bayu (K2 → K2.1) and keeps drifting, then the whip pan right to Nadia and Fajar (K2.1 → K2.2). The whip
 // itself is time-based (the world runs it for ±0.45 s once the scroll passes WHIP_AT); here it is a blend
-// `whip` 0..1 between the drift after K2.1 and the settle into K2.2, both sampled from the scroll.
+// `whip` 0..1 between the drift after K2.1 and the settle into K2.2, both sampled from the scroll. Beats 3–4
+// (K2.2 → K2.4 → K3 → K4) are in ./counter.
 import * as THREE from "three";
 import { lerp } from "../../core/kit";
 import { clamp01, ease, segmentAt } from "../../core/segments";
 import { blendCam, type CamPose } from "../../core/take";
-import { DATA } from "./data";
+import { beat34Camera, k3View, k4View } from "./counter";
+import { DATA, type SolvedKey } from "./data";
+import { B5, beat5Camera } from "./outside";
+import { LAYOUT_STEPS } from "../../sets/companyFront";
 import { SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
 
 export { SEG, TAKE_SCREENS, KEYS, keyP, WHIP_AT } from "./timing";
@@ -15,7 +19,7 @@ export { followClock, heruAt, heruClock, poseHeru, type HeruState } from "./heru
 
 const SEG_K2 = SEG.find((s) => s.from === "K2" && s.type === "move")!.screens,
   SEG_K21 = SEG.find((s) => s.from === "K2.1")!.screens;
-const kf = (k: KeyName, t: number) => blendCam(DATA.cams.pc[k], DATA.cams.hp[k], t);
+const kf = (k: SolvedKey, t: number) => blendCam(DATA.cams.pc[k], DATA.cams.hp[k], t);
 const UP = new THREE.Vector3(0, 1, 0);
 const yawQ = (a: number) => new THREE.Quaternion().setFromAxisAngle(UP, a);
 
@@ -71,18 +75,36 @@ function settle(t: number, u: number): CamPose {
   };
 }
 
+const SEG_K22 = SEG.find((s) => s.from === "K2.2" && s.type === "move")!.screens;
+
 /**
  * Camera for p; `heru` bends the K1 → K2 path so the camera follows him through the door and lifts the dolly
- * over his head; `whip` is the eased whip pan (0 = still at K2.1, 1 = at K2.2).
+ * over his head; `whip` is the eased whip pan (0 = still at K2.1, 1 = at K2.2); `aspect` (width / height of the
+ * screen) keeps the paper whole in the top views of beats 3–4.
  */
 export function cameraAt(
   p: number,
   t: number,
   heru: { x: number; z: number },
   whip: number,
+  aspect = 16 / 9,
 ): CamPose & { key: KeyName } {
-  const { seg, u } = segmentAt(SEG, p);
-  if (seg.type === "hold") return { ...kf(seg.from, t), key: seg.from };
+  const { seg, u, start } = segmentAt(SEG, p);
+  const x = start + u * seg.screens;
+  if (x > B5.rise) {
+    const key = seg.type === "hold" || u < 0.5 ? seg.from : seg.to!;
+    return { ...beat5Camera(x, Math.round(t * LAYOUT_STEPS), t, aspect), key };
+  }
+  if (seg.from === "K3" || seg.from === "K4") {
+    if (seg.type === "hold") return { ...(seg.from === "K3" ? k3View : k4View)(t, aspect), key: seg.from };
+    return { ...beat34Camera(t, aspect, kf("K2.2", t), null, u), key: u < 0.5 ? "K3" : "K4" };
+  }
+  if (seg.type === "move" && (seg.from === "K2.2" || seg.from === "K2.4")) {
+    const s = seg.from === "K2.2" ? u * seg.screens : SEG_K22 + u * seg.screens;
+    const key = s < SEG_K22 * 0.6 ? "K2.2" : s < SEG_K22 + seg.screens * 0.5 ? "K2.4" : "K3";
+    return { ...beat34Camera(t, aspect, kf("K2.2", t), s), key };
+  }
+  if (seg.type === "hold") return { ...kf(seg.from as SolvedKey, t), key: seg.from };
   if (seg.from === "K2") {
     const { A, B, curve, atB } = panPath(t, heru),
       e = easeTo(u, ARRIVE);
@@ -103,8 +125,8 @@ export function cameraAt(
       key: whip < 0.5 ? "K2.1" : "K2.2",
     };
   }
-  const A = kf(seg.from, t),
-    B = kf(seg.to!, t),
+  const A = kf(seg.from as SolvedKey, t),
+    B = kf(seg.to as SolvedKey, t),
     e = ease(u);
   let pos: THREE.Vector3;
   if (seg.from === "K0") pos = A.pos.clone().lerp(B.pos, e);
@@ -134,5 +156,6 @@ export function craneAt(p: number) {
 }
 
 /** True while the camera is inside COMPANY or looking in through the door (the room's actions run). */
-export const roomInView = (p: number) => p * TAKE_SCREENS > SEG[0].screens + SEG[1].screens + SEG[2].screens + 0.3;
+export const roomInView = (p: number) =>
+  p * TAKE_SCREENS > SEG[0].screens + SEG[1].screens + SEG[2].screens + 0.3 && p * TAKE_SCREENS < B5.truck;
 export { clamp01 };

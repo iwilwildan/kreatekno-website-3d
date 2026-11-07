@@ -79,9 +79,10 @@ export const intersect =
 
 /**
  * Meshes `f` inside the box min..max on a res³ grid (the grid is cubic, so cells stretch with the box).
- * Normals come from the field gradient, which keeps soft shapes smooth at low resolution.
+ * Normals come from the field gradient, which keeps soft shapes smooth at low resolution. `merge: false` keeps
+ * the raw triangle soup (when the caller wants it non-indexed anyway; merging is the slow part).
  */
-export function sdfGeometry(f: Sdf, min: Vec3, max: Vec3, res: number) {
+export function sdfGeometry(f: Sdf, min: Vec3, max: Vec3, res: number, { merge = true } = {}) {
   const mc = new MarchingCubes(res, new THREE.MeshBasicMaterial(), false, false, 120000);
   mc.isolation = 0;
   const hs = mc.halfsize as number,
@@ -119,5 +120,5 @@ export function sdfGeometry(f: Sdf, min: Vec3, max: Vec3, res: number) {
   const g = new THREE.BufferGeometry();
   g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   g.setAttribute("normal", new THREE.BufferAttribute(nor, 3));
-  return mergeVertices(g, 1e-5);
+  return merge ? mergeVertices(g, 1e-5) : g;
 }

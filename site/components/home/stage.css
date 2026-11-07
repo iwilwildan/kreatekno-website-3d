@@ -4,11 +4,36 @@
  * below, the same condition HomeTake checks before loading the world.
  */
 
-/* one column; the hero copy shares the first row with the K0 still */
-.take-stage {
+/* one column; the hero copy shares the first row with the K0 still. The take is the grid and the stage lets its
+   children through, so the jump marks (children of the take, outside the stage: in the film they sit at a scroll
+   position) can stand between the stills here: K2.2, #layanan, the K3 still, the leaflet, the K4 still, the binder */
+.take {
   position: relative;
   display: grid;
   grid-template-columns: 100%;
+}
+.take-stage {
+  display: contents;
+}
+.take-mark {
+  display: block;
+  height: 0;
+  scroll-margin-top: calc(var(--nav-top) + var(--nav-h) + 16px);
+}
+.take-mark[data-at="K3"] {
+  order: 1;
+}
+.take-still[data-still="K3"] {
+  order: 2;
+}
+.leaflet-copy {
+  order: 3;
+}
+.take-still[data-still="K4"] {
+  order: 4;
+}
+.binder-copy {
+  order: 5;
 }
 .take-still {
   display: block;
@@ -83,9 +108,225 @@
   margin-top: 16px;
 }
 
+/* copy on the props of beats 3–4 (stacked version: plain sections after the stills; the film places them on the
+   leaflet and the binder's page, see below) */
+.prop-copy {
+  position: relative;
+  width: min(100% - 32px, 64rem);
+  margin: 32px auto;
+}
+.prop-copy h2 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--color-navy);
+}
+.prop-copy p,
+.prop-copy small {
+  color: var(--color-ink);
+}
+.leaflet-copy .kicker {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-purple-deep);
+}
+/* the four services as printed cards, each in its own brand colour (accent and tint) */
+.services {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.services li {
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--tint);
+}
+.services [data-svc="assistants"] {
+  --acc: var(--color-purple);
+  --tint: #f5e9fb;
+}
+.services [data-svc="strategy"] {
+  --acc: #0891a5;
+  --tint: #ddf8fb;
+}
+.services [data-svc="content"] {
+  --acc: var(--color-violet);
+  --tint: #eee5ff;
+}
+.services [data-svc="training"] {
+  --acc: var(--color-navy);
+  --tint: #e7e8f5;
+}
+.svc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.svc-icon {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--acc);
+  color: var(--color-white);
+}
+.svc-num {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--acc);
+}
+.services h3 {
+  font-size: 1.125rem;
+  color: var(--color-navy);
+}
+.services p {
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.services .tag {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #f0c46b;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+/* stacked: the industry tabs above the page they switch */
+.binder-in {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+}
+.binder-copy .tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.binder-copy .tab {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--tab);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.binder-copy .tab[aria-selected="true"] {
+  outline: 2px solid var(--color-navy);
+}
+.binder-copy .intro {
+  margin-top: 6px;
+}
+.binder-copy .uses {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.binder-copy .lbl {
+  font-weight: 700;
+  color: var(--color-purple-deep);
+}
+.binder-copy .page-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 20px;
+}
+
+/* beat 5b · the customer journey (stacked: the K5a.2 still, then the heading, the four steps and the button as
+   plain blocks; the other stills of beats 5a–5b only exist for the stills fallback) */
+.take-mark[data-at="K5a.2"] {
+  order: 6;
+}
+.take-still[data-still="K5a.2"] {
+  order: 7;
+}
+.journey-intro {
+  order: 8;
+}
+.journey-step {
+  order: 9;
+}
+.journey-cta {
+  order: 10;
+}
+.take-still[data-stack="no"] {
+  display: none;
+}
+.journey-copy.prop-copy {
+  margin-block: 12px;
+}
+.journey-intro .kicker {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-purple-deep);
+}
+.journey-step h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  color: var(--color-navy);
+}
+.journey-step p {
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.step-num {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2em;
+  height: 2em;
+  border-radius: 999px;
+  background: var(--acc);
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  font-weight: 800;
+  color: var(--color-white);
+}
+.journey-step[data-step="talk"] {
+  --acc: var(--color-purple);
+}
+.journey-step[data-step="map"] {
+  --acc: #0891a5;
+}
+.journey-step[data-step="build"] {
+  --acc: var(--color-violet);
+}
+.journey-step[data-step="launch"] {
+  --acc: var(--color-navy);
+}
+.journey-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cta-arrow {
+  width: 28px;
+  height: 28px;
+  color: var(--color-purple-deep);
+}
+
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .take {
+    display: block;
     height: calc((var(--take) + 1) * 100lvh);
+  }
+  /* a jump mark sits where the scroll shows its keyframe (screens into the take × the stage height) */
+  .take-mark {
+    position: absolute;
+    top: calc(var(--at) * 100lvh);
+    left: 0;
+    scroll-margin-top: 0;
   }
   .take-stage {
     display: block;
@@ -107,7 +348,7 @@
     height: 100%;
     object-fit: cover;
   }
-  /* K1 to K2.2 stills only exist for the no-WebGL fallback (lazy, so they load only when shown) */
+  /* K1 to K4 stills only exist for the no-WebGL fallback (lazy, so they load only when shown) */
   .take-still:not([data-still="K0"]) {
     display: none;
     opacity: 0;
@@ -184,6 +425,260 @@
     --hero-fade: 1;
   }
 
+  /* Copy on the leaflet and the binder's page (beats 3–4): placed by the world with matrix3d at the size it has on
+     screen at its hold (so the text is sharp there), sized inside by the box (cqw/cqh), faded in by the world.
+     Laid out clear of the hands: Heru's fingers top left, Bu Dewi's bottom right (keyframes K3, K4). */
+  .prop-copy {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: auto;
+    margin: 0;
+    transform-origin: 0 0;
+    backface-visibility: hidden;
+    visibility: hidden;
+    container-type: size;
+    color: var(--color-ink);
+  }
+  .prop-copy h2 {
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  /* the leaflet: purple strip near the top edge (printed), kicker and title right of Heru's fingers; landscape on
+     16:9: four cards in a row that end above Bu Dewi's fingers, the printed logo below them (counterProps);
+     portrait on 9:16: the services stacked as rows, icon beside the title, no card fill (the column is too short
+     for padding, and a fill would lie over Bu Dewi's fingers) */
+  .leaflet-copy .kicker {
+    position: absolute;
+    top: 9.4cqh;
+    left: 27cqw;
+    font-size: 1.25cqw;
+  }
+  .leaflet-copy h2 {
+    position: absolute;
+    top: 13cqh;
+    left: 27cqw;
+    right: 5cqw;
+    font-size: 3.9cqw;
+  }
+  .leaflet-copy .services {
+    position: absolute;
+    top: 26cqh;
+    left: 5cqw;
+    right: 5cqw;
+    bottom: 29.5cqh;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.6cqw;
+    margin: 0;
+  }
+  .leaflet-copy .services li {
+    padding: 1.6cqw 1.6cqw 1.2cqw;
+    border-radius: 1.3cqw;
+  }
+  .leaflet-copy .svc-head {
+    margin-bottom: 1.2cqw;
+  }
+  .leaflet-copy .svc-icon {
+    width: 3.6cqw;
+    height: 3.6cqw;
+    padding: 0.7cqw;
+    border-radius: 0.9cqw;
+  }
+  .leaflet-copy .svc-num {
+    font-size: 1.7cqw;
+  }
+  .leaflet-copy .services h3 {
+    font-size: 2.05cqw;
+    line-height: 1.18;
+  }
+  .leaflet-copy .services p {
+    margin-top: 0.6cqw;
+    font-size: 1.72cqw;
+    line-height: 1.42;
+  }
+  .leaflet-copy .services .tag {
+    margin-top: 0.8cqw;
+    padding: 0.2cqw 0.9cqw;
+    font-size: 1.3cqw;
+  }
+  .leaflet-copy[data-shape="portrait"] .kicker {
+    top: 6cqh;
+    left: 29cqw;
+    font-size: max(10px, 2.9cqw);
+  }
+  .leaflet-copy[data-shape="portrait"] h2 {
+    top: 8.6cqh;
+    left: 29cqw;
+    right: 5cqw;
+    font-size: max(16px, 5.4cqw);
+  }
+  .leaflet-copy[data-shape="portrait"] .services {
+    top: 19.4cqh;
+    left: 6cqw;
+    right: 6cqw;
+    bottom: 6cqh;
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: 0;
+  }
+  .leaflet-copy[data-shape="portrait"] .services li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 2.4cqw;
+    padding: 1.1cqh 0;
+    border-radius: 0;
+    background: none;
+    border-top: 1px solid color-mix(in srgb, var(--acc) 22%, transparent);
+  }
+  .leaflet-copy[data-shape="portrait"] .services li:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .leaflet-copy[data-shape="portrait"] .svc-head {
+    display: contents;
+  }
+  .leaflet-copy[data-shape="portrait"] .svc-icon {
+    grid-area: 1 / 1;
+    width: max(20px, 6.6cqw);
+    height: max(20px, 6.6cqw);
+    padding: max(3px, 1.2cqw);
+    border-radius: max(6px, 1.8cqw);
+  }
+  .leaflet-copy[data-shape="portrait"] .svc-num {
+    grid-area: 1 / 3;
+    font-size: max(12px, 3.8cqw);
+  }
+  .leaflet-copy[data-shape="portrait"] .services h3 {
+    grid-area: 1 / 2;
+    font-size: max(13.5px, 4.4cqw);
+  }
+  .leaflet-copy[data-shape="portrait"] .services p,
+  .leaflet-copy[data-shape="portrait"] .services .tag {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .leaflet-copy[data-shape="portrait"] .services p {
+    margin-top: 0.5cqh;
+    font-size: max(12px, 3.75cqw);
+    line-height: 1.3;
+  }
+  /* the last service ends near Bu Dewi's fingers (bottom right): it keeps to the left of them */
+  .leaflet-copy[data-shape="portrait"] .services li:last-child {
+    margin-right: 17cqw;
+  }
+  .leaflet-copy[data-shape="portrait"] .services .tag {
+    margin-top: 0.8cqh;
+    padding: 1px 8px;
+    font-size: max(11px, 3.4cqw);
+  }
+  /* small phones (360 × 640): the type stays at its floor size, so the rows close up to keep it on the sheet */
+  @container (max-height: 440px) {
+    .leaflet-copy[data-shape="portrait"] .services li {
+      padding: 0.75cqh 0;
+    }
+  }
+
+  /* the binder's page and its tabs: the page on the left (--page-w of the box), the tabs in the strip on its right,
+     each button over its 3D tab with the industry name standing up the tab */
+  .binder-copy {
+    display: block;
+  }
+  .binder-in {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+  .binder-copy .page {
+    position: absolute;
+    inset: 4.5cqh calc((1 - var(--page-w)) * 100cqw + 5cqw) 3.5cqh 6cqw;
+    display: flex;
+    flex-direction: column;
+  }
+  .binder-copy h2 {
+    font-size: max(15px, 4.6cqw);
+  }
+  .binder-copy .intro {
+    margin-top: 1.2cqh;
+    font-size: max(12.5px, 3.1cqw);
+    line-height: 1.4;
+  }
+  .binder-copy .uses {
+    gap: 1.8cqh;
+    margin-top: 2.4cqh;
+  }
+  .binder-copy .uses .lbl {
+    font-size: max(12px, 2.9cqw);
+  }
+  .binder-copy .uses p {
+    margin-top: 0.3cqh;
+    font-size: max(12.5px, 3cqw);
+    line-height: 1.4;
+  }
+  .binder-copy .page-cta {
+    margin-top: auto;
+    gap: 1cqh 3cqw;
+  }
+  .binder-copy .page-cta .btn {
+    --t-btn: max(13px, 3.1cqw);
+    min-height: 44px;
+  }
+  .binder-copy .page-cta small {
+    font-size: max(11.5px, 2.7cqw);
+    line-height: 1.35;
+  }
+  .binder-copy .tabs {
+    position: absolute;
+    inset: 0 0 0 calc(var(--page-w) * 100cqw);
+    display: block;
+  }
+  .binder-copy .tab {
+    position: absolute;
+    top: calc(var(--t0) * 100cqh);
+    bottom: calc((1 - var(--t1)) * 100cqh);
+    left: 0;
+    right: 0;
+    min-height: 0;
+    padding: 0;
+    border-radius: 3px;
+    background: none;
+    writing-mode: vertical-rl;
+    font-size: max(10px, 2.5cqw);
+    font-weight: 600;
+    color: rgb(19 25 81 / 0.72);
+  }
+  /* touch area: at least 44 px wide, reaching out past the page over the binder's cover */
+  .binder-copy .tab::before {
+    content: "";
+    position: absolute;
+    inset: 0 min(0px, calc(100% - 44px)) 0 0;
+  }
+  .binder-copy .tab[aria-selected="true"] {
+    outline: none;
+    font-weight: 800;
+    color: var(--color-navy);
+  }
+  .binder-copy .tab:focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 1px;
+  }
+
+  /* narrow pages (phones): the four examples side by side, one per swipe */
+  @container (max-width: 300px) {
+    .binder-copy .uses {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+    .binder-copy .uses li {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+    }
+  }
+
   @media (max-aspect-ratio: 1/1) {
     .hero-head {
       padding: 10px 16px 8px;
@@ -224,5 +719,47 @@
       width: 34px;
       height: 34px;
     }
+  }
+}
+
+/* Copy on the panels of the row (beat 5b): placed by the world with matrix3d at its size where the camera stops
+   (pc ±390 × 147 px, 9:16 ±285 × 110 px), laid out in the box (cqw/cqh) like print on the white panel. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .journey-copy.prop-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
+    padding: 4cqh 4.5cqw;
+  }
+  .journey-intro .kicker {
+    font-size: max(10px, 3.4cqw);
+  }
+  .journey-intro h2 {
+    margin-top: 0.15em;
+    font-size: max(19px, 8cqw);
+    line-height: 1.05;
+  }
+  .journey-step h3 {
+    gap: 0.45em;
+    font-size: max(16px, 6cqw);
+    line-height: 1.1;
+  }
+  .journey-step p {
+    margin-top: 0.35em;
+    padding-left: calc(max(16px, 6cqw) * 1.62);
+    font-size: max(13px, 4.2cqw);
+    line-height: 1.32;
+    text-wrap: pretty;
+  }
+  .journey-copy.journey-cta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4cqw;
+  }
+  .journey-cta .cta-arrow {
+    width: max(22px, 8cqw);
+    height: max(22px, 8cqw);
   }
 }

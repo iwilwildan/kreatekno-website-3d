@@ -11,4 +11,5 @@ export type CastName = keyof typeof CAST;
 
 export { buildMember, buildMemberSliced } from "./member";
 export { applyPose, K2_POSES } from "./poses";
-export { act, createPhone, lookYaw } from "./acts";
+export { act, createGloom, createPhone, createSweat, lookYaw } from "./acts";
+export { buildCloseHands, type CloseHands } from "./closeHand";

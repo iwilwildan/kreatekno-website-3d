@@ -1,5 +1,6 @@
-// Poses of the cast at the K2 hold (from the team's footage): the staff seated at their desks, Bu Dewi with
-// both hands on the counter. Targets are in the character's own frame (metres, facing +z, origin on the floor
+// Poses of the cast at the K2 hold (from the team's footage): the staff seated at their desks, slumped and
+// worn out by the manual work piling up on them (brows up in the middle, mouths down, heavy lids), Bu Dewi
+// with both hands on the counter, sad and concerned (team document, K2). Targets are in the character's own frame (metres, facing +z, origin on the floor
 // under the pelvis); the member's mesh must already stand in its spot.
 import * as THREE from "three";
 import type { Vec3 } from "../core/kit";
@@ -16,54 +17,62 @@ export type Pose = {
   L?: Hand;
   R?: Hand;
   face?: Expression;
+  /** Heavy eyelids: 0 open … 1 shut (the eye squash a blink uses). */
+  lids?: number;
 };
 
 /** Seat top of the desk chairs in companyFront.ts. */
 const SEAT = 0.505;
 
 export const K2_POSES: Record<string, Pose> = {
-  // typing on her phone, held low over the desk edge, head down, worried
+  // typing on her phone, held low over the desk edge, head down, overwhelmed (brows high, mouth a little open)
   sinta: {
     seat: SEAT,
-    spine: [0.12, 0, 0],
+    spine: [0.16, 0, 0],
     head: [0.38, 0, 0],
     L: { at: [0.05, 0.84, 0.3], fingers: [-0.4, 0.1, 1] },
     R: { at: [-0.06, 0.84, 0.3], fingers: [0.4, 0.1, 1] },
-    face: { browTilt: 0.22, smile: -0.35, browLift: 0.004 },
+    face: { browTilt: 0.45, smile: -0.55, browLift: 0.008, open: 0.18 },
+    lids: 0.05,
   },
-  // at his monitor (to his right on the desk), hands on the keyboard, worried
+  // at his monitor (to his right on the desk), hands on the keyboard, the slips piling up beside him; weary
   bayu: {
     seat: SEAT,
-    spine: [0.1, 0, 0],
-    head: [0.08, -0.25, 0],
+    spine: [0.16, 0, 0],
+    head: [0.14, -0.25, 0],
     L: { at: [-0.04, 0.8, 0.34], fingers: [0, -0.35, 1] },
     R: { at: [-0.3, 0.8, 0.32], fingers: [0, -0.35, 1] },
-    face: { browTilt: 0.2, smile: -0.25 },
+    face: { browTilt: 0.32, smile: -0.5, browLift: -0.004 },
+    lids: 0.32,
   },
-  // chin on her right hand, elbow on the desk, the other hand on the laptop; sad
+  // chin on her right hand, elbow on the desk, the other hand on the laptop; no idea coming, sad
   nadia: {
     seat: SEAT,
-    spine: [0.2, 0, 0],
-    head: [0.18, 0.05, -0.18],
+    spine: [0.24, 0, 0],
+    head: [0.2, 0.05, -0.2],
     R: { at: [-0.04, 0.95, 0.2], fingers: [0.1, 1, 0.25], elbow: [-0.12, 0.8, 0.32] },
     L: { at: [0.12, 0.8, 0.33], fingers: [-0.2, -0.3, 1] },
-    face: { browTilt: 0.28, smile: -0.4 },
+    face: { browTilt: 0.42, smile: -0.45 },
+    lids: 0.28,
   },
-  // scratching his head with his right hand, the left on the desk by the tray; puzzled
+  // scratching his head with his right hand, the left on the desk by the tray; puzzled and fed up
   fajar: {
     seat: SEAT,
-    spine: [0.08, 0, 0],
-    head: [0.12, 0, 0.18],
+    spine: [0.14, 0, 0],
+    head: [0.16, 0, 0.18],
     R: { at: [-0.16, 1.22, 0.0], fingers: [0.3, 1, -0.3], elbow: [-0.35, 1.05, 0.1] },
     L: { at: [0.1, 0.8, 0.32], fingers: [0, -0.35, 1] },
-    face: { browTilt: -0.12, smile: -0.2, mouthShift: 0.012 },
+    face: { browTilt: 0.3, smile: -0.45, mouthShift: 0.014, open: 0.08 },
+    lids: 0.15,
   },
-  // standing on the cashier floor, both hands on the counter top, a friendly smile
+  // standing on the cashier floor, both hands on the counter top; sad and concerned for her staff, head a
+  // little tilted
   dewi: {
     seat: null,
+    head: [0.04, 0, 0.1],
     L: { at: [0.17, 0.79, 0.3], fingers: [0, -0.5, 1] },
     R: { at: [-0.17, 0.79, 0.3], fingers: [0, -0.5, 1] },
-    face: { smile: 0.45 },
+    face: { browTilt: 0.36, browLift: 0.004, smile: -0.35 },
   },
 };
 
@@ -104,5 +113,6 @@ export function applyPose(m: CastMember, p: Pose, face = true) {
     rig.ik("upperArm" + n, "lowerArm" + n, "hand" + n, W(h.at), W(pole));
     rig.point("hand" + n, D(h.fingers));
   }
+  for (const n of ["eyeL", "eyeR"]) rig.bone(n).scale.y = 1 - 0.88 * (p.lids ?? 0);
   if (face && p.face) m.express(p.face);
 }

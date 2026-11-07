@@ -3,16 +3,19 @@
 // where each anchor (copy surface) is on screen. Loaded with import() after the page is visible.
 import * as THREE from "three";
 import { applyAO, encodeMap, loadAO, type AoTarget } from "./core/ao";
-import { projectAnchor, quadVisible, rectAnchor, type Quad } from "./core/anchors";
+import { projectAnchor, quadVisible, rectAnchor, type Anchor, type Quad } from "./core/anchors";
 import { createKit, disposeTree, type Kit } from "./core/kit";
 import { createLight } from "./core/light";
-import { ease, formatT } from "./core/segments";
+import { ease, formatT, segmentStart, smoothstep } from "./core/segments";
 import { createWhipBlur } from "./core/whipBlur";
 import type { CastMember } from "./cast/member";
 import type { Pose } from "./cast/poses";
 import { dampStep } from "./motion/damp";
 import { createCompanyFront, layoutStep, LAYOUT_STEPS, type CompanyFront } from "./sets/companyFront";
-import { buildSky } from "./sets/sky";
+import { createCounterProps, HANDS_PITCH } from "./sets/counterProps";
+import { buildShop, panelFace, rowMaterials } from "./sets/shop";
+import { SHOPS } from "./sets/rowLayout";
+import { buildSky, cloudGeo } from "./sets/sky";
 import { billboardFace, buildStreet } from "./sets/street";
 import type { KeyName } from "./takes/home/data";
 import {
@@ -29,11 +32,36 @@ import {
   whipTarget,
   type HeruState,
 } from "./takes/home";
+import { k3View, k4View, setSafeTop } from "./takes/home/counter";
+import { B5, b5Relax, panelArrivals } from "./takes/home/outside";
+import { SEG } from "./takes/home/timing";
+import { outsideState, poseOutside, scrollClock, stepOutClock } from "./takes/home/outsideCast";
+import type { Row } from "./sets/row";
+import {
+  B4_SECONDS,
+  beat4Clock,
+  beatAt,
+  DEWI_HOLDS,
+  dewiPose3,
+  heru3Clock,
+  phase4,
+  poseHeru3,
+  type Beat3,
+} from "./takes/home/counterCast";
 
 /** Inertia of the camera on the scroll: critically damped, ω = 2 / smoothing time (±0.25 s). */
 const OMEGA = 8;
 /** Duration of the whip pan to K2.2 (s). */
 const WHIP_S = 0.45;
+/** Bu Dewi's nod at K4.1: where it starts (screens: the K4.1 hold), how long it takes (s), her face meanwhile. */
+const keyHoldStart = (k: KeyName) =>
+  segmentStart(
+    SEG,
+    SEG.findIndex((g) => g.from === k && g.type === "hold"),
+  );
+const NOD_AT = keyHoldStart("K4.1");
+const NOD_S = 1.4;
+const NOD_FACE = { browTilt: 0.04, browLift: 0.012, smile: 0.62 };
 
 export { TAKE_SCREENS, KEYS, LAYOUT_STEPS, keyP };
 export { mixQuad, quadToMatrix3d } from "./core/anchors";
@@ -53,6 +81,8 @@ export type WorldOptions = {
   bake?: number;
   /** Where the baked AO maps live. */
   aoBase?: string;
+  /** Height (CSS px) at the top of the host covered by the page's floating header; the top views keep clear of it. */
+  safeTop?: () => number;
   onFrame?: (f: FrameInfo) => void;
   onReady?: () => void;
   onContextLost?: (count: number) => void;
@@ -63,6 +93,12 @@ export type FrameInfo = {
   key: KeyName;
   /** Screen quad per anchor in CSS px of the host, or null when it is off screen or behind the camera. */
   anchors: Record<string, Quad | null>;
+  /**
+   * Opacity of the copy on the props of beats 3–4 (leaflet, page; 0 hidden), and the size its box should have:
+   * its size on screen at its hold, so the text is drawn at about 1:1 there and stays sharp.
+   */
+  fade: Record<string, number>;
+  sizes: Record<string, { w: number; h: number }>;
 };
 
 export type WorldStats = {
@@ -94,6 +130,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
+  // the shaders are known good: skip reading back their logs on first use (it waits for the driver)
+  renderer.debug.checkShaderErrors = process.env.NODE_ENV !== "production";
   const canvas = renderer.domElement;
   canvas.setAttribute("aria-hidden", "true");
   canvas.style.display = "block";
@@ -112,8 +150,18 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   scene.add(street.group);
   const sky = buildSky(kit);
   scene.add(sky.group);
+  // the row of shophouses (beats 5a–5b): the fruit shop and the laundry are seen from K0 on and built with the
+  // street; the rest of the row is its own chunk, built as the camera nears K4.1 (loadRow)
+  const rowMats = rowMaterials(),
+    rowOcc: THREE.BufferGeometry[] = [];
+  for (const i of [0, 1]) scene.add(buildShop(kit, rowMats, SHOPS[i], i, extAO, rowOcc));
+  let row: Row | null = null,
+    rowLoading: Promise<void> | null = null;
   const buildRoom = createCompanyFront(kit);
   const anchors = billboardAnchors();
+  // leaflet, binder and pencils of beats 3–4, laid out on the counter of the current layout
+  const props = createCounterProps(kit);
+  scene.add(props.group);
 
   // ---------- cast (own chunk, built after the sets; K0 does not need it) ----------
   // One member per idle slice so the build does not hold the main thread for long. Heru walks with the
@@ -123,6 +171,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const crew: CastMember[] = [];
   let castMod: typeof import("./cast/roster") | null = null;
   let phone: ReturnType<typeof import("./cast/roster").createPhone> | null = null;
+  let sweat: ReturnType<typeof import("./cast/roster").createSweat> | null = null;
+  let gloom: ReturnType<typeof import("./cast/roster").createGloom> | null = null;
   let placeCrew = () => {};
   const castReady = import("./cast/roster").then(async (mod) => {
     const { CAST, buildMemberSliced, applyPose, K2_POSES } = mod;
@@ -147,6 +197,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     phone = mod.createPhone();
     scene.add(phone.group);
+    sweat = mod.createSweat(crew);
+    gloom = mod.createGloom(crew, cloudGeo);
+    await pause();
+    props.setHands(await mod.buildCloseHands({ saver }, pause));
+    scene.add(gloom.group);
     await pause();
     castMod = mod;
     stats.cast.done = true;
@@ -161,7 +216,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         m.springs?.reset(opts.shot ? 1 : 0);
         if (m.name === "sinta") phone?.update(m, 0);
       }
+      gloom?.update(0);
       lastHeruKey = "";
+      // Bu Dewi is back in her K2 pose and face: beats 3–4 repose her
+      dewiFace = "";
+      lastDewiKey = "";
       renderer.shadowMap.needsUpdate = true;
       needsRender = true;
     };
@@ -184,20 +243,92 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     else heru.springs?.poke(moved ? 1.5 : 0.5);
     return moved;
   };
+  /** Beats 3–4: Heru on his beat-3 clock carries the leaflet to the counter (returns where it is). */
+  let b3: Beat3 | null = null;
+  const placeHeru3 = (shown: number, breath: number) => {
+    if (!heru || !room) return false;
+    const u = b4Clk.x / B4_SECONDS,
+      relax = b5Relax(shown * TAKE_SCREENS),
+      body = `b3 ${heru3Clk.x.toFixed(5)} ${room.step} ${fmtT.toFixed(3)} ${u.toFixed(5)} ${relax.toFixed(4)}`,
+      key = `${body} ${breath.toFixed(4)}`;
+    if (key === lastHeruKey) return false;
+    const moved = !lastHeruKey.startsWith(body + " ");
+    lastHeruKey = key;
+    // beat 4 slides the leaflet aside under his hand (seen from above only)
+    const slide = THREE.MathUtils.smootherstep(phase4(u, "slide"), 0, 1);
+    b3 = poseHeru3(heru, heru3Clk.x, room.step, fmtT, breath, slide, relax);
+    if (opts.shot) heru.springs?.reset(1);
+    else heru.springs?.poke(moved ? 1.5 : 0.5);
+    return moved;
+  };
+  /** Bu Dewi's base pose for the scroll position (her K2 pose until beat 3), and the face it wants. */
+  let dewiFace = "";
+  const dewiBase = (shown: number) => {
+    const m = crew.find((c) => c.name === "dewi");
+    if (!castMod || !m || !room) return null;
+    const k2 = castMod.K2_POSES.dewi as Pose,
+      pose = {
+        ...(beatAt(shown).on
+          ? dewiPose3(m, k2, shown, room.step, b4Clk.x / B4_SECONDS, b5Relax(shown * TAKE_SCREENS))
+          : k2),
+      };
+    // K4.1: she smiles and nods once with her eyes closed (video k41 - k4, ±5.5 s)
+    if (nodT > 0) {
+      const n = Math.sin(Math.PI * nodT) ** 2,
+        head = pose.head ?? [0, 0, 0];
+      pose.head = [head[0] + 0.3 * n, head[1], head[2]];
+      pose.lids = Math.max(pose.lids ?? 0, smoothstep(0.15, 0.4, nodT) * (1 - smoothstep(0.7, 0.9, nodT)));
+      pose.face = NOD_FACE;
+    }
+    const face = JSON.stringify(pose.face);
+    // the face is repainted only when it changes (it redraws the atlas)
+    if (face !== dewiFace) {
+      dewiFace = face;
+      if (pose.face) m.express(pose.face);
+    }
+    return { m, pose };
+  };
   /** The room's actions at time t (seconds); Bu Dewi turns her head toward Heru. */
-  const actCrew = (t: number) => {
+  const actCrew = (t: number, shown: number) => {
     if (!castMod || !heru) return;
-    const head = heru.rig.bone("head").getWorldPosition(new THREE.Vector3());
+    const head = heru.rig.bone("head").getWorldPosition(new THREE.Vector3()),
+      dewi = dewiBase(shown);
     for (const [i, m] of crew.entries()) {
       castMod.act(
         m,
-        castMod.K2_POSES[m.name] as Pose,
+        m.name === "dewi" && dewi ? dewi.pose : (castMod.K2_POSES[m.name] as Pose),
         t,
         i + 1,
-        m.name === "dewi" ? castMod.lookYaw(m, head) * 0.8 : 0,
+        // she looks at Heru until he lays the leaflet down, then at the leaflet
+        m.name === "dewi" ? castMod.lookYaw(m, head) * 0.8 * (1 - Math.min(1, beatAt(shown).s)) : 0,
       );
       if (m.name === "sinta") phone?.update(m, t);
     }
+    sweat?.update(t);
+    gloom?.update(t);
+  };
+
+  /**
+   * Beats 5a–5b: Heru and Bu Dewi out on the street, on their own clock (takes/home/outsideCast.ts). Returns true when
+   * they moved (their shadows follow).
+   */
+  let outside = false,
+    lastOutKey = "";
+  const placeOutside = (c: number) => {
+    const dewi = crew.find((m) => m.name === "dewi");
+    const st = outsideState(c);
+    if (!heru || !dewi || !st) return false;
+    const key = c.toFixed(4);
+    if (key === lastOutKey) return false;
+    lastOutKey = key;
+    poseOutside(heru, dewi, st);
+    street.leafL.rotation.y = st.leftLeaf;
+    if (row) row.doorHinge.rotation.y = st.kreLeaf;
+    for (const m of [heru, dewi]) {
+      if (opts.shot) m.springs?.reset(1);
+      else m.springs?.poke(1.5);
+    }
+    return true;
   };
 
   // ---------- AO ----------
@@ -210,6 +341,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const occluders = () => {
     scene.updateMatrixWorld(true);
     const out = street.batch.occ.map((g) => g.clone().applyMatrix4(street.group.matrixWorld));
+    out.push(...rowOcc, ...(row?.occ ?? []));
     if (room) for (const g of room.batch.occ) out.push(g.clone().applyMatrix4(room.group.matrixWorld));
     return out;
   };
@@ -261,27 +393,65 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     else if (!baking) aoState = "siap";
   };
 
+  /** Builds the rest of the row (its own chunk) once; its AO maps load, its shaders compile in the background. */
+  const loadRow = () =>
+    (rowLoading ??= import("./sets/row").then(async (mod) => {
+      // the name on Kreatekno's band is drawn with the page's display font
+      await document.fonts?.ready;
+      const targets: AoTarget[] = [];
+      row = mod.buildRow(kit, rowMats, targets);
+      scene.add(row.group);
+      renderer.shadowMap.needsUpdate = true;
+      needsRender = true;
+      await provideAO(targets);
+      if (readyFired) void warm();
+    }));
+
   // ---------- interior, rebuilt when the layout step changes ----------
   let room: CompanyFront | null = null;
   let roomAO: Promise<void> = Promise.resolve();
+  const lamps = [0, 1, 2].map(() => {
+    const l = new THREE.PointLight();
+    scene.add(l);
+    return l;
+  });
+  // beat 5 lets the room go from K5a.2 on (memory), and builds it again when the visitor scrolls back
+  let roomReleased = false,
+    roomStep = 0;
   const setRoom = (step: number) => {
-    if (room?.step === step) return;
+    roomStep = step;
+    if (roomReleased || room?.step === step) return;
     if (room) {
       scene.remove(room.group);
       disposeTree(room.group, kit.shared);
     }
     const targets: AoTarget[] = [];
     room = buildRoom(step, targets);
-    room.lampLights.forEach((l) => (l.visible = !saver));
+    props.place(step);
+    // the pendant lamps' lights live in the world, not in the room: letting the room go (beat 5) or building it again
+    // must not change the number of lights, which would recompile every material's shader (a stall on the scroll)
+    room.group.updateMatrixWorld(true);
+    room.lampLights.forEach((l, i) => {
+      lamps[i].copy(l);
+      lamps[i].position.setFromMatrixPosition(l.matrixWorld);
+      l.removeFromParent();
+    });
+    room.lampLights = lamps;
+    lamps.forEach((l) => (l.visible = !saver));
+    // built again while the camera is still out on the street: it stays undrawn until the camera goes back in
+    if (roomHidden) room.group.visible = room.group.matrixWorldAutoUpdate = false;
     scene.add(room.group);
     placeCrew();
     renderer.shadowMap.needsUpdate = true;
     roomAO = provideAO(targets);
+    // a later rebuild (the phone turned) compiles its new parts in the background once its AO is on
+    if (readyFired) void roomAO.then(warm);
   };
 
   // ---------- sizing and format blend ----------
   let fmtT = 0;
-  let dprCap = 9;
+  let dprCap = 9,
+    shadowLow = false;
   const maxDpr = () => (saver ? 1 : Math.min(devicePixelRatio || 1, coarse ? 1.5 : 2));
   let width = 1,
     height = 1;
@@ -291,6 +461,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     renderer.setPixelRatio(Math.min(maxDpr(), dprCap));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
+    setSafeTop((opts.safeTop?.() ?? 0) / height);
+    sizesKey = "";
     fmtT = opts.fmt === "pc" ? 0 : opts.fmt === "hp" ? 1 : formatT(width / height);
     sky.setFormat(fmtT);
     {
@@ -305,7 +477,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       sky.setFlight(k0cam);
     }
     setRoom(opts.bake ?? layoutStep(fmtT));
-    light.setShadowSize(saver || coarse ? 1024 : 2048);
+    light.setShadowSize(saver || coarse || shadowLow ? 1024 : 2048);
     renderer.shadowMap.needsUpdate = true;
     needsRender = true;
   };
@@ -326,6 +498,25 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let whipT = whipTarget(target);
   // Heru's clock (seconds at his own pace), following the scroll no faster than he walks
   const heruClk = { x: heruClock(target, fmtT), v: 0 };
+  // and his clock in beat 3 (walking on to the counter)
+  const heru3Clk = { x: heru3Clock(target, layoutStep(fmtT), fmtT), v: 0 };
+  // and the clock of beat 4 (the leaflet slid out, the binder pulled in and opened)
+  const b4Clk = { x: beat4Clock(target), v: 0 };
+  // Heru and Bu Dewi out on the street walk on their own clock (seconds), not waiting for the scroll
+  const outClk = { x: scrollClock(target * TAKE_SCREENS), v: 0 };
+  /** Whether Heru or Bu Dewi would be on screen at outside clock c (last frame's camera). */
+  const frustum = new THREE.Frustum(),
+    seenSphere = new THREE.Sphere(new THREE.Vector3(), 1.1);
+  const seenAt = (c: number) => {
+    const st = outsideState(c);
+    if (!st) return false;
+    frustum.setFromProjectionMatrix(
+      new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+    );
+    return [st.heru.body, st.dewi.body].some((b) => frustum.intersectsSphere(seenSphere.set(b.clone().setY(0.9), 1.1)));
+  };
+  // Bu Dewi's nod at K4.1 runs on time once the scroll reaches its hold (0..1, back when scrolled up)
+  let nodT = 0;
   const stats: WorldStats = {
     fps: 0,
     calls: 0,
@@ -340,9 +531,87 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   timer.connect(document);
   renderer.info.autoReset = false;
   const blur = createWhipBlur(renderer);
+
+  // ---------- warm-up ----------
+  // Every material compiles its shader the first time it is drawn, and the frame waits for it: measured on an
+  // Intel iGPU, the scroll stalled 0.2–1.5 s at the crane down into the room, at the whip and in beats 3–4. So the
+  // whole scene is compiled in the background (KHR_parallel_shader_compile) before the world fades in, hidden
+  // props and the whip's render-target variants included, and its textures uploaded; again once the cast is built
+  // and when the room is rebuilt for another layout. Programs already compiled are reused, so a repeat is cheap.
+  const uploadTextures = () => {
+    const seen = new Set<THREE.Texture>();
+    scene.traverse((o) => {
+      const m = (o as THREE.Mesh).material;
+      if (!m) return;
+      for (const mat of Array.isArray(m) ? m : [m])
+        for (const v of Object.values(mat))
+          if (v instanceof THREE.Texture && !seen.has(v)) {
+            seen.add(v);
+            renderer.initTexture(v);
+          }
+    });
+  };
+  // A compiled program still costs its first draw on some drivers (ANGLE on D3D11 builds the executable for the
+  // vertex layout and the target there: ±100 ms each measured), so the warm-up ends with one frame that draws
+  // everything once, culling off and hidden objects shown, into a 1-pixel scissor of the screen and of the whip's
+  // target, shadows included. It runs while the camera is at rest, right before that frame's real render.
+  let drawWarm: (() => void) | null = null,
+    warmAsked = 0;
+  const warmDraw = () => {
+    const shown: THREE.Object3D[] = [],
+      culled: THREE.Object3D[] = [];
+    scene.traverse((o) => {
+      if (!o.visible && !(o as THREE.Light).isLight) {
+        shown.push(o);
+        o.visible = true;
+      }
+      if (o.frustumCulled) {
+        culled.push(o);
+        o.frustumCulled = false;
+      }
+    });
+    renderer.setScissorTest(true);
+    renderer.setScissor(0, 0, 1, 1);
+    renderer.shadowMap.needsUpdate = true;
+    renderer.render(scene, camera);
+    renderer.setScissorTest(false);
+    if (!saver) {
+      const rt = blur.target();
+      rt.scissor.set(0, 0, 1, 1);
+      rt.scissorTest = true;
+      renderer.setRenderTarget(rt);
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      rt.scissorTest = false;
+      blur.warmPass();
+    }
+    for (const o of shown) o.visible = false;
+    for (const o of culled) o.frustumCulled = true;
+    // the real frame redraws the shadows without the hidden objects
+    renderer.shadowMap.needsUpdate = true;
+  };
+  let warmChain: Promise<unknown> = Promise.resolve();
+  const warm = () =>
+    (warmChain = warmChain.then(async () => {
+      if (lost) return;
+      uploadTextures();
+      await renderer.compileAsync(scene, camera);
+      if (!saver) await blur.warm(scene, camera);
+      await new Promise<void>((resolve) => {
+        drawWarm = resolve;
+        warmAsked = performance.now();
+        needsRender = true;
+      });
+    }));
+  void castReady.then(warm);
   let frames = 0,
     acc = 0,
-    slow = 0;
+    // the quality ladder: the display's refresh interval (the shortest frame seen), missed frames in a window
+    vsync = 1 / 60,
+    slow = 0,
+    slowAt = 0,
+    ladderDone = false;
+  const slowWin = new Array<number>(60).fill(0);
   // Ambient animation (the K0 pigeons, the people in the room, springs settling) needs frames while nothing
   // else changes: capped to save battery, and only while there is something to see. Stills and review shots
   // (?shot) keep everyone still, in their K2 poses.
@@ -353,6 +622,85 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     lastShadow = 0,
     shadowDue = false;
   const lastQuat = new THREE.Quaternion();
+  // on-screen size of the leaflet and the page at their holds (K3, K4), for the copy boxes
+  let copySizes: Record<string, { w: number; h: number }> = {},
+    sizesKey = "";
+  const holdCam = new THREE.PerspectiveCamera(40, 1, 0.05, 600);
+  // the customer journey's copy on the panels of the row (beat 5b), a little in from the panels' edges
+  const journey = SHOPS.flatMap((s, i) => {
+    if (!s.copy) return [];
+    const f = panelFace(i);
+    return [{ shop: i, anchor: rectAnchor(`journey-${s.copy}`, f.cx, f.cy, f.z + 0.004, f.hw - 0.08, f.hh - 0.08) }];
+  });
+  const measureCopy = () => {
+    sizesKey = `${width} ${height} ${room?.step}`;
+    copySizes = {};
+    const views = { leaflet: k3View(fmtT, width / height), page: k4View(fmtT, width / height) };
+    // the panels: each at the camera of the stop nearest to it (the truck faces the facades square on)
+    const stops = panelArrivals(fmtT >= 0.5).map((at) =>
+      cameraAt((at + 0.01) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height),
+    );
+    const near = (x: number) => stops.reduce((a, b) => (Math.abs(b.pos.x - x) < Math.abs(a.pos.x - x) ? b : a));
+    const holds: [Anchor, { pos: THREE.Vector3; quat: THREE.Quaternion; fov: number }][] = [
+      ...props.holdAnchors().map((a) => [a, views[a.name as keyof typeof views]] as [Anchor, (typeof views)["page"]]),
+      ...journey.map(({ anchor: a }) => [a, near(a.corners[0].x)] as [Anchor, (typeof views)["page"]]),
+    ];
+    for (const [a, v] of holds) {
+      holdCam.position.copy(v.pos);
+      holdCam.quaternion.copy(v.quat);
+      holdCam.fov = v.fov;
+      holdCam.aspect = width / height;
+      holdCam.updateProjectionMatrix();
+      holdCam.updateMatrixWorld();
+      const q = projectAnchor(a, holdCam, width, height);
+      if (q)
+        copySizes[a.name] = {
+          w: Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]),
+          h: Math.hypot(q[2][0] - q[0][0], q[2][1] - q[0][1]),
+        };
+    }
+  };
+  let topView = false,
+    roomHidden = false,
+    lastDewiKey = "";
+
+  // ---------- dwell on copy ----------
+  // Scrolling on (not back), the camera stops where copy comes into view and stays DWELL_S after the copy is fully
+  // shown, however far the scroll has gone meanwhile (user, 7 Nov): the leaflet (K3), the binder's page (K4, once
+  // its cover has opened) and each panel of the row (K5a.2–K5a.4; on 9:16 each panel). The scroll gathered meanwhile
+  // plays out afterwards. Heru and Bu Dewi out on the street follow the scroll itself, not the held camera.
+  const DWELL_S = 1.5,
+    DWELL_MAX_S = 8;
+  let dwellSince = 0,
+    dwellArrive = 0;
+  const dwellDone = new Set<number>();
+  const dwellPoints = () => [
+    { at: keyHoldStart("K3"), shown: () => props.fade.leaflet >= 0.99 },
+    { at: keyHoldStart("K4"), shown: () => props.fade.page >= 0.99 },
+    ...panelArrivals(fmtT >= 0.5).map((at) => ({ at, shown: () => true })),
+  ];
+  const dwellGoal = (ts: number) => {
+    const tx = target * TAKE_SCREENS,
+      vx = view.x * TAKE_SCREENS;
+    // a stop the camera has gone back before is armed again
+    for (const at of dwellDone) if (vx < at - 0.3) dwellDone.delete(at);
+    const next =
+      tx > vx + 1e-4 ? dwellPoints().find((d) => !dwellDone.has(d.at) && d.at >= vx - 0.02 && d.at < tx) : undefined;
+    if (!next) {
+      dwellSince = dwellArrive = 0;
+      return target;
+    }
+    if (Math.abs(vx - next.at) < 0.01) {
+      if (!dwellArrive) dwellArrive = ts;
+      if (next.shown() && !dwellSince) dwellSince = ts;
+      // released DWELL_S after the copy is fully shown, or after DWELL_MAX_S anyway (a copy that never shows)
+      if ((dwellSince && ts - dwellSince > DWELL_S * 1000) || ts - dwellArrive > DWELL_MAX_S * 1000) {
+        dwellDone.add(next.at);
+        dwellSince = dwellArrive = 0;
+      }
+    }
+    return next.at / TAKE_SCREENS;
+  };
 
   const frame = (ts: number) => {
     raf = requestAnimationFrame(frame);
@@ -360,13 +708,27 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const dt = Math.min(timer.getDelta(), 0.1);
     if (lost) return;
     if (!opts.key) {
-      dampStep(view, target, OMEGA, dt);
-      if (Math.abs(view.x - target) < 1e-5 && Math.abs(view.v) < 1e-4) {
-        view.x = target;
+      const goal = dwellGoal(ts);
+      dampStep(view, goal, OMEGA, dt);
+      if (Math.abs(view.x - goal) < 1e-5 && Math.abs(view.v) < 1e-4) {
+        view.x = goal;
         view.v = 0;
       }
     }
-    const shown = Math.min(1, Math.max(0, view.x));
+    const shown = Math.min(1, Math.max(0, view.x)),
+      xs = shown * TAKE_SCREENS;
+    // the rest of the row is built as the camera nears K4.1 (or straight away when the scroll jumps past it)
+    if (!rowLoading && Math.max(xs, target * TAKE_SCREENS) > B5.rise - 1.5) void loadRow();
+    // the front room is let go out on the street from K5a.2 on, and built again on the way back (before K4.2)
+    if (!roomReleased && room && xs > B5.release) {
+      scene.remove(room.group);
+      disposeTree(room.group, kit.shared);
+      room = null;
+      roomReleased = true;
+    } else if (roomReleased && xs < B5.truck + 0.2) {
+      roomReleased = false;
+      setRoom(roomStep);
+    }
     // the whip runs on time once the scroll has passed its point (and back when the visitor scrolls up)
     const wt = whipTarget(shown);
     if (whipT !== wt) {
@@ -379,12 +741,33 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       else followClock(heruClk, clockAt, dt);
       needsRender = true;
     }
+    const clock3 = heru3Clock(shown, room?.step ?? layoutStep(fmtT), fmtT);
+    if (heru3Clk.x !== clock3) {
+      if (opts.key || opts.shot) heru3Clk.x = clock3;
+      else followClock(heru3Clk, clock3, dt);
+      needsRender = true;
+    }
+    const outWas = outClk.x;
+    if (opts.key || opts.shot) outClk.x = scrollClock(xs);
+    // out on the street they follow the scroll itself, also while the camera dwells on a panel
+    else stepOutClock(outClk, xs >= B5.truck ? Math.max(xs, target * TAKE_SCREENS) : xs, dt, seenAt);
+    if (outClk.x !== outWas) needsRender = true;
+    const nodTo = xs >= NOD_AT ? 1 : 0;
+    if (opts.key || opts.shot) nodT = nodTo === 1 ? 0.5 : 0;
+    else if (nodT !== nodTo) nodT = nodTo > nodT ? Math.min(1, nodT + dt / NOD_S) : Math.max(0, nodT - dt / NOD_S);
+    const clock4 = beat4Clock(shown);
+    if (b4Clk.x !== clock4) {
+      if (opts.key || opts.shot) b4Clk.x = clock4;
+      else followClock(b4Clk, clock4, dt);
+      needsRender = true;
+    }
     stepAO(opts.bake != null ? 250 : coarse ? 6 : 10);
     if (Math.abs(shown - lastP) > 1e-6) {
       lastP = shown;
       needsRender = true;
     }
-    const inRoom = roomInView(shown),
+    // the room's actions stop in the top views of beats 3–4 (the room is out of sight)
+    const inRoom = roomInView(shown) && !topView,
       springsBusy = !!heru?.springs?.busy || crew.some((m) => m.springs?.busy);
     const wantsAmbient = ambient && (birdsVisible || (inRoom && stats.cast.done) || springsBusy || shadowDue);
     if (wantsAmbient && ts - lastAmbient >= 1000 / (saver ? 20 : 30) - 2) needsRender = true;
@@ -405,35 +788,122 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
 
     const whip = ease(whipT);
-    const h = heruAt(shown, fmtT, heruClk.x);
-    const moved = placeHeru(h, whip, ambient && inRoom ? 0.012 * Math.sin(Math.PI * 2 * 0.22 * time) : 0);
-    if (moved || street.hinge.rotation.y !== h.door) shadowDue = true;
-    street.hinge.rotation.y = h.door;
-    if (ambient && inRoom) actCrew(time);
+    const h = heruAt(shown, fmtT, heruClk.x),
+      breath = ambient && inRoom ? 0.012 * Math.sin(Math.PI * 2 * 0.22 * time) : 0;
+    const beat3 = beatAt(shown).on;
+    if (!beat3) b3 = null;
+    // in the top views Heru's and Bu Dewi's own forearms fold away into the close-up hands' sleeves (decided
+    // from the last frame's camera); posed again when that changes, so their arm IK never runs folded
+    const folds = [
+      [heru, topView && beat3 && (b3?.lay ?? 0) > 0.99],
+      [crew.find((x) => x.name === "dewi"), topView && beat3 && beatAt(shown).s >= DEWI_HOLDS],
+    ] as const;
+    for (const [m, folded] of folds) {
+      const fold = folded ? 1e-3 : 1;
+      if (m && m.rig.bone("lowerArmR").scale.x !== fold) {
+        m.rig.bone("lowerArmR").scale.setScalar(fold);
+        lastHeruKey = lastDewiKey = "";
+        shadowDue = true;
+      }
+    }
+    if (outClk.x > 0 !== outside) {
+      outside = outClk.x > 0;
+      lastOutKey = "";
+      street.leafL.rotation.y = 0;
+      // back inside: everyone to their spots and poses again
+      if (!outside) placeCrew();
+    }
+    const moved = outside ? placeOutside(outClk.x) : beat3 ? placeHeru3(shown, breath) : placeHeru(h, whip, breath);
+    // the right leaf, open since beat 1, swings shut once the camera has backed out past it (video k4.2 - k4.1)
+    const door = h.door * (1 - smoothstep(B5.back + 0.3, B5.back + 0.5, xs));
+    if (moved || street.hinge.rotation.y !== door) shadowDue = true;
+    street.hinge.rotation.y = door;
+    if (outside) {
+      /* out on the street: the room is out of sight */
+    } else if (ambient && inRoom) actCrew(time, shown);
+    else if (castMod) {
+      // stills and the top views: Bu Dewi still follows the scroll (her own pose, no breathing)
+      // keyed on the pose itself, not the scroll: she is reposed (and the shadows redrawn) only when it changes,
+      // not on every frame of the scroll (that redrew the shadow map on every frame of the take)
+      const d = dewiBase(shown),
+        key = d ? `${room?.step} ${JSON.stringify(d.pose)}` : "";
+      if (d && key !== lastDewiKey) {
+        lastDewiKey = key;
+        castMod.applyPose(d.m, d.pose, false);
+        shadowDue = true;
+      }
+    }
     // springs follow the poses of this frame
     heru?.springs?.update(rdt);
     for (const m of crew) m.springs?.update(rdt);
-    // shadows of moving people every frame (at most 30 times a second on phones; the shadow map is otherwise
-    // drawn only on changes); the small actions in the room leave it as it is
-    if (shadowDue && (!coarse || ts - lastShadow >= 32)) {
+    // shadows of moving people at most 30 times a second (the shadow pass draws every caster of the street and
+    // the room, more than the frame itself; the shadow map is otherwise drawn only on changes); the small actions
+    // in the room leave it as it is
+    if (shadowDue && ts - lastShadow >= 32) {
       renderer.shadowMap.needsUpdate = true;
       lastShadow = ts;
       shadowDue = false;
     }
 
     // the camera follows where the scroll puts Heru (his own clock may lag a little behind it)
-    const c = cameraAt(shown, fmtT, heruAt(shown, fmtT), whip);
-    light.setInside(c.pos.z);
+    const c = cameraAt(shown, fmtT, heruAt(shown, fmtT), whip, width / height);
+    // the close-up light of the top views comes in as the camera tilts down past 35° (full from 75°), and the
+    // pendant lamps' warm light goes with it
+    const close = THREE.MathUtils.smoothstep(-new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x, 0.6, 1.3);
+    // late morning outside from the moment the camera backs out through the door in beat 5
+    const noon = THREE.MathUtils.smoothstep(xs, B5.back + 0.22, B5.back + 0.36);
+    if (light.setInside(c.pos.z, close, noon)) shadowDue = true;
+    // the sun's shadow box follows the camera along the row (snapped, so the shadows do not swim)
+    if (light.follow(c.pos.x)) shadowDue = true;
+    // (the lamps stay lit in the dark only while the room is drawn)
+    lamps.forEach((l) => (l.intensity = roomHidden || !room ? 0 : 2.0 * (1 - close)));
     camera.position.copy(c.pos);
     camera.quaternion.copy(c.quat);
     camera.fov = c.fov;
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
+    // beat 5 backs out over the desks: the staff's rain clouds right by the camera step aside
+    gloom?.clear(xs > B5.rise ? c.pos : null, 2.2);
+    // out on the street (beat 5) the room is not drawn (behind the facade it only costs draw calls); the open
+    // door shows a backdrop of it instead. Heru and Bu Dewi show again once they come out.
+    const hide = xs > B5.back + 0.1 && c.pos.z > 0.6;
+    if (hide !== roomHidden) {
+      roomHidden = hide;
+      if (room) room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
+      props.group.visible = props.group.matrixWorldAutoUpdate = !hide;
+      street.backdrop.visible = hide;
+      if (gloom) gloom.group.visible = !hide;
+      if (phone) phone.group.visible = !hide;
+      shadowDue = true;
+    }
+    // (a member out of sight is not updated either: its skeleton's matrices cost every frame)
+    for (const m of [heru, ...crew])
+      if (m) m.mesh.visible = m.mesh.matrixWorldAutoUpdate = !hide || (outside && (m === heru || m.name === "dewi"));
+    // props of beats 3–4; the close-up hands show in the top views (their shadows need a redraw when they change)
+    const pitch = new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x;
+    // a change of view is applied on the next frame (forearms, room actions)
+    if (topView !== pitch < HANDS_PITCH) needsRender = true;
+    topView = pitch < HANDS_PITCH;
+    if (props.update(shown, pitch, b3, b4Clk.x / B4_SECONDS)) {
+      // the same 30-a-second cap; a change left over is drawn on a later frame
+      if (ts - lastShadow >= 32) {
+        renderer.shadowMap.needsUpdate = true;
+        lastShadow = ts;
+      } else shadowDue = true;
+    }
     // blur along the whip pan: the angle turned since the last frame, as a share of the view's width
     const turn = 2 * Math.acos(Math.min(1, Math.abs(lastQuat.dot(c.quat))));
     lastQuat.copy(c.quat);
     const hfov = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(c.fov) / 2) * camera.aspect),
       smear = whipT > 0 && whipT < 1 && !saver && rdt > 0 ? Math.min(0.08, ((turn / rdt) * (1 / 60)) / hfov) : 0;
+    // at rest: the camera has caught up with the scroll (or is held on a keyframe: shots ignore the scroll)
+    // (or after 1.5 s anyway, so a visitor scrolling all through the load does not hold the world back)
+    const atRest = (opts.key || Math.abs(view.x - target) < 1e-3) && (whipT <= 0 || whipT >= 1);
+    if (drawWarm && (atRest || ts - warmAsked > 1500)) {
+      warmDraw();
+      drawWarm();
+      drawWarm = null;
+    }
     renderer.info.reset();
     // a frame that also redraws the shadow map (people moving, layout or size changes) is counted apart
     const shadowFrame = renderer.shadowMap.needsUpdate;
@@ -444,13 +914,26 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     birdsVisible = sky.birdsInView(camera);
 
     frames++;
-    if (dt > 0.034 && renderer.getPixelRatio() > 1) {
-      if (++slow > 30) {
-        dprCap = Math.max(1, renderer.getPixelRatio() - 0.25);
+    // Quality ladder for GPUs that cannot keep up (measured: an Intel iGPU at 1440 × 810 missed 9–14 % of the
+    // frames while scrolling, mostly sampling the 2048 shadow map): when 12 of the last 60 drawn frames missed the
+    // display's refresh, the shadow map drops to 1024, then the pixel ratio by 0.25 down to 1. Never back up.
+    // Counted only while the camera moves with the scroll and after the cast is built (its build slices delay
+    // frames on any machine). Review shots and stills keep full quality.
+    if (!opts.shot && !opts.key && !ladderDone && stats.cast.done && Math.abs(view.v) > 1e-4 && dt < 0.1) {
+      vsync = Math.min(vsync, Math.max(dt, 1 / 250));
+      const missed = dt > vsync * 1.6 ? 1 : 0;
+      slow += missed - slowWin[slowAt];
+      slowWin[slowAt] = missed;
+      slowAt = (slowAt + 1) % slowWin.length;
+      if (slow >= 12) {
+        slowWin.fill(0);
         slow = 0;
+        if (!shadowLow && !saver && !coarse) shadowLow = true;
+        else if (renderer.getPixelRatio() > 1) dprCap = Math.max(1, renderer.getPixelRatio() - 0.25);
+        else ladderDone = true;
         resize();
       }
-    } else slow = Math.max(0, slow - 1);
+    }
     // the shadow pass is counted apart: it runs only while Heru or the door moves
     if (shadowFrame) {
       stats.shadow.calls = renderer.info.render.calls;
@@ -464,11 +947,15 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     stats.key = c.key;
 
     const quads: Record<string, Quad | null> = {};
-    for (const a of anchors) {
+    for (const a of [...anchors, ...props.copyAnchors(), ...journey.map((j) => j.anchor)]) {
       const q = projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
     }
-    opts.onFrame?.({ p: shown, key: c.key, anchors: quads });
+    if (sizesKey !== `${width} ${height} ${room?.step}`) measureCopy();
+    // the panels' copy is printed on them: shown whenever a panel is on screen out on the street (its shop built)
+    const fade: Record<string, number> = { ...props.fade };
+    for (const j of journey) fade[j.anchor.name] = xs > B5.back + 0.3 && (j.shop < 2 || row) ? 1 : 0;
+    opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
     if (!readyFired && firstAO) {
       const fire = () => {
         if (readyFired) return;
@@ -495,9 +982,13 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   ro.observe(host);
   resize();
   // the cast pops in when built; stills and review shots (?shot, ?bake) wait for it
-  firstAO = Promise.all([provideAO(extAO), roomAO, opts.shot ? castReady : null]).then(() => {
-    needsRender = true;
-  });
+  // the world fades in once its AO is on and its shaders are compiled (the K0 still shows meanwhile)
+  // stills, review shots and the AO bake have the whole row from the start
+  firstAO = Promise.all([provideAO(extAO), roomAO, opts.shot ? castReady : null, opts.shot ? loadRow() : null])
+    .then(warm)
+    .then(() => {
+      needsRender = true;
+    });
   raf = requestAnimationFrame(frame);
 
   return {
@@ -512,6 +1003,13 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       whipT = whipTarget(target);
       heruClk.x = heruClock(target, fmtT);
       heruClk.v = 0;
+      heru3Clk.x = heru3Clock(target, room?.step ?? layoutStep(fmtT), fmtT);
+      heru3Clk.v = 0;
+      b4Clk.x = beat4Clock(target);
+      b4Clk.v = 0;
+      outClk.x = scrollClock(target * TAKE_SCREENS);
+      outClk.v = 0;
+      nodT = target * TAKE_SCREENS >= NOD_AT ? 1 : 0;
       lastHeruKey = "";
       for (const m of crew) m.springs?.reset(opts.shot ? 1 : 0);
       needsRender = true;
@@ -527,7 +1025,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     },
     setSaver(on: boolean) {
       saver = on;
-      room?.lampLights.forEach((l) => (l.visible = !saver));
+      lamps.forEach((l) => (l.visible = !saver));
       resize();
     },
     stats: () => stats,
@@ -550,6 +1048,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       blur.dispose();
       heru?.dispose();
       phone?.dispose();
+      sweat?.dispose();
+      gloom?.dispose();
       for (const m of crew) m.dispose();
       renderer.dispose();
       canvas.remove();

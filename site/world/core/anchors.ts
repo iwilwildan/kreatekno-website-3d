@@ -2,6 +2,7 @@
 // corners are projected to the screen and the element gets the CSS matrix3d that maps its own box onto that
 // quad (a projective transform), so the text sits on the surface with the camera's perspective.
 import * as THREE from "three";
+import type { Vec3 } from "./kit";
 
 export type Quad = [[number, number], [number, number], [number, number], [number, number]];
 
@@ -22,6 +23,15 @@ export function rectAnchor(name: string, cx: number, cy: number, z: number, hw: 
       new THREE.Vector3(cx + hw, cy - hh, z),
     ],
   };
+}
+
+/**
+ * A flat rectangle in an object's frame (matrix m): `tl` and `br` are its top-left and bottom-right corners as
+ * read, in that frame; the other two share their x and z (the rectangle lies on the frame's x–z plane, at tl's y).
+ */
+export function rectAnchorFrom(name: string, m: THREE.Matrix4, tl: Vec3, br: Vec3): Anchor {
+  const P = (x: number, z: number) => new THREE.Vector3(x, tl[1], z).applyMatrix4(m);
+  return { name, corners: [P(tl[0], tl[2]), P(br[0], tl[2]), P(tl[0], br[2]), P(br[0], br[2])] };
 }
 
 const _v = new THREE.Vector3();

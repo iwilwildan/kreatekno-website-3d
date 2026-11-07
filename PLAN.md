@@ -1,6 +1,6 @@
 # Kreatekno Website 3D: Plan
 
-_Disusun 31 Okt 2026 dari interview dengan user dan dokumen repo lama. Status: tahap 0–4 selesai; plan tahap 5 (beat 3–4) menunggu persetujuan. Serah-terima antar sesi ada di `HANDOFF.md`._
+_Disusun 31 Okt 2026 dari interview dengan user dan dokumen repo lama. Status: tahap 0–6 selesai (tahap 6 disetujui 7 Nov). Plan induk Solusi ada di [PLAN-SOLUSI.md](PLAN-SOLUSI.md): lingkup etalase disetujui 4 Nov, struktur fondasi detail dan 12 subplan diperbarui 7 Nov; perluasan cerita inline masih draf. Serah-terima antar sesi ada di `HANDOFF.md`._
 
 ## 1. Tujuan
 
@@ -21,7 +21,7 @@ Membangun ulang kreatekno.com sebagai website **mobile-first** yang menjelaskan 
 | File referensi besar | Disalin ke `refs/`, tidak masuk git |
 | Tes HP | PoC atau take k0-k2 sudah dites di HP Android murah user dan lancar. Model HP dan angka FPS belum dicatat |
 | Fallback | Kalau 3D tidak sanggup: gambar diam per beat yang dirender dari scene 3D yang sama (WebP) + copy HTML |
-| Urutan | Fondasi situs dulu, lalu engine 3D, lalu Home beat demi beat. Solusi menyusul setelah Home |
+| Urutan | Fondasi situs dulu, lalu engine 3D dan Home beat demi beat. **Instruksi user 7 Nov memajukan halaman depan Solusi untuk mulai sekarang**, tanpa mengubah pekerjaan Home yang sedang berjalan. Detail Solusi dan Tonton tetap di tahap terpisah |
 | Repo lama | Dibekukan sebagai arsip. Perubahan yang belum di-commit di sana (`SOLUSI.md`, `PORTFOLIO.md`, `prototype/solusi/`) ikut disalin ke sini |
 | Target | Tanpa deadline. Kualitas dulu, berhenti untuk review di akhir tiap tahap |
 
@@ -39,7 +39,7 @@ Membangun ulang kreatekno.com sebagai website **mobile-first** yang menjelaskan 
 | Dunia k0-k2 | Satuan meter; origin di tengah pintu COMPANY di permukaan trotoar; x menyusuri jalan, y ke atas, z ke arah jalan. Ruko kanan COMPANY mint, keset kuning, huruf COMPANY Nunito ExtraBold, AO saat load, cahaya sudah disetujui | `prototype/k0-k2/HANDOFF.md` |
 | Skala tokoh | Heru 1,8 m; kamera K2 dinaikkan sedikit (opsi c). Tinggi Bu Dewi dikonfirmasi di awal tahap karakter | `prototype/k0-k2/HANDOFF.md` |
 | Gerak | Pegas dan redaman sendiri. Gerak utama di-bake saat load lalu disampel dari posisi scroll (bisa diputar mundur); gerak sekunder memakai pegas live | `prototype/k0-k2/HANDOFF.md` |
-| Solusi | Baca = artefak katalog 12 solusi dipakai apa adanya; Tonton = take 3D per solusi tanpa karakter manusia, ORB satu-satunya aktor, pilot `order-grup`, hanya untuk solusi "Sudah berjalan" | `docs/SOLUSI.md` 2 |
+| Solusi | Etalase v1 (toko 3D dengan kasir Heru, Cari, Kartu masalah) tetap mengacu ke [plan induk](PLAN-SOLUSI.md). Detail dijabarkan dalam fondasi bersama dan 12 subplan. Prototipe detail Order Grup menambah cerita inline; hubungan dengan Tonton lama (overlay, ORB tanpa manusia) belum diputuskan | `docs/SOLUSI.md` 2, `docs/SOLUSI-V1-*.md`, `PLAN-SOLUSI.md` 0 dan 8 |
 | CMS | Tidak ada. Copy di file messages, artikel di MDX | `docs/STACK.md` 3 |
 | Hosting | Vercel (perlu akun Kreatekno) | `docs/STACK.md` 10 |
 
@@ -52,14 +52,14 @@ site/
   app/[locale]/
     page.tsx                    Home: copy dirender di server (SEO), panggung 3D di client
     solusi/page.tsx             katalog + cari          (EN: /en/solutions, usulan)
-    solusi/[slug]/page.tsx      detail + tombol Tonton (overlay #tonton-<slug>)
+    solusi/[slug]/page.tsx      detail bersama + cerita opsional per slug (lihat subplan)
     artikel/, tentang/, kebijakan-privasi/
   components/
     layout/                     Header, MobileMenu, LangSwitch, Footer, WhatsAppButton (port)
     home/HomeStage.tsx          wrapper tinggi (±30 layar) + panggung sticky, memuat world secara lazy
     home/props/                 props HTML per beat: Billboard, Leaflet, Binder, ShopPanel, Corkboard,
                                 MagazineRack, StickyNotes, Plaque, Chalkboard, PurpleFolder, RoadFooter
-    solusi/                     katalog, detail, TontonOverlay
+    solusi/                     katalog, detail; TontonOverlay lama menunggu keputusan integrasi
   world/                        engine three vanilla (lihat 3.2)
   messages/{id,en}.json         semua copy UI (port dari reference)
   content/                      artikel MDX, data solusi
@@ -70,7 +70,7 @@ tools/
 ```
 
 - Semua halaman dirender statis. Copy Home ada di HTML server, jadi bisa diindeks dan dibaca screen reader walau 3D belum dimuat.
-- `world/` hanya dimuat di Home dan saat overlay Tonton dibuka, lewat `import()` setelah halaman tampil.
+- `world/` dimuat sesuai kebutuhan Home, toko Solusi, dan cerita detail yang disetujui, lewat `import()` setelah HTML tampil. Dunia per detail mengikuti subplan; hubungan dengan overlay Tonton lama dijelaskan di `PLAN-SOLUSI.md` bagian 8.
 - GSAP tidak diperlukan untuk panggung 3D (kamera dihitung engine). Lenis dipakai untuk smooth wheel kalau riset tahap 1 tidak menemukan alasan menggantinya.
 
 ### 3.2 Engine dunia (`site/world/`)
@@ -187,15 +187,15 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 2 | Engine 3D + beat 1–2 di situs | Take K0 → K2 dari k0-k2 berjalan di Home, hero di billboard, still K0 sebagai LCP, fallback awal | 1 | ✅ 1 Nov (disetujui user; FPS saat scroll dan kondisi panas tidak dilaporkan) |
 | 3 | Karakter vinyl | Heru, Bu Dewi, Sinta, Bayu, Nadia, Fajar, merpati | 2 | ✅ 1 Nov (disetujui user; belum dites di HP) |
 | 4 | Animasi beat 1–2 | Heru berjalan dan membuka pintu, aksi staf, burung, kamera K2.1 dan K2.2, inersia kamera | 3 | ✅ 1 Nov (disetujui user; belum dites di HP) |
-| 5 | Beat 3–4 | Layanan (leaflet di stand akrilik) dan Use case (binder) di konter kasir | 4 | 🟡 plan menunggu persetujuan |
-| 6 | Beat 5a–5b | Keluar pintu, truck right menyusuri 8 ruko dengan panel customer journey, tiba di kantor Kreatekno | 5 | ⬜ |
+| 5 | Beat 3–4 | Layanan (leaflet A4 datar di konter) dan Use case (binder terbuka), tampak atas dengan tangan Heru dan Bu Dewi | 4 | ✅ 7 Nov (disetujui user; belum dites di HP Android sungguhan) |
+| 6 | Beat 5a–5b | Anggukan Bu Dewi (K4.1), kamera mundur lewat pintu (K4.2), keluar bersama (K5a.1), truck right menyusuri 8 ruko dengan panel customer journey (K5a.2–K5a.5), tiba di pintu Kreatekno (K5a.6) | 5 | ✅ selesai, disetujui 7 Nov |
 | 7 | Beat 6–9a | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi | 6 | ⬜ |
 | 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | ⬜ |
 | 9 | Beat 12–14 | Ruang kelas, praktik saat senja dengan ORB dan pelanggan, papan kapur kecil, CTA map ungu | 8 | ⬜ |
 | 10 | Beat 15–16 | Mundur lewat jendela, malam, naik ke langit, footer di jalan gelap | 9 | ⬜ |
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
-| 12 | Solusi: Baca + pilot Tonton | Katalog dan detail di Next.js, overlay Tonton dengan engine bersama, `order-grup` lengkap | 11 | ⬜ |
-| 13 | Solusi: tiga take lain | Tiga solusi "Sudah berjalan" lainnya dari template yang sama | 12 | ⬜ |
+| 12 | Solusi v1 dan detail | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail | 11 | ⬜ etalase disetujui 4 Nov; perluasan detail draf 7 Nov |
+| 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
 | 14 | Halaman lain | Artikel (MDX, 3 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | ⬜ |
 | 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
 
@@ -368,37 +368,148 @@ Langkah:
 
 **Selesai bila** Heru membuka pintu dan berjalan masuk tanpa kaki meluncur (maju dan mundur), staf bergerak seperti footage, kamera K2.1 dan K2.2 cocok dengan footage dengan whip pan yang terasa cepat, pegas terlihat wajar, dalam anggaran, dan disetujui user.
 
-#### Plan tahap 5 (disusun 1 Nov setelah riset dan jawaban user, menunggu persetujuan)
+#### Plan tahap 5 (revisi 2 Nov dari keyframe K3/K4 dan blockout K2.2 → K3, disetujui 2 Nov, sedang dikerjakan)
 
-Keputusan dari riset, dokumen tim dan jawaban user:
+Versi 1 Nov (arc ke belakang bahu Bu Dewi lalu dolly in, leaflet di stand akrilik, kartu HP di pita bawah) diganti. Acuan baru dari user 2 Nov: keyframe K3 dan K4 pc/hp di `refs/keyframes/` dan blockout `refs/footage/blockout/K2.2 - K3 blockout v3.mp4`. Urutan prioritas: keyframe > blockout > Master 11b > dokumen tim.
+
+Acuan yang terbaca:
+
+| Acuan | Isi |
+|---|---|
+| Blockout K2.2 → K3 (8 dtk, label dan denah di frame; penanda waktu "Akhir K2.2", "Akhir dolly", "K2.4", "K3") | **0–2 s, dolly lurus + pan kiri:** kamera berjalan di lorong kanan (dilihat dari pintu) ke dekat dinding belakang, naik 1,15 → 1,45 m, menoleh kiri 7° → 102°. **2–4 s, orbit ke bahu kanan Bu Dewi:** lewat belakang konter, di antara Bu Dewi dan dinding belakang, dari kanan ke kirinya; menoleh 129° → 194°, menunduk 0° → 11°, tinggi 1,48 m. **4–5 s, berhenti 1 s (K2.4, over-the-shoulder, menunduk 14°):** Heru meletakkan brosur di konter, Bu Dewi menunduk melihatnya. **5–7,5 s, tilt down + push in di tinggi tetap 1,48 m:** menunduk 15° → 90°, kamera maju melewati bahu kanan Bu Dewi sampai tepat di atas konter; tangan Bu Dewi meraih brosur. **7,5–8 s, diam di K3:** keduanya memegang tepi brosur. Sepanjang take Heru berjalan dari dekat pintu lewat celah tengah ke seberang konter, brosur di tangan kanan; Bu Dewi mengangkat kepala di ±3 s |
+| K3 pc | Tampak atas lurus. Leaflet putih ±1,35:1 lanskap, strip ungu tipis dekat tepi atas, memenuhi ±60% lebar dan ±79% tinggi frame. Tangan kanan Heru (kulit lebih gelap) di kiri atas memegang sudut kiri atas; tangan kanan Bu Dewi di kanan bawah memegang sudut kanan bawah. Binder ungu tertutup di tepi kanan atas. Permukaan konter putih keunguan (#f0e6f2) |
+| K3 hp | Leaflet potret ±1:1,39, memenuhi ±90% lebar. Tangan Heru dengan manset jas ungu dan kemeja putih di kiri atas, tangan Bu Dewi dengan lengan krem di kanan bawah |
+| K4 pc | Binder ungu terbuka di tengah, satu halaman krem: ring perak di kiri, 4 tab di kanan (kuning #fff346, toska #23f5ee, pink #ff9ad8, lila #b986dc), sampul #8442b9 di belakang halaman. Pensil kuning di kiri, pensil pink di kanan. Tangan Heru di kiri atas dan Bu Dewi di kanan bawah, keduanya bertumpu di meja. Permukaan lebih lila (#cfbee1) |
+| K4 hp | Binder yang sama terpotong di kiri (ring di tepi kiri), halaman ±80% lebar dan ±64% tinggi frame; tanpa tangan dan pensil |
+
+Di K3/K4 kamera menghadap pintu (menoleh ±182°) dan menunduk 90°, jadi atas frame adalah sisi Heru dan bawah frame sisi Bu Dewi. Tangan di kiri atas adalah tangan kanan Heru, tangan di kanan bawah tangan kanan Bu Dewi. Tulisan leaflet dan binder tegak bagi Bu Dewi dan kamera.
+
+Keputusan (riset dan jawaban user 2 Nov):
 
 | Topik | Keputusan |
 |---|---|
-| Acuan | Belum ada keyframe dan footage K3/K4. Kamera dan komposisi dirancang dari dokumen tim (beat 3 dan 4), Master 11b dan `docs/STORY-STAGE.md` 3. Beat 3 berangkat dari K2.2 (bukan K2), sesuai catatan untuk tim |
-| Sketsa dulu | Sebelum set dibuat detail: sketsa greybox K3 dan K4 (pc dan hp) dengan kotak pengganti properti, tokoh dalam pose kasar, area aman dan area copy, dikirim di chat untuk disetujui |
-| Take | Beat 3: K2.2 → K3 0,8 layar + jeda K3 1,2. Beat 4: K3 → K4 0,5 + jeda K4 1,5 (`STORY-STAGE.md` 3). Total 5,8 → 9,8 layar |
-| Kamera | K2.2 → K3: arc ±120° dengan rig sendiri (yaw, pitch dan radius di sekitar titik di dekat Bu Dewi, di-ease, lookAt ke titik fokus yang ikut bergeser), lewat celah tengah meja lalu ujung kiri konter, berhenti di belakang-samping bahu kanan Bu Dewi menghadap pintu. K3 → K4: dolly in melewati bahunya. Keduanya berhenti diam di jeda (keyframe pembawa copy) |
-| Properti | Stand akrilik, leaflet 40 × 21 cm (putih, strip ungu tipis di atas) tergeletak datar dan binder ungu tertutup sudah ada di konter sejak K2 (kecil di frame, beat 1–2 tidak berubah). Beat 3: Heru menegakkan leaflet ke stand di kiri tablet POS. Beat 4: Heru menggeser stand ke tepi, mengangkat binder, membukanya tegak menghadap Bu Dewi dan kamera; halaman berayun dari ring |
-| Heru | Beat 3: berjalan dari dekat pintu lewat celah tengah (antara meja Bayu dan Nadia) ke seberang konter (gait tahap 4), meraih leaflet, menegakkannya (properti menempel di tangan selama dibawa), mundur sedikit, tersenyum, tangan turun. Beat 4: tangan ke stand, lalu kedua tangan memegang binder (IK). Semua disampel dari scroll |
-| Bu Dewi | Tetap di lantai kasir dengan tangan di konter, kepala mengikuti Heru, mengangguk di beat 4 (disampel dari scroll) |
-| Staf | Aksi loop tahap 4 tetap berjalan; di K3 terlihat dari belakang |
-| Set | Ditambah printer format besar dengan tiga cetakan berbingkai di dinding kanan (Master 11b), detail pintu dan jendela depan dilihat dari dalam, ponsel/tablet POS yang sudah ada. Akrilik memakai `MeshStandardMaterial` transparan dengan tepi lebih terang (bukan transmission, terlalu mahal di HP). Bake AO dan still diulang |
-| Copy desktop | Wajah leaflet dan halaman binder adalah HTML asli lewat anchor `matrix3d` (seperti billboard). Leaflet: judul layanan + 4 layanan. Binder: halaman kiri judul, intro dan tombol Konsultasi gratis; halaman kanan 4 contoh industri aktif; tab berwarna di tepi kanan adalah tombol tab ARIA (klik dan panah keyboard), port dari `reference/.../Binder.tsx`. Copy muncul hanya saat tidak ada tangan atau tokoh di depannya (akhir gerak), dan mulai pergi saat gerak berikutnya mulai |
-| Teks tajam | Kotak HTML diberi ukuran sebesar tampilannya di layar saat jeda K3 dan K4 (yang terbesar), jadi selama gerak hanya mengecil |
-| Copy HP | Kartu di pita bawah, tidak ditempel ke 3D. Layanan: 4 layanan digeser satu per satu. Use case (jawaban user): judul pendek, 4 chip industri, 4 contoh digeser satu per satu, tombol Konsultasi gratis; tinggi ±40%. Carousel memakai `overflow-x` + scroll-snap native (tanpa `touch-action: pan-x`, supaya scroll halaman tetap jalan), tombol sebelumnya/berikutnya, panah keyboard, `aria-roledescription="carousel"` |
-| Halaman | Placeholder `#layanan` diganti: link menu Layanan melompat ke jeda K3 di take. Versi tumpuk (reduced motion, tanpa JS) mendapat section Layanan dan Use case dengan still K3/K4 dan copy lengkap. Fallback still mendapat K3 dan K4 |
+| Kamera K2.2 → K3 | Ikut blockout: dolly lurus + pan kiri, orbit di belakang Bu Dewi ke bahu kanannya, melambat di K2.4 saat brosur diletakkan (tanpa copy, bukan jeda penuh), tilt down + push in ke tampak atas. Rig sendiri: posisi dari kurva Catmull-Rom sentripetal melewati titik blockout yang disesuaikan ke ruangan situs; arah dari yaw dan pitch (Euler `YXZ`), bukan `lookAt`, karena `lookAt` tidak stabil saat arah pandang sejajar sumbu up (menunduk 90°). FOV di-blend dari K2.2 ke K3 |
+| Kamera K3 → K4 | Tetap tampak atas, truck ke kanan ±35 cm ke arah binder. Heru menarik binder ke tengah dan membukanya; leaflet keluar frame di kiri |
+| Kamera K3, K4 | Tanpa solver: bidang datar tanpa titik ruangan, jadi jarak dan FOV saling menggantikan. Sudut kertas diukur di keyframe (skrip kecil di scratchpad), lalu tinggi dihitung dari FOV: jarak = tinggi frame / (2·tan(FOV/2)). Contoh pc: A4 lanskap 21 cm = 79% tinggi frame, jadi frame 26,6 cm; dengan FOV K2.2 (34°) kamera ±0,44 m di atas konter, ±1,44 m dari lantai, dekat 1,48 m di blockout. HP: FOV dipersempit ke ±45° vertikal selama tilt (74° dari K2.2 terlalu cembung untuk tampak atas), tingginya menyesuaikan. Roll 0. `tools/camera-solve` tidak dipakai di tahap ini |
+| Durasi | K2.2 → K3 2,0 layar (dolly 0,5, orbit 0,5, melambat di K2.4 0,3, tilt + push 0,7) + jeda K3 1,2; K3 → K4 0,6 + jeda K4 1,5. Take 6,6 → 11,9 layar. `KeyName` mendapat `K2.4`, `K3`, `K4` (`K2.4` titik sambungan seperti `K2.1`) |
+| Heru | Jam sendiri seperti beat 1 (laju alami, dikejar pegas kritis dari scroll, bisa diputar mundur). Dari posisi K2 berjalan lewat celah tengah (antara meja Bayu dan Nadia) ke seberang konter, brosur di tangan kanan (menempel ke tulang tangan), meletakkannya datar di konter (IK), tangan tetap memegang sudut kiri atas. Beat 4: tangan kanan menggeser brosur ke kiri keluar frame, kedua tangan menarik binder ke tengah dan membuka sampulnya, lalu tangan kanan bertumpu di kiri atas seperti K4. Wajah Heru tidak terlihat di K3/K4 |
+| Bu Dewi | Mengangkat kepala saat Heru mendekat, menunduk melihat brosur, tangan kanan meraih dan memegang sudut kanan bawah (IK), lalu bertumpu di kanan bawah di K4. Ekspresi bergeser dari prihatin (K2) ke tertarik saat brosur diletakkan (terlihat selama orbit). Anggukan dari dokumen tim tidak dipakai karena kamera tampak atas |
+| Tangan close-up | Tangan detail untuk tampak atas: SDF + `MarchingCubes` (telapak, 4 jari dengan buku jari, jempol, kuku lebih terang di atlas), manset jas ungu + kemeja putih Heru, lengan krem Bu Dewi; ±3–5 ribu segitiga per tangan. Menggantikan tangan biasa hanya saat kamera menunduk lebih dari ±60°. Pose jari tetap (memegang tepi, bertumpu) |
+| Properti | **Leaflet** A4 (29,7 × 21 cm) putih dengan strip ungu tipis dekat tepi atas: lanskap di langkah layout 0–2, potret di 3–4, mengikuti keyframe pc dan hp. **Binder** ring tebal (`refs/Properti/Binder tebal.png`): sampul ungu, 4 ring perak, tumpukan halaman krem, 4 tab warna keyframe di tepi kanan; saat dibuka sampul depan berputar ke bawah binder, jadi yang tampil satu halaman bertab; halaman sedikit melengkung dekat ring. **Pensil** kuning dan pink (heksagonal, ujung kayu dan grafit) di konter sejak K2. Binder tertutup ada di konter sejak K2. Stand akrilik dihapus |
+| Set | Printer format besar + 3 cetakan berbingkai di dinding kanan (dilihat dari pintu, Master 11b); jalur dolly lewat di dekatnya, jadi jaraknya dicek di sketsa. Permukaan konter tetap #fbf7f8; nuansa lila keyframe dari preset cahaya close-up. Kalau tidak cukup, alas meja lila di bawah binder diputuskan saat review sketsa. Bake AO ulang |
+| Cahaya | Preset close-up K3/K4: lembut dan merata dari atas, bayangan tangan pendek dan lunak seperti keyframe; di-blend dari preset ruangan pagi selama tilt down. Bayangan tangan di kertas dari shadow map kalau cukup halus; kalau tidak, bayangan kontak lembut (decal) di bawah tangan |
+| Copy desktop | HTML asli lewat anchor `matrix3d` di wajah leaflet dan halaman binder. Saat jeda kamera tegak lurus ke kertas, jadi transform hampir 2D; kotak diberi ukuran tampilan saat jeda supaya teks tajam. Leaflet: H2 "Empat cara kami membantu usaha Anda" di bawah strip ungu dan di kanan jari Heru, 4 kolom layanan (judul + isi, label "E-course segera hadir" di panel 4). Binder, semua di satu halaman: H2, intro, 4 tab industri di tab berwarna (tombol tab ARIA, teks tegak di tab, klik dan panah keyboard, port dari `reference/site-nextjs/components/story/Binder.tsx`), 4 contoh tab aktif, tombol Konsultasi gratis dan teks di bawahnya |
+| Copy HP | Juga di kertas, tanpa kartu pita bawah: di keyframe hp kertas memenuhi layar (leaflet ±336 × 570 px, halaman binder ±300 × 520 px di 375 × 812). Leaflet: H2 + 4 layanan bertumpuk. Binder: H2, contoh tab aktif, tombol. Tab di keyframe hanya ±22 px lebar, jadi area sentuhnya diperluas ke luar halaman sampai ≥ 44 px (WCAG 2.2 AA minimal 24 px). Kalau tidak muat di layar 360 px, contoh digeser dengan scroll-snap seperti plan lama |
+| Tangan dan copy | HTML tidak bisa tertutup objek 3D. Tata letak copy menghindari sudut kiri atas (jari Heru) dan kanan bawah (jari Bu Dewi) dengan margin dari posisi tangan saat jeda. Selama gerak, `clip-path: polygon()` sederhana (≤ 8 titik, dari kotak tangan yang diproyeksikan) memotong teks di bawah jari. Copy muncul setelah tangan diam di jeda dan mulai pergi saat gerak berikutnya mulai |
+| Staf | Aksi loop dan awan mendung tetap berjalan selama dolly dan orbit (terlihat dari samping dan belakang). Loop ambient berhenti saat kamera tampak atas karena ruangan tidak terlihat |
+| Halaman | Placeholder `#layanan` diganti: link menu Layanan melompat ke jeda K3. Versi tumpuk (reduced motion, tanpa JS) mendapat section Layanan dan Use case dengan still K3/K4. Fallback still mendapat K3 dan K4 |
+| Anggaran | Draw call < 120 dan segitiga < 150 ribu di setiap titik. Titik terberat adalah orbit (ruangan, 6 tokoh, properti). Di K3/K4 sebagian besar ruangan di luar frustum; tambahannya 2 tangan close-up (±10 ribu), leaflet, binder (±4–6 ribu) dan pensil. Tangan close-up ikut chunk tokoh (≤ 120 KB gzip); still K3/K4 ±60–100 KB |
+
+Catatan untuk tim (dokumen beat 3–4 perlu diperbarui): leaflet A4 datar di konter tanpa stand akrilik, K3/K4 tampak atas dengan tangan Heru dan Bu Dewi, titik K2.4, tanpa anggukan, gerak K3 → K4 (truck kanan) belum ada blockout-nya dan dirancang di sini.
 
 Langkah:
 
-1. Sketsa: kamera K3 dan K4 pc/hp, jalur arc dan dolly, kotak pengganti leaflet, stand, binder, printer; Heru dan Bu Dewi dalam pose kasar; garis area aman dan area copy. **Berhenti untuk review di chat.**
-2. Set dan properti: printer + 3 bingkai, stand akrilik, leaflet, binder (sampul, ring, halaman krem, 4 tab), posisinya di konter sejak K2; bake AO ulang.
-3. Gerak: Heru (jalan ke konter, leaflet, binder), properti yang dibawa tangan, halaman binder, anggukan dan tolehan Bu Dewi; take dan kamera K3/K4.
-4. Copy desktop: komponen Leaflet dan Binder (port), anchor baru (wajah leaflet, halaman kiri dan kanan binder, tab), lapisan cahaya, timing masuk dan keluar.
-5. Copy HP: kartu Layanan dan Use case dengan carousel scroll-snap.
-6. Halaman: `#layanan` ke K3, versi tumpuk, still K3/K4 pc/hp, fallback.
-7. Cek: render jeda K3/K4 pc (1280×720) dan hp (375×812), scroll maju dan mundur, ketajaman teks saat jeda, tab binder dengan mouse dan keyboard, swipe kartu HP tanpa mengganggu scroll halaman, anggaran (draw call < 120, segitiga < 150 ribu), console, `build`, `typecheck`, `lint`, `format:check`.
+1. Ukur dan sketsa:
+   - ukur sudut kertas dan posisi tangan di keyframe K3/K4 (skrip di scratchpad);
+   - petakan titik jalur blockout ke ruangan situs: lorong kanan, belakang konter, jarak ke printer, dinding belakang dan kepala Bu Dewi;
+   - greybox kamera K2.4, K3, K4 pc/hp dengan kotak pengganti leaflet, binder, pensil dan tangan, plus area copy dan zona tangan;
+   - urutan frame K2.2 → K3 berdampingan dengan blockout.
 
-**Selesai bila** beat 3–4 tampil dan bergerak seperti dokumen tim, copy tajam dan bisa dibaca serta diklik di desktop dan HP, dalam anggaran, dan disetujui user.
+   **Berhenti untuk review di chat.**
+2. Set dan properti: printer + 3 bingkai, leaflet (lanskap atau potret per layout), binder bertab yang bisa dibuka, pensil; bake AO ulang.
+3. Tangan close-up Heru dan Bu Dewi, dibandingkan dengan keyframe (hanya di chat).
+4. Gerak:
+   - take dan kamera: `timing.ts`, rig yaw/pitch, titik K2.4/K3/K4, `?k=K2.4|K3|K4`;
+   - Heru berjalan ke konter, brosur, binder dan pensil;
+   - Bu Dewi: kepala, tangan, ekspresi;
+   - cahaya close-up.
+5. Copy desktop dan HP: komponen Leaflet dan Binder, anchor baru, clip-path tangan, timing masuk dan keluar.
+6. Halaman: `#layanan` ke K3, versi tumpuk, still K3/K4 pc/hp, fallback.
+7. Cek:
+   - render jeda K3/K4 pc (1280×720) dan hp (375×812 dan 360×640) berdampingan dengan keyframe (hanya di chat);
+   - urutan frame K2.2 → K3 berdampingan dengan blockout;
+   - scroll maju dan mundur;
+   - teks tajam saat jeda, tidak ada teks tertutup jari;
+   - tab binder dengan mouse, keyboard dan sentuhan;
+   - anggaran: draw call, segitiga, chunk;
+   - console bersih;
+   - `build`, `typecheck`, `lint`, `format:check`.
+
+**Selesai bila** jalur kamera mengikuti blockout, K3 dan K4 cocok dengan keyframe pc dan hp, copy tajam dan bisa dibaca serta diklik di desktop dan HP, dalam anggaran, dan disetujui user.
+
+#### Plan tahap 6 (disusun 7 Nov dari 8 video tim dan jawaban user, plan disetujui 7 Nov, tahap disetujui 7 Nov)
+
+Acuan: 8 video 16:9 di `refs/footage/tahap6/` (belum ada versi 9:16), Master 1, 2 dan 7, dokumen tim beat 4–5b. Urutan prioritas: keyframe K4 > video > Master > dokumen tim.
+
+**Arah video.** Tujuh nama file berarti "akhir - awal"; hanya `k5a.5 - k5a.6` yang "awal - akhir". Dicek dengan mencocokkan frame akhir dan frame awal video berikutnya (selisih piksel rata-rata 1,4–14, urutan terbalik 31–79). Urutan kontinu:
+
+| Gerak | File | Durasi | Kamera | Isi |
+|---|---|---|---|---|
+| K4 → K4.1 | `k41 -k4` (1920×1080, 30 fps) | 6,1 s | Dari tampak atas binder kamera naik sambil berputar 180° (gambar berputar searah jarum jam, ±0–3 s), lalu tilt up ke over-the-shoulder di belakang Heru (Heru di tepi kanan, membelakangi kamera). Berhenti | Bu Dewi berdiri di balik konter, kedua tangan di konter, tersenyum lalu mengangguk dengan mata terpejam (±5,5 s). Binder terbuka di tengah konter, leaflet di kanan (dari sisi Heru), rak rim kertas dan pintu kayu kelas di belakangnya. Cahaya pagi hangat ruangan, berkas sinar di lantai |
+| K4.1 → K4.2 | `k4.2-k4.1` | 3 s | Dolly mundur lurus dari konter lewat lorong tengah, menembus pintu kaca yang terbuka (±1,0–1,5 s, sangat cepat), terus mundur sampai frontal ke fasad. Berhenti | Heru dan Bu Dewi tetap di konter. Daun pintu menutup setelah kamera lewat. K4.2: fasad COMPANY frontal setinggi mata, pintu tertutup di tengah, kanopi, jendela kiri, pilar mint ruko buah di kanan, papan COMPANY terpotong di atas. Cahaya luar lebih terang dan netral dari K1 |
+| K4.2 → K5a.1 | `k5a.1 - k4.2` | 3 s | Dolly out dan sedikit naik, makin lebar. Berhenti | Bayangan Heru dan Bu Dewi di balik kaca buram (±0,5 s), pintu terbuka (±1 s), keduanya keluar. K5a.1: COMPANY di kiri, ruko buah dengan panel putih di kanan, rangka billboard di kiri atas, jalan di bawah; Heru di kiri menahan daun pintu, Bu Dewi di kanan |
+| K5a.1 → K5a.2 | `k5a.2 - k5a.1` | 3 s | Truck right dari diam, makin cepat | Keduanya berjalan ke kanan berdampingan. K5a.2: panel ruko buah dan laundry |
+| K5a.2 → K5a.3 | `k5a.3 - k5a.2` | 3 s | Truck right rata (±0,3 lebar frame per detik), tidak berhenti | K5a.3: panel sepatu dan warteg |
+| K5a.3 → K5a.4 | `k5a.4 - k5a.3` | 3 s | Sama | K5a.4: panel kosmetik dan warnet. Heru dan Bu Dewi bertukar posisi seperti saling menembus (cacat video, tidak diikuti) |
+| K5a.4 → K5a.5 | `k5a.5 - k5a.4` | 3 s | Sama | K5a.5: panel warung dan elektronik, tepi kantor Kreatekno di kanan |
+| K5a.5 → K5a.6 | `k5a.5 - k5a.6` | 3 s | Truck right melambat sampai berhenti | Heru mendahului, membuka pintu kaca Kreatekno dan berdiri di baliknya; Bu Dewi berjalan ke pintu. K5a.6: kantor Kreatekno (kaca ungu dua lantai, pita KREATEKNO, plakat kayu kosong dan lampu kuningan di kiri pintu), ruko elektronik di tepi kiri, ruko ujung abu-biru muda dengan balkon di kanan |
+
+Deret ruko di video sama dengan Master 7: buah (mint), laundry (krem), sepatu (pink), warteg (cyan muda), kosmetik (hijau), warnet (biru), warung (krem pucat), elektronik (mint toska), Kreatekno (ungu), ruko ujung (abu-biru). Tiap ruko ±7 m, sama dengan ruko buah dan laundry di situs (Master 7: ruko 0,62 × lebar COMPANY 11,6 m). Jadi dari COMPANY ke pintu Kreatekno ±60 m.
+
+**Selisih dengan acuan lain:**
+
+- Dokumen tim tidak punya K4.1, K4.2, K5a.1–K5a.6. K5a.6 setara K5 dokumen tim (beat 6 mulai dari sini). Di K5 dokumen tim panel elektronik (CTA) ada di kiri frame; di video panel itu sudah hampir keluar frame di K5a.6 dan terbaca di K5a.5. Ikut video.
+- Dokumen tim: Heru dan Bu Dewi keluar bersama kamera. Video: kamera keluar sendiri dulu (K4.2), keduanya menyusul (K5a.1). Ikut video.
+- Anggukan Bu Dewi (dokumen tim beat 4) yang tidak dipakai di tahap 5 sekarang ada di K4.1.
+- Master 2 menaruh ruko pink di kiri Kreatekno; video dan Master 7 menaruh ruko elektronik. Ikut video.
+- Video K4 memakai 4 alat tulis dan tanpa tangan; situs tetap mengikuti keyframe K4 (pensil kuning dan pink, tangan Heru dan Bu Dewi).
+- STORY-STAGE (pertanyaan 2 untuk tim): video bergerak rata, web perlu jeda baca. Jawaban di bawah: hanyut pelan.
+
+Keputusan (jawaban user 7 Nov):
+
+| Topik | Keputusan |
+|---|---|
+| Keyframe | `KeyName` mendapat `K4.1`, `K4.2`, `K5a.1`–`K5a.6`. Semua dari frame akhir video (pc); HP dirancang sendiri karena belum ada video 9:16 |
+| Durasi (±8 layar, take 11,9 → ±19,9) | K4 → K4.1 1,0; jeda K4.1 0,3; K4.1 → K4.2 0,6; K4.2 → K5a.1 0,7 (K4.2 titik lewat yang melambat, tanpa jeda); jeda K5a.1 0,2; lima gerak truck 0,5; empat jeda hanyut di K5a.2–K5a.5 0,6; jeda K5a.6 0,3. Total 8,0. Disetel di review greybox |
+| Kamera K4 → K4.1 | Rig yaw/pitch tahap 5: dari tampak atas (yaw ±182°, pitch 90°) kamera naik sambil yaw berputar 180° dengan pitch tetap 90° (gambar berputar seperti video), lalu pitch naik ke ±15° menunduk sambil bergerak ke belakang kiri Heru. FOV di-blend. Copy binder memudar saat kamera mulai bergerak (aturan tahap 5) |
+| Kamera K4.1 → K4.2 | Dolly mundur lurus lewat celah tengah dan pintu, lalu ke trotoar. FOV menyempit dari ruangan ke lensa panjang K4.2; diinterpolasi lewat tinggi frustum di bidang fasad (FOV dihitung dari jarak tiap frame), bukan FOV langsung, supaya tidak terasa zoom. Near plane dan daun pintu dicek supaya kamera tidak menembus kusen |
+| Kamera K4.2, K5a.1 dan truck | Diukur dari frame akhir video dengan `tools/camera-solve` (fasad COMPANY, pintu, kanopi dan panel ruko punya ukuran yang diketahui). Truck: kamera frontal sejajar fasad (tanpa pan), tinggi dan FOV tetap, x bergerak; panel di layar tidak berubah ukuran, jadi copy tetap 1:1 |
+| Ritme truck | **Revisi 7 Nov (user):** kamera berhenti diam di K5a.2–K5a.5 (dulu hanyut pelan ±15–20%); tiap gerak antar jeda mulai dan berhenti halus. Tokoh berjalan dengan jam yang mengejar scroll maju dan mundur (paling cepat 1,5×), dipindah langsung hanya saat di luar layar |
+| Jeda tanpa copy | Jeda pendek di K4.1 (anggukan) dan K5a.1 (keluar pintu); K4.2 hanya melambat lalu lanjut |
+| Pintu COMPANY | Ikut video: daun pintu menutup sendiri setelah kamera keluar (di situs sekarang tetap terbuka 83° sejak beat 1), lalu ditarik ke dalam oleh Heru di K4.2 → K5a.1 dan ditahan sampai Bu Dewi keluar, menutup lagi setelah keduanya lewat |
+| Tokoh | K4.1: Heru berdiri di konter membelakangi kamera, Bu Dewi tersenyum dan mengangguk (kepala + kelopak). Tangan close-up K4 berganti ke tangan biasa saat pitch < 60° (mekanisme tahap 5), tangan tetap di konter. K4.2 → K5a.1: keduanya berjalan dari konter ke pintu di luar frame, keluar. Truck: berdampingan tanpa bertukar, Heru di kiri, Bu Dewi di kanan; di K5a.5 → K5a.6 (panel kosong dan CTA) Heru mempercepat langkah lewat sisi jalan, sampai di pintu Kreatekno, membukanya dan berdiri di baliknya; Bu Dewi berjalan ke pintu |
+| Langkah | Campuran: gait dari jarak tempuh (kaki menapak tanpa meluncur) sampai ±2,5 m/s jalan cepat (revisi review greybox 7 Nov, sebelumnya ±1,8); di atas itu irama langkah tetap di batas dan kaki sedikit meluncur (hanya saat scroll cepat). Posisi tokoh dari scroll lewat pegas kritis seperti kamera. Bu Dewi mendapat siklus jalan sendiri (`cast/walk.ts` dibuat umum), hijab dengan pegas tahap 4 |
+| Cahaya | Preset luar baru "pagi menjelang siang": matahari lebih tinggi dan lebih netral, tetap dari kiri, langit biru dengan awan low-poly (Master 7). Di-blend saat kamera melewati pintu di K4.1 → K4.2 (luar tidak terlihat sejak K2). Ruangan di K4.1 tetap cahaya pagi tahap 5. Bayangan matahari: kamera bayangan ikut x kamera dengan snapping per texel supaya tidak bergetar |
+| Set | Set A diperpanjang ±80 m: 8 ruko dua lantai (pilar, lis, panel putih lantai 2, bagian depan terbuka dengan isi toko sederhana: peti buah, rak baju dan mesin cuci, rak sepatu, etalase lauk dan bangku, rak kosmetik, meja PC, gantungan dan rak jajanan, rak elektronik), kantor Kreatekno (fasad kaca ungu, pita KREATEKNO dari glyph seperti huruf COMPANY, pintu kaca yang bisa dibuka, plakat kosong untuk beat 9b, lampu kuningan, lobi terang samar di balik kaca), ruko ujung, trotoar, kerb dan jalan. Ruko buah dan laundry yang sudah ada dibangun ulang dengan detail yang sama. Lobi dalam dibangun di tahap 7 |
+| Chunk dan memori | Deret ruko di chunk `sets/row` sendiri (≤ 120 KB gzip), dibangun saat kamera mendekati K4.1. Geometri digabung per ruko (bukan satu mesh untuk seluruh deret) supaya frustum culling tetap jalan. Maksimal dua set hidup: ruang depan COMPANY dilepas setelah K5a.2 dan dibangun ulang saat scroll mundur. AO di-bake per ruko |
+| Copy | Selalu terlihat seperti cetakan di panel, HTML asli lewat anchor `matrix3d` di tiap panel: buah = kicker "Cara kerja" + H2, laundry/sepatu/warteg/kosmetik = langkah 1–4 (nomor, judul, isi, dari `home.journey`), warnet dan warung kosong, elektronik = tombol "Konsultasi gratis" (link WhatsApp) dengan panah ke pintu Kreatekno. Elemen di luar layar disembunyikan (`visibility: hidden`) supaya tidak bisa di-tab saat tidak terlihat |
+| HP | Satu panel per jeda: tiap jeda hanyut pc dibagi dua di HP (panel kiri, geser pendek, panel kanan), panel kosong dilewati; linimasa scroll sama dengan pc. Kamera HP dirancang sendiri: K4.1 Bu Dewi di tengah dengan kepala Heru di bawah, K4.2 pintu dan kanopi, K5a.1 pintu dengan kedua tokoh, truck dengan panel ±84% lebar layar. Kalau langkah 2 tidak muat di panel 360 px, panel di layout HP dibuat lebih tinggi (diputuskan di greybox) |
+| Halaman | `#cara-kerja` jadi penanda lompat di tengah jeda K5a.2 (section placeholder di `page.tsx` dihapus). Versi tumpuk: section Cara kerja dengan still dan langkah. Still pc K4.1, K5a.1, K5a.2–K5a.6 dan HP per panel; fallback tanpa WebGL dengan copy di still lewat `quadMatrix3d` seperti K3/K4 |
+| Anggaran | Draw call < 120 dan segitiga < 150 ribu di setiap titik. Titik terberat diperkirakan K4.1 → K4.2 saat ruangan dan jalan sama-sama terlihat lewat pintu, dan frame truck dengan ±3 ruko berisi barang + 2 tokoh |
+
+Catatan untuk tim: tambahkan K4.1, K4.2, K5a.1–K5a.6 ke dokumen (K5a.6 = K5), urutan keluar (kamera dulu, tokoh menyusul), anggukan pindah ke K4.1, panel CTA terbaca di K5a.5; versi 9:16 untuk beat 5a–5b belum ada; di video Heru dan Bu Dewi saling menembus di K5a.3 → K5a.4.
+
+Langkah:
+
+1. Ukur dan sketsa greybox:
+   - solve kamera K4.2, K5a.1 dan satu frame truck (K5a.3) dari video; ukur K4.1 terhadap konter dan Bu Dewi;
+   - deret ruko berupa kotak berwarna dengan panel putih dan kotak area copy, kantor Kreatekno dan ruko ujung sebagai kotak;
+   - jalur kamera K4 → K5a.6 pc dan HP, posisi tokoh sementara;
+   - urutan frame berdampingan dengan video (hanya di chat), K4.1–K5a.6 pc dan HP, cek teks HP di panel 360 px.
+
+   **Berhenti untuk review di chat.**
+2. Set: 8 ruko dengan isi toko, kantor Kreatekno, ruko ujung, jalan panjang, chunk `sets/row`, pelepasan set, bayangan yang ikut kamera, bake AO. **Review di chat.**
+3. Gerak dan cahaya: `timing.ts`, kamera (putar, dolly lewat pintu, dolly out, truck dengan hanyut), pintu COMPANY dan Kreatekno, anggukan Bu Dewi, keluar pintu, jalan berdampingan dengan langkah campuran, Heru menyalip dan membuka pintu, preset luar. **Review di chat** (urutan frame dan video scroll).
+4. Copy dan halaman: komponen panel journey ID/EN, anchor, CTA, HP satu panel per jeda, `#cara-kerja`, versi tumpuk, still dan fallback. **Review di chat.**
+5. Cek:
+   - jeda dan titik lewat pc (1280×720) dan HP (375×812, 360×640) berdampingan dengan frame video (hanya di chat);
+   - scroll maju dan mundur, cepat dan lambat; kaki meluncur hanya di atas ±1,8 m/s;
+   - copy tajam (skala 1,000), tidak tertutup benda, CTA bisa diklik dan di-tab;
+   - anggaran draw call, segitiga, chunk; memori setelah set dilepas; FPS dengan CPU 4×;
+   - console bersih; `build`, `typecheck`, `lint`, `format:check`;
+   - tes di HP Android sungguhan (tertunda sejak tahap 2).
+
+**Selesai bila** urutan K4 → K5a.6 mengikuti video, copy customer journey terbaca di pc dan HP, Heru dan Bu Dewi berjalan tanpa terlihat meluncur pada scroll wajar, dalam anggaran, dan disetujui user.
 
 ### Tahap 5 sampai 10: Home beat demi beat
 
@@ -416,8 +527,8 @@ Langkah yang sama di tiap tahap:
 
 Catatan per tahap:
 
-- **5 (beat 3–4):** busur ±120° ke belakang bahu Bu Dewi, lalu dolly in ke binder. Tab binder adalah tab industri; contoh use case di 40% bawah layar HP. Master 11b.
-- **6 (beat 5a–5b):** set jalan ruko diperluas dengan 8 ruko (Master 3–7, denah Master 8). Panel 1–5 dan 8 membawa copy; panel terakhir menunjuk pintu Kreatekno. Di HP satu panel per layar. Ini beat terpanjang (±4,7 layar).
+- **5 (beat 3–4):** dolly, orbit ke bahu kanan Bu Dewi, lalu tilt down ke tampak atas leaflet (blockout K2.2 → K3), truck kanan ke binder. Tab binder adalah tab industri; copy HP di kertas. Keyframe K3/K4, Master 11b.
+- **6 (beat 5a–5b):** set jalan ruko diperluas dengan 8 ruko (Master 3–7, denah Master 8). Panel 1–5 dan 8 membawa copy; panel terakhir menunjuk pintu Kreatekno. Di HP satu panel per layar. Acuan gerak: 8 video tim di `refs/footage/tahap6/` (K4 → K4.1 → K4.2 → K5a.1 → … → K5a.6); plan di "Plan tahap 6" di atas. ±8 layar.
 - **7 (beat 6–9a):** set lobi baru (Master 10a, 10b). Ruang rapat berkaca dengan Wildan dan Andi di balik kaca. Cahaya sore hanya lewat jendela ruang rapat. Tokoh Wildan dan Andi dibuat di sini.
 - **8 (beat 9b–11):** plakat Tentang kami (Master 2 golden hour), kamera naik ke atas deret ruko (Master 9 sore), matahari turun, turun lagi ke pintu COMPANY yang terbuka (Master 1 jingga). Beat tanpa copy (10, 11) harus tetap menarik saat di-scroll.
 - **9 (beat 12–14):** set kelas baru (Master 12), Wildan mengajar. Mundur keluar kelas saat senja (Master 11a senja), ORB merapikan slip menjadi centang, papan kapur kecil di ujung kiri konter, lalu CTA map ungu di stand dokumen.
@@ -434,10 +545,7 @@ Catatan per tahap:
 
 ### Tahap 12 dan 13: Solusi
 
-- Port mode Baca dari `prototype/solusi/src/page.html` ke halaman Next.js; data 12 solusi jadi satu file konten. Hash route artefak (`#solusi`, `#s-<slug>`, `#cari`) jadi route asli supaya bisa diindeks.
-- Overlay Tonton (`<dialog>`, rail langkah, hotspot sebagai tombol HTML) memakai `world/` yang sama dengan Home.
-- Lanjutkan tahap 2–4 `docs/SOLUSI.md` untuk `order-grup`: ruko depot air di deret yang sama, props, ORB, cahaya siang ke malam.
-- Tahap 13: tiga solusi "Sudah berjalan" lainnya.
+Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, data, kasir Heru, tahapan S0–S7 dan indeks 12 subplan. S6 didelegasikan ke [fondasi detail](docs/plans/solusi/PLAN-DETAIL.md), [pilot Order Grup](docs/plans/solusi/PLAN-ORDER-GRUP.md), dan subplan slug lain pada indeks induk. Rencana T1–T3 lama tetap dicatat; apakah cerita inline menggantikan atau berdampingan dengan overlay perlu keputusan eksplisit. **Instruksi terbaru user 7 Nov memajukan halaman depan Solusi: mulai S0 sekarang di sesi terpisah, tanpa menunggu Home tahap 11 dan tanpa mengubah pekerjaan Home.** Lingkup sesi ini etalase, Cari, Kartu, hasil, kontak dan kasir; bukan detail atau Tonton.
 
 ### Tahap 14: Halaman lain
 
@@ -755,3 +863,502 @@ Catatan per tahap:
 - Remote `origin` ditambahkan, `main` di-push.
 - Dicek: tidak ada file `refs/` (selain README) atau keyframe tim di commit; `site/public/stills/` adalah render scene sendiri.
 - Belum: akun Vercel dan deploy preview; plan tahap 5 masih menunggu persetujuan.
+
+### 2026-11-02 (revisi tahap 4: staf kewalahan oleh kerja manual)
+
+- Masukan user (lewat sesi induk): staf di meja harus terlihat kesulitan karena kerja manual yang menumpuk; pilihan floating emoji, ekspresi wajah, atau bayangan hitam ala anime, kami yang menentukan.
+- Dicek: dokumen tim K2 (Sinta alis naik kewalahan dengan ponsel penuh notifikasi, Bayu di antara monitor dan tumpukan tinggi slip dengan alis turun lesu, Nadia bertopang dagu tanpa ide, Fajar menggaruk kepala di samping baki daftar harga; Bu Dewi sedih prihatin) dan keyframe K2 HP. Temuan: Bu Dewi di situs tersenyum, bertentangan dengan dokumen tim dan keyframe. Riset singkat: tetes keringat kecil di pelipis yang diam dibaca sebagai tegang atau lelah; tetes yang menetes dibaca panik.
+- Jawaban user: ekspresi + bahasa tubuh + tetes keringat 3D vinyl (tanpa emoji dan tanpa bayangan anime); Bu Dewi prihatin seperti dokumen tim.
+- Diubah:
+  - `cast/poses.ts`: alis staf lebih miring, mulut lebih turun, Sinta mulut sedikit terbuka; badan lebih membungkuk; field baru `lids` (kelopak berat: Bayu 0,32, Nadia 0,28, Fajar 0,15, Sinta 0,05) yang juga tampil di still; Bu Dewi alis naik di tengah, mulut turun, kepala sedikit miring;
+  - `cast/acts.ts`: helaan napas berat tiap 7–8 s, bergantian per staf (dada naik, lalu membungkuk melewati pose dan kembali); kelopak berat digabung dengan kedipan; gelembung notifikasi Sinta 3 → 5 (satu tiap setengah detik), naik menyamping supaya wajahnya tetap terlihat; `createSweat`: tetes keringat lathe biru muda mengkilap ±10 cm di pelipis tiap staf, menempel di tulang kepala, bergoyang kecil tanpa menetes;
+  - `sets/companyFront.ts`: tumpukan slip Bayu 11 → 17 dan makin berantakan ke atas, tumpukan kedua di depan dan tiga slip tercecer; empat gumpalan kertas di meja Nadia; baki Fajar penuh kertas dan empat map menunggu di sampingnya. AO di-bake ulang;
+  - `index.ts`: tetes keringat ikut diperbarui bersama aksi ruangan.
+- Dicek: render K2, K2.1, K2.2 pc dan HP (dikirim di chat). Draw call pass utama pc K2 88 → 95, K2.1 65 → 68, K2.2 65 → 70; HP K2 87 → 93, K2.1 60 → 63, K2.2 60 → 65; segitiga maks 128,4 rb. Typecheck dan lint lulus; still K0–K2.2 dirender ulang.
+- Dicek di browser (14 s di K2.2): helaan napas bergantian Sinta ±2 s, Bayu ±4 s, Nadia ±6 s, Fajar ±8 s (dada ±0,07 rad), tetes bergoyang 0,93–1,07, tanpa error.
+- Belum: review user; tes HP.
+
+### 2026-11-02 (revisi tahap 4: awan mendung di atas staf)
+
+- Masukan user: masih kurang suram, dan orang yang pertama kali scroll tidak akan sadar staf sedang kesulitan.
+- Analisis: di shot lebar K2 (jeda 0,3 layar) wajah dan tetes keringat hanya beberapa piksel; yang terbaca sekilas hanya bentuk besar dan warna.
+- Jawaban user: tambah awan mendung di atas kepala; jeda K2 tetap 0,3 layar (bayangan anime, pencahayaan suram dan pose dramatis tidak dipilih).
+- Diubah: `cast/acts.ts` `createGloom`: awan low-poly abu gelap (bentuk awan langit K0, `cloudGeo` diekspor dari `sets/sky.ts`) ±0,55 m di atas puncak kepala tiap staf, mengikuti kepala dan bergoyang pelan, dengan 10 rintik hujan biru per awan (satu InstancedMesh) yang jatuh ke rambut; tanpa bayangan. Diperbarui bersama aksi ruangan (`index.ts`).
+- Dicek: render K2, K2.1, K2.2 pc dan HP (dikirim di chat): awan terbaca di shot lebar pc dan HP, hujan jatuh ke kepala. Draw call pass utama pc K2 95 → 100, K2.1 68 → 71, K2.2 70 → 73; HP 93 → 98, 63 → 66, 65 → 68; segitiga maks 131,7 rb. Typecheck dan lint lulus; still dirender ulang.
+- Belum: tes HP.
+- User menyetujui revisi staf kewalahan ("Sudah pas"). Plan tahap 5 masih menunggu persetujuan.
+
+### 2026-11-02 (tahap 5, plan direvisi dari keyframe K3/K4 dan blockout)
+
+- Acuan baru dari user: keyframe K3 dan K4 pc/hp (`refs/keyframes/`) dan blockout kamera `refs/footage/blockout/K2.2 - K3 blockout v3.mp4`, dicatat di `refs/README.md`.
+- Dibaca: dokumen tim beat 3–4 dan tabel beat (hlm. 5, 8–9, 15–17, 26), Master 11b, `refs/Properti/` (binder tebal, kertas lebar, map ungu), plan tahap 5 versi 1 Nov. Frame blockout diekstrak dengan ffmpeg ke scratchpad (label dan denah dipotong per 0,5 s).
+- Temuan yang mengubah plan:
+  - blockout: dolly lurus + pan kiri, orbit di belakang Bu Dewi ke bahu kanannya, berhenti 1 s di titik "K2.4" saat Heru meletakkan brosur, lalu tilt down 15° → 90° + push in di tinggi tetap 1,48 m sampai tampak atas; Heru membawa brosur dari pintu;
+  - K3/K4 tampak atas: leaflet ±A4 (lanskap di pc, potret di hp) dan binder terbuka satu halaman, tangan kanan Heru (kiri atas, manset ungu-putih) dan tangan kanan Bu Dewi (kanan bawah); tanpa stand akrilik; pensil kuning dan pink di K4;
+  - solver kamera tidak berguna untuk K3/K4 (bidang datar tanpa titik ruangan); tinggi kamera dihitung dari ukuran kertas di frame dan FOV (pc ±1,44 m dengan FOV 34°, dekat 1,48 m blockout).
+- Riset singkat: `lookAt` tidak stabil saat menunduk 90° (pakai yaw/pitch atau quaternion langsung); `clip-path: polygon()` per frame untuk HTML yang tertutup objek WebGL (poligon kecil murah); ukuran target sentuh WCAG 2.2 (24 px AA, 44 px aman).
+- Jawaban user: ikut blockout (Heru membawa brosur, stand dihapus); K3 → K4 truck kanan ke binder; copy HP di kertas; leaflet A4 lanskap di pc dan potret di hp; durasi K2.2 → K3 2,0 + jeda 1,2, K3 → K4 0,6 + jeda 1,5 (take 11,9 layar); tangan close-up; binder satu halaman; copy menghindari tangan + clip-path saat gerak.
+- Plan tahap 5 versi 1 Nov diganti (bagian 5); baris tahap 5 di tabel tahapan dan catatan per tahap diperbarui. Kode `site/` tidak diubah.
+- Belum: persetujuan plan oleh user; dokumen tim beat 3–4 perlu diperbarui oleh tim (catatan di plan); baris "Keyframe beat 3–16 belum ada" di bagian 2 dan risiko terkait sekarang hanya berlaku untuk beat 5a–16.
+
+### 2026-11-02 (tahap 5, plan disetujui, langkah 1: ukur dan greybox)
+
+- User menyetujui plan tahap 5 ("plan tahap 5 disetujui"); implementasi dimulai di sesi baru.
+- Diukur di keyframe (skrip di scratchpad, ambang warna + cek mata):
+  - K3 pc: kertas x 0,203–0,801, y 0,107–0,892 (rasio di layar 1,35:1, sedikit trapesium: kamera ±6° dari tegak lurus); strip ungu ±5% tinggi kertas dari tepi atas; tangan Heru x 0,15–0,34, y 0–0,22; tangan Bu Dewi x 0,69–0,94, y 0,73–1; binder tertutup x 0,94–1, y 0–0,54.
+  - K3 hp: kertas x 0,053–0,949, y 0,145–0,848; tangan Heru (dengan manset) x 0,02–0,27, y 0–0,20; Bu Dewi x 0,76–1, y 0,78–1.
+  - K4 pc: halaman x 0,316–0,655, y 0,07–0,916 (A4 potret); sampul x 0,306–0,701, y 0,043–0,952; tab x 0,651–0,676 (kuning y 0,08–0,24, toska 0,29–0,42, pink 0,44–0,60, lila 0,63–0,91); pensil kuning (0,17; 0,17)–(0,21; 0,74), pink (0,85; 0,13)–(0,81; 0,73).
+  - K4 hp: halaman x 0,085–0,854, y 0,189–0,822; tab x 0,844–0,902.
+  - Tinggi frame di kertas: K3 pc 26,8 cm, K3 hp 41,7 cm, K4 pc 35,1 cm, K4 hp 48,6 cm. Dengan FOV 34,2° (pc) dan 45° (hp): kamera 0,43 / 0,50 / 0,57 / 0,59 m di atas konter.
+- Dibangun (greybox, tetap dipakai di langkah berikutnya):
+  - `takes/home/timing.ts`: `K2.4`, `K3`, `K4`; K2.2 → K2.4 1,15, K2.4 → K3 0,85, jeda K3 1,2, K3 → K4 0,6, jeda K4 1,5. Take 11,9 layar.
+  - `takes/home/counter.ts`: letak leaflet, binder dan pensil per langkah layout (`counterLayout`), kamera tampak atas dari ukuran keyframe (layar lebih sempit dari keyframe menjaga lebar, jadi kertas tidak terpotong di 375×812), jalur K2.2 → K3 (Catmull-Rom sentripetal melewati 8 titik dari blockout yang dipetakan ke ruangan situs, waktu dan sudut lewat kubik monoton supaya tidak overshoot, rig yaw/pitch Euler `YXZ`), truck K3 → K4. `data.ts`: `SolvedKey` untuk keyframe yang punya solve.
+  - `sets/companyFront.ts`: `layoutParams` dipisah dari `build` dan `counterFrame(step)` (konter, Bu Dewi, lorong Nadia–Fajar, dinding) untuk kamera dan properti.
+  - `sets/counterProps.ts`: leaflet dengan blok copy rencana, binder tertutup/terbuka dengan 4 ring dan 4 tab, pensil, tangan pengganti. `index.ts`: properti ditempatkan per layout, `cameraAt` menerima aspect layar.
+- Temuan yang mengubah plan (ditanyakan di review):
+  - Bu Dewi berdiri di lantai kasir (bahu ±1,55 m), jadi K2.4 di 1,48 m seperti blockout akan melihat punggungnya. K2.4 sekarang ±1,9 m di belakang kanan bahunya, lalu turun ke 1,44 m (pc) selama tilt + push (blockout: tinggi tetap).
+  - Truck K3 → K4 pc 0,5 m (bukan 0,35): pensil K4 berada di antara leaflet dan binder, jadi dengan 0,35 pensil kuning terlihat di K3 padahal keyframe K3 kosong. Heru menggeser binder dari dekatnya ke tengah depan Bu Dewi.
+  - Konter hp hanya 1,04 m dan mesin kasir masuk frame K3 hp; leaflet hp digeser 3 cm, truck hp 0,27 m, pensil hp di tepi depan konter di luar kedua frame.
+  - Kertas putih hampir tidak terpisah dari permukaan konter (#fbf7f8 di bawah cahaya pagi hangat terlihat krem); keyframe: kertas putih di atas permukaan lila.
+- Dicek: render K2.4, K3, K4 pc (1280×720) dan hp (450×800 dan 375×812) berdampingan dengan keyframe, urutan frame K2.2 → K3 pc berdampingan dengan blockout dan hp, Heru diganti posisi sementara di depan konter (gerak Heru di langkah 4); semua hanya di chat. Draw call pc K2.4 87, K3 47, K4 61; hp 67/45/56; segitiga maks 131 ribu (orbit). Tanpa error console. `typecheck`, `eslint` dan `prettier` untuk file yang diubah.
+- Belum: review greybox oleh user; langkah 2–7.
+
+### 2026-11-02 (tahap 5, langkah 2: set dan properti)
+
+- User menyetujui greybox dengan ketiga rekomendasi ("Ya, lanjut langkah 2"): K2.4 ±1,9 m di belakang bahu kanan Bu Dewi lalu turun ke tinggi K3 selama tilt + push; truck K3 → K4 pc 0,5 m (hp 0,27 m) dengan Heru menggeser binder ke tengah; alas meja lila di bawah leaflet dan binder.
+- `sets/companyFront.ts`: printer format besar (kabinet di kaki, unit cetak dengan slot dan cetakan keluar, gulungan kertas di atas) dan 3 bingkai oranye berisi cetakan putih di dinding kanan (dilihat dari pintu), dari Master 11b. Posisinya di depan meja Fajar ke arah pintu (`D4z + 3,0`): di 9:16 printer di sebelah meja Fajar sempat masuk tepi kanan K2 hp, jadi digeser sampai di luar frame K2 dan K2.2 pc/hp. Hanya material yang sudah dipakai ruangan, jadi tidak menambah draw call.
+- `sets/counterProps.ts` (menggantikan greybox):
+  - alas meja lila (#ddd0ea) dari batas frame K3 sampai K4, tidak sampai ke mesin kasir;
+  - leaflet A4 satu material (kanvas putih + strip ungu 3 mm, 11 mm dari tepi atas), lanskap atau potret per layout;
+  - binder: sampul belakang, punggung, tumpukan halaman krem dengan halaman atas yang naik 3 mm di dekat ring, 4 tab warna keyframe, batang ring dengan paku keling dan 4 ring baja, sampul depan berengsel di punggung. `setOpen` menutup atau melipat sampul ke bawah (animasi lipat di langkah 4);
+  - pensil heksagonal kuning (dua ujung diraut) dan pink (penghapus + cincin logam), dibangun dari posisi ujung per layout;
+  - bagian yang bergerak bersama digabung, bagian kecil berwarna lewat vertex color. Properti menambah ±6 draw call di K2 (versi pertama tanpa penggabungan menambah 32 dan K2 pc jadi 132).
+  - Leaflet baru muncul di konter mulai K2.4 sampai Heru membawanya (langkah 4).
+- `takes/home/counter.ts`: batas alas (`pad`) per layout.
+- Bake AO ulang (printer dan bingkai mengubah dinding kanan dan lantai).
+- Dicek: K2 dan K2.2 pc/hp dibanding still lama: selisih 0,05% piksel (aksi staf), printer tidak terlihat. Draw call pass utama pc K2 106 (sebelumnya 100), K2.2 76, K2.4 85, K3 44, K4 45; hp K2 104, K2.2 71, K2.4 66, K3 42, K4 45. Segitiga maks 138 ribu (K2). `typecheck`, `eslint`, `prettier` untuk file yang diubah. Render dikirim di chat.
+- Belum: still K0–K2.2 belum dirender ulang (alas lila terlihat tipis di konter K2; dirender bersama still K3/K4 di langkah 6); warna kertas dan alas di tampak atas masih memakai cahaya pagi ruangan (preset close-up di langkah 4); di K4 hp keyframe kamera ±1 cm di kanan tengah halaman (ring terpotong di tepi kiri), sekarang kamera di tengah binder (disetel di langkah 4).
+
+### 2026-11-03 (tahap 5, langkah 3: tangan close-up)
+
+- User menyetujui langkah 2 ("Ya, lanjut langkah 3").
+- `cast/closeHand.ts`: tangan kanan Heru dan Bu Dewi untuk tampak atas. Satu SDF (telapak dan pangkal telapak, 4 jari 3 ruas dengan buku jari, jempol 2 ruas, pergelangan) di-mesh `MarchingCubes` res 52 (hemat 36), sisi bawah yang menempel di meja dibuang. Kuku berupa elips pipih yang ditanam di ujung jari supaya tepinya tegas (warna per vertex di mesh MarchingCubes memberi tepi bergerigi). Lengan baju dari tabung: Heru jas ungu + manset kemeja putih, Bu Dewi tunik krem dengan pita motif oranye. Kulit, kuku dan lengan memakai vertex color, jadi satu tangan satu draw call. Pose `hold` (K3, ujung jari menekan sudut leaflet) dan `rest` (K4, bertumpu di konter). Proporsi jari disetel dari crop keyframe K3 pc: jari pendek dan gemuk (panjang ±3× lebar), rapat, kuku besar.
+- `cast/vinyl.ts`: wrap lighting dipisah jadi `withWrap` (dipakai tangan); `vinylMaterial` tetap sama. `cast/sdf.ts`: `sdfGeometry(..., { merge: false })` untuk mesh yang toh dipakai tanpa indeks.
+- `sets/counterProps.ts`: tangan pengganti dibuang; tangan close-up diserahkan dari chunk tokoh (`roster.buildCloseHands`, dibangun per mesh di antara jeda seperti tokoh), ujung jari tengah diletakkan di titik dari keyframe (relatif ke sudut leaflet di K3, ke binder di K4). Tampil hanya saat kamera menunduk lebih dari 60° (`HANDS_PITCH`); perubahan memicu gambar ulang bayangan. Di layout potret tangan diperkecil 0,7 karena keyframe hp menggambar tangan lebih kecil terhadap kertas daripada keyframe pc.
+- Waktu bangun (Edge dengan GPU, dev): awalnya 140–170 ms per tangan (680–870 ms di CPU 4×), lebih lama dari potongan tokoh. Penyebab utama `mergeVertices` yang lalu dibatalkan `toNonIndexed`; ditambah jalan pintas SDF di atas tangan dan pemotongan per bagian. Sekarang 37–61 ms per tangan (175–252 ms di CPU 4×); total tokoh + tangan 0,66 s (2,4 s di CPU 4×), potongan terpanjang 61 ms (277 ms di CPU 4×, potongan tokoh).
+- Anggaran: segitiga ±9–11 ribu per tangan (perkiraan plan 3–5 ribu); karena hanya tampil di tampak atas, K3 pc 76 ribu, K4 pc 76 ribu, hp 71–80 ribu. Draw call tidak berubah (K3 44, K4 45 pc; tangan menggantikan pengganti). Orbit tetap titik terberat (135,5 ribu).
+- Dicek: K3/K4 pc dan K3 hp berdampingan dengan keyframe, crop tangan 1:1 (hanya di chat). `typecheck`, `eslint`, `prettier --check` untuk `world/`.
+- Belum: tangan tokoh sendiri (IK) harus tiba di titik yang sama saat kamera melewati 60° supaya tidak meloncat (langkah 4); warna kulit masih di bawah cahaya pagi ruangan (preset close-up di langkah 4); pose transisi tangan (meletakkan, menggeser, membuka binder) di langkah 4.
+
+### 2026-11-03 (tahap 5, langkah 4: gerak dan cahaya)
+
+- User menyetujui langkah 3 ("Ya, lanjut langkah 4").
+- `takes/home/counterCast.ts` (baru):
+  - Heru punya jam beat 3 sendiri (seperti beat 1; mengejar scroll dengan pegas kritis, paling cepat 1,5× laju alami). Ia berjalan dari titik K2 lewat celah meja Bayu dan Nadia ke depan konter (`Walk`, langkah 0,42 m). Ia tiba di 1,0 layar beat 3, lalu meletakkan leaflet (1,1 s, mulai 0,25 s sebelum berhenti) sampai 1,3 layar; K2.4 jatuh di tengahnya, seperti blockout.
+  - Leaflet dibawa di sisi kanan, dipegang di sudutnya dan menggantung dengan muka menghadap keluar-depan. Saat diletakkan, sudut itu berpindah melengkung ke sudut leaflet di konter dan orientasinya di-slerp ke datar; tangan kanan Heru mengikuti dengan IK (`walkPose` sekarang menerima `reachR`). Badan condong saat meletakkan, lalu sedikit tegak supaya kepalanya keluar dari tampak atas.
+  - Bu Dewi: kepala naik saat Heru datang (0,55–0,85 layar), menunduk ke leaflet (1,0–1,3), tangan kanan meraih sudut terdekatnya (1,35–1,75), di beat 4 ke sebelah binder. Wajah berganti dari prihatin ke tertarik saat leaflet diletakkan (atlas dilukis ulang sekali). Tolehan ke Heru memudar selama beat 3.
+- `sets/counterProps.ts`:
+  - Leaflet mengikuti Heru.
+  - Beat 4 dari scroll: Bu Dewi melepas (0–0,4), Heru menggeser leaflet keluar frame ke kiri (0,05–0,35), memindah tangan ke binder dan menariknya ke tengah (0,35–0,72), sampul terbuka (0,72–0,95), lalu tangan ke posisi bertumpu K4.
+  - Sampul diayun 180° ke kiri di tepi atas punggung, lalu diselipkan ke bawah binder sambil turun (versi pertama memiringkan binder supaya sampul lewat di bawah, dan terlihat aneh).
+  - Tangan close-up berpindah pose di tengah lintasan, dengan sedikit terangkat.
+- Konflik keyframe: pensil kuning K4 berada tepat di tempat binder tertutup di K3. Binder K3 (pc) digeser sedikit ke kanan sampai bebas dari pensil, jadi strip binder di tepi kanan K3 pc sekarang di luar frame. Pensil hp dipindah 1,5 cm ke tepi depan.
+- `core/light.ts`: preset close-up (langit lavender putih, tanah lila muda, matahari lebih lemah dan netral, lingkungan lebih terang), di-blend dari cahaya ruangan saat kamera menunduk 35° → 75°; lampu gantung meredup bersamanya.
+- `index.ts`:
+  - jam Heru beat 3;
+  - pose Bu Dewi dari scroll, juga di still dan di tampak atas;
+  - loop ambient ruangan berhenti di tampak atas;
+  - di tampak atas lengan bawah kanan Heru dan Bu Dewi dilipat (skala tulang ±0) ke dalam lengan baju tangan close-up. Lipatan diputuskan sebelum pose; bug pertama: IK sempat dihitung dengan lengan terlipat dan tidak diulang, sehingga tangan Heru tidak memegang leaflet.
+- `takes/home/heru.ts`: `walkTime`, `walked`, `heruK2Spot` diekspor. `sets/companyFront.ts`: `counterFrame` mendapat `gapX/gapZ`.
+- Dicek:
+  - urutan frame K2.2 → K3 pc berdampingan dengan blockout, dan hp;
+  - beat 4 pc dalam 9 langkah; K3/K4 pc dan hp dengan cahaya close-up berdampingan dengan keyframe (hanya di chat);
+  - kaki Heru yang menapak bergeser ≤ 1,5 mm (pc) dan 2,3 mm (hp), maju dan mundur, di 300 posisi scroll;
+  - draw call pass utama pc K2.4 86, K3 42, K4 45, maks di orbit 90; hp 67/42/45; segitiga maks 137 ribu;
+  - tanpa error console; `typecheck`, `lint`.
+  - `format:check` gagal hanya di `components/home/stills.json` (tidak diubah sesi ini; dibuat ulang bersama still di langkah 6).
+- Belum: copy HTML (langkah 5); kamera K4 hp tidak digeser (tengah halaman keyframe hp dan pc sama-sama ±1 cm dari tengah binder); tes FPS dan HP.
+
+### 2026-11-04 (plan ulang halaman Solusi)
+
+- Permintaan user: plan ulang halaman Solusi dari Solusi v1 (artefak `AZX3Jy8e9Bmmdnu9tLL8Jb` dan tiga dokumen terlampir); kasir memakai Heru 3D dengan baju berbeda.
+- Disalin dari Downloads: `docs/SOLUSI-V1-LOGIKA.md`, `docs/SOLUSI-V1-VISUAL.md`, `docs/SOLUSI-V1-COPY.md`, `prototype/solusi-etalase-v1.html`. Isi artefak sama dengan file HTML (artefak hanya menambah pembungkus runtime).
+- Temuan: dokumen v1 merujuk SOLUSI-SPEC dan kode Solusi (`components/solusi/`, `content/solusi/`, `world/sets/toko.ts`) yang tidak ada di repo ini; messages hanya punya `pages.solutions.title`. Raka di v1 ±2,7 m dengan kepala 0,54 m, jadi Heru 1,8 m perlu diskalakan ±1,77 di toko. Kartu masalah tanpa tombol tidak lulus WCAG 2.2 AA (2.5.7).
+- Riset: satu canvas + scissor (manual three.js), biaya `getBoundingClientRect` per frame, WCAG 2.5.7/2.5.1, `<dialog>` native, JetBrains Mono lewat `next/font/google`, `node:test` dengan type stripping di Node 24.
+- Ditulis `PLAN-SOLUSI.md` (draf); baris tahap 12–13, keputusan Solusi dan bagian "Tahap 12 dan 13" di plan ini sekarang merujuk ke sana. Kode `site/` tidak diubah.
+- Jawaban user (dicatat di `PLAN-SOLUSI.md` 9): bangun dari nol tanpa SOLUSI-SPEC; Solusi setelah Home tahap 11; kasir Heru berkaos putih lengan pendek, celemek ungu tepi cyan, kerah cyan, papan nama polos, struk "Kasir: Heru"; nama platform boleh di halaman Solusi; pop up kontak hanya di Solusi; analytics per kanal; penanda kartu jadi tombol; hasil Cari tanpa WebGL berupa daftar HTML; JetBrains Mono; draf EN oleh Claude; selisih v1 lainnya ikut v1.
+- User menyetujui plan Solusi ("Setuju").
+- Belum: riset dan cek ulang plan saat Solusi dimulai (setelah tahap 11). Commit dokumen v1 dan plan menunggu permintaan user.
+
+### 2026-11-06 (tahap 5, revisi langkah 4: leaflet muncul di konter)
+
+- Masukan user: Heru tidak perlu terlihat menenteng leaflet; leaflet cukup dikeluarkan dari bawah saat ia sudah sampai di meja.
+- `takes/home/counterCast.ts`:
+  - Heru berjalan dengan tangan kosong (lengan berayun biasa);
+  - begitu berhenti (1,0 layar beat 3), tangannya turun ke bawah tepi konter dan leaflet naik dari sana, berdiri di tepi dekatnya, tepat di depan konter, tersembunyi oleh daun konter dari sisi Bu Dewi;
+  - leaflet lalu rebah ke depan di atas tepi konter (rotasi di tepi depan) dan digeser ke tempatnya (1,3 layar), jari Heru tetap di sudutnya;
+  - lama gerak 1,3 s, mulai tepat saat ia berhenti;
+  - leaflet tidak ada sebelum itu;
+  - siku kanan diarahkan keluar ke samping setinggi bahu: di konter 9:16 (setinggi dada) siku yang jatuh membuat tangan terlihat seperti di dagu.
+- K3 tidak berubah (posisi akhir leaflet dan tangan sama).
+- Dicek: urutan frame 0,9–1,45 layar beat 3, pc dan hp (hanya di chat); `typecheck`, `lint`.
+
+### 2026-11-06 (tahap 5, revisi langkah 4: binder tidak terbuka secepat scroll)
+
+- Masukan user: binder terbuka sangat cepat saat di-scroll.
+- Penyebab: fase buka (0,72–0,95 dari K3 → K4) hanya ±0,14 layar dan mengikuti scroll langsung; dengan scroll cepat sampul terbuka dalam ±0,15 s.
+- `takes/home/counterCast.ts`:
+  - beat 4 mendapat jam sendiri, seperti jalan Heru: scroll menentukan tujuan, dunia mengejar paling cepat 1,5× laju alami dan bisa diputar mundur;
+  - `B4_SECONDS` 5,5 s pada laju alami, dengan fase `B4_PHASES`: lepas (Bu Dewi), geser leaflet, tangan ke binder, tarik 0,42–0,58, buka 0,58–0,92, tangan bertumpu.
+- `sets/counterProps.ts`, `index.ts`: semua gerak beat 4 (leaflet, binder, sampul, tangan close-up, tangan Bu Dewi) memakai jam itu; kamera tetap mengikuti scroll.
+- Dicek: scroll langsung dari jeda K3 ke jeda K4 (Edge dengan GPU), sampul terbuka ±1,4 s (sebelumnya ±0,15 s), urutan selesai ±3,8 s setelah lompatan; video dikirim di chat. `typecheck`, `lint`, `prettier --check world`.
+
+### 2026-11-06 (tahap 5, langkah 5: copy desktop dan HP)
+
+- User menyetujui revisi beat 4 dan meminta lanjut ke langkah 5.
+- Komponen (`components/home/props/`):
+  - `Leaflet.tsx` (server): H2 "Empat cara kami membantu usaha Anda" + 4 layanan (judul, isi, label "E-course segera hadir");
+  - `Binder.tsx` (client): H2, intro, contoh tab aktif, tombol Konsultasi gratis + catatan, dan 4 tab industri ARIA (`tablist` vertikal, klik/ketuk, panah, Home, End, fokus ikut). Tiap tombol tab berada di atas tab 3D-nya, dengan nama industri berdiri di tab. Area sentuh diperluas ke luar tepi halaman sampai ≥ 44 px.
+  - Dirender di server lewat `HomeStage` → `HomeTake` (`copy`); H2 dan tab ada di HTML prerender ID dan EN.
+- World:
+  - `core/anchors.ts` `rectAnchorFrom`;
+  - `sets/counterProps.ts` `copyAnchors` (wajah leaflet dan halaman binder + strip tab, dari transform mesh tiap frame, jadi copy ikut leaflet yang digeser), `holdAnchors`, dan `fade`: copy leaflet masuk saat kamera tegak 72° → 86° setelah tangan diam, pergi saat leaflet digeser; copy binder masuk setelah sampul terlipat dan tangan bertumpu;
+  - `sets/binderLayout.ts` (angka halaman, tab dan area copy tanpa three, dipakai world dan HTML);
+  - `index.ts`: `FrameInfo.fade` dan `sizes` (ukuran kotak = ukuran di layar saat jeda, diukur dengan kamera jeda; teks digambar ±1:1 di jeda, jadi tajam).
+- `placeHero.ts` `placeAnchors`: elemen `data-fade` diberi ukuran dari world, opacity, `data-shape` (lanskap/potret), dan disembunyikan (`visibility: hidden`, tidak bisa di-tab) saat tidak tampil.
+- `stage.css`:
+  - versi tumpuk sederhana (section biasa; dirapikan di langkah 6);
+  - film: tata letak dalam unit kontainer (`cqw`/`cqh`); leaflet 4 kolom di lanskap dan bertumpuk di potret, keduanya di luar jari Heru (kiri atas) dan Bu Dewi (kanan bawah);
+  - halaman binder dengan kolom tab; di halaman sempit (< 300 px, HP) contoh digeser satu per layar dengan scroll-snap.
+- Bar header mengambang menutupi judul binder di K4: `counter.ts` `setSafeTop` membuat tampak atas sedikit lebih lebar dan bergeser supaya kertas berada di bawah header (`WorldOptions.safeTop`, dari `HomeTake`). K4 sekarang dibingkai pada halaman (setebal binder di atas konter), seperti keyframe.
+- Tangan close-up dan lipatan lengan sekarang per tokoh: tangan Bu Dewi muncul begitu tangannya di sudut (1,75 layar), tidak menunggu leaflet Heru. Di HP sebelumnya lengan aslinya sempat terlihat dari atas.
+- Clip-path di bawah jari tidak dipasang: tata letak menghindari jari saat jeda, copy leaflet memudar sebelum tangan Heru pindah ke binder, dan copy binder baru masuk setelah kedua tangan diam. Tidak ada saat ketika tangan melintas di atas teks.
+- Dicek:
+  - jeda K3/K4 di 1280×720, 375×812 dan 360×640, ID dan EN (hanya di chat);
+  - urutan masuk/keluar copy dengan scroll sungguhan di Edge dengan GPU;
+  - tab: klik mouse, ketuk di area sentuh di luar tepi halaman (HP), ArrowDown/End/Home dengan fokus ikut;
+  - tanpa error console;
+  - `typecheck`, `lint`, `format:check` (lulus; `stills.json` ikut dirapikan prettier), `build` (semua halaman statis).
+- Belum: langkah 6 (`#layanan` ke K3, versi tumpuk, still K3/K4, fallback).
+
+### 2026-11-06 (tahap 5, revisi langkah 5: leaflet lebih hidup)
+
+- Masukan user: leaflet terlalu hambar (kertas putih dengan teks saja, bagian bawah kosong di pc).
+- `props/Leaflet.tsx`: kicker "Layanan" di atas H2 (pesan `nav.services`), tiap layanan dapat ikon garis (SVG inline, `aria-hidden`) dan nomor 01–04.
+- `stage.css`:
+  - tiap layanan punya warna brand sendiri (ungu, cyan, violet, navy) sebagai aksen dan tint;
+  - pc: 4 kartu bertint yang berakhir di atas jari Bu Dewi;
+  - HP potret: baris dengan ikon di samping judul dan garis pemisah, tanpa isi kartu (kolomnya terlalu pendek untuk padding, dan isi kartu akan menutupi jari Bu Dewi);
+  - `@container (max-height: 440px)` merapatkan baris di 360×640;
+  - versi tumpuk ikut memakai kartu yang sama.
+- `sets/counterProps.ts`: logo Kreatekno dicetak di tekstur kertas setelah gambarnya termuat. Di lanskap di kaki leaflet dengan garis tipis; di potret di kanan atas, sebaris dengan kicker. Jadi leaflet tidak kosong saat naik dan digeser.
+- Dicek:
+  - K3 pc 1440×810, HP 375×812 dan 360×640 (ID), pc dan HP (EN), dengan gambar dikirim di chat;
+  - copy tetap di dalam kertas dan di luar jari;
+  - versi tumpuk (reduced motion);
+  - `typecheck`, `lint`, `format:check` lulus.
+- Belum: langkah 6. Still K3 nanti dirender dengan cetakan baru.
+
+### 2026-11-06 (tahap 5, langkah 6: halaman, versi tumpuk, still K3/K4, fallback)
+
+- **`#layanan`:** penanda lompat `.take-mark`, anak `.take` di luar panggung.
+  - Di film, penanda duduk di posisi scroll tengah jeda K3 (`--at` × 100lvh dari `keyP("K3")`), jadi menu "Layanan" mendarat di leaflet dengan copy sudah masuk.
+  - Section placeholder "Layanan" di `page.tsx` dihapus. "Cara kerja" tetap.
+- **Lompatan scroll:** `HomeTake` memotong (`world.jump`) kalau scroll berpindah lebih dari 2 layar sekaligus (tautan lompat, tombol End, scrollbar). Dengan begitu kamera tidak terbang melewati seluruh take, dan jam Heru serta beat 4 tidak mengejar beberapa detik.
+- **Still:**
+  - `tools/render/stills.mjs` dan `lib.mjs` sekarang merender K0–K4 pc/hp, termasuk K0–K2.2 ulang yang kini menampilkan alas lila di konter;
+  - posisi leaflet di K3 dan halaman binder di K4 dicatat di `stills.json`;
+  - di K0 hanya anchor billboard yang dicatat;
+  - ukuran K3/K4: pc 15,0 dan 18,0 KB, hp 9,7 dan 7,1 KB;
+  - teks alt `home.stage.k3` dan `k4` (ID/EN) ditambah.
+- **Fallback tanpa WebGL:**
+  - still berganti ke K3 di 8,2–8,6 layar dan ke K4 di 9,85–10,3 layar;
+  - copy leaflet dan halaman binder ditempatkan di still dengan homografi `quadMatrix3d` (`placeHero.ts`, tanpa three.js), ukurannya dari quad di layar, memudar mengikuti scroll.
+- **Versi tumpuk (reduced motion, tanpa JS):**
+  - `.take` menjadi grid dan `.take-stage` `display: contents`, sehingga urutannya: K2.2, `#layanan`, still K3, kartu layanan, still K4, tab industri, halaman binder;
+  - tab di atas halaman: aturan flex pindah ke `.binder-in`, karena sebelumnya ada di kotak luar dan tidak berlaku.
+- **Dicek dengan Edge (GPU):**
+  - menu "Layanan" di pc dan hash di HP mendarat di K3 dengan copy penuh;
+  - fallback tanpa WebGL di K3/K4, pc dan HP;
+  - versi tumpuk pc dan HP dengan `#layanan` di bawah header;
+  - tanpa error console.
+- `tools/render/shots.mjs compare` melewati K3/K4, karena prototype k0-k2 tidak punya keduanya.
+- **Belum:** langkah 7 (cek akhir dan review tahap).
+
+### 2026-11-06 (tahap 5: scroll lebih mulus)
+
+- **Masukan user:** gerakan scroll masih patah-patah.
+- **Cara ukur:** skrip sementara (Playwright, Edge dengan GPU) men-scroll seluruh take 1.500 px/detik di build produksi, sambil merekam jarak antar frame, long animation frame dan profil CPU. Playwright memakai GPU Intel UHD, bukan RTX, jadi angkanya mewakili laptop tanpa kartu grafis atau browser yang berjalan di iGPU. Skrip dihapus setelah selesai.
+- **Penyebab:**
+  1. Shader dikompilasi saat objek pertama kali tampil, sehingga scroll macet 0,2–1,5 detik di crane down (1,5 layar), di whip ke K2.2 (5,7 layar) dan di beat 3–4. Situs belum punya pemanasan shader.
+  2. Shadow map (109 caster, 193 ribu segitiga, seluruh jalan dan ruangan) digambar ulang di setiap frame scroll. Pemicunya: kunci pose Bu Dewi di luar ruangan dan di tampak atas memakai posisi scroll, jadi ia dipose ulang tiap frame padahal pose-nya tetap.
+  3. Di GPU Intel frame tertahan oleh sampling bayangan 2048: dengan bayangan 1024 median turun dari 16,7 ke 11,3 ms.
+- **Perubahan:**
+  - `world/index.ts` dan `core/whipBlur.ts`, pemanasan:
+    - semua tekstur di-upload dan semua shader dikompilasi di latar (`compileAsync`, KHR_parallel_shader_compile) sebelum world crossfade, sementara still K0 tetap tampil;
+    - termasuk properti tersembunyi dan varian render target untuk blur whip;
+    - diulang setelah tokoh selesai dibangun dan saat ruangan dibangun ulang;
+    - diakhiri satu frame yang menggambar semuanya sekali ke scissor 1 px (layar dan target whip, plus bayangan), karena ANGLE D3D11 baru menyusun executable-nya di draw pertama;
+    - di produksi `renderer.debug.checkShaderErrors` dimatikan.
+  - Kunci pose Bu Dewi memakai isi pose (JSON), bukan posisi scroll.
+  - Pembaruan bayangan maksimal 30× per detik di semua perangkat (sebelumnya hanya HP), termasuk dari properti beat 3–4.
+  - Tangga kualitas menggantikan penurun dpr lama. Kalau 12 dari 60 frame terakhir meleset dari refresh layar saat kamera bergerak (setelah tokoh selesai dibangun):
+    - bayangan turun ke 1024;
+    - lalu dpr turun 0,25 sampai 1;
+    - tidak pernah naik lagi;
+    - still dan shot review tetap kualitas penuh.
+  - `placeHero.ts`: `placeAnchors` memakai satu objek `matchMedia`.
+- **Hasil di build produksi (scroll wheel, pc 1440×810):**
+
+  | | Sebelum | Sesudah |
+  |---|---|---|
+  | Median frame | 27,8 ms | 16,7 ms |
+  | p99 | 100 ms | 28–33 ms |
+  | Frame terpanjang | 1.028–1.455 ms | 55–94 ms |
+  | Frame > 25 ms | 54–68% | 2–8% |
+
+  Profil tidak lagi menunjukkan kompilasi saat scroll; jumlah shadow pass turun dari 305 menjadi 151 per scroll penuh, dan nol di 0–2,5 layar. HP 375×812 dengan CPU 4× lebih lambat: median 16,6 ms, frame > 25 ms 2,6%.
+- **Dicek:** K2, K2.2, K3, K4 pc dan HP tampil sama, tanpa error console; `typecheck`, `lint`, `format:check`, `build` lulus.
+- **Belum:**
+  - tes di HP Android sungguhan;
+  - wajah Bu Dewi yang dilukis ulang di awal beat 3 (atlas kanvas, ±40 ms sekali);
+  - lampu gantung (3 point light) mahal per piksel di iGPU; kandidat untuk tahap 11 kalau HP murah masih berat.
+
+### 2026-11-07 (tahap 5, langkah 7: cek akhir)
+
+- **K3/K4 berdampingan dengan keyframe pc dan HP** (hanya di chat). Komposisinya sesuai. Selisih yang sudah diketahui:
+  - tampak atas sedikit lebih lebar dan turun di bawah header (langkah 5);
+  - binder tidak tampak di tepi kanan K3 pc (letaknya dipilih di langkah 2 supaya pensil kuning tidak masuk frame K3);
+  - kertas dan alas sedikit lebih gelap dari keyframe;
+  - K4 HP memperlihatkan binder utuh (keyframe memotong ring di kiri).
+- **K2.2 → K3 dibandingkan dengan blockout v3** di 8 titik jalur (0–8 s): dolly di lorong, orbit ke bahu kanan Bu Dewi, jeda K2.4 saat Heru meletakkan leaflet, tilt dan push ke tampak atas. Gambar hanya di chat.
+- **Scroll maju lalu mundur, pc dan HP:** copy leaflet tampak di K3, copy binder di K4. Saat kembali ke K3 binder tertutup lagi, dan saat kembali ke K2 leaflet hilang serta Heru dan Bu Dewi kembali ke pose K2.
+- **Teks:** di jeda K3/K4 transform copy berskala 1,000 tanpa perspektif (kotak = ukuran di layar), jadi teks digambar 1:1.
+- **Tab:** klik (pc), ketuk (HP), End dan ArrowDown dengan fokus ikut; area sentuh 44 px.
+- **Anggaran:**
+  - pass utama pc K2.4 86 draw call / 135,5 ribu segitiga, K3 45 / 77,0 ribu, K4 46 / 76,1 ribu;
+  - HP 74 / 121,0 ribu, 42 / 70,8 ribu, 45 / 79,8 ribu;
+  - chunk world 26,3 KB gzip, chunk tokoh 27,0 KB gzip (batas 120 KB), three 82,3 + 67,7 KB gzip.
+- **Bug yang ketemu dan diperbaiki:**
+  - Frame pemanasan menunggu kamera diam, padahal di mode shot kamera dikunci ke keyframe dan scroll halaman 0, jadi still dan shot tidak pernah siap. Sekarang shot dianggap diam. Ditambah batas 1,5 s supaya pengunjung yang terus men-scroll saat loading tidak menahan world.
+  - Tangan close-up ditambahkan dalam keadaan terlihat dan baru disembunyikan saat kunci properti berubah. Di jeda yang diam keempatnya tetap digambar (K2.4 sempat 90 draw call / 183 ribu segitiga). Sekarang tersembunyi sampai update berikutnya menempatkannya.
+- **Dicek:** console tanpa error, `format:check`, `typecheck`, `lint`, `build` lulus.
+- **Belum:** tes di HP Android sungguhan.
+- **Review:** user menyetujui tahap 5 ("Disetujui", 7 Nov). Belum di-commit.
+
+### 2026-11-07 (tahap 6 riset dan plan)
+
+- Acuan baru dari user: 8 video 16:9 di `refs/footage/tahap6/` (dipindah dari Downloads oleh sesi induk). Belum ada versi 9:16.
+- Dibaca: `CLAUDE.md`, `PLAN.md`, `HANDOFF.md`, `docs/STORY-STAGE.md`, dokumen tim beat 4–5b dan copy customer journey (hlm. 9–10, 19–20, tabel beat), Master 1, 2, 3–6, 7 dan 8, `sets/street.ts`, `takes/home/timing.ts`, `data.json`, messages `home.journey`.
+- Frame tiap video diekstrak dengan ffmpeg ke scratchpad (lembar 12 frame per video, frame awal dan akhir, lebih rapat di K4 → K4.1, K4.1 → K4.2 dan K5a.5 → K5a.6). Kecepatan truck diukur dengan korelasi fase antar frame.
+- Temuan:
+  - tujuh nama file berarti "akhir - awal", hanya `k5a.5 - k5a.6` "awal - akhir"; urutan kontinu K4 → K4.1 → K4.2 → K5a.1 → … → K5a.6 dicek dari selisih frame akhir dan awal;
+  - kamera keluar sendiri dulu (K4.2), Heru dan Bu Dewi menyusul (K5a.1); anggukan Bu Dewi di K4.1;
+  - truck rata ±0,3 lebar frame per detik dari K5a.2 sampai K5a.5, tiap keyframe membingkai dua panel; berhenti di K4.1, K4.2, K5a.1 dan K5a.6;
+  - deret ruko sama dengan Master 7; ±60 m dari COMPANY ke pintu Kreatekno, jadi tokoh di video berjalan ±4 m/s;
+  - K5a.6 setara K5 dokumen tim, tapi panel CTA elektronik sudah hampir keluar frame;
+  - cahaya luar lebih terang dan netral dari K1;
+  - di video K4 ada 4 alat tulis dan tanpa tangan; di K5a.3 → K5a.4 kedua tokoh saling menembus.
+- Riset singkat: penggabungan geometri per klaster supaya frustum culling tetap jalan; tempo scrollytelling dikendalikan pembaca, teks yang bergerak perlu ritme baca; interpolasi dolly zoom lewat tinggi frustum, bukan FOV langsung.
+- Jawaban user: hanyut pelan di K5a.2–K5a.5, ±8 layar, HP satu panel per jeda, Heru menyalip menjelang Kreatekno, cahaya pagi menjelang siang, jeda pendek di K4.1 dan K5a.1, copy panel selalu terlihat, pintu COMPANY menutup sendiri seperti video (4 alat tulis dan tangan tetap ikut tahap 5), langkah campuran (dari jarak sampai ±1,8 m/s, di atasnya kaki sedikit meluncur).
+- Catatan: rincian durasi di pilihan "±8 layar" yang ditanyakan ternyata berjumlah 9,5 layar; plan memakai potongan yang lebih pendek supaya total 8,0 (take ±19,9 layar), disetel saat review greybox.
+- Plan tahap 6 ditulis (bagian 5); baris tahap 6 dan catatan per tahap diperbarui; `refs/README.md` mencatat arah video. Kode `site/` tidak diubah, tidak ada commit.
+- Belum: persetujuan plan oleh user; dokumen tim perlu diperbarui (catatan di plan); versi 9:16 beat 5a–5b dari tim.
+
+### 2026-11-07 (tahap 6, plan disetujui, langkah 1: ukur dan greybox)
+
+- User menyetujui plan tahap 6 di sesi induk sebelum plan selesai: "setelah ada hasilnya langsung jalankan sesi baru untuk implementasi". Implementasi dimulai di sesi baru.
+- Diukur di frame akhir video (skrip di scratchpad; titik hilang sambungan paving, skala pintu 2,03 × 2,2 m dan ruko 7 m, kedalaman dari kerb). Bangunan di video adalah komposisi AI yang proporsinya tidak sama dengan situs (COMPANY lebih sempit, pintu lebih lebar), jadi set situs tetap dan hanya kamera yang dicari, seperti solve K2.1/K2.2:
+  - K4.2: frontal, x +0,62, tinggi 1,40 m, 5,8 m dari fasad, FOV vertikal 43,6°, menengadah 1°. Bukan lensa panjang seperti dugaan plan: FOV hampir sama dengan ruangan, jadi tidak perlu interpolasi tinggi frustum;
+  - K5a.1: x 3,82, tinggi 3,27, jarak 10,9, FOV 43,9°;
+  - truck: tinggi 3,63, jarak 12,7, FOV 40,3°, datar; pusat frame K5a.2–K5a.5 di batas ruko buah/laundry, sepatu/warteg, kosmetik/warnet, warung/elektronik (tiap keyframe maju 2 ruko = 14,1 m), K5a.6 di 0,42 lebar Kreatekno;
+  - K4.1 (tidak ada titik ruangan yang cocok): pc 1,8 m di belakang Heru dan 1,2 m di kirinya, tinggi 2,1, FOV 30°; Heru berdiri tepat di depan Bu Dewi, jadi kamera harus menyamping supaya kepalanya tidak menutupi Bu Dewi;
+  - Kreatekno ±12,4 m (1,75 ruko), pintu di 0,52 lebarnya; pintu Kreatekno ±63 m dari pintu COMPANY.
+- Dibangun (greybox, tetap dipakai di langkah berikutnya):
+  - `takes/home/timing.ts`: `K4.1`, `K4.2`, `K5a.1`–`K5a.6` dan segmen sesuai plan (8,0 layar). Take 11,9 → 19,9 layar.
+  - `sets/rowLayout.ts` (angka tanpa three, dipakai world dan halaman nanti): 8 ruko 7 m (warna dari video), panel 5,2 × 2,06 m di y 5,25, bukaan toko 4,9 × 2,75 m, Kreatekno, ruko ujung.
+  - `sets/row.ts`: greybox deret ruko (satu grup per ruko, digabung per material), panel dengan rencana copy digambar di kanvas, Kreatekno (kaca ungu, pita nama, plakat, lampu, pintu), ruko ujung, trotoar, kerb dan jalan sampai x ±101. Ruko buah dan laundry dipindah dari `sets/street.ts` ke sini (K0/K1 dicek sama).
+  - `takes/home/outside.ts`: kamera beat 5 (naik + putar 180° menunduk, lalu tilt ke belakang Heru; mundur lewat celah meja dan pintu, berhenti sesaat di K4.2 lalu dolly out; truck dengan Hermite: dari diam, hanyut 2,5 m di tiap jeda pc ≈ 18% laju truck, melambat ke K5a.6). HP: tiap jeda dibagi panel kiri, geser 0,16 layar, panel kanan; warnet dan warung dilewati. FOV jalan dilebarkan di layar lebih sempit dari 9:16 supaya lebar panel tetap (`fitFov`). Posisi tokoh sementara: keluar pintu setelah K4.2, lalu ikut kamera dengan offset dari frame video.
+  - `world/index.ts`: deret ruko, Heru dan Bu Dewi di jalan (`walkPose` dari jarak, sementara), aksi ruangan berhenti di jalan, awan mendung staf yang dekat kamera disembunyikan saat kamera mundur di atas meja. `core/light.ts` `follow`: kotak bayangan matahari ikut x kamera (dibulatkan per meter).
+- Dicek (hanya di chat): keyframe K4.1–K5a.6 pc berdampingan dengan frame akhir video; urutan 5 frame per gerak untuk 8 video, pc dan HP 375×812; K0/K1 pc dan HP sama dengan still. Teks langkah di panel HP muat: panel 303 × 120 px di 360×640 (316 × 125 di 375×812), isi terpanjang (langkah 1/2 ID) butuh 95 px dengan judul 16 px dan isi 13 px, jadi panel HP tidak perlu dibuat lebih tinggi.
+- Anggaran (pass utama): K4.1 64 draw call / 64,5 rb segitiga; K4.2 121 / 143 rb; K5a.1 134 / 149 rb; K5a.2 118 / 126 rb; K5a.3–K5a.6 28–45 / 27–34 rb (HP K5a.2–K5a.6 16–49). K4.2 sampai K5a.2 melewati batas 120 karena ruangan COMPANY dan tokohnya ikut digambar di balik fasad. Rencana langkah 2: sembunyikan ruangan saat kamera di luar dan pintu tertutup, lepas set setelah K5a.2 seperti plan.
+- Temuan yang perlu diputuskan di review: kecepatan jalan tokoh (±13,6 m per layar scroll, jadi di scroll wajar 1 layar per 2 detik ±7 m/s); bayangan diagonal penghalang K1 jatuh ke ruko; K4.1 HP kamera di kanan Heru (lampu gantung tepat di antara Heru dan Bu Dewi di ruangan 9:16).
+- `typecheck`, `eslint world`, `prettier` untuk file yang diubah lulus; console tanpa error.
+- Belum: review greybox oleh user; langkah 2–5. Pintu COMPANY masih terbuka (langkah 3), cahaya luar masih pagi K1.
+
+### 2026-11-07 (tahap 6, langkah 2: set)
+
+- User menyetujui greybox dengan rekomendasinya ("Ya, lanjut langkah 2"):
+  - ruangan COMPANY disembunyikan saat kamera di luar (beat 5), lalu dilepas setelah K5a.2;
+  - penghalang bayangan diagonal K1 dibatasi ke sekitar COMPANY bersama preset cahaya luar (langkah 3);
+  - langkah tokoh: irama dan panjang langkah dari jarak tempuh sampai jalan cepat ±2,5 m/s (bukan 1,8), di atasnya kaki boleh meluncur.
+- Dibangun:
+  - `sets/shop.ts` (bundle utama): satu ruko detail: dinding depan berbentuk dengan bukaan (material sendiri untuk peta AO), pilar dengan alas dan kepala, lis atas, pita lantai, kap di atas bukaan, panel putih berbingkai, pintu lipat putih di kedua sisi bukaan, ruang toko sedalam 1,9 m (lantai AO, dinding belakang, plafon dengan lampu strip) dan barang dari video: peti buah bertingkat dengan pisang, rak baju lipat + gantungan + mesin cuci, rak sepatu, etalase lauk + bangku, rak kosmetik + meja, meja PC + kursi, rak jajanan + renceng, rak elektronik. Barang dan isi toko satu mesh warna per vertex (`Tint`). ±6 draw call per ruko, di-cull per ruko. Ruko buah dan laundry dibangun bersama jalan (terlihat sejak K0/K1).
+  - `sets/row.ts` (chunk sendiri, 2,6 KB gzip, dimuat 1,5 layar sebelum K4.1, atau langsung untuk still/shot/bake): ruko sepatu sampai elektronik, kantor Kreatekno (fasad ungu, jendela panjang lantai 2 berbingkai dengan pilaster tengah, pita nama dengan tulisan KREATEKNO memakai font display situs, etalase kaca dengan pintu dua daun yang daun kanannya berengsel untuk langkah 3, dinding dengan plakat kayu kosong untuk beat 9b dan lampu kuningan, lobi terang samar di balik kaca), ruko ujung (balkon dengan pagar, rolling door), trotoar per ruko (bidang AO, ubin selaras dengan trotoar jalan), kerb, jalan dan marka sampai x ±101.
+  - `sets/street.ts`: pola ubin trotoar diekspor (`drawPaveTiles`), latar ruang depan di balik pintu (tampil saat ruangan tidak digambar).
+  - `world/index.ts`: ruangan, properti konter, staf, awan mendung dan HP Sinta tidak digambar saat kamera di luar di beat 5 (Heru dan Bu Dewi tampil lagi begitu keluar); ruangan dilepas mulai jeda K5a.2 dan dibangun ulang saat scroll kembali sebelum K5a.1.
+  - `core/light.ts` `follow`: kotak bayangan matahari digeser di bidang cahaya per 28 texel (±1 m, sama untuk peta 1024 dan 2048), jadi grid texel tidak bergeser di set statis dan peta digambar ulang sekitar sekali per meter.
+  - `tools/render/bake-ao.mjs`: peta `row-*` di-bake bersama langkah 0. Bake ulang langkah 0: 33 peta (26 baru untuk deret ruko, 98 KB) dalam 12,7 s; `ext-pave` ikut berubah sedikit di depan ruko buah.
+- Dicek (hanya di chat): K5a.1–K5a.6 pc berdampingan dengan video dan HP 375×812 dengan AO; K1 pc dan HP sama dengan still yang ada; scroll lompat ke K5a.3 lalu kembali ke K4.1: ruangan dibangun ulang, staf tampil lagi.
+- Anggaran (pass utama, pc / HP): K1 119 draw call · 146 rb segitiga / 118 · 144 rb (sebelumnya 118 · 141 rb); K4.2 35 · 62 rb; K5a.1 47 · 83 rb / 37 · 74 rb; K5a.2 42 · 98 rb; K5a.3–K5a.6 34–42 · 30–63 rb; HP K5a.2–K5a.6 19–27 · 12–53 rb. Chunk world 13,5 KB gzip, chunk tokoh 27,6 KB, chunk deret ruko 2,6 KB.
+- `typecheck`, `lint`, `format:check`, `build` lulus; console tanpa error.
+- Belum: pintu COMPANY menutup, pintu Kreatekno dibuka Heru, cahaya luar baru dan pembatasan penghalang bayangan K1 (diagonal masih jatuh ke ruko), gerak tokoh (langkah 3); copy panel (langkah 4).
+
+### 2026-11-07 (tahap 6, revisi ritme beat 5b, langkah 3: gerak dan cahaya)
+
+- Permintaan user setelah review set: kamera berhenti di setiap ruko sementara tokoh tetap berjalan dengan kecepatan normal; tokoh tidak perlu selalu di tengah frame. Jawaban user atas dua pertanyaan:
+  - kamera pc berhenti diam di tiap keyframe K5a.2–K5a.5 (tetap dua ruko per frame seperti video; HP tetap satu panel per jeda, juga berhenti diam). Hanyut pelan di jeda dihapus; panjang take tetap;
+  - Heru dan Bu Dewi berjalan dengan jam sendiri begitu keluar pintu (±1,3 m/s, ±48 detik sampai Kreatekno), tidak menunggu scroll. Kalau scroll lebih cepat dari mereka, mereka tertinggal lalu menyusul paling cepat 1,5×; di K5a.6 kamera menunggu sampai mereka tiba dan Heru membuka pintu. Scroll mundur sampai sebelum titik keluar memutar balik.
+- Akibatnya kaki tidak pernah meluncur (laju maksimum 1,5 × 1,3 ≈ 2,0 m/s, di bawah batas jalan cepat 2,5 m/s), jadi langkah selalu dari jarak tempuh.
+- Plan tahap 6 (tabel keputusan "Ritme truck", "Langkah", "Tokoh") diperbarui sesuai ini.
+- **Kamera:** di `takes/home/outside.ts` hanyut pelan dihapus. Kamera pc berhenti diam di K5a.2–K5a.5. Di HP, kamera berhenti diam di panel kiri, bergeser 0,16 layar, lalu berhenti diam di panel kanan. Tiap gerak antar jeda mulai dan berhenti halus (Hermite dengan kecepatan 0 di ujung). Jalur K4 → K4.1 dirapikan supaya kamera lewat di bawah tudung lampu gantung (dari 2,2 m), tidak menembusnya.
+- **Tokoh** (`takes/home/outsideCast.ts`, baru), semuanya fungsi murni dari jam keluar (detik):
+  - Heru keluar duluan, mendorong daun pintu kiri COMPANY ke luar, lalu menahan tepinya dengan tangan kanan (IK) sampai Bu Dewi lewat. Daun pintu menutup sendiri, dan Bu Dewi menunggu sebentar sampai Heru di sampingnya.
+  - Mereka berjalan berdampingan 1,3 m/s; Heru di sisi toko, Bu Dewi di sisi jalan. Sesekali mereka saling menoleh.
+  - 11 m sebelum Kreatekno, Heru mempercepat ke 1,8 m/s dan memutar lewat sisi jalan. Ia mendorong pintu Kreatekno ke dalam, masuk, lalu berbalik menghadap Bu Dewi. Bu Dewi berjalan sampai ke pintu dan menghadapnya.
+  - Langkah memakai `Walk` dari jarak tempuh dengan laju yang diintegrasikan (`TimedWalk`, akselerasi 1,6 m/s²), jadi kaki tidak pernah meluncur. Tiap ruas diakhiri kedua kaki rapat, jadi tidak ada kaki menggantung saat berhenti.
+  - Jam (`stepOutClock`): mulai 0,15 layar setelah K4.2. Jam berjalan 1× menurut waktu; kalau tertinggal dari posisi scroll (`scrollClock`), menyusul paling cepat 1,5×. Kalau scroll mundur sampai sebelum titik keluar, jam diputar balik (atau langsung ke 0 kalau mereka sudah jauh). Kalau kamera kembali ke dalam, mereka langsung di konter. Still, shot dan lompatan memakai `scrollClock`, yang menaruh mereka di frame tiap jeda.
+- **Pintu:**
+  - daun kanan COMPANY (terbuka sejak beat 1) menutup setelah kamera mundur melewatinya;
+  - daun kiri sekarang ikut bergerak (`street.leafL`);
+  - daun kanan Kreatekno digerakkan dari jam keluar.
+- **Bu Dewi di K4.1:** mengangguk sekali dengan mata terpejam dan senyum lebih lebar. Anggukan berjalan menurut waktu (1,4 s) begitu scroll sampai jeda K4.1, dan berbalik kalau scroll naik.
+- **Cahaya** (`core/light.ts`): preset luar "pagi menjelang siang" (matahari lebih tinggi dan netral dari kiri, langit lebih biru), di-blend saat kamera keluar lewat pintu (beat 5). Arah matahari ikut berubah; kotak bayangan memakai arah yang sedang aktif. Penghalang bayangan diagonal K1 dipotong di x 5. Dicek: diagonal di COMPANY utuh, dan deret ruko tidak terkena.
+- **Bug ditemukan dan diperbaiki:** bake AO di langkah 2 merusak peta ruangan `int-0` (wilayah gelap besar di dinding belakang dan lantai K2). Penyebabnya, occluder baru (dinding ruko, lantai toko, trotoar) dikirim sebagai geometri berindeks, padahal tracer AO hanya membaca posisi. Sekarang dikirim lewat `clean` dan sudah di-bake ulang. K0–K4 pc dan HP kembali sama dengan still (rata-rata selisih 1,4–2,1 dari 255; piksel berbeda > 40 paling banyak 0,34% di K1). Render street langkah 2 tidak terpengaruh, tapi wilayah gelap di K4.1 pada render sebelumnya berasal dari bug ini.
+- **Dicek** (hanya di chat):
+  - urutan frame pc;
+  - video scroll sungguhan pc 1280×720 dan HP 375×812: dari K4, jeda baca 2–3,5 s di tiap keyframe, berhenti 10 s di K5a.6. Direkam dengan screencast CDP dan ffmpeg lokal, karena perekam video Playwright butuh unduhan ffmpeg sendiri.
+  - draw call pc K4.1 63, K4.2 35, K5a.1 46, K5a.2–K5a.6 34–41;
+  - `typecheck`, `eslint` lulus.
+- **Belum:**
+  - copy panel dan halaman (langkah 4);
+  - hijab Bu Dewi saat berjalan baru mengikuti pegas tahap 4, belum dicek dari dekat;
+  - siluet di balik kaca buram sebelum pintu terbuka (video) tidak dibuat; tokoh baru terlihat saat daun pintu terbuka.
+
+### 2026-11-07 (struktur plan detail Solusi per slug)
+
+- Permintaan user: `PLAN-SOLUSI.md` menjadi induk yang mereferensikan subplan masing-masing detail solusi, setelah mempelajari prototipe detail Order Grup dan tiga dokumen lampiran.
+- Diubah hanya dokumentasi: induk sekarang punya indeks 12 slug dan batas tanggung jawab; S6 merujuk fondasi detail bersama dan tahapan per slug. `docs/plans/solusi/PLAN-DETAIL.md` memiliki kontrak template/schema/route/mesin/fallback/QA; `PLAN-ORDER-GRUP.md` menjabarkan pilot 9 adegan. Sebelas subplan lain memakai data dan langkah HTML dari COPY katalog, dengan cerita 3D belum tersedia.
+- Tiga sumber `SOLUSI-DETAIL-ORDER-GRUP-V1-{LOGIKA,VISUAL,COPY}.md` disalin dari Downloads ke `docs/` tanpa perubahan; SHA-256 salinan cocok. HTML artifact belum disimpan ke repo.
+- Status persetujuan dibedakan: lingkup etalase 4 Nov tetap tercatat disetujui; perluasan detail dan keputusan desain/anggaran baru adalah draf. Urutan Solusi sesudah Home tahap 11 dipertahankan. Hubungan inline vs overlay Tonton, figur/robot vs ORB, layout tablet, dan kebijakan konten ditulis sebagai keputusan terbuka, bukan diasumsikan dari lampiran.
+- Riset resmi dicatat di fondasi: batas zoom CSS3DRenderer, prerender locale/slug, ukuran target sentuh beserta pengecualiannya. Klaim repo di sumber dikoreksi pada lapisan plan: three aktual `0.186.1`, helper WA di `lib/wa.ts`, script `size` dan `core/quality.ts` belum tersedia.
+- Validasi dokumen: indeks mencakup 12 slug katalog tepat satu kali, semua tautan markdown lokal pada plan baru/perubahan menunjuk file yang ada, serta data identitas/langkah 11 subplan cocok dengan sumber. Kode dan aset website tidak diubah dalam pekerjaan ini; build/runtime test tidak dijalankan karena perubahan hanya markdown.
+- Belum: review keputusan terbuka, ekspor HTML prototype detail, implementasi S0–S7/D0–D4/OG0–OG4, dan benchmark perangkat. Tidak ada commit/push.
+
+### 2026-11-07 (tahap 6, revisi langkah 3: tokoh ikut scroll mundur)
+
+- Masukan user atas video: kalau scroll ke atas, tokoh harus ikut mundur. Usul saya, jam yang mengejar scroll (pola Heru beat 1 dan 3), disetujui ("Ya, ubah begitu").
+- `takes/home/outsideCast.ts` `stepOutClock`:
+  - jam keluar sekarang mengejar `scrollClock` maju dan mundur dengan `followClock` dari `heru.ts` (pegas kritis, paling cepat 1,5× laju 1,3 m/s);
+  - kalau scroll berhenti, tokoh berjalan sampai titik scroll lalu berhenti; kalau scroll naik, mereka berjalan mundur;
+  - kalau jarak ke titik scroll lebih dari 3 detik jalan dan tokoh di luar pandangan kamera, jam dipindah langsung ke titik 1,5–12 detik sebelum tujuan yang juga di luar pandangan. Sisanya mereka jalani dalam pandangan, jadi lompatan tidak pernah terlihat;
+  - `world/index.ts` mengecek pandangan dengan frustum kamera frame sebelumnya (bola 1,1 m di tubuh tiap tokoh).
+- Plan tahap 6, baris "Ritme truck": tokoh kini ikut scroll, tidak lagi memakai jam bebas.
+
+### 2026-11-07 (tahap 6, revisi K4.1: posisi tokoh)
+
+- Masukan user (tangkapan layar K4.1 di layar 952×846, di antara 16:9 dan 9:16): posisi tokoh aneh. Ada dua penyebab:
+  - kamera pc di kiri Heru dan kamera HP di kanan Heru di-blend, jadi pada rasio di antaranya kamera tepat di belakang Heru dan Bu Dewi tertutup kepalanya;
+  - lengan kanan Heru dan Bu Dewi masih terjulur ke titik tangan close-up di samping binder (beat 4), padahal dari samping posisi itu terlihat janggal.
+- `takes/home/outside.ts` `k41View`: kamera selalu di kiri Heru (pc 1,2 m, 9:16 1,0 m), jadi kepalanya di kanan frame dan tidak menutupi Bu Dewi di semua rasio. Di 9:16 kamera lebih rendah (1,9 m), di bawah tudung lampu gantung.
+- `b5Relax`: selama kamera naik dari tampak atas ke K4.1, tangan Heru lepas dari binder dan lengannya turun; kedua tangan Bu Dewi kembali di konter seperti K2 (video K4.1), dan badannya tegak (`poseHeru3` dan `dewiPose3` mendapat parameter `relax`).
+- Dicek (hanya di chat): K4.1 di 1280×720, 952×846 dan 375×812; `typecheck`, `eslint`.
+
+### 2026-11-07 (tahap 6: kamera ditahan di copy, perbaikan pemindahan tokoh)
+
+- **Bug pemindahan tokoh:** saat tokoh di luar layar dan jauh dari titik scroll, jamnya dipindah ulang ke titik yang sama setiap frame, jadi mereka berhenti di luar layar (misalnya tidak pernah tiba di K5a.6). Sekarang pemindahan hanya dilakukan kalau membuat mereka lebih dekat ke tujuan. Dicek: setelah scroll cepat ke K5a.6 dan kembali ke K5a.3, mereka berjalan masuk frame.
+- **Masukan user:** setiap kali copy tampil, layar ditahan sebentar walaupun pengunjung terus scroll. Saat ini copy leaflet dan binder belum sempat terlihat ketika adegan sudah lanjut, begitu juga di ruko. Hanya tokoh yang terus ikut scroll, sedangkan kamera tertahan di bangunan. Jawaban user: ditahan 1,5 detik sejak copy terlihat penuh, hanya saat scroll maju.
+- **`world/index.ts` dwell:**
+  - saat scroll maju, kamera berhenti di awal jeda K3 (leaflet), K4 (halaman binder) dan tiap panel ruko K5a.2–K5a.5 (di 9:16 tiap panel), meskipun scroll sudah lewat;
+  - kamera dilepas 1,5 s setelah copy terlihat penuh (K3/K4 menunggu fade copy = 1, jadi di K4 menunggu sampul selesai terbuka), atau paling lama 8 s;
+  - scroll yang terkumpul selama ditahan dijalankan sesudahnya dengan pegas kamera biasa;
+  - scroll mundur tidak ditahan, dan titik henti aktif lagi kalau kamera kembali 0,3 layar sebelumnya;
+  - lompatan scroll (menu, End) tetap memotong;
+  - di jalan, tokoh mengikuti posisi scroll, bukan kamera yang ditahan;
+  - ini juga mengubah K3/K4 tahap 5 (sudah disetujui sebelumnya); di luar dwell perilakunya sama.
+- `takes/home/outside.ts` `panelArrivals`: titik tiba kamera di tiap panel (pc dan 9:16).
+- **Dicek:** scroll terus 1 layar per 0,6 s dari K2.2. Kamera tertahan di K4 3,6 s (menunggu sampul terbuka + 1,5 s), lalu di K5a.2 dan K5a.3 masing-masing ±2,4 s. `typecheck`, `eslint` lulus.
+
+### 2026-11-07 (tahap 6, langkah 4: copy dan halaman)
+
+- User menyetujui gerak dan dwell ("Ya, lanjut langkah 4").
+- **`components/home/props/Journey.tsx`** (server): copy customer journey di panel ruko. Teksnya HTML asli yang dirender di server, jadi H2 "Cara kerja" (`#h-cara-kerja`) dan keempat langkah ada di HTML prerender ID dan EN.
+  - ruko buah: kicker + H2;
+  - laundry, sepatu, warteg, kosmetik: langkah 1–4 (nomor bulat berwarna brand, H3, isi);
+  - elektronik: tombol "Konsultasi gratis" (WhatsApp, `section="journey"`) dengan panah ke arah pintu Kreatekno;
+  - warnet dan warung kosong.
+- **World** (`world/index.ts`): anchor `journey-*` di wajah panel, 8 cm ke dalam dari tepi.
+  - Kotak copy berukuran sama dengan ukurannya di layar saat kamera berhenti di panel itu, jadi teks digambar 1:1 di sana. Ukuran pc sekitar 390 × 147 px, 9:16 sekitar 285 × 110 px.
+  - Copy tampil selama panelnya di layar dan kamera sudah di jalan, atau tersembunyi (`visibility: hidden`, tidak bisa di-tab) di luar itu. Panel ruko 2–7 menunggu chunk deret ruko.
+- **CSS** (`stage.css`): tata letak dalam unit kontainer dengan batas bawah untuk HP (judul langkah ≥ 16 px, isi ≥ 13 px). Di 360×640 dan 375×812 semua langkah muat, termasuk langkah 1 dan 2 yang terpanjang.
+- **Halaman:**
+  - `#cara-kerja` jadi penanda lompat di awal jeda K5a.2 (+0,06 layar), bukan di tengahnya, karena di 9:16 tengah jeda jatuh di antara dua panel. Menu "Cara kerja" mendarat di K5a.2 dengan judul tampil.
+  - Section placeholder "Cara kerja" di `page.tsx` dihapus.
+  - Teks alt still `home.stage.k4_1`, `k5a_1` … `k5a_6` ditambahkan (ID/EN).
+- **Still** (`tools/render`):
+  - pc K4.1, K5a.1–K5a.6 (25–46 KB);
+  - 9:16 juga, tapi diambil saat kamera berhenti di panel, plus `K5a.2b` dan `K5a.3b` untuk panel kedua (14–32 KB);
+  - posisi copy panel per still dicatat di `stills.json`;
+  - K0–K4 dirender ulang bersama, tanpa perubahan isi.
+- **Fallback tanpa WebGL** (`HomeTake.tsx`): still beat 5 bergantian mengikuti scroll, dan copy tiap panel ditempatkan di still-nya (homografi) sampai still berikutnya masuk. Di 16:9, still "b" sama dengan still jedanya.
+- **Versi tumpuk** (reduced motion, tanpa JS): penanda `#cara-kerja`, still K5a.2, judul, empat langkah, tombol; still beat 5 lainnya tidak tampil di versi ini.
+- **Dicek** (hanya di chat):
+  - halaman pc 1280×720 (ID, EN) dan 9:16 375×812 serta 360×640 (ID, EN) di setiap panel;
+  - fallback tanpa WebGL pc dan HP;
+  - versi tumpuk;
+  - tautan `#cara-kerja` pc dan HP;
+  - `typecheck`, `lint`, `format:check`, `build` lulus; console tanpa error.
+- **Belum:** langkah 5 (cek akhir tahap: anggaran di semua titik, FPS CPU 4×, memori setelah set dilepas, tes HP sungguhan).
+
+### 2026-11-07 (tahap 6: ruko kosong dihapus)
+
+- **Masukan user:** ruko yang kosong dihilangkan saja. Jawaban user atas pertanyaan K5a.5: digabung ke K5a.4.
+- **Perubahan:**
+  - deret ruko tinggal 6: buah, laundry, sepatu, warteg, kosmetik, elektronik, lalu Kreatekno. Warnet dan warung, yang panelnya kosong, dihapus dari `sets/rowLayout.ts` beserta barangnya di `sets/shop.ts`;
+  - pintu Kreatekno kini ±49 m dari pintu COMPANY (sebelumnya ±63 m);
+  - `K5a.5` dihapus dari `timing.ts`. K5a.4 membingkai kosmetik (langkah 4) dan elektronik (Konsultasi gratis) berdampingan, lalu kamera lanjut ke K5a.6. Take 19,9 → 18,8 layar (beat 5a–5b 6,9 layar);
+  - di HP, K5a.4 sekarang dua panel: kosmetik, lalu elektronik;
+  - still `K5a.5` dihapus; `K5a.4b` (HP, panel elektronik) ditambahkan; teks alt `k5a_4` diperbarui dan `k5a_5` dihapus;
+  - AO deret ruko di-bake ulang (27 peta);
+  - still dirender ulang.
+- Plan tahap 6, perlu disesuaikan dengan keputusan ini:
+  - tabel gerak, baris K5a.4 → K5a.5 dan K5a.5 → K5a.6 dari video, sekarang menjadi satu gerak K5a.4 → K5a.6;
+  - catatan untuk tim: urutan keyframe sekarang K5a.1–K5a.4, K5a.6.
+
+### 2026-11-07 (tahap 6, langkah 5: cek akhir)
+
+- **Anggaran** (pass utama, setiap 0,1 layar sepanjang take, shot):
+  - pc 1280×720: titik terberat tetap K1 (119 draw call / 146,7 rb segitiga, sama seperti sebelum tahap 6); beat 5 paling banyak 89 / 126 rb;
+  - HP 375×812: K1 118 / 143,9 rb; beat 5 paling banyak 85 / 126 rb;
+  - chunk world 13,2 KB gzip, chunk deret ruko 2,7 KB.
+- **Memori:**
+  - melepas ruangan (jeda K5a.2) membebaskan 61 geometri dan 5 tekstur (peta AO);
+  - tiga siklus lepas–bangun ulang memberi angka yang sama (199 → 138 → 199 geometri, 62 → 57 → 62 tekstur), jadi tidak ada kebocoran.
+- **Copy:** di setiap perhentian pc dan HP, transform copy panel berskala 1,000 tanpa perspektif (teks 1:1). Tombol CTA bisa difokus saat panelnya di layar dan tersembunyi (tidak bisa di-tab) saat di luar layar.
+- **Diperbaiki saat profil:**
+  - lampu gantung ruangan kini tinggal di world, tidak di dalam ruangan. Sebelumnya, melepas atau membangun ulang ruangan mengubah jumlah lampu dan membuat semua shader dikompilasi ulang (tersendat di K5a.2 dan saat kembali);
+  - ruangan, properti dan staf yang tersembunyi tidak lagi diperbarui matriksnya;
+  - panel, pintu lipat dan barang di dalam toko tidak lagi menggambar bayangan.
+- **FPS** (build produksi, scroll rata 1 layar per 1,5 s, Playwright memakai GPU Intel; tangga kualitas menurunkan dpr ke 1). Angka ini lebih tinggi dari tahap 5 karena keadaan mesin dan harness berbeda, jadi yang dipakai adalah perbandingan di sesi yang sama:
+
+  | | beat 1–4 (K1 → K4) | beat 5 (K4 → K5a.6) |
+  |---|---|---|
+  | pc, CPU 1× (median / p95) | 22,1 / 33,4 ms | 22,0 / 27,9 ms |
+  | pc, CPU 4× (median / p95) | 38,9 / 66,7 ms | 38,9 / 72,3 ms |
+  | HP 375×812, CPU 4× (median / p95) | 27,7 / 44,5 ms | 22,2 / 44,4 ms |
+
+  Beat 5 tidak lebih berat dari beat 1–4. Satu kali halaman crash saat dimuat di tengah rangkaian run berturut-turut, dan tidak terulang di run berikutnya.
+- **Render** (hanya di chat):
+  - K0–K4 pc dan HP sama dengan still (rata-rata selisih 1,4–2,0; piksel berbeda > 40 paling banyak 0,05%);
+  - jeda K4.1–K5a.6 pc berdampingan dengan frame akhir video;
+  - HP 375×812 di setiap perhentian.
+- `typecheck`, `lint`, `format:check`, `build` lulus; console tanpa error.
+- **Belum:** tes di HP Android sungguhan (tertunda sejak tahap 2, hanya bisa dilakukan user).
+
+### 2026-11-07 (tahap 6 disetujui, push ke GitHub untuk Vercel)
+
+- User: "tahap 6 disetujui. push ke github main pekerjaan homepage. saya mau deploy ke vercel".
+- Satu commit di `main` berisi pekerjaan Home sejak commit `ebdc5af`: revisi tahap 4, tahap 5 (beat 3–4), tahap 6 (beat 5a–5b), still, peta AO, tool render, `PLAN.md` dan `refs/README.md`.
+- Tidak ikut commit: pekerjaan Solusi yang masih berjalan (`PLAN-SOLUSI.md`, `docs/SOLUSI-*`, `docs/plans/`, `site/content/`, `site/lib/solusi/`, `tools/solusi/`, `prototype/solusi-etalase-v1.html`) dan screenshot debug `tools/hash_*.png`. Kode Home tidak mengimpor file Solusi.
+- Dicek: tidak ada keyframe tim atau isi `refs/` (selain README) di commit; build bersih dari isi commit (salinan terpisah, `npm ci` lalu `build`) lulus.
+- Belum: tes di HP Android sungguhan; deploy Vercel dilakukan user (Root Directory `site`).

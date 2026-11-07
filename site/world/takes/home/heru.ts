@@ -63,9 +63,9 @@ const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
 const phase = (k: number, [a, b]: readonly [number, number]) => clamp01((k - a) / (b - a));
 
 /** Seconds of walking for the path (up to speed, on at speed, slowing to a stop). */
-const walkTime = (w: Walk) => w.length / SPEED + ACCEL;
+export const walkTime = (w: Walk) => w.length / SPEED + ACCEL;
 /** Metres walked after s seconds of walking: speed ramps up and down smoothly over ACCEL. */
-function walked(w: Walk, s: number) {
+export function walked(w: Walk, s: number) {
   const dur = walkTime(w);
   s = Math.min(dur, Math.max(0, s));
   // the speed eases in (smoothstep) over ACCEL, holds and eases out the same way; R integrates the ramp
@@ -75,6 +75,9 @@ function walked(w: Walk, s: number) {
   };
   return SPEED * (s <= dur - ACCEL ? R(s) + Math.max(0, s - ACCEL) : dur - ACCEL - R(dur - s));
 }
+
+/** Where he stands at the end of his walk in (K2, facing into the shop) for a format blend. */
+export const heruK2Spot = (t: number) => walkFor(t).curve.getPointAt(1);
 
 /** Length of his part on his clock (seconds) for a format blend. */
 export const heruEnd = (t: number) => T.walk + walkTime(walkFor(t));
