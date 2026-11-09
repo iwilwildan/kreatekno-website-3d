@@ -1,17 +1,17 @@
 // Beats 5a–5b (tahap 6, the team's videos K4 → K5a.6): the camera rises off the binder turning half round and
 // tilts up over Heru's shoulder to Bu Dewi nodding (K4.1), dollies straight back down the middle of the room and out
 // through the door to the facade (K4.2, passed slowly), dollies out and up as Heru and Bu Dewi come out (K5a.1),
-// then trucks right along the row of shophouses facing the facades square on: K5a.2–K5a.4 frame two panels each and
-// the camera stands still on them (revision 7 Nov: no drift), K5a.6 settles at Kreatekno's door. On 9:16 each hold
-// is split in two (left panel, a short move, right panel) and blank panels are skipped. Heru and Bu Dewi walk on
-// their own clock meanwhile (./outsideCast).
+// then trucks right along the row of shophouses facing the facades square on, keeping Heru and Bu Dewi in the
+// middle of the frame as they walk (issue #2: it used to stand still on K5a.2–K5a.4, two panels each), and settles
+// on K5a.6 at Kreatekno's door. Their walk on the street is bound to the scroll (./outsideCast), and the camera
+// follows their clock, so they stay in the middle however the visitor scrolls.
 // The street cameras were measured on the videos' last frames (vanishing point of the paving joints, scale of the
 // door and the shops, depth from the kerb), with the site's set held as built.
 import * as THREE from "three";
 import { lerp } from "../../core/kit";
 import { clamp01, ease, segmentStart, smoothstep } from "../../core/segments";
 import type { CamPose } from "../../core/take";
-import { KREATEKNO, ROW, shopX } from "../../sets/rowLayout";
+import { KREATEKNO } from "../../sets/rowLayout";
 import { counterLayout, k4View, monotone } from "./counter";
 import { counterSpots } from "./counterCast";
 import { SEG, type KeyName } from "./timing";
@@ -50,25 +50,8 @@ const OUT = {
   truck: { pc: { y: 3.63, z: 12.7, fov: 40.3 } as Lens, hp: { y: 4.0, z: 11.0, fov: 53 } as Lens },
 };
 
-/** pc truck: frame centre at each keyframe (the boundaries between two shops; K5a.6 at Kreatekno). */
-const pcKeys = [shopX(0).x1 + ROW.gap / 2, shopX(2).x1 + ROW.gap / 2, shopX(4).x1 + ROW.gap / 2];
-const PC_K56 = KREATEKNO.x0 + 0.42 * KREATEKNO.w;
-type Knot = { s: number; x: number; v: number };
-/** Cubic Hermite through knots of (screens, x, speed in m per screen). */
-function hermite(knots: Knot[], s: number) {
-  if (s <= knots[0].s) return knots[0].x;
-  for (let i = 0; i < knots.length - 1; i++) {
-    const a = knots[i],
-      b = knots[i + 1];
-    if (s > b.s) continue;
-    const h = b.s - a.s,
-      u = (s - a.s) / h,
-      u2 = u * u,
-      u3 = u2 * u;
-    return (2 * u3 - 3 * u2 + 1) * a.x + (u3 - 2 * u2 + u) * h * a.v + (-2 * u3 + 3 * u2) * b.x + (u3 - u2) * h * b.v;
-  }
-  return knots[knots.length - 1].x;
-}
+/** Frame centre at K5a.6 (pc 0.42 of Kreatekno's width, as the video; 9:16 just left of its door). */
+const k56X = (t: number) => lerp(KREATEKNO.x0 + 0.42 * KREATEKNO.w, KREATEKNO.door.cx - 0.4, t);
 
 /** Screens of each hold of the truck (start, length), from the K5a.1 hold on. */
 const holds = (["K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6"] as const).map((k) => {
@@ -76,50 +59,27 @@ const holds = (["K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6"] as const).map((k) =
   return { s: segmentStart(SEG, i), len: SEG[i].screens };
 });
 
-function pcKnots(): Knot[] {
-  const k: Knot[] = [];
-  const [h1, ...mid] = holds,
-    last = mid.pop()!;
-  k.push({ s: h1.s, x: OUT.K51.pc.x, v: 0 }, { s: h1.s + h1.len, x: OUT.K51.pc.x, v: 0 });
-  mid.forEach((h, i) => k.push({ s: h.s, x: pcKeys[i], v: 0 }, { s: h.s + h.len, x: pcKeys[i], v: 0 }));
-  k.push({ s: last.s, x: PC_K56, v: 0 }, { s: last.s + last.len, x: PC_K56, v: 0 });
-  return k;
-}
-
-/** hp: which panels each hold shows (blank ones skipped), as shop indices; K5a.6 at Kreatekno's door. */
+/** hp: which panels each hold shows, as shop indices (for the copy's on-screen size, panelArrivals). */
 const HP_PANELS = [
   [0, 1],
   [2, 3],
   [4, 5],
 ];
-/** On 9:16 the short move from the left panel to the right one inside a pc hold (screens). */
+/** On 9:16 the share of a hold between its first panel and its second (screens). */
 const HP_SHIFT = 0.16;
-function hpKnots(): Knot[] {
-  const k: Knot[] = [];
-  const [h1, ...mid] = holds,
-    last = mid.pop()!;
-  k.push({ s: h1.s, x: OUT.K51.hp.x, v: 0 }, { s: h1.s + h1.len, x: OUT.K51.hp.x, v: 0 });
-  mid.forEach((h, i) => {
-    const panels = HP_PANELS[i].map((j) => shopX(j).cx);
-    if (panels.length === 1) k.push({ s: h.s, x: panels[0], v: 0 }, { s: h.s + h.len, x: panels[0], v: 0 });
-    else {
-      const part = (h.len - HP_SHIFT) / 2;
-      k.push(
-        { s: h.s, x: panels[0], v: 0 },
-        { s: h.s + part, x: panels[0], v: 0 },
-        { s: h.s + part + HP_SHIFT, x: panels[1], v: 0 },
-        { s: h.s + h.len, x: panels[1], v: 0 },
-      );
-    }
-  });
-  const door = KREATEKNO.door.cx - 0.4;
-  k.push({ s: last.s, x: door, v: 0 }, { s: last.s + last.len, x: door, v: 0 });
-  return k;
-}
-const KNOTS = { pc: pcKnots(), hp: hpKnots() };
 
-/** Camera x along the street for screens s (from the K5a.1 hold on), pc and hp. */
-export const truckX = (s: number, t: number) => lerp(hermite(KNOTS.pc, s), hermite(KNOTS.hp, s), t);
+/** Smooth minimum of a and b over a blend of r (metres): no kink where the camera starts or stops following. */
+function smin(a: number, b: number, r: number) {
+  const h = clamp01(0.5 + (0.5 * (b - a)) / r);
+  return lerp(b, a, h) - r * h * (1 - h);
+}
+
+/**
+ * Camera x on the street for the pair's x (their middle, from ./outsideCast pairX): it stays on K5a.1 until they
+ * walk into the middle of its frame, follows them, and stops on K5a.6's framing at Kreatekno.
+ */
+export const truckX = (pair: number, t: number) =>
+  -smin(-smin(pair, k56X(t), 1.2), -lerp(OUT.K51.pc.x, OUT.K51.hp.x, t), 1.2);
 
 /**
  * Field of view for a frontal street camera: the keyframe's vertical fov at its own aspect (16:9 … 9:16 by t),
@@ -242,23 +202,26 @@ function backCam(step: number, t: number, aspect: number) {
   return fn;
 }
 
-/** The truck from the K5a.1 hold on (screens s since its start). */
-function truckCam(s: number, t: number, aspect: number): CamPose {
+/** The truck from the K5a.1 hold on (screens s since its start), following the pair at x `pair`. */
+function truckCam(s: number, t: number, aspect: number, pair: number): CamPose {
   const a = blendLens(OUT.K51.pc, OUT.K51.hp, t),
     b = blendLens(OUT.truck.pc, OUT.truck.hp, t),
     k = ease(clamp01((s - holds[0].len) / SEG[idx("K5a.1", "move")].screens));
   return {
-    pos: new THREE.Vector3(truckX(holds[0].s + s, t), lerp(a.y, b.y, k), lerp(a.z, b.z, k)),
+    pos: new THREE.Vector3(lerp(a.x, truckX(pair, t), k), lerp(a.y, b.y, k), lerp(a.z, b.z, k)),
     quat: rig(0, 0),
     fov: fitFov(lerp(a.fov, b.fov, k), t, aspect),
   };
 }
 
-/** Camera of beat 5 for screens x into the take (≥ B5.rise), layout step, format blend t, screen aspect. */
-export function beat5Camera(x: number, step: number, t: number, aspect: number): CamPose {
+/**
+ * Camera of beat 5 for screens x into the take (≥ B5.rise), layout step, format blend t, screen aspect, and the x of
+ * Heru and Bu Dewi out on the street (their middle, which the truck follows).
+ */
+export function beat5Camera(x: number, step: number, t: number, aspect: number, pair: number): CamPose {
   if (x < B5.back) return riseCam(step, t, aspect)(Math.min(RISE, x - B5.rise));
   if (x < B5.truck) return backCam(step, t, aspect)(x - B5.back);
-  return truckCam(x - B5.truck, t, aspect);
+  return truckCam(x - B5.truck, t, aspect, pair);
 }
 
 /**
@@ -268,9 +231,9 @@ export function beat5Camera(x: number, step: number, t: number, aspect: number):
 export const b5Relax = (x: number) => smoothstep(B5.rise + 0.45 * RISE, B5.rise + 0.85 * RISE, x);
 
 /**
- * Where the camera arrives on each panel of the row (screens; the start of its hold), for the dwell on copy
- * (world/index.ts): pc one per hold K5a.2–K5a.4, 9:16 one per panel (two in a hold: left, then right after the
- * short shift; blank panels skipped).
+ * Scroll points on the row near each panel (screens): pc one per hold K5a.2–K5a.4, 9:16 one per panel (two in a
+ * hold). The world measures the copy's on-screen size from the cameras there (the truck faces the panels square on,
+ * so the size is the same wherever it passes them).
  */
 export function panelArrivals(hp: boolean) {
   return holds.slice(1, -1).flatMap((h, i) => {

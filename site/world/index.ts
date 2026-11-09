@@ -666,9 +666,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
 
   // ---------- dwell on copy ----------
   // Scrolling on (not back), the camera stops where copy comes into view and stays DWELL_S after the copy is fully
-  // shown, however far the scroll has gone meanwhile (user, 7 Nov): the leaflet (K3), the binder's page (K4, once
-  // its cover has opened) and each panel of the row (K5a.2–K5a.4; on 9:16 each panel). The scroll gathered meanwhile
-  // plays out afterwards. Heru and Bu Dewi out on the street follow the scroll itself, not the held camera.
+  // shown, however far the scroll has gone meanwhile (user, 7 Nov): the leaflet (K3) and the binder's page (K4, once
+  // its cover has opened). The scroll gathered meanwhile plays out afterwards. The panels of the row no longer stop
+  // it (issue #2): there the camera follows Heru and Bu Dewi, who walk as the scroll goes.
   const DWELL_S = 1.5,
     DWELL_MAX_S = 8;
   let dwellSince = 0,
@@ -677,7 +677,6 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const dwellPoints = () => [
     { at: keyHoldStart("K3"), shown: () => props.fade.leaflet >= 0.99 },
     { at: keyHoldStart("K4"), shown: () => props.fade.page >= 0.99 },
-    ...panelArrivals(fmtT >= 0.5).map((at) => ({ at, shown: () => true })),
   ];
   const dwellGoal = (ts: number) => {
     const tx = target * TAKE_SCREENS,
@@ -749,8 +748,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     const outWas = outClk.x;
     if (opts.key || opts.shot) outClk.x = scrollClock(xs);
-    // out on the street they follow the scroll itself, also while the camera dwells on a panel
-    else stepOutClock(outClk, xs >= B5.truck ? Math.max(xs, target * TAKE_SCREENS) : xs, dt, seenAt);
+    // out on the street they follow the scroll as the camera shows it (along the row the camera follows them)
+    else stepOutClock(outClk, xs, dt, seenAt);
     if (outClk.x !== outWas) needsRender = true;
     const nodTo = xs >= NOD_AT ? 1 : 0;
     if (opts.key || opts.shot) nodT = nodTo === 1 ? 0.5 : 0;
@@ -846,7 +845,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
 
     // the camera follows where the scroll puts Heru (his own clock may lag a little behind it)
-    const c = cameraAt(shown, fmtT, heruAt(shown, fmtT), whip, width / height);
+    const c = cameraAt(shown, fmtT, heruAt(shown, fmtT), whip, width / height, outClk.x);
     // the close-up light of the top views comes in as the camera tilts down past 35° (full from 75°), and the
     // pendant lamps' warm light goes with it
     const close = THREE.MathUtils.smoothstep(-new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x, 0.6, 1.3);

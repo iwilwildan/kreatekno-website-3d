@@ -6,6 +6,7 @@
 // The clock is seconds of that walk and follows the scroll both ways (revision 7 Nov, after a first take on a free
 // clock): the scroll sets where it should be, they walk there at their pace (at most 1.5× to catch up) and stop when
 // they get there; scrolling up walks them back. Far behind or ahead and out of view, they are moved (stepOutClock).
+// Along the row (issue #2) the clock is bound to the scroll itself, and the camera follows them (pairX).
 // Everything is a pure function of the clock (stills and review shots set it from the scroll, scrollClock), and
 // every walk is laid out by distance (cast/walk.ts), so the feet never slide, forward or back.
 import * as THREE from "three";
@@ -16,7 +17,7 @@ import { KREATEKNO } from "../../sets/rowLayout";
 import { DATA } from "./data";
 import { followClock } from "./heru";
 import { K42_PASS, TRUCK_HOLDS } from "./outside";
-import type { Damped } from "../../motion/damp";
+import { dampStep, type Damped } from "../../motion/damp";
 
 /** Natural walking pace (m/s), how much faster they may go to catch up with the scroll, and Heru's quickened pace. */
 export const OUT_SPEED = 1.3,
@@ -154,6 +155,16 @@ export function stepOutClock(c: Damped, x: number, dt: number, seen: (clock: num
   }
   const target = scrollClock(x),
     gap = target - c.x;
+  // along the row (issue #2) they walk as the scroll goes, at its pace, and the camera keeps them in the middle; a
+  // stiff spring only takes up what the paced walk out of the door left behind, without a jump
+  if (x >= STREET) {
+    dampStep(c, target, BOUND, dt);
+    if (Math.abs(c.x - target) < 1e-4 && Math.abs(c.v) < 1e-3) {
+      c.x = target;
+      c.v = 0;
+    }
+    return c;
+  }
   if (Math.abs(gap) > SNAP_GAP && !seen(c.x)) {
     for (const lead of [1.5, 3, 5, 8, 12]) {
       const k = Math.max(0, target - Math.sign(gap) * lead);
@@ -170,6 +181,41 @@ export function stepOutClock(c: Damped, x: number, dt: number, seen: (clock: num
 }
 /** Seconds of walk between them and the scroll's point beyond which they may be moved while out of view. */
 const SNAP_GAP = 3;
+/** Screens from which their clock is bound to the scroll (the end of the K5a.1 hold: the walk along the row). */
+const STREET = TRUCK_HOLDS[0].s + TRUCK_HOLDS[0].len;
+/** Stiffness of that binding (1/s). */
+const BOUND = 12;
+
+let pairTable: Float32Array | null = null;
+const PAIR_HZ = 30;
+/**
+ * The x the camera keeps in the middle on the street at clock c: halfway between Heru and Bu Dewi, smoothed over
+ * ±0.6 s of their walk (their steps, her wait at the door, his hurry) and never going back while they walk on.
+ */
+export function pairX(c: number) {
+  if (!pairTable) {
+    const n = Math.ceil(OUT_END * PAIR_HZ) + 1,
+      raw = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const st = outsideState(Math.max(1e-3, i / PAIR_HZ))!;
+      raw[i] = (st.heru.body.x + st.dewi.body.x) / 2;
+    }
+    const w = Math.round(0.6 * PAIR_HZ);
+    pairTable = new Float32Array(n);
+    let top = -Infinity;
+    for (let i = 0; i < n; i++) {
+      let sum = 0,
+        k = 0;
+      for (let j = Math.max(0, i - w); j <= Math.min(n - 1, i + w); j++, k++) sum += raw[j];
+      top = Math.max(top, sum / k);
+      pairTable[i] = top;
+    }
+  }
+  const k = Math.min(Math.max(0, c), OUT_END) * PAIR_HZ,
+    i = Math.min(Math.floor(k), pairTable.length - 2),
+    f = Math.min(1, k - i);
+  return pairTable[i] * (1 - f) + pairTable[i + 1] * f;
+}
 
 export type OutsideState = {
   heru: Stride;

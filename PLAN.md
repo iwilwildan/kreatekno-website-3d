@@ -1391,3 +1391,36 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - still K2, K2.1, K2.2 pc dan HP di `site/public/stills/` dirender ulang (hanya tiga key ini, still lain tidak disentuh).
 - Dicek: render K2, K2.1, K2.2, K3, K4, K5a.1 pc dan HP, dan 10 frame K4 → K5a.1 (dikirim di chat); draw call pass utama pc K2 100 → 108, K2.1 71 → 82, K2.2 73 → 81; HP K2 98 → 106; segitiga maks 159,4 rb (awan 131,7 rb). Typecheck, ESLint, Prettier untuk file yang diubah lulus; `build` lulus; console hanya 404 skrip analytics Vercel lokal.
 - Belum: animasi isi gelembung (chat bertambah, tumpukan goyah); tes FPS di HP Android sungguhan; konfirmasi user, commit dan penutupan issue.
+
+### 2026-11-09 (issue GitHub #2: kamera mengikuti tokoh di jalan ruko)
+
+- Issue #2 (CR, dibuat user 8 Nov): kamera berhenti di setiap ruko untuk copy. Diminta: kamera mengikuti tokoh, tokoh selalu di tengah, dan tokoh berjalan karena scroll.
+- Reproduksi (Playwright `?hud`, scroll rata 2 s per layar K5a.1 → K5a.6, posisi tengah pasangan di layar dalam NDC): pc 1280×720 kamera diam di x 11,8 / 25,9 / 40,0 / 52,3 dan tengah tokoh di −0,4 sampai −1,4 (113 dari 127 sampel lebih dari 0,25 dari tengah); HP 375×812 kamera tertahan dwell sementara tokoh sudah sampai +10 NDC, kamera menyusul ±6 s setelah scroll berhenti.
+- Jawaban user: tokoh terikat langsung ke scroll (panjang take tetap, jadi ±12 m per layar), lensa truck tetap (frontal seperti video, panel utuh, copy 1:1), pusat frame di tengah pasangan.
+- Diubah:
+  - `takes/home/outsideCast.ts`: mulai akhir jeda K5a.1, jam keluar mengikuti `scrollClock` dengan pegas kaku (12/s) tanpa batas laju. Pegas hanya menutup sisa jeda dari jalan keluar pintu yang masih dibatasi laju. `pairX(c)`: tengah Heru dan Bu Dewi per jam, dihaluskan ±0,6 s dan tidak pernah mundur selama mereka maju.
+  - `takes/home/outside.ts`: kurva Hermite dengan jeda diam di K5a.2–K5a.4 dihapus. `truckX` mengikuti `pairX` (smooth max dengan x K5a.1, smooth min dengan framing K5a.6), jadi kamera diam di K5a.1 sampai tokoh masuk ke tengah, mengikuti mereka, lalu berhenti di framing K5a.6.
+  - `takes/home/index.ts` `cameraAt`: parameter jam keluar (default dari scroll, untuk still dan shot).
+  - `world/index.ts`: dwell di panel ruko dihapus (dwell K3 dan K4 tetap); jam tokoh mengikuti scroll yang tampil, kamera memakai jam tokoh.
+- Dicek:
+  - ukur ulang: tengah pasangan 0,000 NDC di sepanjang jalan pada 1280×720, 1920×1080 (build produksi), 768×1024, 375×812 dan 360×640 (build produksi); hanya bergeser di K5a.1 (keyframe, −0,47) dan framing akhir K5a.6 (+0,15–0,18);
+  - scroll maju 0,5 layar lalu berhenti: tokoh berhenti ±0,6 s kemudian (inersia kamera); scroll mundur: kembali ke titik semula, tetap di tengah (pc, HP, tablet);
+  - tautan `#cara-kerja` mendarat dengan judul "Cara kerja" di tengah di pc, HP dan tablet;
+  - frame pc dan HP sepanjang jalan dicek visual (hanya di scratchpad dan chat);
+  - typecheck, ESLint, Prettier untuk file yang diubah lulus; `build` lulus; console hanya 404 skrip analytics Vercel lokal.
+- Belum: still fallback tanpa WebGL beat 5 masih framing per panel (jadi crossfade still → live saat halaman dimuat di tengah jalan ruko berpindah framing); tes di HP Android sungguhan; konfirmasi user, commit dan penutupan issue.
+
+### 2026-11-09 (issue GitHub #3: awan hujan diganti gelembung pikiran)
+
+- Issue #3 (CR): awan hujan di atas kepala staf dihilangkan. Penggantinya harus tetap terbaca sekilas di shot lebar K2 (alasan awan dipasang 2 Nov).
+- Riset singkat: uap dari kepala umumnya dibaca sebagai marah, jadi tidak dipilih. Opacity per instance tidak ada di InstancedMesh bawaan, jadi semua prototipe opak gaya vinyl.
+- Prototipe yang dirender dan direview di chat (K2 lebar PC, sebagian K2.2): uap, pusaran kertas, baterai, jam pasir, gelembung pikiran, benang kusut. Pelajaran: yang terbaca di shot lebar adalah siluet gelap atau warna kuat di depan dinding pucat. Alternatif dan penjelasannya dikomentari di issue #3 (gambar ditambahkan user).
+- Pilihan user: gelembung pikiran dengan isi berbeda per staf, mengikuti pose K2 dan empat kartu layanan di `COPY.md`: Sinta balon chat hijau bertumpuk dengan titik merah (Agen AI WhatsApp), Bayu tumpukan slip dan struk panjang (Otomasi admin), Nadia bohlam padam di antara kertas diremas (Otomasi konten), Fajar map SOP dan tanda tanya (Asisten pengetahuan). Tanpa teks dan logo platform.
+- Diubah:
+  - `cast/acts.ts`: `createGloom` dan konstanta `RAIN` dihapus; `createThought` baru. Gelembung: bola pipih bertepi gelap (bola sendiri sedikit lebih besar, back face) dengan dua bola kecil ke kepala, di sisi kepala yang berlawanan dengan tetes keringat; tepi dan gelembung instanced per sisi, isi per staf satu mesh (vertex colour), tanpa bayangan. Gelembung bernapas pelan, isinya bergoyang. Gelembung Nadia 6 cm lebih tinggi supaya bola kecilnya tidak menempel di pita sanggul;
+  - `cast/roster.ts`: ekspor `createThought` menggantikan `createGloom`;
+  - `world/index.ts`: `gloom` jadi `thoughts`, `cloudGeo` tidak diimpor lagi (tetap dipakai langit di `sets/sky.ts`). Gelembung tetap disembunyikan dekat kamera saat beat 5 mundur di atas meja dan saat ruangan tidak digambar;
+  - still K2, K2.1, K2.2 pc dan HP di `site/public/stills/` dirender ulang (hanya tiga key ini, still lain tidak disentuh).
+- Dicek: render K2, K2.1, K2.2, K3, K4, K5a.1 pc dan HP, dan 10 frame K4 → K5a.1 (dikirim di chat); draw call pass utama pc K2 100 → 108, K2.1 71 → 82, K2.2 73 → 81; HP K2 98 → 106; segitiga maks 159,4 rb (awan 131,7 rb). Typecheck, ESLint, Prettier untuk file yang diubah lulus; `build` lulus; console hanya 404 skrip analytics Vercel lokal.
+- Belum: animasi isi gelembung (chat bertambah, tumpukan goyah); tes FPS di HP Android sungguhan.
+- Setelah konfirmasi user: di-commit ke `main` sebagai `d443b2d` (hanya bagian issue #3 dari `world/index.ts`, `cast/roster.ts` dan `PLAN.md`; pekerjaan issue #2 dan Solusi tidak ikut) lalu di-push. Issue #3 ditutup (completed), dicek lewat API GitHub.

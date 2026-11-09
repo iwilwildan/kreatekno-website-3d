@@ -11,6 +11,7 @@ import { blendCam, type CamPose } from "../../core/take";
 import { beat34Camera, k3View, k4View } from "./counter";
 import { DATA, type SolvedKey } from "./data";
 import { B5, beat5Camera } from "./outside";
+import { pairX, scrollClock } from "./outsideCast";
 import { LAYOUT_STEPS } from "../../sets/companyFront";
 import { SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
 
@@ -80,7 +81,8 @@ const SEG_K22 = SEG.find((s) => s.from === "K2.2" && s.type === "move")!.screens
 /**
  * Camera for p; `heru` bends the K1 → K2 path so the camera follows him through the door and lifts the dolly
  * over his head; `whip` is the eased whip pan (0 = still at K2.1, 1 = at K2.2); `aspect` (width / height of the
- * screen) keeps the paper whole in the top views of beats 3–4.
+ * screen) keeps the paper whole in the top views of beats 3–4; `outClock` is Heru's and Bu Dewi's clock out on the
+ * street (default: where the scroll puts it), whose pair the truck follows along the row.
  */
 export function cameraAt(
   p: number,
@@ -88,12 +90,14 @@ export function cameraAt(
   heru: { x: number; z: number },
   whip: number,
   aspect = 16 / 9,
+  outClock?: number,
 ): CamPose & { key: KeyName } {
   const { seg, u, start } = segmentAt(SEG, p);
   const x = start + u * seg.screens;
   if (x > B5.rise) {
     const key = seg.type === "hold" || u < 0.5 ? seg.from : seg.to!;
-    return { ...beat5Camera(x, Math.round(t * LAYOUT_STEPS), t, aspect), key };
+    const pair = x >= B5.truck ? pairX(outClock ?? scrollClock(x)) : 0;
+    return { ...beat5Camera(x, Math.round(t * LAYOUT_STEPS), t, aspect, pair), key };
   }
   if (seg.from === "K3" || seg.from === "K4") {
     if (seg.type === "hold") return { ...(seg.from === "K3" ? k3View : k4View)(t, aspect), key: seg.from };
