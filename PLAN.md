@@ -1362,3 +1362,12 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Tidak ikut commit: pekerjaan Solusi yang masih berjalan (`PLAN-SOLUSI.md`, `docs/SOLUSI-*`, `docs/plans/`, `site/content/`, `site/lib/solusi/`, `tools/solusi/`, `prototype/solusi-etalase-v1.html`) dan screenshot debug `tools/hash_*.png`. Kode Home tidak mengimpor file Solusi.
 - Dicek: tidak ada keyframe tim atau isi `refs/` (selain README) di commit; build bersih dari isi commit (salinan terpisah, `npm ci` lalu `build`) lulus.
 - Belum: tes di HP Android sungguhan; deploy Vercel dilakukan user (Root Directory `site`).
+
+### 2026-11-09 (perbaikan issue GitHub #1: Heru bolak-balik di HP)
+
+- Issue #1 (dibuat user 8 Nov): di HP, saat Heru berjalan ke meja Bu Dewi (K2.2 → K2.4), ia berbalik arah lalu kembali lagi.
+- Penyebab: jalur di `takes/home/counterCast.ts` melewati celah meja Bayu–Nadia lalu titik ancang-ancang 0,7 m di depan konter. Di layout HP ruangan lebih rapat, jadi celah meja sejajar dengan titik berdiri Heru (z −8,39), sedangkan titik ancang-ancang ada di z −7,68. Heru melewati celah, mundur 0,7 m ke titik ancang-ancang, lalu berbalik lagi. Di step 2 mundurnya ±5 cm, di step 3 ±38 cm. Step 0–1 (desktop) tidak terkena.
+- Diubah: kalau celah tidak minimal 0,25 m di depan titik ancang-ancang, kedua titik digabung menjadi satu titik (x celah, z ancang-ancang). Titik tengah jalur memakai z yang lebih dekat ke pintu. Jalur desktop tetap sama.
+- Dicek: posisi pinggul Heru disampel dengan Playwright (lompatan scroll deterministik dan scroll berjalan 3 s) di 375×812, 360×640, 700×800, 800×700 dan 960×540. Tidak ada titik balik; titik akhir di konter tidak berubah. Frame HP K2.2 → K2.4 dicek visual (hanya di scratchpad). Typecheck, ESLint, Prettier lulus.
+- Komentar penyebab dan perbaikan dipasang di issue #1. Atas permintaan user, perbaikan di-commit ke `main` (hanya `counterCast.ts` dan entri log ini; pekerjaan Solusi tidak ikut) lalu di-push.
+- Belum: tes di HP Android sungguhan; issue #1 masih open.

@@ -64,6 +64,8 @@ export function counterSpots(L: CounterLayout) {
   };
 }
 
+/** How far the desk gap must lie in front of the approach point (metres) to be passed on its own. */
+const APPROACH_MIN = 0.25;
 const walks = new Map<string, Walk>();
 /** His path to the counter for layout step `step` and format blend t (from his K2 spot, ending facing -z). */
 function walkFor(step: number, t: number) {
@@ -72,13 +74,20 @@ function walkFor(step: number, t: number) {
   if (!w) {
     const L = counterLayout(step),
       { stand } = counterSpots(L),
-      k2 = heruK2Spot(Math.round(t * 20) / 20);
+      k2 = heruK2Spot(Math.round(t * 20) / 20),
+      approach = new THREE.Vector3(stand.x, 0, stand.z + 0.7);
+    // through the gap, then squared up in front of the counter; on narrow screens the desks reach as far back
+    // as the counter (the gap is level with his spot, past the approach), so he walks straight from the gap
+    // line to his spot (issue #1: he walked past it, turned back to the approach and turned round again)
+    const via =
+      L.f.gapZ > approach.z + APPROACH_MIN
+        ? [new THREE.Vector3(L.f.gapX, 0, L.f.gapZ), approach]
+        : [new THREE.Vector3(L.f.gapX, 0, approach.z)];
     w = new Walk(
       [
         k2,
-        new THREE.Vector3(k2.x + (L.f.gapX - k2.x) * 0.6, 0, (k2.z + L.f.gapZ) / 2),
-        new THREE.Vector3(L.f.gapX, 0, L.f.gapZ),
-        new THREE.Vector3(stand.x, 0, stand.z + 0.7),
+        new THREE.Vector3(k2.x + (L.f.gapX - k2.x) * 0.6, 0, (k2.z + Math.max(L.f.gapZ, approach.z)) / 2),
+        ...via,
         stand,
       ],
       { step: 0.42, first: "L" },
