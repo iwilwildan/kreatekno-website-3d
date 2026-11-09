@@ -18,6 +18,28 @@ Rebuild kreatekno.com dengan Three.js: story Home 18 beat dan Solusi Tonton diba
 10. Tiap sesi kerja menambah entri bertanggal di log `PLAN.md` (apa yang berubah, apa yang dicek, apa yang belum).
 11. Skill desain di `.claude/skills/` boleh dipakai; launcher biner Impeccable tidak dijalankan, hanya panduan tertulisnya.
 
+## Alur menyelesaikan issue GitHub (dari user, wajib)
+
+Issue ada di GitHub `iwilwildan/kreatekno-website-3d` (bukan GitLab). "Issue #N" selalu berarti repo ini. Urutannya:
+
+1. **Cek issue.** Baca judul, isi dan komentar lewat `https://api.github.com/repos/iwilwildan/kreatekno-website-3d/issues/N` (dan `/comments`). Repo publik, jadi tidak perlu token. `gh` CLI belum terpasang.
+2. **Investigasi dan reproduksi.** Cari kode yang terkait, lalu reproduksi bug di kondisi yang dilaporkan (viewport HP, layout step, scroll). Buktinya harus terukur, misalnya posisi tokoh per frame lewat Playwright dengan `?hud` supaya `window.__world` tersedia. Jangan menebak dari kode saja.
+3. **Komentar penyebab dan rencana perbaikan di issue**, dalam bahasa Indonesia: Penyebab, Perbaikan, Dicek, Belum. Komentar ditulis lewat Claude in Chrome dengan login GitHub user.
+4. **Implementasi perbaikan.** Perubahannya sekecil mungkin dan tidak mengubah perilaku di luar bug, misalnya jalur desktop tetap sama.
+5. **Tes dan verifikasi.**
+   - Ulangi pengukuran langkah 2 di beberapa viewport (HP, tablet, desktop).
+   - Cek frame secara visual. Screenshot hanya di chat.
+   - Jalankan typecheck, ESLint dan Prettier.
+   - Untuk tes di HP user: `npm run build`, lalu `preview_start` `site-prod-3300`, dan beri link `http://<IP Wi-Fi laptop>:3300/` (bisa dengan `?k=<keyframe>`).
+6. **Konfirmasi ke user.** Laporkan hasilnya, lalu tunggu konfirmasi. Jangan commit sebelum dikonfirmasi.
+7. **Setelah dikonfirmasi: commit ke `main` dengan tag issue, lalu push.**
+   - Commit hanya file perbaikan dan entri log-nya. Pekerjaan lain yang belum di-commit tidak ikut. Untuk `PLAN.md` yang bercampur, stage versi HEAD ditambah entri log perbaikan saja.
+   - Format pesan: subjek diakhiri `(#N)`, badan pesan memuat `Refs #N`. Jangan pakai `Fixes`/`Closes`, karena issue ditutup di langkah 8.
+   - Push ke `origin main`. Push ini memicu deploy Vercel.
+8. **Tutup issue** di GitHub dengan status completed, lalu cek lewat API. API publik bisa membalas status lama sampai ±1 menit karena cache.
+
+Konfirmasi user di langkah 6 berlaku sebagai izin commit dan push (aturan 9) untuk perbaikan issue itu saja.
+
 ## Peta folder
 
 | Path | Isi |

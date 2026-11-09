@@ -1371,3 +1371,9 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Dicek: posisi pinggul Heru disampel dengan Playwright (lompatan scroll deterministik dan scroll berjalan 3 s) di 375×812, 360×640, 700×800, 800×700 dan 960×540. Tidak ada titik balik; titik akhir di konter tidak berubah. Frame HP K2.2 → K2.4 dicek visual (hanya di scratchpad). Typecheck, ESLint, Prettier lulus.
 - Komentar penyebab dan perbaikan dipasang di issue #1. Atas permintaan user, perbaikan di-commit ke `main` (hanya `counterCast.ts` dan entri log ini; pekerjaan Solusi tidak ikut) lalu di-push.
 - Belum: tes di HP Android sungguhan; issue #1 masih open.
+
+### 2026-11-09 (alur menyelesaikan issue GitHub)
+
+- Issue #1 ditutup (completed) setelah commit `04612e6` di-push; status dicek lewat API GitHub.
+- Atas permintaan user, alur resolve issue dijadikan panduan proyek di `CLAUDE.md` (bagian "Alur menyelesaikan issue GitHub"): cek issue → investigasi dan reproduksi → komentar penyebab dan perbaikan → implementasi → tes dan verifikasi → konfirmasi user → commit ke `main` dengan tag issue dan push → tutup issue.
+- Atas permintaan user, `CLAUDE.md` dan entri log ini di-commit ke `main` lalu di-push (pekerjaan Solusi tidak ikut).
