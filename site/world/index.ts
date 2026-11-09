@@ -15,7 +15,7 @@ import { createCompanyFront, layoutStep, LAYOUT_STEPS, type CompanyFront } from 
 import { createCounterProps, HANDS_PITCH } from "./sets/counterProps";
 import { buildShop, panelFace, rowMaterials } from "./sets/shop";
 import { SHOPS } from "./sets/rowLayout";
-import { buildSky, cloudGeo } from "./sets/sky";
+import { buildSky } from "./sets/sky";
 import { billboardFace, buildStreet } from "./sets/street";
 import type { KeyName } from "./takes/home/data";
 import {
@@ -172,7 +172,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let castMod: typeof import("./cast/roster") | null = null;
   let phone: ReturnType<typeof import("./cast/roster").createPhone> | null = null;
   let sweat: ReturnType<typeof import("./cast/roster").createSweat> | null = null;
-  let gloom: ReturnType<typeof import("./cast/roster").createGloom> | null = null;
+  let thoughts: ReturnType<typeof import("./cast/roster").createThought> | null = null;
   let placeCrew = () => {};
   const castReady = import("./cast/roster").then(async (mod) => {
     const { CAST, buildMemberSliced, applyPose, K2_POSES } = mod;
@@ -198,10 +198,10 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     phone = mod.createPhone();
     scene.add(phone.group);
     sweat = mod.createSweat(crew);
-    gloom = mod.createGloom(crew, cloudGeo);
+    thoughts = mod.createThought(crew);
     await pause();
     props.setHands(await mod.buildCloseHands({ saver }, pause));
-    scene.add(gloom.group);
+    scene.add(thoughts.group);
     await pause();
     castMod = mod;
     stats.cast.done = true;
@@ -216,7 +216,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         m.springs?.reset(opts.shot ? 1 : 0);
         if (m.name === "sinta") phone?.update(m, 0);
       }
-      gloom?.update(0);
+      thoughts?.update(0);
       lastHeruKey = "";
       // Bu Dewi is back in her K2 pose and face: beats 3–4 repose her
       dewiFace = "";
@@ -305,7 +305,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       if (m.name === "sinta") phone?.update(m, t);
     }
     sweat?.update(t);
-    gloom?.update(t);
+    thoughts?.update(t);
   };
 
   /**
@@ -862,8 +862,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     camera.fov = c.fov;
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
-    // beat 5 backs out over the desks: the staff's rain clouds right by the camera step aside
-    gloom?.clear(xs > B5.rise ? c.pos : null, 2.2);
+    // beat 5 backs out over the desks: the staff's thought bubbles right by the camera step aside
+    thoughts?.clear(xs > B5.rise ? c.pos : null, 2.2);
     // out on the street (beat 5) the room is not drawn (behind the facade it only costs draw calls); the open
     // door shows a backdrop of it instead. Heru and Bu Dewi show again once they come out.
     const hide = xs > B5.back + 0.1 && c.pos.z > 0.6;
@@ -872,7 +872,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       if (room) room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
       props.group.visible = props.group.matrixWorldAutoUpdate = !hide;
       street.backdrop.visible = hide;
-      if (gloom) gloom.group.visible = !hide;
+      if (thoughts) thoughts.group.visible = !hide;
       if (phone) phone.group.visible = !hide;
       shadowDue = true;
     }
@@ -1049,7 +1049,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       heru?.dispose();
       phone?.dispose();
       sweat?.dispose();
-      gloom?.dispose();
+      thoughts?.dispose();
       for (const m of crew) m.dispose();
       renderer.dispose();
       canvas.remove();

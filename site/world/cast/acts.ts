@@ -2,6 +2,8 @@
 // like the pigeons at K0, and only run while the room is on screen. Every action starts from its K2 pose at
 // time 0, so stills and review shots (?shot, time 0) show the poses of tahap 3.
 import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import type { Vec3 } from "../core/kit";
 import type { CastMember } from "./member";
 import { applyPose, type Pose } from "./poses";
@@ -284,82 +286,256 @@ export function createSweat(crew: CastMember[]) {
   return { update, dispose };
 }
 
-/** Rain clouds: drops per cloud, how long a drop falls (s) and how far (m). */
-const RAIN = { drops: 10, fall: 0.5, dist: 0.2 };
+/** Thought bubble: how high its centre sits over the crown and how far to the side (m), paper slabs in Bayu's stack. */
+const THOUGHT = { up: 0.3, side: 0.12, slabs: 22 };
+/** Extra height (m) for a head whose hair reaches up (Nadia's bun), so the trail does not touch it. */
+const THOUGHT_LIFT: Record<string, number> = { nadia: 0.06 };
 
 /**
- * Small dark rain clouds over the heads of the four staff, raining on them: the gloom of work piling up, made
- * to read at a glance in the wide K2 shot (faces and sweat drops are too small there). Low-poly like the sky's
- * clouds, flat-shaded dark grey, bobbing gently; the drops are one instanced mesh. Neither casts a shadow.
+ * A comic thought bubble over the heads of the four staff (issue #3, in place of the rain clouds), each holding what
+ * that member is stuck on, read at a glance in the wide K2 shot: Sinta's unanswered chats, Bayu's slips and a long
+ * receipt, Nadia's dark light bulb among crumpled drafts, Fajar's SOP binder and a question mark (no text or app
+ * logos). The bubble is a puffy cloud of flattened balls with two small balls trailing to the head, glossy
+ * lilac-white with a dark comic rim (its own balls a little larger, back faces only); rim and bubble are instanced
+ * per side the bubble sits on, each member's thought is one mesh (vertex colours). No shadow. It faces the way its
+ * member faces, breathes a little and its thought sways.
  */
-export function createGloom(crew: CastMember[], cloudGeo: (seed: number) => THREE.BufferGeometry) {
+export function createThought(crew: CastMember[]) {
   const group = new THREE.Group();
-  const material = new THREE.MeshStandardMaterial({
-    color: "#4d4a5c",
-    roughness: 0.95,
-    flatShading: true,
-    emissive: "#242130",
-    emissiveIntensity: 0.4,
-  });
-  const staff = crew.filter((m) => SWEAT[m.name]);
-  const clouds = staff.map((m, i) => {
-    const mesh = new THREE.Mesh(cloudGeo(41 + i), material);
-    // the sky's cloud is about 3.7 units wide: about 0.55 m over a head
-    mesh.scale.setScalar(0.15);
-    group.add(mesh);
-    return { m, mesh, at: new THREE.Vector3() };
-  });
-  const drop = new THREE.CylinderGeometry(0.0075, 0.0075, 0.06, 6),
-    dropMat = new THREE.MeshStandardMaterial({
-      color: "#8fb3e0",
+  const side = (m: CastMember) => -(SWEAT[m.name]?.side ?? 1);
+  // the bubble in its own frame (centre at 0), the trail toward the head at (-side · THOUGHT.side, -THOUGHT.up)
+  const bubble = (pad: number, dir: number) => {
+    const balls: THREE.BufferGeometry[] = [];
+    const ball = (x: number, y: number, r: number, flat = 0.42) =>
+      balls.push(new THREE.SphereGeometry(r + pad, 14, 9).scale(1, 1, flat).translate(x, y, 0));
+    ball(0, 0, 0.11);
+    for (let k = 0; k < 8; k++) {
+      const a = (k / 8) * TAU + 0.2;
+      ball(Math.cos(a) * 0.125, Math.sin(a) * 0.075, 0.062);
+    }
+    const hx = -dir * THOUGHT.side,
+      hy = -THOUGHT.up + 0.05;
+    ball(hx * 0.62, hy * 0.62, 0.032, 0.8);
+    ball(hx * 0.85, hy * 0.85, 0.02, 0.8);
+    const g = mergeGeometries(balls)!;
+    for (const b of balls) b.dispose();
+    return g;
+  };
+  const rimGeo = [bubble(0.011, 1), bubble(0.011, -1)],
+    bubGeo = [bubble(0, 1), bubble(0, -1)];
+  const paint = (g: THREE.BufferGeometry, hex: string) => {
+    const c = new THREE.Color(hex),
+      n = g.getAttribute("position").count,
+      a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) c.toArray(a, i * 3);
+    g.setAttribute("color", new THREE.BufferAttribute(a, 3));
+    return g.index ? g.toNonIndexed() : g;
+  };
+  const merge = (parts: THREE.BufferGeometry[]) => {
+    const g = mergeGeometries(parts)!;
+    for (const x of parts) x.dispose();
+    return g;
+  };
+  /** A comic question mark (a bent tube and a dot), about 0.06 m tall, its foot at the origin. */
+  const question = (hex: string) => {
+    const pts: THREE.Vector3[] = [];
+    for (let k = 0; k <= 10; k++) {
+      const a = ((150 - (230 * k) / 10) * Math.PI) / 180;
+      pts.push(new THREE.Vector3(0.019 * Math.cos(a), 0.046 + 0.019 * Math.sin(a), 0));
+    }
+    pts.push(new THREE.Vector3(0.002, 0.018, 0), new THREE.Vector3(0, 0.008, 0));
+    return [
+      paint(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.0065, 6), hex),
+      paint(new THREE.SphereGeometry(0.0085, 10, 8).translate(0, -0.008, 0), hex),
+    ];
+  };
+  const Z = 0.055;
+  /** What each member is thinking about, in the bubble's frame (front face at about z = 0.05). */
+  const CONTENT: Record<string, () => THREE.BufferGeometry> = {
+    // chats piling up, the top one over the rim, with red unread dots
+    sinta: () => {
+      const parts: THREE.BufferGeometry[] = [];
+      const chat = (x: number, y: number, rz: number, hex: string, flip: number) => {
+        parts.push(
+          paint(new RoundedBoxGeometry(0.1, 0.058, 0.018, 2, 0.02).rotateZ(rz).translate(x, y, Z), hex),
+          paint(
+            new THREE.ConeGeometry(0.014, 0.026, 3).rotateZ(flip * 0.6 + rz).translate(x - flip * 0.035, y - 0.034, Z),
+            hex,
+          ),
+        );
+        for (const d of [-1, 0, 1])
+          parts.push(
+            paint(
+              new THREE.SphereGeometry(0.0075, 8, 6).translate(x + d * 0.022, y + d * 0.022 * Math.sin(rz), Z + 0.011),
+              "#ffffff",
+            ),
+          );
+      };
+      chat(-0.035, -0.06, 0.08, "#2fa84f", 1);
+      chat(0.035, -0.005, -0.1, "#3cc163", -1);
+      chat(-0.025, 0.05, 0.06, "#2fa84f", 1);
+      chat(0.03, 0.105, -0.12, "#3cc163", -1);
+      for (const [x, y] of [
+        [0.075, 0.135],
+        [0.07, 0.025],
+        [0.02, -0.035],
+      ])
+        parts.push(paint(new THREE.SphereGeometry(0.014, 12, 8).translate(x, y, Z + 0.014), "#e23b2e"));
+      return merge(parts);
+    },
+    // slips and invoices stacked out of the top, a long receipt hanging out of the bottom
+    bayu: () => {
+      const parts: THREE.BufferGeometry[] = [];
+      let y = -0.085;
+      for (let k = 0; k < THOUGHT.slabs; k++) {
+        const folder = k % 6 === 3,
+          th = folder ? 0.015 : 0.011,
+          hex = folder ? "#e8641c" : k % 3 ? "#ffffff" : "#f3e8d2",
+          dx = 0.012 * Math.sin(k * 2.7) + 0.0022 * k - 0.02;
+        parts.push(
+          paint(
+            new THREE.BoxGeometry(0.1, th, 0.05).rotateZ(0.06 * Math.sin(k * 1.9)).translate(dx, y + th / 2, Z),
+            hex,
+          ),
+        );
+        y += th + 0.0015;
+      }
+      parts.push(
+        paint(new THREE.BoxGeometry(0.042, 0.19, 0.004).rotateZ(0.12).translate(0.085, -0.1, Z + 0.02), "#fbfaf6"),
+      );
+      for (let k = 0; k < 7; k++)
+        parts.push(
+          paint(
+            new THREE.BoxGeometry(0.026, 0.004, 0.002)
+              .rotateZ(0.12)
+              .translate(0.085 + 0.003 - k * 0.0028, -0.03 - k * 0.022, Z + 0.023),
+            "#9a97a6",
+          ),
+        );
+      return merge(parts);
+    },
+    // a light bulb gone dark among crumpled drafts
+    nadia: () => {
+      const parts: THREE.BufferGeometry[] = [
+        paint(new THREE.SphereGeometry(0.058, 16, 12).scale(1, 1.08, 0.7).translate(0, 0.03, Z), "#8a8694"),
+        paint(new THREE.CylinderGeometry(0.025, 0.03, 0.036, 12).translate(0, -0.035, Z), "#4d4956"),
+        paint(new THREE.TorusGeometry(0.029, 0.005, 6, 14).rotateX(Math.PI / 2).translate(0, -0.026, Z), "#6c6876"),
+        paint(new THREE.TorusGeometry(0.028, 0.005, 6, 14).rotateX(Math.PI / 2).translate(0, -0.04, Z), "#6c6876"),
+        paint(new THREE.SphereGeometry(0.012, 8, 6).translate(0, -0.058, Z), "#3f3c48"),
+      ];
+      for (const [x, y, r] of [
+        [-0.1, -0.05, 0.024],
+        [0.1, -0.055, 0.022],
+        [-0.095, 0.065, 0.02],
+        [0.095, 0.06, 0.023],
+        [0.06, -0.085, 0.018],
+      ]) {
+        const g = new THREE.IcosahedronGeometry(r * 1.25, 0);
+        const pos = g.getAttribute("position");
+        for (let i = 0; i < pos.count; i++)
+          pos.setXYZ(
+            i,
+            pos.getX(i) * (1 + 0.25 * Math.sin(i * 3.1 + x * 40)),
+            pos.getY(i) * (1 + 0.25 * Math.cos(i * 2.3 + y * 50)),
+            pos.getZ(i),
+          );
+        g.computeVertexNormals();
+        parts.push(paint(g.translate(x, y, Z), "#cdbfa6"));
+      }
+      return merge(parts);
+    },
+    // a thick SOP binder and a big question mark over it
+    fajar: () => {
+      const parts: THREE.BufferGeometry[] = [
+        paint(
+          new RoundedBoxGeometry(0.095, 0.12, 0.034, 2, 0.008).rotateZ(-0.12).translate(-0.04, -0.025, Z),
+          "#c2560f",
+        ),
+        paint(new THREE.BoxGeometry(0.012, 0.11, 0.03).rotateZ(-0.12).translate(-0.082, -0.02, Z + 0.003), "#7a3410"),
+        paint(new THREE.BoxGeometry(0.05, 0.03, 0.004).rotateZ(-0.12).translate(-0.035, 0.0, Z + 0.018), "#fbfaf6"),
+        paint(new THREE.BoxGeometry(0.008, 0.1, 0.028).rotateZ(-0.12).translate(0.012, -0.034, Z), "#f3eee2"),
+      ];
+      for (const g of question("#7a3fd0")) parts.push(g.scale(1.55, 1.55, 1.55).translate(0.075, 0.0, Z + 0.01));
+      return merge(parts);
+    },
+  };
+  const rimMat = new THREE.MeshBasicMaterial({ color: "#3b3350", side: THREE.BackSide }),
+    bubMat = new THREE.MeshStandardMaterial({
+      color: "#f6f2fb",
       roughness: 0.3,
-      emissive: "#3d6ea8",
-      emissiveIntensity: 0.3,
+      emissive: "#d9d2ea",
+      emissiveIntensity: 0.25,
+    }),
+    contentMat = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      roughness: 0.45,
+      emissive: "#2a2630",
+      emissiveIntensity: 0.2,
     });
-  const rain = new THREE.InstancedMesh(drop, dropMat, clouds.length * RAIN.drops);
-  rain.frustumCulled = false;
-  group.add(rain);
-  const head = new THREE.Vector3(),
-    up = new THREE.Vector3(),
+  const staff = crew.filter((m) => SWEAT[m.name]);
+  // one instanced mesh per side the bubble leans to (its trail differs); the stack is the same on both
+  const meshes = [1, -1].flatMap((dir, j) => {
+    const n = staff.filter((m) => side(m) === dir).length;
+    if (!n) return [];
+    return [new THREE.InstancedMesh(rimGeo[j], rimMat, n), new THREE.InstancedMesh(bubGeo[j], bubMat, n)].map((im) => ({
+      im,
+      dir,
+    }));
+  });
+  // each member's own thought (one mesh each)
+  const contents = staff.map((m) => {
+    const mesh = new THREE.Mesh((CONTENT[m.name] ?? CONTENT.bayu)(), contentMat);
+    mesh.frustumCulled = false;
+    return mesh;
+  });
+  for (const { im } of meshes) {
+    im.frustumCulled = false;
+    im.castShadow = false;
+    group.add(im);
+  }
+  for (const c of contents) group.add(c);
+  const shown = staff.map(() => true);
+  const at = new THREE.Vector3(),
+    right = new THREE.Vector3(),
     mtx = new THREE.Matrix4(),
     q = new THREE.Quaternion(),
+    tilt = new THREE.Quaternion(),
+    e = new THREE.Euler(),
     s = new THREE.Vector3(),
-    p = new THREE.Vector3();
-  /** Clouds over the heads where they are now, and the rain at time t (seconds). */
+    sway = new THREE.Quaternion();
+  /** The bubbles over the heads where they are now, at time t (seconds). */
   const update = (t: number) => {
-    clouds.forEach((c, i) => {
-      // over the crown (the head bone sits at the chin; a bowed head carries its crown forward), drifting a little
-      c.m.rig.bone("head").localToWorld(head.set(0, 0.36, 0));
-      up.set(0, 1, 0);
-      c.at.copy(head).addScaledVector(up, 0.3 + 0.015 * Math.sin(TAU * 0.4 * t + i * 1.3));
-      c.at.x += 0.012 * Math.sin(TAU * 0.23 * t + i);
-      c.mesh.position.copy(c.at);
-      c.mesh.quaternion.copy(c.m.mesh.quaternion);
-      for (let k = 0; k < RAIN.drops; k++) {
-        const age = (((t + (k * RAIN.fall) / RAIN.drops + i * 0.17) % RAIN.fall) + RAIN.fall) % RAIN.fall,
-          f = age / RAIN.fall,
-          // spread under the cloud's belly, a fixed spot per drop
-          a = k * 2.399 + i,
-          r = 0.05 + 0.1 * ((k * 0.618) % 1);
-        p.set(c.at.x + Math.cos(a) * r, c.at.y - 0.06 - RAIN.dist * f, c.at.z + Math.sin(a) * r * 0.6);
-        // shrinking away as it reaches the hair
-        const k2 = f > 0.8 ? (1 - f) / 0.2 : 1;
-        mtx.compose(p, q.identity(), s.set(k2, k2, k2));
-        rain.setMatrixAt(i * RAIN.drops + k, mtx);
-      }
+    const slot = { 1: 0, [-1]: 0 } as Record<number, number>;
+    staff.forEach((m, i) => {
+      const dir = side(m);
+      m.rig.bone("head").localToWorld(at.set(0, 0.36, 0));
+      right.set(1, 0, 0).applyQuaternion(m.mesh.quaternion);
+      at.addScaledVector(right, dir * THOUGHT.side).y +=
+        THOUGHT.up + (THOUGHT_LIFT[m.name] ?? 0) + 0.01 * Math.sin(TAU * 0.4 * t + i * 1.3);
+      q.copy(m.mesh.quaternion).multiply(tilt.setFromEuler(e.set(0.1, 0, 0.04 * Math.sin(TAU * 0.3 * t + i))));
+      const k = shown[i] ? 1 + 0.025 * Math.sin(TAU * 0.5 * t + i) : 0;
+      mtx.compose(at, q, s.set(k, k, k));
+      const n = slot[dir]++;
+      for (const x of meshes) if (x.dir === dir) x.im.setMatrixAt(n, mtx);
+      // the thought inside sways on its own a little
+      const c = contents[i];
+      c.position.copy(at);
+      c.quaternion.copy(q).multiply(sway.setFromEuler(e.set(0, 0, 0.05 * Math.sin(TAU * 0.6 * t + i * 0.9))));
+      c.scale.setScalar(k);
     });
-    rain.instanceMatrix.needsUpdate = true;
+    for (const { im } of meshes) im.instanceMatrix.needsUpdate = true;
   };
-  /** Hides the clouds within r metres of a camera passing among them (beat 5 backs out over the desks). */
+  /** Hides the bubbles within r metres of a camera passing among them (beat 5 backs out over the desks). */
   const clear = (cam: THREE.Vector3 | null, r = 1.3) => {
-    for (const c of clouds) c.mesh.visible = !cam || c.mesh.position.distanceTo(cam) > r;
+    staff.forEach((m, i) => {
+      m.rig.bone("head").getWorldPosition(at);
+      shown[i] = !cam || at.distanceTo(cam) > r;
+    });
   };
   const dispose = () => {
-    material.dispose();
-    drop.dispose();
-    dropMat.dispose();
-    rain.dispose();
-    for (const c of clouds) c.mesh.geometry.dispose();
+    for (const g of [...rimGeo, ...bubGeo, ...contents.map((c) => c.geometry)]) g.dispose();
+    for (const mat of [rimMat, bubMat, contentMat]) mat.dispose();
+    for (const { im } of meshes) im.dispose();
   };
   return { group, update, clear, dispose };
 }

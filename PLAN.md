@@ -1377,3 +1377,17 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Issue #1 ditutup (completed) setelah commit `04612e6` di-push; status dicek lewat API GitHub.
 - Atas permintaan user, alur resolve issue dijadikan panduan proyek di `CLAUDE.md` (bagian "Alur menyelesaikan issue GitHub"): cek issue → investigasi dan reproduksi → komentar penyebab dan perbaikan → implementasi → tes dan verifikasi → konfirmasi user → commit ke `main` dengan tag issue dan push → tutup issue.
 - Atas permintaan user, `CLAUDE.md` dan entri log ini di-commit ke `main` lalu di-push (pekerjaan Solusi tidak ikut).
+
+### 2026-11-09 (issue GitHub #3: awan hujan diganti gelembung pikiran)
+
+- Issue #3 (CR): awan hujan di atas kepala staf dihilangkan. Penggantinya harus tetap terbaca sekilas di shot lebar K2 (alasan awan dipasang 2 Nov).
+- Riset singkat: uap dari kepala umumnya dibaca sebagai marah, jadi tidak dipilih. Opacity per instance tidak ada di InstancedMesh bawaan, jadi semua prototipe opak gaya vinyl.
+- Prototipe yang dirender dan direview di chat (K2 lebar PC, sebagian K2.2): uap, pusaran kertas, baterai, jam pasir, gelembung pikiran, benang kusut. Pelajaran: yang terbaca di shot lebar adalah siluet gelap atau warna kuat di depan dinding pucat. Alternatif dan penjelasannya dikomentari di issue #3 (gambar ditambahkan user).
+- Pilihan user: gelembung pikiran dengan isi berbeda per staf, mengikuti pose K2 dan empat kartu layanan di `COPY.md`: Sinta balon chat hijau bertumpuk dengan titik merah (Agen AI WhatsApp), Bayu tumpukan slip dan struk panjang (Otomasi admin), Nadia bohlam padam di antara kertas diremas (Otomasi konten), Fajar map SOP dan tanda tanya (Asisten pengetahuan). Tanpa teks dan logo platform.
+- Diubah:
+  - `cast/acts.ts`: `createGloom` dan konstanta `RAIN` dihapus; `createThought` baru. Gelembung: bola pipih bertepi gelap (bola sendiri sedikit lebih besar, back face) dengan dua bola kecil ke kepala, di sisi kepala yang berlawanan dengan tetes keringat; tepi dan gelembung instanced per sisi, isi per staf satu mesh (vertex colour), tanpa bayangan. Gelembung bernapas pelan, isinya bergoyang. Gelembung Nadia 6 cm lebih tinggi supaya bola kecilnya tidak menempel di pita sanggul;
+  - `cast/roster.ts`: ekspor `createThought` menggantikan `createGloom`;
+  - `world/index.ts`: `gloom` jadi `thoughts`, `cloudGeo` tidak diimpor lagi (tetap dipakai langit di `sets/sky.ts`). Gelembung tetap disembunyikan dekat kamera saat beat 5 mundur di atas meja dan saat ruangan tidak digambar;
+  - still K2, K2.1, K2.2 pc dan HP di `site/public/stills/` dirender ulang (hanya tiga key ini, still lain tidak disentuh).
+- Dicek: render K2, K2.1, K2.2, K3, K4, K5a.1 pc dan HP, dan 10 frame K4 → K5a.1 (dikirim di chat); draw call pass utama pc K2 100 → 108, K2.1 71 → 82, K2.2 73 → 81; HP K2 98 → 106; segitiga maks 159,4 rb (awan 131,7 rb). Typecheck, ESLint, Prettier untuk file yang diubah lulus; `build` lulus; console hanya 404 skrip analytics Vercel lokal.
+- Belum: animasi isi gelembung (chat bertambah, tumpukan goyah); tes FPS di HP Android sungguhan; konfirmasi user, commit dan penutupan issue.
