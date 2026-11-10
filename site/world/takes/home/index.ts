@@ -16,7 +16,7 @@ import { LAYOUT_STEPS } from "../../sets/companyFront";
 import { SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
 
 export { SEG, TAKE_SCREENS, KEYS, keyP, WHIP_AT } from "./timing";
-export { followClock, heruAt, heruClock, poseHeru, type HeruState } from "./heru";
+export { followDoorClock, heruAt, heruClock, heruGate, poseHeru, type HeruState } from "./heru";
 
 const SEG_K2 = SEG.find((s) => s.from === "K2" && s.type === "move")!.screens,
   SEG_K21 = SEG.find((s) => s.from === "K2.1")!.screens;

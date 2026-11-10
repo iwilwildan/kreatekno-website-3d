@@ -21,22 +21,22 @@ const HERO_OUT = [SEG[0].screens - 0.05, SEG[0].screens + 0.35 * SEG[1].screens]
  */
 const STILL_FADES: Record<string, [number, number]> = {
   K1: [0.51, 0.93],
-  K2: [2.0, 3.1],
-  "K2.1": [3.8, 4.4],
-  "K2.2": [4.52, 4.72],
-  K3: [7.3, 7.7],
-  K4: [8.15, 8.6],
+  K2: [1.72, 2.38],
+  "K2.1": [3, 3.6],
+  "K2.2": [3.72, 3.92],
+  K3: [6.5, 6.9],
+  K4: [7.35, 7.8],
   // beats 5a–5b: K4.1 as the camera tilts up, K5a.1 out of the door, then each stop along the row (on 9:16 the
   // "b" stills are the second panel of a hold; on 16:9 they repeat the hold's still, so nothing changes there)
-  "K4.1": [9.6, 10.2],
-  "K5a.1": [11.2, 11.8],
-  "K5a.2": [12.1, 12.5],
-  "K5a.2b": [12.7, 12.88],
-  "K5a.3": [13.2, 13.6],
-  "K5a.3b": [13.8, 13.98],
-  "K5a.4": [14.3, 14.7],
-  "K5a.4b": [14.9, 15.08],
-  "K5a.6": [15.4, 15.8],
+  "K4.1": [8.8, 9.4],
+  "K5a.1": [10.4, 11],
+  "K5a.2": [11.3, 11.7],
+  "K5a.2b": [11.9, 12.08],
+  "K5a.3": [12.4, 12.8],
+  "K5a.3b": [13, 13.18],
+  "K5a.4": [13.5, 13.9],
+  "K5a.4b": [14.1, 14.28],
+  "K5a.6": [14.6, 15],
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -45,7 +45,7 @@ const ROW_STILLS = {
 };
 /** Stills fallback: the leaflet's copy comes in on the K3 still and goes as the K4 still comes; the page's after. */
 // Both copies are fully visible at their keyframe, including when reached by a section link.
-const STILL_COPY = { leaflet: [7.5, 7.7], page: [8.5, 8.7] } as const;
+const STILL_COPY = { leaflet: [6.7, 6.9], page: [7.7, 7.9] } as const;
 /** A scroll step longer than this (screens; a jump link, the End key, the scrollbar) cuts instead of flying. */
 const JUMP_SCREENS = 2;
 /** Jump marks: menu links to sections told inside the take land on their keyframe's hold (its middle). */

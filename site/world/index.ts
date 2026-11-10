@@ -21,9 +21,10 @@ import type { KeyName } from "./takes/home/data";
 import {
   cameraAt,
   craneAt,
-  followClock,
+  followDoorClock,
   heruAt,
   heruClock,
+  heruGate,
   KEYS,
   keyP,
   poseHeru,
@@ -51,6 +52,8 @@ import {
 
 /** Inertia of the camera on the scroll: critically damped, ω = 2 / smoothing time (±0.25 s). */
 const OMEGA = 8;
+/** Screens per second at most the camera catches up with the scroll after waiting for Heru at the door (issue #10). */
+const CATCH_UP = 2;
 /** Duration of the whip pan to K2.2 (s). */
 const WHIP_S = 0.45;
 /** Bu Dewi's nod at K4.1: where it starts (screens: the K4.1 hold), how long it takes (s), her face meanwhile. */
@@ -555,6 +558,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let rowPreloadTimer: ReturnType<typeof setTimeout> | undefined;
   // the scroll position shown, with the camera's inertia (position and velocity of a critically damped spring)
   const view = { x: target, v: 0 };
+  // where the camera heads for: the scroll, or while it waits for Heru at the door, as far as he lets it
+  const gate = { goal: target, catching: false };
   // the whip pan: linear time 0..1 toward its target (0 before the whip point, 1 after), shown eased
   let whipT = whipTarget(target);
   // Heru's clock (seconds at his own pace), following the scroll no faster than he walks
@@ -735,7 +740,16 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const dt = Math.min(timer.getDelta(), 0.1);
     if (lost) return;
     if (!opts.key) {
-      const goal = target;
+      // through the door the camera waits for Heru (issue #10): never more than a step ahead of his clock; then it
+      // catches up with the scroll no faster than a quick scroll
+      const gated = heruGate(target, heruClk.x, fmtT);
+      if (gated !== target) gate.catching = true;
+      if (gate.catching) {
+        const max = (CATCH_UP / TAKE_SCREENS) * dt;
+        gate.goal += Math.max(-max, Math.min(max, gated - gate.goal));
+        if (Math.abs(gate.goal - target) < 1e-6) gate.catching = false;
+      }
+      const goal = gate.catching ? gate.goal : (gate.goal = target);
       dampStep(view, goal, OMEGA, dt);
       if (Math.abs(view.x - goal) < 1e-5 && Math.abs(view.v) < 1e-4) {
         view.x = goal;
@@ -762,10 +776,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       whipT = wt > whipT ? Math.min(wt, whipT + dt / WHIP_S) : Math.max(wt, whipT - dt / WHIP_S);
       needsRender = true;
     }
-    const clockAt = heruClock(shown, fmtT);
+    // his clock follows the scroll itself (issue #6), the camera follows him
+    const clockAt = heruClock(target, fmtT);
     if (heruClk.x !== clockAt) {
       if (opts.key || opts.shot) heruClk.x = clockAt;
-      else followClock(heruClk, clockAt, dt);
+      else followDoorClock(heruClk, clockAt, dt);
       needsRender = true;
     }
     const clock3 = heru3Clock(shown, room?.step ?? layoutStep(fmtT), fmtT);
@@ -1043,8 +1058,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     },
     /** Jump without easing (keyframe links, tools). */
     jump(p: number) {
-      target = view.x = Math.min(1, Math.max(0, p));
+      target = view.x = gate.goal = Math.min(1, Math.max(0, p));
       view.v = 0;
+      gate.catching = false;
       whipT = whipTarget(target);
       heruClk.x = heruClock(target, fmtT);
       heruClk.v = 0;

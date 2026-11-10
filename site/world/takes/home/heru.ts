@@ -3,8 +3,9 @@
 // one push, lets go as it swings, walks in and stops near the door looking into the shop; from K2 to K2.2 he
 // stays there and turns his head with the camera, left to Sinta and Bayu, then right to Nadia and Fajar.
 // His part runs on his own clock (seconds at a natural pace): the scroll sets where the clock should be, and
-// the world moves it there no faster than PACE × real time, so a fast scroll or a mouse wheel never makes him
-// sprint or jerk. Everything is a pure function of the clock, so scrolling up plays it backwards.
+// the world moves it there no faster than DOOR.pace × real time, so a fast scroll or a mouse wheel never makes
+// him sprint or jerk. Everything is a pure function of the clock, so scrolling up plays it backwards. The camera
+// waits for him (heruGate, issue #10): it never runs ahead of his clock through a door still closed.
 import * as THREE from "three";
 import { clamp01, ease, segmentStart, smoothstep } from "../../core/segments";
 import { dampStep, type Damped } from "../../motion/damp";
@@ -35,6 +36,14 @@ const SPEED = 1.0,
 /** How much faster than his natural pace he may go to catch up with the scroll, and how soon he follows it. */
 const PACE = 1.5,
   FOLLOW = 3.5;
+/** The same through the door (issue #6): the short move asks ±2× his pace at 2 s per screen, and he keeps up. */
+const DOOR = { pace: 2, follow: 6 };
+/** Share of extra clock speed early in the move (the turn and the push) taken from the end (the walk in). */
+const LEAD = 0.2;
+/** How far (screens) the camera may run ahead of, or lag behind, where his clock puts the scroll. */
+const BAND = 0.15;
+/** Seconds of his clock from either end where the camera is let go (he is all but still; his clock creeps there). */
+const LET_GO = 0.15;
 
 const walks = new Map<number, Walk>();
 /** Path from his K1 spot through the right half of the doorway to his K2 spot (blended pc → hp). */
@@ -82,19 +91,43 @@ export const heruK2Spot = (t: number) => walkFor(t).curve.getPointAt(1);
 /** Length of his part on his clock (seconds) for a format blend. */
 export const heruEnd = (t: number) => T.walk + walkTime(walkFor(t));
 
-/** Where his clock should be for the scroll position p (0..1). */
+/** Where his clock should be for the scroll position p (0..1): a little faster early, so the door opens sooner. */
 export function heruClock(p: number, t: number) {
-  return clamp01((p * TAKE_SCREENS - MOVE.start) / MOVE.len) * heruEnd(t);
+  const u = clamp01((p * TAKE_SCREENS - MOVE.start) / MOVE.len);
+  return (u + LEAD * u * (1 - u)) * heruEnd(t);
 }
 
-/** Moves his clock toward the scroll's over dt seconds: smoothly, and at most PACE × his natural pace. */
-export function followClock(s: Damped, target: number, dt: number) {
+/** The scroll position (0..1) where his clock reads c: the inverse of heruClock. */
+export function heruClockP(c: number, t: number) {
+  const f = clamp01(c / heruEnd(t)),
+    u = (1 + LEAD - Math.sqrt((1 + LEAD) ** 2 - 4 * LEAD * f)) / (2 * LEAD);
+  return (MOVE.start + u * MOVE.len) / TAKE_SCREENS;
+}
+
+/**
+ * The scroll position the camera may go to (0..1) for the scroll's `goal`, while his clock reads c: within BAND
+ * of his clock until he is through (and, scrolling up, until he is back on his K1 spot).
+ */
+export function heruGate(goal: number, c: number, t: number) {
+  const at = heruClockP(c, t),
+    band = BAND / TAKE_SCREENS;
+  if (c < heruEnd(t) - LET_GO) goal = Math.min(goal, at + band);
+  if (c > LET_GO) goal = Math.max(goal, at - band);
+  return goal;
+}
+
+/** Moves his clock through the door toward the scroll's over dt seconds (DOOR pace). */
+export const followDoorClock = (s: Damped, target: number, dt: number) =>
+  followClock(s, target, dt, DOOR.pace, DOOR.follow);
+
+/** Moves a clock toward the scroll's over dt seconds: smoothly, and at most `pace` × the natural pace. */
+export function followClock(s: Damped, target: number, dt: number, pace = PACE, follow = FOLLOW) {
   const x = s.x;
-  dampStep(s, target, FOLLOW, dt);
-  const max = PACE * dt;
+  dampStep(s, target, follow, dt);
+  const max = pace * dt;
   if (Math.abs(s.x - x) > max) {
     s.x = x + Math.sign(s.x - x) * max;
-    s.v = Math.sign(s.v) * Math.min(Math.abs(s.v), PACE);
+    s.v = Math.sign(s.v) * Math.min(Math.abs(s.v), pace);
   }
   if (Math.abs(s.x - target) < 1e-4 && Math.abs(s.v) < 1e-3) {
     s.x = target;

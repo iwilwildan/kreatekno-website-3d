@@ -1,6 +1,6 @@
 // Timing of the Home take in screens of scroll, beats 1–2: hold on K0 (hero on the billboard), crane down to the
 // door (K1, Heru facing the camera), short hold, follow Heru as he turns round and walks through the door into
-// COMPANY (K2; two screens, so a natural walking pace fits an unhurried scroll), short hold, dolly in and pan left to
+// COMPANY (K2; 1.2 screens, so he goes up to twice his natural pace on an unhurried scroll), short hold, dolly in and pan left to
 // Sinta and Bayu (K2.1, no hold: the camera keeps drifting), whip pan right to Nadia and Fajar (K2.2), hold.
 // Beats 3–4 (blockout K2.2 → K3): dolly down the right aisle and orbit behind Bu Dewi to her right shoulder,
 // slowing at K2.4 while Heru lays the leaflet on the counter (no hold), tilt down and push in to the top view of
@@ -36,7 +36,8 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K0", screens: 0.3 },
   { type: "move", from: "K0", to: "K1", screens: 0.7 },
   { type: "hold", from: "K1", screens: 0.3 },
-  { type: "move", from: "K1", to: "K2", screens: 2.0 },
+  // issue #6: 1.2 screens (was 2.0), so the turn and the push on the door take ±0.5 screen of scroll
+  { type: "move", from: "K1", to: "K2", screens: 1.2 },
   { type: "hold", from: "K2", screens: 0.3 },
   { type: "move", from: "K2", to: "K2.1", screens: 0.8 },
   { type: "move", from: "K2.1", to: "K2.2", screens: 0.7 },

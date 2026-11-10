@@ -1496,3 +1496,23 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - `tools/render/issue4.mjs` 73/73 dan `issue4-loading.mjs` 25/25 lulus; typecheck, ESLint, Prettier (`tools/render/lib.mjs` sudah tidak lolos Prettier sejak HEAD), `npm run build` lulus.
 - Dikonfirmasi user setelah tes di HP ("Ok tested", diteruskan sesi induk). Di-commit ke `main` (Refs #5; hanya `timing.ts`, `HomeTake.tsx`, `tools/render/lib.mjs`, `tools/render/issue4.mjs` dan entri log ini; pekerjaan Solusi dan entri tes UX 10 Nov tidak ikut), lalu di-push.
 - Belum: komentar Penyebab/Perbaikan/Dicek/Belum di issue #5 dan penutupan issue, karena Claude in Chrome tidak tersambung dan browser bawaan belum login GitHub (draf komentar di scratchpad sesi).
+
+### 2026-11-11 (issue GitHub #6 dan #10: Heru berbalik dan pintu, kamera menunggu Heru)
+
+- Issue #6: setelah K1, Heru berbalik dan membuka pintu butuh terlalu banyak scroll. Issue #10: pada scroll cepat kamera menembus pintu yang belum terbuka dan mendahului Heru. Diukur ulang setelah #5 (build produksi, skrip scratchpad, kamera, pinggul Heru dan daun pintu per frame): dari akhir hold K1 sampai pintu terbuka penuh 1,24 layar (1280×720), 1,26 (768×1024), 1,34 (375×812) pada 2 s/layar. Scroll cepat: daun kanan −0,17 rad (pc, 1 s/layar) dan 0 (HP, 0,6 s/layar) saat kamera lewat, Heru masih di trotoar.
+- Penyebab: jam Heru ±4,7 s dibentang rata di gerak 2,0 layar; jam mengikuti scroll yang sudah diredam, lalu diredam lagi `FOLLOW` 3,5 (±0,57 s) dan dibatasi 1,5×; kamera maju mengikuti scroll, bukan jam Heru.
+- Keputusan user: gerak K1 → K2 1,2 layar, #10 ikut diperbaiki, laju Heru di pintu sampai 2×.
+- Diubah:
+  - `takes/home/timing.ts`: gerak K1 → K2 2,0 → 1,2; take 16,1 → 15,3 layar.
+  - `takes/home/heru.ts`: `heruClock` sedikit lebih cepat di awal (`LEAD` 0,2) dengan kebalikan `heruClockP`; `followDoorClock` (laju 2×, pegas 6) untuk pintu, `followClock` jalan ruko tetap 1,5×/3,5; `heruGate`: kamera paling jauh 0,15 layar dari posisi jam Heru sampai ia selesai (lepas 0,15 s dari ujung jam).
+  - `world/index.ts`: jam Heru mengikuti `target` (scroll), kamera menuju `heruGate`; setelah menunggu, kamera mengejar scroll paling cepat 2 layar/s (`CATCH_UP`); `jump` mengatur ulang.
+  - `components/home/HomeTake.tsx`: `STILL_FADES` K2 dipetakan ke gerak baru (1,72–2,38), lainnya −0,8; `STILL_COPY` −0,8. `tools/render/lib.mjs` `HP_AT` −0,8; `tools/render/issue4.mjs` take 15,3, rentang 6,5–9,2, fallback leaflet 6,9 dan binder 7,9.
+- Dicek:
+  - 2 s/layar: pintu penuh 0,63 layar setelah hold di pc, tablet dan HP; K2 1,2 layar setelah hold; kamera berhenti 0,6–0,7 s setelah scroll (sama dengan sebelum); saat kamera lewat pintu daun terbuka penuh dan Heru 1,1–1,2 m di dalam (sebelumnya 0,2–0,4); jarak kamera ke kepala Heru paling dekat 0,93–1,0 m (sebelumnya 0,47–0,49);
+  - scroll cepat maju dan mundur (pc 1 s, HP 0,6 s/layar) dan swipe jauh sampai 5,5: tidak ada frame kamera di ambang pintu dengan daun < 1,2 rad (sebelumnya 6–7 frame); kamera tiba 1,8 s (pc) dan 2,5 s (HP) setelah scroll berhenti, karena menunggu Heru; scroll mundur mengembalikan Heru ke K1 dan pintu tertutup;
+  - frame pc dan HP scroll rata dan cepat dicek visual (hanya di chat);
+  - `#layanan` mendarat di 7,1 (K3), `#cara-kerja` di 11,76 dengan judul terlihat (1280×720, 768×1024, 375×812);
+  - `tools/render/issue4.mjs` 73/73 dan `issue4-loading.mjs` 25/25 lulus; typecheck, ESLint, Prettier (kecuali `tools/render/lib.mjs`, sudah tidak lolos sejak HEAD), `npm run build` lulus; console hanya 404 skrip analytics Vercel lokal.
+- Temuan, belum diperbaiki: swipe sangat cepat melewati K2.1 → K2.2 masih memotong whip pan saat masuk hold K2.2 (kamera melompat ±0,5 m dalam satu frame). Pola ini sudah ada sebelum perbaikan (hold K2.2 tidak menunggu whip yang berjalan dengan waktu).
+- Belum: komentar di issue #6 dan #10 (Chrome tidak tersambung; draf di scratchpad sesi), tes HP fisik, konfirmasi user, commit, push, tutup issue. Still tidak dirender ulang (kamera hold sama).
+- Dikonfirmasi user ("Ok, commit dan push"). Di-commit ke `main` (Refs #6, Refs #10; hanya `timing.ts`, `heru.ts`, `takes/home/index.ts`, `world/index.ts`, `HomeTake.tsx`, `tools/render/lib.mjs`, `tools/render/issue4.mjs` dan entri log ini; pekerjaan Solusi dan entri tes UX 10 Nov tidak ikut).
