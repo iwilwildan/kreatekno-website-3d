@@ -49,7 +49,8 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
   const tMeta = await getTranslations("meta");
 
   return (
-    <html lang={locale} className={`${bricolage.variable} ${jakarta.variable}`}>
+    // Home's inline scroll lock (components/home/bootLock.ts) sets data-booting here before hydration
+    <html lang={locale} className={`${bricolage.variable} ${jakarta.variable}`} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider>
           <a

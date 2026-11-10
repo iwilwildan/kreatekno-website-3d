@@ -4,7 +4,8 @@
 // Sinta and Bayu (K2.1, no hold: the camera keeps drifting), whip pan right to Nadia and Fajar (K2.2), hold.
 // Beats 3–4 (blockout K2.2 → K3): dolly down the right aisle and orbit behind Bu Dewi to her right shoulder,
 // slowing at K2.4 while Heru lays the leaflet on the counter (no hold), tilt down and push in to the top view of
-// the leaflet (K3), hold; truck right to the binder (K4), hold.
+// the leaflet (K3), short hold, truck right to the binder (K4), short hold. The holds only give the copy room to be
+// read; the camera never waits on the copy (issue #4: no dwell).
 // Beats 5a–5b (the team's videos K4 → K5a.6): rise and turn to look over Heru's shoulder at Bu Dewi nodding (K4.1,
 // short hold), dolly straight back through the door out to the facade (K4.2, passed slowly, no hold), dolly out as
 // Heru and Bu Dewi come out (K5a.1, short hold), then truck right along the row: K5a.2–K5a.4 frame two panels each
@@ -41,9 +42,9 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K2.2", screens: 0.6 },
   { type: "move", from: "K2.2", to: "K2.4", screens: 1.15 },
   { type: "move", from: "K2.4", to: "K3", screens: 0.85 },
-  { type: "hold", from: "K3", screens: 1.2 },
+  { type: "hold", from: "K3", screens: 0.4 },
   { type: "move", from: "K3", to: "K4", screens: 0.6 },
-  { type: "hold", from: "K4", screens: 1.5 },
+  { type: "hold", from: "K4", screens: 0.5 },
   { type: "move", from: "K4", to: "K4.1", screens: 1.0 },
   { type: "hold", from: "K4.1", screens: 0.3 },
   { type: "move", from: "K4.1", to: "K4.2", screens: 0.6 },

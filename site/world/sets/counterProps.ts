@@ -77,7 +77,7 @@ const LOGO_SRC = "/brand/kreatekno-logo.webp";
  * A sheet's top face as a canvas: paper white with the purple strip near the top edge (as read), and the logo
  * with a rule at the foot once the logo has loaded (the sheet is plain until then). The copy itself is HTML.
  */
-function leafletTex(kit: Kit, w: number, h: number) {
+function leafletTex(kit: Kit, w: number, h: number, signal?: AbortSignal) {
   const px = 2000,
     foot = w > h ? LEAF_FOOT.land : LEAF_FOOT.port;
   const paint = (g: CanvasRenderingContext2D, W: number, H: number, logo?: HTMLImageElement) => {
@@ -99,17 +99,28 @@ function leafletTex(kit: Kit, w: number, h: number) {
     }
   };
   const tex = kit.canvasTex(Math.round((px * w) / Math.max(w, h)), Math.round((px * h) / Math.max(w, h)), paint);
-  if (typeof Image !== "undefined") {
+  const ready = new Promise<void>((resolve) => {
+    if (typeof Image === "undefined") return resolve();
     const logo = new Image();
     logo.decoding = "async";
+    const finish = () => {
+      logo.onload = logo.onerror = null;
+      signal?.removeEventListener("abort", finish);
+      resolve();
+    };
     logo.onload = () => {
       const c = tex.image as HTMLCanvasElement;
       paint(c.getContext("2d")!, c.width, c.height, logo);
       tex.needsUpdate = true;
+      finish();
     };
-    logo.src = LOGO_SRC;
-  }
-  return tex;
+    // A missing decorative logo may leave a plain sheet; it must not prevent reading the HTML copy.
+    logo.onerror = finish;
+    signal?.addEventListener("abort", finish, { once: true });
+    if (signal?.aborted) finish();
+    else logo.src = LOGO_SRC;
+  });
+  return { tex, ready };
 }
 
 /**
@@ -147,7 +158,7 @@ function pencilParts(color: string, a: THREE.Vector3, b: THREE.Vector3, eraser: 
   return parts;
 }
 
-export function createCounterProps(kit: Kit) {
+export function createCounterProps(kit: Kit, signal?: AbortSignal) {
   const group = new THREE.Group();
   group.name = "counterProps";
 
@@ -157,8 +168,8 @@ export function createCounterProps(kit: Kit) {
   const pencils = shadowed(new THREE.Mesh(new THREE.BufferGeometry(), tintMat(0.5)), false);
 
   // ---------- leaflet ----------
-  const texLand = leafletTex(kit, 0.297, 0.21),
-    texPort = leafletTex(kit, 0.21, 0.297);
+  const { tex: texLand, ready: landReady } = leafletTex(kit, 0.297, 0.21, signal),
+    { tex: texPort, ready: portReady } = leafletTex(kit, 0.21, 0.297, signal);
   const paper = new THREE.MeshStandardMaterial({ map: texLand, roughness: 0.82 });
   // one material on every face (the 1.2 mm edges just look white); turned half a turn so the sheet's top edge
   // is toward +z (Heru's side) and it reads upright from above with the door at the top of the frame
@@ -412,6 +423,16 @@ export function createCounterProps(kit: Kit) {
     ];
   };
 
-  return { group, place, update, setOpen, setHands, copyAnchors, holdAnchors, fade };
+  return {
+    group,
+    place,
+    update,
+    setOpen,
+    setHands,
+    copyAnchors,
+    holdAnchors,
+    fade,
+    ready: Promise.all([landReady, portReady]),
+  };
 }
 export type CounterProps = ReturnType<typeof createCounterProps>;

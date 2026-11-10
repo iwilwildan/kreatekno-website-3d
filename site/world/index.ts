@@ -85,6 +85,9 @@ export type WorldOptions = {
   safeTop?: () => number;
   onFrame?: (f: FrameInfo) => void;
   onReady?: () => void;
+  onError?: (error: unknown) => void;
+  /** Share 0..1 of the boot done (sets, AO, cast, hands, shaders), for the loading bar. */
+  onProgress?: (share: number) => void;
   onContextLost?: (count: number) => void;
 };
 
@@ -116,6 +119,41 @@ export type WorldStats = {
 
 export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const { aoBase = "/world/ao" } = opts;
+  let disposed = false;
+  const abort = new AbortController();
+  const reportError = (error: unknown) => {
+    if (!disposed) opts.onError?.(error);
+  };
+  // ---------- boot progress ----------
+  // Each step of the boot weighs about what it took on a laptop (measured 10 Nov); each one counts once (a later
+  // room rebuild or warm-up does not move the bar back). A performance mark per step, for profiling.
+  const BOOT_STEPS: Record<string, number> = {
+    sets: 2,
+    aoExt: 0.5,
+    aoRoom: 0.5,
+    "cast:heru": 0.5,
+    "cast:dewi": 0.4,
+    "cast:sinta": 0.4,
+    "cast:bayu": 0.4,
+    "cast:nadia": 0.4,
+    "cast:fajar": 0.4,
+    hands: 0.5,
+    props: 0.1,
+    fonts: 0.1,
+    compile: 3,
+    blur: 1,
+    draw: 1,
+  };
+  const bootTotal = Object.values(BOOT_STEPS).reduce((a, b) => a + b, 0);
+  const bootDone = new Set<string>();
+  let bootShare = 0;
+  const bootStep = (name: string) => {
+    if (disposed || bootDone.has(name) || !(name in BOOT_STEPS)) return;
+    bootDone.add(name);
+    performance.mark(`world:${name}`);
+    bootShare += BOOT_STEPS[name] / bootTotal;
+    opts.onProgress?.(Math.min(1, bootShare));
+  };
   const coarse = matchMedia("(pointer: coarse)").matches;
   let saver = !!opts.saver;
 
@@ -160,7 +198,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const buildRoom = createCompanyFront(kit);
   const anchors = billboardAnchors();
   // leaflet, binder and pencils of beats 3–4, laid out on the counter of the current layout
-  const props = createCounterProps(kit);
+  const props = createCounterProps(kit, abort.signal);
   scene.add(props.group);
 
   // ---------- cast (own chunk, built after the sets; K0 does not need it) ----------
@@ -175,6 +213,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let thoughts: ReturnType<typeof import("./cast/roster").createThought> | null = null;
   let placeCrew = () => {};
   const castReady = import("./cast/roster").then(async (mod) => {
+    if (disposed) return;
     const { CAST, buildMemberSliced, applyPose, K2_POSES } = mod;
     // each slice is timed; the HUD shows the total and the longest (a long slice is a stutter on a phone)
     let t = performance.now();
@@ -189,20 +228,32 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         }, 0);
       });
     heru = await buildMemberSliced(CAST.heru, { saver }, pause);
+    if (disposed) return heru.dispose();
     scene.add(heru.mesh);
+    bootStep("cast:heru");
     for (const name of ["dewi", "sinta", "bayu", "nadia", "fajar"] as const) {
       const m = await buildMemberSliced(CAST[name], { saver }, pause);
+      if (disposed) return m.dispose();
       crew.push(m);
       scene.add(m.mesh);
+      bootStep(`cast:${name}`);
     }
     phone = mod.createPhone();
     scene.add(phone.group);
     sweat = mod.createSweat(crew);
     thoughts = mod.createThought(crew);
     await pause();
-    props.setHands(await mod.buildCloseHands({ saver }, pause));
+    if (disposed) return;
+    const hands = await mod.buildCloseHands({ saver }, pause);
+    if (disposed) {
+      for (const who of Object.values(hands)) for (const hand of Object.values(who)) disposeTree(hand.mesh);
+      return;
+    }
+    props.setHands(hands);
     scene.add(thoughts.group);
+    bootStep("hands");
     await pause();
+    if (disposed) return;
     castMod = mod;
     stats.cast.done = true;
     placeCrew = () => {
@@ -247,16 +298,16 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let b3: Beat3 | null = null;
   const placeHeru3 = (shown: number, breath: number) => {
     if (!heru || !room) return false;
-    const u = b4Clk.x / B4_SECONDS,
+    const u = b4Time / B4_SECONDS,
       relax = b5Relax(shown * TAKE_SCREENS),
-      body = `b3 ${heru3Clk.x.toFixed(5)} ${room.step} ${fmtT.toFixed(3)} ${u.toFixed(5)} ${relax.toFixed(4)}`,
+      body = `b3 ${heru3Time.toFixed(5)} ${room.step} ${fmtT.toFixed(3)} ${u.toFixed(5)} ${relax.toFixed(4)}`,
       key = `${body} ${breath.toFixed(4)}`;
     if (key === lastHeruKey) return false;
     const moved = !lastHeruKey.startsWith(body + " ");
     lastHeruKey = key;
     // beat 4 slides the leaflet aside under his hand (seen from above only)
     const slide = THREE.MathUtils.smootherstep(phase4(u, "slide"), 0, 1);
-    b3 = poseHeru3(heru, heru3Clk.x, room.step, fmtT, breath, slide, relax);
+    b3 = poseHeru3(heru, heru3Time, room.step, fmtT, breath, slide, relax);
     if (opts.shot) heru.springs?.reset(1);
     else heru.springs?.poke(moved ? 1.5 : 0.5);
     return moved;
@@ -269,7 +320,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const k2 = castMod.K2_POSES.dewi as Pose,
       pose = {
         ...(beatAt(shown).on
-          ? dewiPose3(m, k2, shown, room.step, b4Clk.x / B4_SECONDS, b5Relax(shown * TAKE_SCREENS))
+          ? dewiPose3(m, k2, shown, room.step, b4Time / B4_SECONDS, b5Relax(shown * TAKE_SCREENS))
           : k2),
       };
     // K4.1: she smiles and nods once with her eyes closed (video k41 - k4, ±5.5 s)
@@ -337,6 +388,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let aoJobTargets: AoTarget[] = [];
   let baking = false;
   const aoQueue: AoTarget[][] = [];
+  const aoWaiters = new Set<() => void>();
+  const waitForAO = () => (baking ? new Promise<void>((resolve) => aoWaiters.add(resolve)) : Promise.resolve());
   const baked = new Map<string, { data: Uint8Array; res: [number, number] }>();
   const occluders = () => {
     scene.updateMatrixWorld(true);
@@ -356,6 +409,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     baking = true;
     aoState = "menghitung";
     const { bakeAO } = await import("./core/bake");
+    if (disposed) return;
     aoJobTargets = targets;
     aoJob = bakeAO(targets, occluders());
   };
@@ -377,7 +431,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         }
         aoJob = null;
         needsRender = true;
-        void nextBake();
+        void nextBake().catch(reportError);
         break;
       }
       aoState = `${Math.round(r.value * 100)}%`;
@@ -387,7 +441,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const provideAO = async (targets: AoTarget[]) => {
     if (opts.noAO) return;
     if (opts.bake != null) return startBake(targets);
-    const missing = await loadAO(targets, aoBase);
+    const missing = await loadAO(targets, aoBase, abort.signal);
+    if (disposed) return;
     needsRender = true;
     if (missing.length) await startBake(missing);
     else if (!baking) aoState = "siap";
@@ -398,13 +453,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     (rowLoading ??= import("./sets/row").then(async (mod) => {
       // the name on Kreatekno's band is drawn with the page's display font
       await document.fonts?.ready;
+      if (disposed) return;
       const targets: AoTarget[] = [];
       row = mod.buildRow(kit, rowMats, targets);
       scene.add(row.group);
       renderer.shadowMap.needsUpdate = true;
       needsRender = true;
       await provideAO(targets);
-      if (readyFired) void warm();
+      if (readyFired) await waitForAO().then(() => warm());
     }));
 
   // ---------- interior, rebuilt when the layout step changes ----------
@@ -445,7 +501,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     renderer.shadowMap.needsUpdate = true;
     roomAO = provideAO(targets);
     // a later rebuild (the phone turned) compiles its new parts in the background once its AO is on
-    if (readyFired) void roomAO.then(warm);
+    if (readyFired)
+      void roomAO
+        .then(waitForAO)
+        .then(() => warm())
+        .catch(reportError);
   };
 
   // ---------- sizing and format blend ----------
@@ -491,17 +551,17 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     lostCount = 0,
     lost = false,
     readyFired = false,
-    firstAO: Promise<void> | null = null;
+    assetsReady = false;
+  let rowPreloadTimer: ReturnType<typeof setTimeout> | undefined;
   // the scroll position shown, with the camera's inertia (position and velocity of a critically damped spring)
   const view = { x: target, v: 0 };
   // the whip pan: linear time 0..1 toward its target (0 before the whip point, 1 after), shown eased
   let whipT = whipTarget(target);
   // Heru's clock (seconds at his own pace), following the scroll no faster than he walks
   const heruClk = { x: heruClock(target, fmtT), v: 0 };
-  // and his clock in beat 3 (walking on to the counter)
-  const heru3Clk = { x: heru3Clock(target, layoutStep(fmtT), fmtT), v: 0 };
-  // and the clock of beat 4 (the leaflet slid out, the binder pulled in and opened)
-  const b4Clk = { x: beat4Clock(target), v: 0 };
+  // Counter choreography follows the same smoothed scroll as the camera (issue #4).
+  let heru3Time = heru3Clock(target, layoutStep(fmtT), fmtT);
+  let b4Time = beat4Clock(target);
   // Heru and Bu Dewi out on the street walk on their own clock (seconds), not waiting for the scroll
   const outClk = { x: scrollClock(target * TAKE_SCREENS), v: 0 };
   /** Whether Heru or Bu Dewi would be on screen at outside clock c (last frame's camera). */
@@ -591,19 +651,24 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     renderer.shadowMap.needsUpdate = true;
   };
   let warmChain: Promise<unknown> = Promise.resolve();
-  const warm = () =>
+  // `final`: the warm-up of the complete K0–K4 scene, the last steps of the boot (an earlier one only gets ahead)
+  const warm = (final = false) =>
     (warmChain = warmChain.then(async () => {
-      if (lost) return;
+      if (lost || disposed) return;
       uploadTextures();
       await renderer.compileAsync(scene, camera);
+      if (disposed) return;
+      if (final) bootStep("compile");
       if (!saver) await blur.warm(scene, camera);
+      if (disposed) return;
+      if (final) bootStep("blur");
       await new Promise<void>((resolve) => {
         drawWarm = resolve;
         warmAsked = performance.now();
         needsRender = true;
       });
+      if (final) bootStep("draw");
     }));
-  void castReady.then(warm);
   let frames = 0,
     acc = 0,
     // the quality ladder: the display's refresh interval (the shortest frame seen), missed frames in a window
@@ -664,50 +729,13 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     roomHidden = false,
     lastDewiKey = "";
 
-  // ---------- dwell on copy ----------
-  // Scrolling on (not back), the camera stops where copy comes into view and stays DWELL_S after the copy is fully
-  // shown, however far the scroll has gone meanwhile (user, 7 Nov): the leaflet (K3) and the binder's page (K4, once
-  // its cover has opened). The scroll gathered meanwhile plays out afterwards. The panels of the row no longer stop
-  // it (issue #2): there the camera follows Heru and Bu Dewi, who walk as the scroll goes.
-  const DWELL_S = 1.5,
-    DWELL_MAX_S = 8;
-  let dwellSince = 0,
-    dwellArrive = 0;
-  const dwellDone = new Set<number>();
-  const dwellPoints = () => [
-    { at: keyHoldStart("K3"), shown: () => props.fade.leaflet >= 0.99 },
-    { at: keyHoldStart("K4"), shown: () => props.fade.page >= 0.99 },
-  ];
-  const dwellGoal = (ts: number) => {
-    const tx = target * TAKE_SCREENS,
-      vx = view.x * TAKE_SCREENS;
-    // a stop the camera has gone back before is armed again
-    for (const at of dwellDone) if (vx < at - 0.3) dwellDone.delete(at);
-    const next =
-      tx > vx + 1e-4 ? dwellPoints().find((d) => !dwellDone.has(d.at) && d.at >= vx - 0.02 && d.at < tx) : undefined;
-    if (!next) {
-      dwellSince = dwellArrive = 0;
-      return target;
-    }
-    if (Math.abs(vx - next.at) < 0.01) {
-      if (!dwellArrive) dwellArrive = ts;
-      if (next.shown() && !dwellSince) dwellSince = ts;
-      // released DWELL_S after the copy is fully shown, or after DWELL_MAX_S anyway (a copy that never shows)
-      if ((dwellSince && ts - dwellSince > DWELL_S * 1000) || ts - dwellArrive > DWELL_MAX_S * 1000) {
-        dwellDone.add(next.at);
-        dwellSince = dwellArrive = 0;
-      }
-    }
-    return next.at / TAKE_SCREENS;
-  };
-
   const frame = (ts: number) => {
     raf = requestAnimationFrame(frame);
     timer.update(ts);
     const dt = Math.min(timer.getDelta(), 0.1);
     if (lost) return;
     if (!opts.key) {
-      const goal = dwellGoal(ts);
+      const goal = target;
       dampStep(view, goal, OMEGA, dt);
       if (Math.abs(view.x - goal) < 1e-5 && Math.abs(view.v) < 1e-4) {
         view.x = goal;
@@ -717,7 +745,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const shown = Math.min(1, Math.max(0, view.x)),
       xs = shown * TAKE_SCREENS;
     // the rest of the row is built as the camera nears K4.1 (or straight away when the scroll jumps past it)
-    if (!rowLoading && Math.max(xs, target * TAKE_SCREENS) > B5.rise - 1.5) void loadRow();
+    if (!rowLoading && Math.max(xs, target * TAKE_SCREENS) > B5.rise - 1.5) void loadRow().catch(reportError);
     // the front room is let go out on the street from K5a.2 on, and built again on the way back (before K4.2)
     if (!roomReleased && room && xs > B5.release) {
       scene.remove(room.group);
@@ -741,9 +769,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       needsRender = true;
     }
     const clock3 = heru3Clock(shown, room?.step ?? layoutStep(fmtT), fmtT);
-    if (heru3Clk.x !== clock3) {
-      if (opts.key || opts.shot) heru3Clk.x = clock3;
-      else followClock(heru3Clk, clock3, dt);
+    if (heru3Time !== clock3) {
+      heru3Time = clock3;
       needsRender = true;
     }
     const outWas = outClk.x;
@@ -755,12 +782,15 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     if (opts.key || opts.shot) nodT = nodTo === 1 ? 0.5 : 0;
     else if (nodT !== nodTo) nodT = nodTo > nodT ? Math.min(1, nodT + dt / NOD_S) : Math.max(0, nodT - dt / NOD_S);
     const clock4 = beat4Clock(shown);
-    if (b4Clk.x !== clock4) {
-      if (opts.key || opts.shot) b4Clk.x = clock4;
-      else followClock(b4Clk, clock4, dt);
+    if (b4Time !== clock4) {
+      b4Time = clock4;
       needsRender = true;
     }
     stepAO(opts.bake != null ? 250 : coarse ? 6 : 10);
+    if (!baking) {
+      for (const resolve of aoWaiters) resolve();
+      aoWaiters.clear();
+    }
     if (Math.abs(shown - lastP) > 1e-6) {
       lastP = shown;
       needsRender = true;
@@ -883,7 +913,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // a change of view is applied on the next frame (forearms, room actions)
     if (topView !== pitch < HANDS_PITCH) needsRender = true;
     topView = pitch < HANDS_PITCH;
-    if (props.update(shown, pitch, b3, b4Clk.x / B4_SECONDS)) {
+    if (props.update(shown, pitch, b3, b4Time / B4_SECONDS)) {
       // the same 30-a-second cap; a change left over is drawn on a later frame
       if (ts - lastShadow >= 32) {
         renderer.shadowMap.needsUpdate = true;
@@ -955,14 +985,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const fade: Record<string, number> = { ...props.fade };
     for (const j of journey) fade[j.anchor.name] = xs > B5.back + 0.3 && (j.shop < 2 || row) ? 1 : 0;
     opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
-    if (!readyFired && firstAO) {
-      const fire = () => {
-        if (readyFired) return;
-        readyFired = true;
-        opts.onReady?.();
-      };
-      void firstAO.then(() => requestAnimationFrame(fire));
-      firstAO = null;
+    // Reveal only after the complete counter scene has been prepared and actually drawn.
+    if (!readyFired && assetsReady && !disposed) {
+      readyFired = true;
+      opts.onReady?.();
+      // Prepare the next set during the intro, instead of starting its download at the binder.
+      if (!opts.shot) rowPreloadTimer = setTimeout(() => void loadRow().catch(reportError), 800);
     }
   };
 
@@ -980,14 +1008,32 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const ro = new ResizeObserver(resize);
   ro.observe(host);
   resize();
-  // the cast pops in when built; stills and review shots (?shot, ?bake) wait for it
-  // the world fades in once its AO is on and its shaders are compiled (the K0 still shows meanwhile)
+  // The K0 still remains while all K0–K4 resources (including close-up hands) are prepared.
   // stills, review shots and the AO bake have the whole row from the start
-  firstAO = Promise.all([provideAO(extAO), roomAO, opts.shot ? castReady : null, opts.shot ? loadRow() : null])
-    .then(warm)
+  bootStep("sets");
+  const setsAO = Promise.all([provideAO(extAO).then(() => bootStep("aoExt")), roomAO.then(() => bootStep("aoRoom"))]);
+  // The sets' shaders (their AO maps change the programs, so after those) compile while the cast is still being
+  // built; the final warm-up then only has the cast's own programs left (measured 10 Nov: the boot waited for both).
+  if (!opts.shot)
+    void setsAO
+      .then(waitForAO)
+      .then(() => (assetsReady ? undefined : warm()))
+      .catch(reportError);
+  void Promise.all([
+    setsAO,
+    castReady,
+    props.ready.then(() => bootStep("props")),
+    document.fonts.ready.then(() => bootStep("fonts")),
+    opts.shot ? loadRow() : null,
+  ])
+    .then(waitForAO)
+    .then(() => warm(true))
     .then(() => {
+      if (disposed) return;
+      assetsReady = true;
       needsRender = true;
-    });
+    })
+    .catch(reportError);
   raf = requestAnimationFrame(frame);
 
   return {
@@ -1002,10 +1048,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       whipT = whipTarget(target);
       heruClk.x = heruClock(target, fmtT);
       heruClk.v = 0;
-      heru3Clk.x = heru3Clock(target, room?.step ?? layoutStep(fmtT), fmtT);
-      heru3Clk.v = 0;
-      b4Clk.x = beat4Clock(target);
-      b4Clk.v = 0;
+      heru3Time = heru3Clock(target, room?.step ?? layoutStep(fmtT), fmtT);
+      b4Time = beat4Clock(target);
       outClk.x = scrollClock(target * TAKE_SCREENS);
       outClk.v = 0;
       nodT = target * TAKE_SCREENS >= NOD_AT ? 1 : 0;
@@ -1029,7 +1073,16 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     },
     stats: () => stats,
     /** Live objects, for dev tools (camera solve, review shots). */
-    debug: () => ({ scene, camera, heru, crew, room, fmtT }),
+    debug: () => ({
+      scene,
+      camera,
+      heru,
+      crew,
+      room,
+      fmtT,
+      scroll: { shown: view.x, target },
+      counter: { ...props.fade, clock3: heru3Time, clock4: b4Time },
+    }),
     keyP,
     canvas,
     renderer,
@@ -1038,6 +1091,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     /** Baked maps as grey PNG data URLs, for tools/render. */
     aoExport: () => [...baked].map(([id, { data, res }]) => ({ id, w: res[0], h: res[1], png: encodeMap(data, res) })),
     dispose() {
+      if (disposed) return;
+      disposed = true;
+      abort.abort();
+      clearTimeout(rowPreloadTimer);
+      for (const resolve of aoWaiters) resolve();
+      aoWaiters.clear();
+      drawWarm?.();
+      drawWarm = null;
       cancelAnimationFrame(raf);
       ro.disconnect();
       timer.dispose();

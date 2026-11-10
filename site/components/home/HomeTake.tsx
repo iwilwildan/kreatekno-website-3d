@@ -5,6 +5,7 @@ import { clamp01, smoothstep } from "@/world/core/segments";
 import { SEG, TAKE_SCREENS, keyP, type KeyName } from "@/world/takes/home/timing";
 import { segmentStart } from "@/world/core/segments";
 import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type StillsData } from "./placeHero";
+import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
 import stillsData from "./stills.json";
 
 const STILLS = stillsData as unknown as StillsData;
@@ -24,18 +25,18 @@ const STILL_FADES: Record<string, [number, number]> = {
   "K2.1": [4.7, 5.3],
   "K2.2": [5.42, 5.62],
   K3: [8.2, 8.6],
-  K4: [9.85, 10.3],
+  K4: [9.05, 9.5],
   // beats 5a–5b: K4.1 as the camera tilts up, K5a.1 out of the door, then each stop along the row (on 9:16 the
   // "b" stills are the second panel of a hold; on 16:9 they repeat the hold's still, so nothing changes there)
-  "K4.1": [12.3, 12.9],
-  "K5a.1": [13.9, 14.5],
-  "K5a.2": [14.8, 15.2],
-  "K5a.2b": [15.4, 15.58],
-  "K5a.3": [15.9, 16.3],
-  "K5a.3b": [16.5, 16.68],
-  "K5a.4": [17.0, 17.4],
-  "K5a.4b": [17.6, 17.78],
-  "K5a.6": [18.1, 18.5],
+  "K4.1": [10.5, 11.1],
+  "K5a.1": [12.1, 12.7],
+  "K5a.2": [13.0, 13.4],
+  "K5a.2b": [13.6, 13.78],
+  "K5a.3": [14.1, 14.5],
+  "K5a.3b": [14.7, 14.88],
+  "K5a.4": [15.2, 15.6],
+  "K5a.4b": [15.8, 15.98],
+  "K5a.6": [16.3, 16.7],
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -43,7 +44,8 @@ const ROW_STILLS = {
   hp: ["K5a.2", "K5a.2b", "K5a.3", "K5a.3b", "K5a.4", "K5a.4b", "K5a.6"],
 };
 /** Stills fallback: the leaflet's copy comes in on the K3 still and goes as the K4 still comes; the page's after. */
-const STILL_COPY = { leaflet: [8.6, 8.9], page: [10.3, 10.6] } as const;
+// Both copies are fully visible at their keyframe, including when reached by a section link.
+const STILL_COPY = { leaflet: [8.4, 8.6], page: [9.4, 9.6] } as const;
 /** A scroll step longer than this (screens; a jump link, the End key, the scrollbar) cuts instead of flying. */
 const JUMP_SCREENS = 2;
 /** Jump marks: menu links to sections told inside the take land on their keyframe's hold (its middle). */
@@ -53,6 +55,9 @@ const MARKS: { id: string; key: KeyName; at?: number }[] = [
   { id: "cara-kerja", key: "K5a.2", at: 0.06 },
 ];
 const CROSSFADE_MS = 500;
+/** Share of the loading bar before the world reports its own steps: the take started, the world's code loaded. */
+const BAR_START = 0.02,
+  BAR_IMPORTED = 0.08;
 /** Screens where the hold on keyframe k starts. */
 const holdStart = (k: KeyName) =>
   segmentStart(
@@ -66,11 +71,14 @@ const holdStart = (k: KeyName) =>
  * Reduced motion and no-JS get the stacked version from CSS (stage.css).
  */
 export function HomeTake({
+  loadingLabel,
   stills,
   headline,
   body,
   copy,
 }: {
+  /** "Memuat" / "Loading": the loading bar's label, followed by the share done. */
+  loadingLabel: string;
   stills: ReactNode;
   headline: ReactNode;
   body: ReactNode;
@@ -79,6 +87,7 @@ export function HomeTake({
 }) {
   const root = useRef<HTMLElement>(null);
   const host = useRef<HTMLDivElement>(null);
+  const loader = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<Mode>("boot");
   const [live, setLive] = useState(false);
   const [hud, setHud] = useState<string | null>(null);
@@ -107,12 +116,30 @@ export function HomeTake({
       worldMod: WorldModule | null = null,
       current: Mode = "boot",
       disposed = false,
+      abandoned = false,
       liveAt = 0,
       lastQuads: Record<string, Quad | null> = {};
+    let bootTimer: ReturnType<typeof setTimeout> | undefined;
+    let hudTimer: ReturnType<typeof setInterval> | undefined;
+    let cancelStart = () => {};
 
     const switchMode = (m: Mode) => {
       current = m;
       setMode(m);
+      // live or stills: the scroll is the visitor's again
+      if (m !== "boot") bootUnlock();
+    };
+    /** The loading bar (written directly: no re-render of the take for each step). */
+    let barShare = 0;
+    const setBar = (share: number) => {
+      const bar = loader.current;
+      if (!bar || share <= barShare) return;
+      barShare = share;
+      const pct = Math.round(share * 100);
+      bar.style.setProperty("--boot", share.toFixed(3));
+      bar.setAttribute("aria-valuenow", String(pct));
+      const text = bar.querySelector(".take-loader-text");
+      if (text) text.textContent = `${loadingLabel} ${pct}%`;
     };
     const readP = () => {
       const r = el.getBoundingClientRect(),
@@ -204,8 +231,13 @@ export function HomeTake({
     if (kq && !params.has("shot")) scrollTo(0, el.offsetTop + keyP(kq) * (el.offsetHeight - stage.clientHeight));
 
     const toStills = () => {
+      if (disposed) return;
+      abandoned = true;
+      clearTimeout(bootTimer);
+      clearInterval(hudTimer);
       world?.dispose();
       world = null;
+      setLive(false);
       switchMode("stills");
       placeHero(el, STILLS);
       onScroll();
@@ -215,10 +247,20 @@ export function HomeTake({
     if (!gl) {
       toStills();
     } else {
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      // A slow phone or a stalled download gets the stills, at most BOOT_LIMIT_MS after the page was opened
+      // (the scroll is locked until then): the visitor never waits on the loading bar longer than that.
+      if (!params.has("shot") && !params.has("bake"))
+        bootTimer = setTimeout(toStills, Math.max(0, BOOT_LIMIT_MS - performance.now()));
       const start = async () => {
+        if (disposed || abandoned) return;
+        performance.mark("take:start");
+        setBar(BAR_START);
         try {
           worldMod = await import("@/world");
-          if (disposed) return;
+          if (disposed || abandoned) return;
+          performance.mark("take:imported");
+          setBar(BAR_IMPORTED);
           const aspect = worldMod.anchorAspects();
           world = await worldMod.mount(canvasHost, {
             fmt: (params.get("fmt") as "pc" | "hp" | null) ?? undefined,
@@ -243,7 +285,9 @@ export function HomeTake({
               placeAnchors(el, quads, aspect, worldMod.quadToMatrix3d, f);
             },
             onReady: () => {
-              if (disposed) return;
+              if (disposed || abandoned) return;
+              performance.mark("take:live");
+              clearTimeout(bootTimer);
               liveAt = performance.now();
               switchMode("live");
               setLive(true);
@@ -252,11 +296,19 @@ export function HomeTake({
             onContextLost: (n) => {
               if (n >= 2) toStills();
             },
+            onProgress: (share) => setBar(BAR_IMPORTED + (1 - BAR_IMPORTED) * share),
+            onError: (error) => {
+              if (disposed || abandoned) return;
+              console.error(error);
+              toStills();
+            },
           });
-          if (disposed) {
+          if (disposed || abandoned) {
             world.dispose();
+            world = null;
             return;
           }
+          performance.mark("take:mounted");
           world.setTarget(readP());
           if (dev) {
             const w = world;
@@ -275,8 +327,8 @@ export function HomeTake({
             });
           }
           if (params.has("hud")) {
-            const id = setInterval(() => {
-              if (!world) return clearInterval(id);
+            hudTimer = setInterval(() => {
+              if (!world) return;
               const s = world.stats();
               setHud(
                 `${s.key} · ${s.fps} fps · ${s.calls} draw call · ${(s.triangles / 1000).toFixed(1)} rb segitiga (dengan bayangan ${s.shadow.calls}) · dpr ${s.pixelRatio.toFixed(2)} · AO ${s.ao} · tokoh ${s.cast.ms} ms (maks ${s.cast.longest})`,
@@ -288,11 +340,11 @@ export function HomeTake({
           if (!disposed) toStills();
         }
       };
-      // after the first paint and the LCP image, when the main thread is idle
-      const idle = (cb: () => void) =>
-        "requestIdleCallback" in window ? requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 300);
-      if (document.readyState === "complete") idle(start);
-      else addEventListener("load", () => idle(start), { once: true });
+      // Right after the first paint (the K0 still and the hero copy are on screen), prepare the world: the
+      // visitor waits on the loading bar meanwhile, so waiting for an idle main thread only adds to it (measured
+      // 10 Nov: up to 10 s on a slow phone). Cancelled on navigation.
+      const firstPaint = requestAnimationFrame(() => void start());
+      cancelStart = () => cancelAnimationFrame(firstPaint);
     }
 
     const io = new IntersectionObserver(([e]) => world?.setRunning(e.isIntersecting));
@@ -300,11 +352,17 @@ export function HomeTake({
 
     return () => {
       disposed = true;
+      bootUnlock();
+      cancelStart();
+      clearTimeout(bootTimer);
+      clearInterval(hudTimer);
       io.disconnect();
       removeEventListener("scroll", onScroll);
       removeEventListener("resize", onResize);
       world?.dispose();
     };
+    // the label comes from the server and never changes for this take
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -336,6 +394,25 @@ export function HomeTake({
           {body}
         </div>
         {copy}
+        {/* Shown only while the scroll is locked (html[data-booting], stage.css); its share is set by setBar. */}
+        <div
+          ref={loader}
+          className="take-loader"
+          data-done={mode !== "boot" || undefined}
+          role="progressbar"
+          aria-label={loadingLabel}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={0}
+          suppressHydrationWarning
+        >
+          <span className="take-loader-track" aria-hidden>
+            <span className="take-loader-fill" />
+          </span>
+          <span className="take-loader-text" aria-hidden suppressHydrationWarning>
+            {loadingLabel} 0%
+          </span>
+        </div>
         {hud && (
           <p className="font-mono fixed bottom-3 left-3 z-20 rounded-lg bg-white/90 px-3 py-2 text-xs text-ink">
             {hud}

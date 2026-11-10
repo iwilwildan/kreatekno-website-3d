@@ -72,9 +72,9 @@ export function applyAO(t: AoTarget, data: Uint8Array) {
 }
 
 /** Decodes a baked PNG into one byte per texel (red channel), or null when it is missing or the wrong size. */
-async function fetchMap(url: string, [w, h]: [number, number]) {
+async function fetchMap(url: string, [w, h]: [number, number], signal?: AbortSignal) {
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal });
     if (!res.ok) return null;
     const bmp = await createImageBitmap(await res.blob(), {
       colorSpaceConversion: "none",
@@ -97,11 +97,12 @@ async function fetchMap(url: string, [w, h]: [number, number]) {
 }
 
 /** Loads the baked maps; returns the targets that have none. */
-export async function loadAO(targets: AoTarget[], base: string) {
+export async function loadAO(targets: AoTarget[], base: string, signal?: AbortSignal) {
   const missing: AoTarget[] = [];
   await Promise.all(
     targets.map(async (t) => {
-      const data = await fetchMap(`${base}/${t.id}.png`, t.res);
+      const data = await fetchMap(`${base}/${t.id}.png`, t.res, signal);
+      if (signal?.aborted) return;
       if (data) applyAO(t, data);
       else missing.push(t);
     }),

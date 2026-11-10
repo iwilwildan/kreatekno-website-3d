@@ -1,6 +1,7 @@
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { getMessages, getTranslations } from "next-intl/server";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { BOOT_LIMIT_MS, bootLock } from "./bootLock";
 import { HomeTake } from "./HomeTake";
 import { Binder, type Industry } from "./props/Binder";
 import { Journey } from "./props/Journey";
@@ -68,7 +69,10 @@ export async function HomeStage() {
 
   return (
     <>
+      {/* Locks the scroll while the world boots, before the take is parsed (bootLock.ts). */}
+      <script dangerouslySetInnerHTML={{ __html: `(${bootLock.toString()})(${BOOT_LIMIT_MS})` }} />
       <HomeTake
+        loadingLabel={tStage("loading")}
         stills={stills}
         copy={
           <>

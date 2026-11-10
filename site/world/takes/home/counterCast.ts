@@ -4,8 +4,8 @@
 // fingers on its corner (revision 6 Nov: he is not seen carrying it). Bu Dewi looks up as he comes, down at the
 // leaflet when he lays it, and takes its other corner. In beat 4 (top view) the props and the close-up hands
 // move instead (sets/counterProps.ts): the leaflet slides out, the binder comes to the middle and opens.
-// Heru's walk runs on his own clock like beat 1 (see ./heru): the scroll sets where it should be, he follows at
-// his own pace. Bu Dewi's part is sampled from the scroll directly (she hardly moves).
+// Beats 3–4 sample the displayed scroll directly, including the walk and hands: the leaflet must be laid and
+// the binder open when the camera arrives, without holding the camera to wait for a separate animation clock.
 import * as THREE from "three";
 import type { CastMember } from "../../cast/member";
 import type { Pose } from "../../cast/poses";
@@ -23,9 +23,8 @@ const B3 = { start: segmentStart(SEG, i22), len: SEG[i22].screens + SEG[i22 + 1]
   B4 = { start: segmentStart(SEG, i34), len: SEG[i34].screens };
 
 /**
- * Beat 4 runs on its own clock too (seconds at a natural pace), like Heru's walk: the scroll sets where it should
- * be and the world follows no faster than 1.5× (scrolled straight from the K3 → K4 move, the binder opened in a
- * blink). Its phases, as shares of the clock: Bu Dewi lets go, Heru slides the leaflet out, moves his hand to the
+ * Beat 4 is sampled from the displayed scroll. Seconds only parameterize the choreography, not a real-time
+ * speed limit. Its phases, as shares of the clock: Bu Dewi lets go, Heru slides the leaflet out, moves his hand to the
  * binder, pulls it to the middle, its cover opens and folds under, both hands come to rest.
  */
 export const B4_SECONDS = 5.5;
