@@ -13,30 +13,30 @@ type Mode = "boot" | "live" | "stills";
 type WorldModule = typeof import("@/world");
 type World = Awaited<ReturnType<WorldModule["mount"]>>;
 
-/** Screens of scroll over which the hero leaves (end of the K0 hold into the crane down). */
-const HERO_OUT = [0.85, 1.25];
+/** Screens of scroll over which the hero leaves (end of the K0 hold into the first third of the crane down). */
+const HERO_OUT = [SEG[0].screens - 0.05, SEG[0].screens + 0.35 * SEG[1].screens];
 /**
  * Stills fallback: crossfade into K1 during the crane down, into K2 during the walk through the door, into K2.1
  * during the dolly in, into K2.2 at the whip pan, into K3 at the end of the tilt down, into K4 during the truck.
  */
 const STILL_FADES: Record<string, [number, number]> = {
-  K1: [1.2, 1.8],
-  K2: [2.9, 4.0],
-  "K2.1": [4.7, 5.3],
-  "K2.2": [5.42, 5.62],
-  K3: [8.2, 8.6],
-  K4: [9.05, 9.5],
+  K1: [0.51, 0.93],
+  K2: [2.0, 3.1],
+  "K2.1": [3.8, 4.4],
+  "K2.2": [4.52, 4.72],
+  K3: [7.3, 7.7],
+  K4: [8.15, 8.6],
   // beats 5a–5b: K4.1 as the camera tilts up, K5a.1 out of the door, then each stop along the row (on 9:16 the
   // "b" stills are the second panel of a hold; on 16:9 they repeat the hold's still, so nothing changes there)
-  "K4.1": [10.5, 11.1],
-  "K5a.1": [12.1, 12.7],
-  "K5a.2": [13.0, 13.4],
-  "K5a.2b": [13.6, 13.78],
-  "K5a.3": [14.1, 14.5],
-  "K5a.3b": [14.7, 14.88],
-  "K5a.4": [15.2, 15.6],
-  "K5a.4b": [15.8, 15.98],
-  "K5a.6": [16.3, 16.7],
+  "K4.1": [9.6, 10.2],
+  "K5a.1": [11.2, 11.8],
+  "K5a.2": [12.1, 12.5],
+  "K5a.2b": [12.7, 12.88],
+  "K5a.3": [13.2, 13.6],
+  "K5a.3b": [13.8, 13.98],
+  "K5a.4": [14.3, 14.7],
+  "K5a.4b": [14.9, 15.08],
+  "K5a.6": [15.4, 15.8],
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -45,7 +45,7 @@ const ROW_STILLS = {
 };
 /** Stills fallback: the leaflet's copy comes in on the K3 still and goes as the K4 still comes; the page's after. */
 // Both copies are fully visible at their keyframe, including when reached by a section link.
-const STILL_COPY = { leaflet: [8.4, 8.6], page: [9.4, 9.6] } as const;
+const STILL_COPY = { leaflet: [7.5, 7.7], page: [8.5, 8.7] } as const;
 /** A scroll step longer than this (screens; a jump link, the End key, the scrollbar) cuts instead of flying. */
 const JUMP_SCREENS = 2;
 /** Jump marks: menu links to sections told inside the take land on their keyframe's hold (its middle). */

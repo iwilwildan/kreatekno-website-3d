@@ -1478,3 +1478,21 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Dicek: typecheck, ESLint, Prettier, build lulus. Tes kunci (skrip scratchpad, browser baru tiap profil): pc live 8,0 s, HP CPU 1× 8,9 s, HP CPU 4× 12,2 s, HP CPU 6× stills di 15,9 s; selama boot scroll roda, End/PageDown/Space dan usapan jari tertahan; bar naik monoton; setelah selesai kunci lepas, bar hilang, bisa scroll; reduced motion tidak dikunci; `?k=K3` tetap di K3 selama terkunci; tanpa pageerror. Screenshot loader hp/pc/EN hanya di chat.
 - Regresi: `tools/render/issue4.mjs` 73/73 dan `issue4-loading.mjs` 25/25 lulus pada build ini.
 - Belum: tes HP fisik dan konfirmasi user, komentar tambahan di issue #4 (loading screen), commit, push, tutup issue. Bobot `onProgress` diukur di laptop; di HP bar bisa melompat di tahap tokoh.
+
+### 2026-11-10 (issue GitHub #5: K0 → K1 dipendekkan)
+
+- Issue #5: dari hero di billboard (K0) sampai Heru di pintu COMPANY (K1) butuh 1,9 layar. Diukur ulang di build produksi (scroll rata 2 s/layar, skrip scratchpad, posisi kamera, headline dan kartu hero per frame): kamera baru mulai turun di 1,10 layar dan tiba di K1 di 1,96 layar pada 1280×720 (1.411 px, ±14 putaran roda), 1920×1080 (2.130 px), 768×1024, 375×812 (1.594 px) dan 360×640. Penyebab: hold K0 0,9 + crane 1,0 layar di `timing.ts`. Copy hero dibaca saat halaman diam di posisi 0 (scroll terkunci selama loading), jadi hold panjang hanya menunda efek scroll.
+- Keputusan user: K0 → K1 1,0 layar (hold 0,3 + crane 0,7, pilihan yang direkomendasikan). Instruksi user lewat sesi induk: pertanyaan berikutnya di issue ini memakai rekomendasi; tidak ada pertanyaan lanjutan.
+- Diubah:
+  - `takes/home/timing.ts`: hold K0 0,9 → 0,3, crane K0 → K1 1,0 → 0,7; take 17,0 → 16,1 layar.
+  - `components/home/HomeTake.tsx`: `HERO_OUT` dihitung dari segmen (akhir hold − 0,05 sampai sepertiga awal crane; sekarang 0,25–0,545, sebelumnya 0,85–1,25), jadi kartu hero HP tetap memudar di akhir hold dan tombol hero tetap disembunyikan setelahnya. `STILL_FADES` K1 dipetakan ke crane baru (0,51–0,93), lainnya −0,9; `STILL_COPY` −0,9.
+  - `tools/render/lib.mjs` `HP_AT` −0,9; `tools/render/issue4.mjs` take 16,1, rentang 7,3–10,0, fallback leaflet 7,7 dan binder 8,7.
+  - Tidak diubah: burung (`craneAt` relatif ke crane, keluar di 35% awal), still K0 dan crossfade (kamera hold sama), tautan `#layanan`/`#cara-kerja` (dihitung dari segmen), Heru berbalik dan pintu (#6, #10).
+- Dicek:
+  - ukur ulang di build produksi (port 3302): kamera mulai turun 0,48–0,49 layar dan tiba di K1 1,08–1,09 layar di kelima viewport (1280×720 784 px ±8 putaran, 1920×1080 1.177 px, 375×812 880 px). Kartu hero HP penuh sampai 0,27 layar, hilang di 0,53; headline HP lepas dari billboard 0,82–1,00. Tanpa pageerror;
+  - frame PC dan HP di 0, 0,3, 0,45, 0,55, 0,7, 0,85 dan 1,15 layar (hanya di chat): hero utuh selama hold, burung keluar saat crane, Heru di K1;
+  - still dirender dari build baru dan dibandingkan dengan `site/public/stills/`: K0–K5a.1 dan K5a.6 sama (selisih rata-rata 1,5–3,1 dari kompresi WebP). K5a.2–K5a.4 berbeda karena still itu masih framing per panel dari sebelum issue #2, bukan karena perbaikan ini. Still tidak dirender ulang;
+  - `#layanan` mendarat di K3 (7,9) dengan copy leaflet tampil, `#cara-kerja` di 12,56 dengan judul di layar (1280×720, 768×1024, 375×812);
+  - `tools/render/issue4.mjs` 73/73 dan `issue4-loading.mjs` 25/25 lulus; typecheck, ESLint, Prettier (`tools/render/lib.mjs` sudah tidak lolos Prettier sejak HEAD), `npm run build` lulus.
+- Dikonfirmasi user setelah tes di HP ("Ok tested", diteruskan sesi induk). Di-commit ke `main` (Refs #5; hanya `timing.ts`, `HomeTake.tsx`, `tools/render/lib.mjs`, `tools/render/issue4.mjs` dan entri log ini; pekerjaan Solusi dan entri tes UX 10 Nov tidak ikut), lalu di-push.
+- Belum: komentar Penyebab/Perbaikan/Dicek/Belum di issue #5 dan penutupan issue, karena Claude in Chrome tidak tersambung dan browser bawaan belum login GitHub (draf komentar di scratchpad sesi).

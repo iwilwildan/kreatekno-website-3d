@@ -56,8 +56,8 @@ async function scrollRun(page, secondsPerScreen, reverse = false) {
         stage = el.querySelector("[data-stage]");
       const total = Number(el.style.getPropertyValue("--take"));
       const range = el.offsetHeight - stage.clientHeight;
-      const from = reverse ? 10.9 : 8.2,
-        to = reverse ? 8.2 : 10.9;
+      const from = reverse ? 10.0 : 7.3,
+        to = reverse ? 7.3 : 10.0;
       const go = (s) =>
         scrollTo({
           top: el.offsetTop + (s / total) * range,
@@ -125,11 +125,11 @@ try {
       ao: window.__world.aoDone(),
     }));
     check(
-      `${label}: ready includes cast/fonts/AO and 17.0 screens`,
+      `${label}: ready includes cast/fonts/AO and 16.1 screens`,
       boot.cast &&
         boot.fonts === "loaded" &&
         boot.ao &&
-        Math.abs(boot.total - 17.0) < 1e-8,
+        Math.abs(boot.total - 16.1) < 1e-8,
       boot,
     );
     await wait(page, 2500);
@@ -238,9 +238,9 @@ try {
     if (label === "no-webgl") {
       await page.waitForSelector('.take[data-mode="stills"]');
       for (const [s, name] of [
-        [8.6, "leaflet"],
-        [9.6, "binder"],
-        [8.6, "leaflet"],
+        [7.7, "leaflet"],
+        [8.7, "binder"],
+        [7.7, "leaflet"],
       ]) {
         await page.evaluate((s) => {
           const el = document.getElementById("beranda");

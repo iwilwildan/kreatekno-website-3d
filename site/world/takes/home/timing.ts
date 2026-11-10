@@ -32,8 +32,9 @@ export type KeyName =
   | "K5a.6";
 
 export const SEG: Segment<KeyName>[] = [
-  { type: "hold", from: "K0", screens: 0.9 },
-  { type: "move", from: "K0", to: "K1", screens: 1.0 },
+  // issue #5: K0 → K1 in 1.0 screen (was 0.9 + 1.0): a short hold, then the scroll moves the camera at once
+  { type: "hold", from: "K0", screens: 0.3 },
+  { type: "move", from: "K0", to: "K1", screens: 0.7 },
   { type: "hold", from: "K1", screens: 0.3 },
   { type: "move", from: "K1", to: "K2", screens: 2.0 },
   { type: "hold", from: "K2", screens: 0.3 },

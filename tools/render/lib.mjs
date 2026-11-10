@@ -61,7 +61,7 @@ export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.
  * Stills of beats 5a–5b on 9:16 taken where the camera stops on a panel (screens into the take), not at the
  * hold's middle (between two panels there); "b" keys are the second panel of a hold (9:16 only).
  */
-export const HP_AT = { "K5a.2": 13.45, "K5a.2b": 13.83, "K5a.3": 14.55, "K5a.3b": 14.93, "K5a.4": 15.65, "K5a.4b": 16.03 };
+export const HP_AT = { "K5a.2": 12.55, "K5a.2b": 12.93, "K5a.3": 13.65, "K5a.3b": 14.03, "K5a.4": 14.75, "K5a.4b": 15.13 };
 /** The journey copy recorded on each still (stills fallback), per format. */
 export const JOURNEY = {
   pc: { "K5a.2": ["intro", "talk"], "K5a.3": ["map", "build"], "K5a.4": ["launch", "cta"] },
