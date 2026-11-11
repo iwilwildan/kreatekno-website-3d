@@ -36,7 +36,7 @@ import {
 import { k3View, k4View, setSafeTop } from "./takes/home/counter";
 import { B5, b5Relax, panelArrivals } from "./takes/home/outside";
 import { SEG } from "./takes/home/timing";
-import { outsideState, poseOutside, scrollClock, stepOutClock } from "./takes/home/outsideCast";
+import { outsideState, poseOutside, rightLeaf, scrollClock, stepOutClock } from "./takes/home/outsideCast";
 import type { Row } from "./sets/row";
 import {
   B4_SECONDS,
@@ -858,8 +858,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       if (!outside) placeCrew();
     }
     const moved = outside ? placeOutside(outClk.x) : beat3 ? placeHeru3(shown, breath) : placeHeru(h, whip, breath);
-    // the right leaf, open since beat 1, swings shut once the camera has backed out past it (video k4.2 - k4.1)
-    const door = h.door * (1 - smoothstep(B5.back + 0.3, B5.back + 0.5, xs));
+    // the right leaf, open since beat 1, swings shut once the camera has backed out past it (video k4.2 - k4.1), and
+    // opens outward with the left one when they come out, so Bu Dewi walks out through it (issue #8)
+    const door = h.door * (1 - smoothstep(B5.back + 0.3, B5.back + 0.5, xs)) + (outside ? rightLeaf(outClk.x) : 0);
     if (moved || street.hinge.rotation.y !== door) shadowDue = true;
     street.hinge.rotation.y = door;
     if (outside) {

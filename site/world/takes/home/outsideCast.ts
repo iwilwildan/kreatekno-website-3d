@@ -65,6 +65,8 @@ class TimedWalk {
 const DW = DATA.ext.dw;
 /** COMPANY's left leaf: hinge, leaf width, and its free edge for an angle (it opens outward, toward the street). */
 const LEFT = { hinge: V(-DW + 0.05, -0.1), w: DW - 0.07, open: -1.4 };
+/** COMPANY's right leaf opened outward on the way out (its hinge is at the door's right edge; sets/street.ts). */
+const RIGHT_OPEN = 1.4;
 const leftEdge = (angle: number) =>
   new THREE.Vector3(LEFT.w, 1.0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).add(LEFT.hinge);
 /** Kreatekno's hinged leaf (sets/row.ts): hinge at the door's right edge, opening inward. */
@@ -95,7 +97,8 @@ const H2len = new Walk(H2pts).length;
 const H2h = new TimedWalk(H2pts, (d) => (d > H2len - 11 ? HURRY : OUT_SPEED), 0.42, "R");
 const H3 = new TimedWalk([hDoor, V(KD.cx + 0.3, -0.25), V(KD.cx + 0.4, -0.8)], () => 0.9, 0.38, "L");
 const D1 = new TimedWalk(
-  [V(0.4, -1.9), V(0.38, -0.6), V(0.45, 0.45), V(1.0, LANE.dewi), V(1.4, LANE.dewi)],
+  // out through the right half and on past the end of the right leaf (open outward to z 0.83) before turning right
+  [V(0.4, -1.9), V(0.38, -0.6), V(0.36, 0.75), V(0.5, 1.25), V(1.05, 1.22), V(1.4, LANE.dewi)],
   () => OUT_SPEED,
   0.36,
   "R",
@@ -229,6 +232,14 @@ export type OutsideState = {
 };
 
 const ph = (c: number, [a, b]: readonly [number, number]) => smoothstep(a, b, c);
+
+/**
+ * COMPANY's right leaf on the way out (radians about its hinge; issue #8). It swung shut once the camera was out
+ * (video k4.2 - k4.1); as in video k5a.1 - k4.2 both leaves then open outward together and Bu Dewi comes out
+ * through the right half, stepping out past the leaf's end before she turns right (D1); it shuts with the left one.
+ * Beat 1 is unchanged: there Heru pushes this leaf inward.
+ */
+export const rightLeaf = (c: number) => (c <= 0 ? 0 : RIGHT_OPEN * (ph(c, T.leafOpen) - ph(c, T.leafShut)));
 /** The shortest turn from yaw a to yaw b. */
 const turnTo = (a: number, b: number) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
 
