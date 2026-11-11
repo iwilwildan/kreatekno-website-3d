@@ -11,7 +11,7 @@ import { clean, G, mtx, type Kit, type Vec3 } from "../core/kit";
 import { rectAnchorFrom, type Anchor } from "../core/anchors";
 import { BINDER, counterLayout, type CounterLayout } from "../takes/home/counter";
 import { PAGE, PAGE_COPY, TABS } from "./binderLayout";
-import { beatAt, DEWI_HOLDS, phase4, type Beat3 } from "../takes/home/counterCast";
+import { beatAt, dewiCloseHand, phase4, type Beat3 } from "../takes/home/counterCast";
 import type { CloseHands } from "../cast/closeHand";
 
 /** The close-up hands replace the cast's own hands once the camera looks down steeper than this (radians). */
@@ -19,12 +19,18 @@ export const HANDS_PITCH = -THREE.MathUtils.degToRad(60);
 /**
  * Where the close-up hands lie, from the keyframes: the middle fingertip relative to a leaflet corner (K3:
  * Heru's on the corner nearest him on the left, Bu Dewi's on the one nearest her on the right) or to the binder
- * (K4), and the way the fingers point (yaw; 0 = fingers toward Bu Dewi).
+ * (K4, Heru's only), and the way the fingers point (yaw; 0 = fingers toward Bu Dewi).
  */
 const HAND_AT = {
   heru: { hold: { tip: [-0.03, -0.025], yaw: 0.3 }, rest: { tip: [0.256, 0.074], yaw: 0.25 } },
-  dewi: { hold: { tip: [0.028, 0.038], yaw: Math.PI + 0.55 }, rest: { tip: [-0.25, -0.075], yaw: Math.PI + 0.15 } },
+  dewi: { hold: { tip: [0.028, 0.038], yaw: Math.PI + 0.55 } },
 } as const;
+/**
+ * Issue #14: in beat 4 Bu Dewi's close-up hand no longer rests beside the binder (its sleeve ended ±0.55 m from
+ * her elbow, and the arm read as cut off once the camera rose to K4.1). As she lets go it is drawn back along its
+ * sleeve toward her, this far (metres), out of the bottom of the top view; then her own arm takes over.
+ */
+const DEWI_DRAW_BACK = 0.5;
 
 /** Purple strip of the leaflet: 11 mm below its top edge, 3 mm wide, edge to edge (K3 pc and hp). */
 const STRIP = { from: 0.011, width: 0.003 };
@@ -310,9 +316,10 @@ export function createCounterProps(kit: Kit, signal?: AbortSignal) {
 
   /**
    * Pose for the scroll position p, the camera's pitch and Heru's beat-3 state (leaflet in his hand or laid
-   * down). Beat 4 (K3 → K4) from its own clock (`k4`, 0..1; see counterCast): Bu Dewi lets go, Heru slides the leaflet out to the left, pulls the
-   * binder to the middle, its cover folds under, and both hands come to rest beside it. Returns true when
-   * something moved (the shadow map is redrawn).
+   * down). Beat 4 (K3 → K4) from its own clock (`k4`, 0..1; see counterCast): Bu Dewi lets go and draws her
+   * hand back out of view, Heru slides the leaflet out to the left, pulls the binder to the middle, its cover
+   * folds under, and his hand comes to rest beside it. Returns true when something moved (the shadow map is
+   * redrawn).
    */
   const fade = { leaflet: 0, page: 0 };
   let last = "";
@@ -340,21 +347,21 @@ export function createCounterProps(kit: Kit, signal?: AbortSignal) {
     binder.position.copy(L.binderK3).lerp(L.binderK4, pull).setY(y);
     binder.updateMatrixWorld(true);
     // the close-up hands, in the top views only, each once its own hand is on the leaflet (Heru's once it is
-    // laid down, Bu Dewi's once she has reached its corner)
+    // laid down, Bu Dewi's once she has reached its corner, until she has drawn it back out of view)
     const hs = L.portrait ? 0.7 : 1,
       seen = !!hands && on && pitch < HANDS_PITCH,
-      top = { heru: seen && (b3?.lay ?? 0) > 0.99, dewi: seen && s3 >= DEWI_HOLDS };
+      top = { heru: seen && (b3?.lay ?? 0) > 0.99, dewi: seen && dewiCloseHand(s3, u) };
     const key = `${L.f.x0} ${top.heru} ${top.dewi} ${b3?.c.toFixed(4)} ${u.toFixed(5)}`;
     if (key === last) return false;
     last = key;
     if (!hands) return true;
     const slide = 0.42 * THREE.MathUtils.smootherstep(phase4(u, "slide"), 0, 1);
-    const at = (who: "heru" | "dewi", pose: "hold" | "rest", base: THREE.Vector3, lift = 0): HandAt => ({
-      pose,
-      tip: new THREE.Vector3(base.x + HAND_AT[who][pose].tip[0], 0, base.z + HAND_AT[who][pose].tip[1]),
-      yaw: HAND_AT[who][pose].yaw,
-      lift,
-    });
+    const at = (
+      pose: "hold" | "rest",
+      spot: { tip: readonly [number, number]; yaw: number },
+      base: THREE.Vector3,
+      lift = 0,
+    ): HandAt => ({ pose, tip: new THREE.Vector3(base.x + spot.tip[0], 0, base.z + spot.tip[1]), yaw: spot.yaw, lift });
     const cornerH = new THREE.Vector3(L.leaflet.x + L.leafX / 2 + slide, 0, L.leaflet.z + L.leafZ / 2),
       cornerD = new THREE.Vector3(L.leaflet.x - L.leafX / 2, 0, L.leaflet.z - L.leafZ / 2),
       onBinder: HandAt = {
@@ -363,10 +370,16 @@ export function createCounterProps(kit: Kit, signal?: AbortSignal) {
         yaw: 0.3,
         lift: BINDER.h - 0.004,
       };
-    const heruHold = at("heru", "hold", cornerH, 0.0012),
-      heruRest = at("heru", "rest", L.binderK4),
-      dewiHold = at("dewi", "hold", cornerD, 0.0012),
-      dewiRest = at("dewi", "rest", L.binderK4);
+    const heruHold = at("hold", HAND_AT.heru.hold, cornerH, 0.0012),
+      heruRest = at("rest", HAND_AT.heru.rest, L.binderK4),
+      dewiHold = at("hold", HAND_AT.dewi.hold, cornerD, 0.0012),
+      // back along the sleeve (the hand's +z, turned by its yaw), toward her
+      dewiAway: HandAt = {
+        ...dewiHold,
+        tip: dewiHold.tip
+          .clone()
+          .addScaledVector(new THREE.Vector3(Math.sin(dewiHold.yaw), 0, Math.cos(dewiHold.yaw)), DEWI_DRAW_BACK),
+      };
     const heruAt =
       phase4(u, "toBinder") <= 0
         ? heruHold
@@ -375,7 +388,7 @@ export function createCounterProps(kit: Kit, signal?: AbortSignal) {
           : phase4(u, "rest") <= 0
             ? onBinder
             : between(onBinder, heruRest, phase4(u, "rest"));
-    const dewiAt = between(dewiHold, dewiRest, phase4(u, "letGo"));
+    const dewiAt = between(dewiHold, dewiAway, phase4(u, "letGo"));
     for (const [who, a] of [
       ["heru", heruAt],
       ["dewi", dewiAt],

@@ -42,7 +42,7 @@ import {
   B4_SECONDS,
   beat4Clock,
   beatAt,
-  DEWI_HOLDS,
+  dewiCloseHand,
   dewiPose3,
   heru3Clock,
   phase4,
@@ -840,7 +840,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // from the last frame's camera); posed again when that changes, so their arm IK never runs folded
     const folds = [
       [heru, topView && beat3 && (b3?.lay ?? 0) > 0.99],
-      [crew.find((x) => x.name === "dewi"), topView && beat3 && beatAt(shown).s >= DEWI_HOLDS],
+      [crew.find((x) => x.name === "dewi"), topView && beat3 && dewiCloseHand(beatAt(shown).s, b4Time / B4_SECONDS)],
     ] as const;
     for (const [m, folded] of folds) {
       const fold = folded ? 1e-3 : 1;

@@ -1538,3 +1538,22 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Komentar revisi dikirim di issue #8 (issuecomment-6783124647).
 - Keputusan user: "Commit saja". Di-commit ke `main` (Refs #8; hanya `world/index.ts`, `takes/home/outsideCast.ts` dan entri log ini; pekerjaan Solusi dan entri log lain tidak ikut). Belum di-push; issue #8 tetap open sampai push.
 - Belum: still K5a.1 tidak dirender ulang (daun kanan di still masih tertutup); tes di HP Android sungguhan; konfirmasi user, commit, push, tutup issue.
+
+### 2026-11-11 (issue GitHub #14: tangan Bu Dewi kembali ke badannya di K3 → K4)
+
+- Issue #14 (revisi user di komentar: tangan Bu Dewi tidak ke samping binder, tangan Heru tetap). Direproduksi di build produksi (port 3300, skrip scratchpad, Playwright `?hud`, posisi tiap 0,1 layar): di tampak atas lengan bawah kanan Bu Dewi dilipat dan diganti tangan close-up, yang ujung lengan bajunya berjarak 0,27 m (PC) / 0,17 m (HP) dari sikunya di K3, lalu 0,55 / 0,35 m setelah tangannya pindah ke samping binder di K3 → K4. Di K3 dan jeda K4 celah itu di luar frame; saat kamera naik dan berputar ke K4.1 (8,9–9,02 layar) tangan close-up masih tampil, jadi lengannya terlihat putus (lengan dari atas di kiri binder, badan di kanan atas), di PC dan HP.
+- Keputusan user: pilihan A (tangan kembali ke badannya, keluar frame, lengan asli utuh lagi).
+- Diubah:
+  - `sets/counterProps.ts`: saat Bu Dewi melepas leaflet (`letGo`, 0–35% beat 4) tangan close-up-nya ditarik mundur 0,5 m menyusuri lengan bajunya (`DEWI_DRAW_BACK`) sampai keluar dari bawah frame, lalu dimatikan; `HAND_AT.dewi.rest` dihapus.
+  - `takes/home/counterCast.ts`: `dewiCloseHand(s, k4)` (dari memegang sudut leaflet sampai `letGo` selesai); `dewiPose3` mengembalikan tangan kanan aslinya ke konter di depannya (pose K2) saat melepas, bukan ke samping binder.
+  - `world/index.ts`: lengan bawah Bu Dewi dilipat hanya selama `dewiCloseHand`.
+  - `site/public/stills/pc/k4.webp` dirender ulang (tanpa tangan Bu Dewi). K4 HP sama persis; K4.1 tidak dirender ulang (selisihnya gelembung pikiran issue #3, bukan dari perbaikan ini).
+  - Tangan Heru, kamera, timing dan copy tidak berubah.
+- Dicek (build produksi, port 3300):
+  - posisi tiap 0,05 layar 7,2–9,2 di 1280×720, 768×1024 dan 375×812: tangan close-up keluar frame di 7,40 dan dimatikan di ±7,51; jeda K4 tanpa tangan Bu Dewi dan ujung jari tangan aslinya tidak masuk frame (pergelangan di 1,59 / 1,25 / 1,08 tinggi layar); naik ke K4.1 lengannya utuh;
+  - scroll mulus maju lalu mundur 7,0 ↔ 9,3 (2 s/layar di ketiga viewport, 1 s/layar PC, 0,6 s/layar HP): 0 frame tangan muncul atau hilang di dalam frame; lipatan lengan selalu sejalan dengan tangan close-up; tanpa pageerror;
+  - frame PC, tablet dan HP dicek visual (hanya di chat);
+  - `tools/render/issue4.mjs` 73/73 dan `issue4-loading.mjs` 25/25; typecheck, ESLint, Prettier (file yang diubah) dan `npm run build` lulus.
+- Komentar Penyebab, Perbaikan, Dicek, Belum dikirim di issue #14 lewat Chrome (issuecomment-6787693135).
+- Keputusan user: "Ok, commit saja". Di-commit ke `main` (Refs #14; hanya `world/index.ts`, `sets/counterProps.ts`, `takes/home/counterCast.ts`, still `pc/k4.webp` dan entri log ini; pekerjaan Solusi dan entri log lain tidak ikut). Belum di-push; issue #14 tetap open sampai push.
+- Belum: tes di HP Android sungguhan, push, tutup issue.

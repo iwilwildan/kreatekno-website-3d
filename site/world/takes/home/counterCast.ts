@@ -174,14 +174,21 @@ export const heru3End = (step: number, t: number) => walkTime(walkFor(step, t)) 
 
 /** Screens into beat 3 by which Bu Dewi's hand rests on the leaflet's corner (her close-up hand may show). */
 export const DEWI_HOLDS = 1.75;
+/**
+ * Whether Bu Dewi's close-up hand is in play (screens into beat 3, beat-4 progress): from when it holds the
+ * leaflet's corner until she has let go and drawn it back out of the top view (issue #14: it no longer goes
+ * beside the binder, far from her elbow; her own arm takes over, whole).
+ */
+export const dewiCloseHand = (s: number, k4: number) => s >= DEWI_HOLDS && phase4(k4, "letGo") < 1;
 
 /** Bu Dewi's face once Heru lays the leaflet down: interested (brows up, a small smile). */
 const INTERESTED = { browTilt: 0.06, browLift: 0.008, smile: 0.32 };
 
 /**
  * Bu Dewi's pose for scroll p from her K2 pose: head up as Heru comes (blockout ±3 s), down at the leaflet when
- * he lays it, her right hand to the leaflet's corner nearest her (during the tilt down) and, in beat 4, to the
- * counter beside the binder. Her hand targets are world points turned into her own frame.
+ * he lays it, her right hand to the leaflet's corner nearest her (during the tilt down) and, in beat 4, back to
+ * the counter in front of her as she lets go (issue #14). Her hand targets are world points turned into her own
+ * frame.
  */
 export function dewiPose3(m: CastMember, base: Pose, p: number, step: number, k4 = beatAt(p).u, relax = 0): Pose {
   const { s } = beatAt(p),
@@ -189,13 +196,12 @@ export function dewiPose3(m: CastMember, base: Pose, p: number, step: number, k4
   const lift = smoothstep(0.55, 0.85, s) * (1 - smoothstep(1.0, 1.3, s)),
     down = smoothstep(1.0, 1.3, s),
     reach = smoothstep(1.35, DEWI_HOLDS, s),
-    rest = smoothstep(0, 1, phase4(k4, "letGo"));
+    // beat 4: she lets go and her hand goes back to the counter in front of her (her K2 hand)
+    hold = reach * (1 - smoothstep(0, 1, phase4(k4, "letGo")));
   const local = (v: THREE.Vector3) => m.mesh.worldToLocal(v.clone()).toArray() as Vec3;
   // her wrist behind the corner (toward her) and a little above the counter
   const corner = new THREE.Vector3(L.leaflet.x - L.leafX / 2, L.f.top, L.leaflet.z - L.leafZ / 2),
-    atCorner = corner.clone().add(new THREE.Vector3(0.02, 0.045, -0.085)),
-    atRest = new THREE.Vector3(L.binderK4.x - 0.25, L.f.top + 0.04, L.binderK4.z - 0.165),
-    target = new THREE.Vector3(...local(atCorner)).lerp(new THREE.Vector3(...local(atRest)), rest);
+    target = local(corner.clone().add(new THREE.Vector3(0.02, 0.045, -0.085)));
   const R0 = base.R!;
   const lerp3 = (a: Vec3, b: Vec3, k: number) => a.map((v, i) => v + (b[i] - v) * k) as Vec3;
   const head = base.head ?? [0, 0, 0];
@@ -205,8 +211,8 @@ export function dewiPose3(m: CastMember, base: Pose, p: number, step: number, k4
     spine: [0.32 * reach * (1 - relax), 0, 0],
     head: [head[0] - 0.14 * lift + 0.4 * down - 0.2 * reach, head[1], head[2] * (1 - Math.max(lift, down))],
     R: {
-      at: lerp3(R0.at, target.toArray() as Vec3, reach * (1 - relax)),
-      fingers: lerp3(R0.fingers, [0, -0.6, 1], reach * (1 - relax)),
+      at: lerp3(R0.at, target, hold * (1 - relax)),
+      fingers: lerp3(R0.fingers, [0, -0.6, 1], hold * (1 - relax)),
     },
     face: s >= 1.0 ? INTERESTED : base.face,
   };
