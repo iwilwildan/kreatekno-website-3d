@@ -18,7 +18,9 @@ const findChunk = (test) => {
 const worldChunk = findChunk(
   (s) => s.includes("clock3:") && s.includes("webglcontextlost"),
 );
-const castChunk = findChunk((s) => s.includes('"buildCloseHands"'));
+// (the cast module's own chunk: its export list names buildCloseHands. Since tahap 7 the cast shares modules with
+// Wildan's and Andi's chunk, so Turbopack lists the exports as "name,id" pairs in a small chunk of its own)
+const castChunk = findChunk((s) => /["',]buildCloseHands[,"']/.test(s));
 const browser = await launch({ gpu: true });
 const results = [];
 const check = (name, ok, detail) => {
@@ -168,10 +170,16 @@ try {
       await page.evaluate(() => {
         const el = document.getElementById("beranda"),
           p = window.__world.keyP("K4");
+        // tahap 7: the take is 20.4 screens of scroll on landscape and 22.95 on portrait; K4 is before the lobby,
+        // where both run screen for screen with the world's 22.95-screen timeline
+        const portrait = matchMedia("(max-aspect-ratio: 1/1)").matches,
+          total = Number(
+            el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
+          );
         scrollTo(
           0,
           el.offsetTop +
-            p *
+            ((p * 22.95) / total) *
               (el.offsetHeight - el.querySelector("[data-stage]").clientHeight),
         );
         window.__world.world.jump(p);

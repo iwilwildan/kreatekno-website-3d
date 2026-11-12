@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { clamp01, smoothstep } from "@/world/core/segments";
-import { SEG, TAKE_SCREENS, keyP, type KeyName } from "@/world/takes/home/timing";
-import { segmentStart } from "@/world/core/segments";
+import { clamp01, scrollAtScreens, screensAtScroll, segmentStart, smoothstep } from "@/world/core/segments";
+import { SEG, TAKE_SCREENS, TAKE_SCROLL, keyP, type KeyName } from "@/world/takes/home/timing";
 import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type StillsData } from "./placeHero";
 import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
 import stillsData from "./stills.json";
@@ -48,7 +47,11 @@ const ROW_STILLS = {
 const STILL_COPY = { leaflet: [6.7, 6.9], page: [7.7, 7.9] } as const;
 /** A scroll step longer than this (screens; a jump link, the End key, the scrollbar) cuts instead of flying. */
 const JUMP_SCREENS = 2;
-/** Jump marks: menu links to sections told inside the take land on their keyframe's hold (its middle). */
+/**
+ * Jump marks: menu links to sections told inside the take land on their keyframe's hold (its middle). Placed in
+ * screens of scroll from the take's own timeline: right while they come before the lobby, where the two formats'
+ * timelines part (tahap 7).
+ */
 const MARKS: { id: string; key: KeyName; at?: number }[] = [
   { id: "layanan", key: "K3" },
   // "Cara kerja" lands where the camera arrives on the first panel (on 9:16 the hold's middle is between panels)
@@ -141,10 +144,25 @@ export function HomeTake({
       const text = bar.querySelector(".take-loader-text");
       if (text) text.textContent = `${loadingLabel} ${pct}%`;
     };
-    const readP = () => {
+    // landscape and portrait have their own timelines in the lobby (tahap 7): the stage's height follows the same
+    // query (stage.css), and the scroll is mapped onto the take's own timeline (9:16) for the world
+    const portraitMq = matchMedia(PORTRAIT_QUERY);
+    const fmtNow = () => (portraitMq.matches ? "hp" : "pc");
+    /** Where the take is: screens on its own timeline. */
+    const readS = () => {
       const r = el.getBoundingClientRect(),
-        max = r.height - stage.clientHeight;
-      return max > 0 ? clamp01(-r.top / max) : 0;
+        max = r.height - stage.clientHeight,
+        f = fmtNow();
+      return screensAtScroll(SEG, (max > 0 ? clamp01(-r.top / max) : 0) * TAKE_SCROLL[f], f === "hp");
+    };
+    const readP = () => readS() / TAKE_SCREENS;
+    /** Scroll top at which the take is at p (0..1 on its own timeline). */
+    const scrollTopAt = (p: number) => {
+      const f = fmtNow();
+      return (
+        el.offsetTop +
+        (scrollAtScreens(SEG, p * TAKE_SCREENS, f === "hp") / TAKE_SCROLL[f]) * (el.offsetHeight - stage.clientHeight)
+      );
     };
     /** Anchors on a still where it covers the stage (object-fit: cover, centred), in stage pixels. */
     const stillQuads = (key = "K0") => {
@@ -201,8 +219,8 @@ export function HomeTake({
     };
     let lastS = 0;
     const onScroll = () => {
-      const p = readP(),
-        s = p * TAKE_SCREENS;
+      const s = readS(),
+        p = s / TAKE_SCREENS;
       el.style.setProperty("--hero-out", smoothstep(HERO_OUT[0], HERO_OUT[1], s).toFixed(3));
       el.toggleAttribute("data-hero-gone", s >= HERO_OUT[1]);
       if (world && Math.abs(s - lastS) > JUMP_SCREENS) world.jump(p);
@@ -218,17 +236,18 @@ export function HomeTake({
       }
     };
     const onResize = () => {
-      if (current === "stills") stillCopy(readP() * TAKE_SCREENS);
+      if (current === "stills") stillCopy(readS());
       else if (current !== "live") placeHero(el, STILLS);
+      // turning the device changes the timeline and the stage's height under the same scroll
+      onScroll();
     };
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onResize);
     onResize();
-    onScroll();
 
     // jump links for review (?k=K1) work without the world too
     const kq = params.get("k") as KeyName | null;
-    if (kq && !params.has("shot")) scrollTo(0, el.offsetTop + keyP(kq) * (el.offsetHeight - stage.clientHeight));
+    if (kq && !params.has("shot")) scrollTo(0, scrollTopAt(keyP(kq)));
 
     const toStills = () => {
       if (disposed) return;
@@ -372,7 +391,7 @@ export function HomeTake({
       aria-labelledby="h-hero"
       className="take"
       data-mode={mode}
-      style={{ "--take": TAKE_SCREENS } as CSSProperties}
+      style={{ "--take": TAKE_SCROLL.pc, "--take-hp": TAKE_SCROLL.hp } as CSSProperties}
     >
       {MARKS.map(({ id, key, at }) => (
         <span

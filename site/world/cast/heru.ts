@@ -7,7 +7,7 @@ import { ribbon, SIDES, type Body } from "./body";
 import type { FaceSpec } from "./face";
 import type { Weights } from "./figure";
 import { loft } from "./loft";
-import { buildMember, frontU, type MemberSpec } from "./member";
+import { buildMember, frontU, type Ctx, type MemberSpec } from "./member";
 import { sd, subtract, union, type Sdf } from "./sdf";
 
 export const HERU: Body = {
@@ -122,13 +122,13 @@ function paintHair(g: CanvasRenderingContext2D, w: number, h: number, B: typeof 
 }
 
 /** Spring bones of the hair below the ears: name and angle around the head (0 = straight back, + his left). */
-const HAIR_SPRINGS: [string, number][] = [
+export const HERU_HAIR_SPRINGS: [string, number][] = [
   ["hairC", 0],
   ["hairL", 1.1],
   ["hairR", -1.1],
 ];
 
-function hairSdf(): Sdf {
+export function heruHairSdf(): Sdf {
   // same axis as the crown dome, so the shell never bulges out of the cap (a bulge reads as a flat patch)
   const z0 = -0.015;
   /** Angle around the head (0 = straight back) and a groove pattern that swirls a little as it falls. */
@@ -179,6 +179,94 @@ function hairSdf(): Sdf {
   return f;
 }
 
+export const HERU_HAIR_JOINTS = HERU_HAIR_SPRINGS.flatMap(([n, a]) => [
+  { name: n, parent: "head", at: [0.16 * Math.sin(a), 1.57, -0.015 - 0.16 * Math.cos(a)] as Vec3 },
+  { name: n + "Tip", parent: n, at: [0.19 * Math.sin(a), 1.42, -0.015 - 0.19 * Math.cos(a)] as Vec3 },
+]);
+
+export const HERU_HAIR_SPRING_SPECS = HERU_HAIR_SPRINGS.map(([n]) => ({
+  bone: n,
+  tip: n + "Tip",
+  stiffness: 2.2,
+  gravity: 0.3,
+  drag: 0.4,
+  radius: 0.02,
+}));
+
+export const HERU_COLLIDERS = [
+  { bone: "head", at: [0, 1.58, -0.015] as Vec3, r: 0.17 },
+  { bone: "chest", at: [-0.17, 1.3, -0.01] as Vec3, to: [0.17, 1.3, -0.01] as Vec3, r: 0.07 },
+  { bone: "chest", at: [0, 1.05, -0.02] as Vec3, r: 0.125 },
+  { bone: "spine", at: [0, 0.8, 0] as Vec3, to: [0, 1.0, 0] as Vec3, r: 0.15 },
+];
+
+/** Hair shared by Home Heru and his Solutions cashier uniform. */
+export function heruHair(c: Ctx) {
+  const { fig } = c;
+  c.soft(
+    heruHairSdf(),
+    [-0.24, 1.37, -0.25],
+    [0.24, 1.83, 0.23],
+    [30, 22],
+    c.cell(256, 256, (g, w, h) => paintHair(g, w, h, HAIR_BOX), 0.56),
+    fig.hem(fig.rigid("head"), HERU_HAIR_SPRINGS, 1.56, 1.43, -0.015),
+  );
+}
+
+/** Trousers and shoes shared by both Heru outfits. */
+export function heruLegs(c: Ctx) {
+  const { fig } = c;
+  const trousers = c.cell(128, 128, (g, w, h) => weave(g, w, h, P.trousers, 0.035, 5), 0.86);
+  fig.add(
+    loft(
+      [
+        { y: 0.655, rx: 0.1, rz: 0.075 },
+        { y: 0.69, rx: 0.15, rz: 0.1 },
+        { y: 0.79, rx: 0.16, rz: 0.108 },
+      ],
+      20,
+    ),
+    trousers,
+    "hips",
+  );
+  c.legs(
+    [
+      [0, 0.088, 0.092],
+      [0.25, 0.085, 0.09],
+      [0.5, 0.081, 0.085],
+      [1, 0.079, 0.083],
+    ],
+    trousers,
+  );
+  c.shoes(
+    0.3,
+    0.17,
+    0.13,
+    c.cell(
+      128,
+      128,
+      (g, w, h) => {
+        g.fillStyle = P.shoe;
+        g.fillRect(0, 0, w, h);
+        g.fillStyle = P.sole;
+        g.fillRect(w * 0.36, 0, w * 0.28, h);
+        g.strokeStyle = "rgba(20,20,26,0.55)";
+        g.lineWidth = 2;
+        for (let k = 0; k < 4; k++) {
+          const y = h * (0.42 + k * 0.08);
+          for (const x0 of [0, w]) {
+            g.beginPath();
+            g.moveTo(x0, y);
+            g.lineTo(x0 + (x0 ? -1 : 1) * w * 0.07, y + 2);
+            g.stroke();
+          }
+        }
+      },
+      0.7,
+    ),
+  );
+}
+
 export const HERU_SPEC: MemberSpec = {
   name: "heru",
   height: 1.8,
@@ -186,37 +274,21 @@ export const HERU_SPEC: MemberSpec = {
   skin: P.skin,
   face: heruFace(),
   extraJoints: [
-    ...HAIR_SPRINGS.flatMap(([n, a]) => [
-      { name: n, parent: "head", at: [0.16 * Math.sin(a), 1.57, -0.015 - 0.16 * Math.cos(a)] as Vec3 },
-      { name: n + "Tip", parent: n, at: [0.19 * Math.sin(a), 1.42, -0.015 - 0.19 * Math.cos(a)] as Vec3 },
-    ]),
+    ...HERU_HAIR_JOINTS,
     { name: "lanyard", parent: "chest", at: [0, 1.2, 0.132] },
     { name: "lanyardTip", parent: "lanyard", at: [0, 0.98, 0.138] },
     { name: "bag", parent: "spine", at: [0.175, 0.9, 0.09] },
     { name: "bagTip", parent: "bag", at: [0.195, 0.74, 0.085] },
   ],
   springs: [
-    ...HAIR_SPRINGS.map(([n]) => ({ bone: n, tip: n + "Tip", stiffness: 2.2, gravity: 0.3, drag: 0.4, radius: 0.02 })),
+    ...HERU_HAIR_SPRING_SPECS,
     { bone: "lanyard", tip: "lanyardTip", stiffness: 0.9, gravity: 1.0, drag: 0.3, radius: 0.03 },
     { bone: "bag", tip: "bagTip", stiffness: 0.7, gravity: 1.0, drag: 0.45, radius: 0.05 },
   ],
-  colliders: [
-    { bone: "head", at: [0, 1.58, -0.015], r: 0.17 },
-    { bone: "chest", at: [-0.17, 1.3, -0.01], to: [0.17, 1.3, -0.01], r: 0.07 },
-    { bone: "chest", at: [0, 1.05, -0.02], r: 0.125 },
-    { bone: "spine", at: [0, 0.8, 0], to: [0, 1.0, 0], r: 0.15 },
-  ],
+  colliders: HERU_COLLIDERS,
   dress(c) {
     const { fig, atlas } = c;
-    c.soft(
-      hairSdf(),
-      [-0.24, 1.37, -0.25],
-      [0.24, 1.83, 0.23],
-      [30, 22],
-      c.cell(256, 256, (g, w, h) => paintHair(g, w, h, HAIR_BOX), 0.56),
-      // the locks below the ears swing on three springs behind the head
-      fig.hem(fig.rigid("head"), HAIR_SPRINGS, 1.56, 1.43, -0.015),
-    );
+    heruHair(c);
 
     // ---------- blazer over a tee ----------
     const BLZ = { y0: 0.68, y1: 1.335 };
@@ -304,56 +376,7 @@ export const HERU_SPEC: MemberSpec = {
       { cuff: tee },
     );
 
-    // ---------- trousers, shoes ----------
-    const trousers = c.cell(128, 128, (g, w, h) => weave(g, w, h, P.trousers, 0.035, 5), 0.86);
-    fig.add(
-      loft(
-        [
-          { y: 0.655, rx: 0.1, rz: 0.075 },
-          { y: 0.69, rx: 0.15, rz: 0.1 },
-          { y: 0.79, rx: 0.16, rz: 0.108 },
-        ],
-        20,
-      ),
-      trousers,
-      "hips",
-    );
-    c.legs(
-      [
-        [0, 0.088, 0.092],
-        [0.25, 0.085, 0.09],
-        [0.5, 0.081, 0.085],
-        [1, 0.079, 0.083],
-      ],
-      trousers,
-    );
-    c.shoes(
-      0.3,
-      0.17,
-      0.13,
-      c.cell(
-        128,
-        128,
-        (g, w, h) => {
-          g.fillStyle = P.shoe;
-          g.fillRect(0, 0, w, h);
-          g.fillStyle = P.sole;
-          g.fillRect(w * 0.36, 0, w * 0.28, h);
-          g.strokeStyle = "rgba(20,20,26,0.55)";
-          g.lineWidth = 2;
-          for (let k = 0; k < 4; k++) {
-            const y = h * (0.42 + k * 0.08);
-            for (const x0 of [0, w]) {
-              g.beginPath();
-              g.moveTo(x0, y);
-              g.lineTo(x0 + (x0 ? -1 : 1) * w * 0.07, y + 2);
-              g.stroke();
-            }
-          }
-        },
-        0.7,
-      ),
-    );
+    heruLegs(c);
 
     // ---------- lanyard, card, bag ----------
     // the lower lanyard and the card swing from where the cords meet; the bag from the end of its strap

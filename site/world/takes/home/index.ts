@@ -10,6 +10,7 @@ import { clamp01, ease, segmentAt } from "../../core/segments";
 import { blendCam, type CamPose } from "../../core/take";
 import { beat34Camera, k3View, k4View } from "./counter";
 import { DATA, type SolvedKey } from "./data";
+import { LOBBY_START, lobbyCamera } from "./lobby";
 import { B5, beat5Camera } from "./outside";
 import { pairX, scrollClock } from "./outsideCast";
 import { LAYOUT_STEPS } from "../../sets/companyFront";
@@ -94,6 +95,12 @@ export function cameraAt(
 ): CamPose & { key: KeyName } {
   const { seg, u, start } = segmentAt(SEG, p);
   const x = start + u * seg.screens;
+  // beats 6–9a (tahap 7, greybox): in through Kreatekno's door from where the truck stopped at K5a.6
+  if (x >= LOBBY_START) {
+    const k56 = beat5Camera(LOBBY_START, Math.round(t * LAYOUT_STEPS), t, aspect, pairX(scrollClock(LOBBY_START)));
+    const key = seg.type === "hold" || u < 0.5 ? seg.from : seg.to!;
+    return { ...lobbyCamera(x, t, aspect, k56), key };
+  }
   if (x > B5.rise) {
     const key = seg.type === "hold" || u < 0.5 ? seg.from : seg.to!;
     const pair = x >= B5.truck ? pairX(outClock ?? scrollClock(x)) : 0;

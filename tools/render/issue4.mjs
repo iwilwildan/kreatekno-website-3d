@@ -19,6 +19,10 @@ const wait = (page, ms) =>
   page.evaluate((ms) => new Promise((r) => setTimeout(r, ms)), ms);
 const ready = (page) =>
   page.waitForFunction(() => window.__world?.ready(), null, { timeout: 30000 });
+// Tahap 7: the take has a timeline per format (lobby holds), 20.4 screens of scroll on landscape and 22.95 on
+// portrait (max-aspect-ratio 1/1, the page's PORTRAIT_QUERY). Up to the lobby both run screen for screen with the
+// world's own timeline (TAKE_SCREENS, 22.95), which is what jump() takes.
+const TAKE = { pc: 20.4, hp: 22.95 };
 async function open(viewport, options = {}) {
   const page = await browser.newPage({ viewport, ...options });
   const errors = [];
@@ -30,8 +34,15 @@ async function at(page, key) {
     const el = document.getElementById("beranda");
     const stage = el.querySelector("[data-stage]");
     const p = window.__world.keyP(key);
+    const portrait = matchMedia("(max-aspect-ratio: 1/1)").matches,
+      total = Number(
+        el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
+      );
+    // (keys before the lobby: the same screens of scroll on both formats)
     scrollTo({
-      top: el.offsetTop + p * (el.offsetHeight - stage.clientHeight),
+      top:
+        el.offsetTop +
+        ((p * 22.95) / total) * (el.offsetHeight - stage.clientHeight),
       behavior: "instant",
     });
     window.__world.world.jump(p);
@@ -54,7 +65,11 @@ async function scrollRun(page, secondsPerScreen, reverse = false) {
     async ({ secondsPerScreen, reverse }) => {
       const el = document.getElementById("beranda"),
         stage = el.querySelector("[data-stage]");
-      const total = Number(el.style.getPropertyValue("--take"));
+      const portrait = matchMedia("(max-aspect-ratio: 1/1)").matches,
+        total = Number(
+          el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
+        ),
+        world = 22.95;
       const range = el.offsetHeight - stage.clientHeight;
       const from = reverse ? 9.2 : 6.5,
         to = reverse ? 6.5 : 9.2;
@@ -64,7 +79,7 @@ async function scrollRun(page, secondsPerScreen, reverse = false) {
           behavior: "instant",
         });
       go(from);
-      window.__world.world.jump(from / total);
+      window.__world.world.jump(from / world);
       await new Promise((r) => setTimeout(r, 500));
       const start = performance.now(),
         duration = Math.abs(to - from) * secondsPerScreen,
@@ -76,8 +91,8 @@ async function scrollRun(page, secondsPerScreen, reverse = false) {
           const d = window.__world.world.debug();
           rows.push({
             t,
-            shown: d.scroll.shown * total,
-            target: d.scroll.target * total,
+            shown: d.scroll.shown * world,
+            target: d.scroll.target * world,
             counter: d.counter,
           });
           if (t < duration + 1.5) requestAnimationFrame(tick);
@@ -120,16 +135,20 @@ try {
       total: Number(
         document.getElementById("beranda").style.getPropertyValue("--take"),
       ),
+      totalHp: Number(
+        document.getElementById("beranda").style.getPropertyValue("--take-hp"),
+      ),
       cast: window.__world.world.stats().cast.done,
       fonts: document.fonts.status,
       ao: window.__world.aoDone(),
     }));
     check(
-      `${label}: ready includes cast/fonts/AO and 15.3 screens`,
+      `${label}: ready includes cast/fonts/AO and ${TAKE.pc}/${TAKE.hp} screens`,
       boot.cast &&
         boot.fonts === "loaded" &&
         boot.ao &&
-        Math.abs(boot.total - 15.3) < 1e-8,
+        Math.abs(boot.total - TAKE.pc) < 1e-8 &&
+        Math.abs(boot.totalHp - TAKE.hp) < 1e-8,
       boot,
     );
     await wait(page, 2500);

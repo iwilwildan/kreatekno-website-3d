@@ -9,6 +9,7 @@ import { createLight } from "./core/light";
 import { ease, formatT, segmentStart, smoothstep } from "./core/segments";
 import { createWhipBlur } from "./core/whipBlur";
 import type { CastMember } from "./cast/member";
+import type { LobbyCastName } from "./cast/lobbyCast";
 import type { Pose } from "./cast/poses";
 import { dampStep } from "./motion/damp";
 import { createCompanyFront, layoutStep, LAYOUT_STEPS, type CompanyFront } from "./sets/companyFront";
@@ -34,9 +35,22 @@ import {
   type HeruState,
 } from "./takes/home";
 import { k3View, k4View, setSafeTop } from "./takes/home/counter";
-import { B5, b5Relax, panelArrivals } from "./takes/home/outside";
+import { B5, b5Relax, K42_PASS, panelArrivals } from "./takes/home/outside";
+import { DOOR_GATES, DOOR_OPEN, LOBBY_MARKS, LOBBY_START } from "./takes/home/lobby";
+import { LOBBY, lx } from "./sets/lobbyLayout";
+import type { Lobby } from "./sets/lobby";
 import { SEG } from "./takes/home/timing";
-import { outsideState, poseOutside, rightLeaf, scrollClock, stepOutClock } from "./takes/home/outsideCast";
+import {
+  kreLeafFor,
+  LT,
+  OUT_BACK_GATE,
+  outsideState,
+  poseOutside,
+  rightLeaf,
+  scrollClock,
+  stepOutClock,
+} from "./takes/home/outsideCast";
+import { followClock } from "./takes/home/heru";
 import type { Row } from "./sets/row";
 import {
   B4_SECONDS,
@@ -65,6 +79,7 @@ const keyHoldStart = (k: KeyName) =>
 const NOD_AT = keyHoldStart("K4.1");
 const NOD_S = 1.4;
 const NOD_FACE = { browTilt: 0.04, browLift: 0.012, smile: 0.62 };
+const OUT_FACE = JSON.stringify(NOD_FACE);
 
 export { TAKE_SCREENS, KEYS, LAYOUT_STEPS, keyP };
 export { mixQuad, quadToMatrix3d } from "./core/anchors";
@@ -195,9 +210,19 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   // street; the rest of the row is its own chunk, built as the camera nears K4.1 (loadRow)
   const rowMats = rowMaterials(),
     rowOcc: THREE.BufferGeometry[] = [];
-  for (const i of [0, 1]) scene.add(buildShop(kit, rowMats, SHOPS[i], i, extAO, rowOcc));
+  const mainShops = [0, 1].map((i) => buildShop(kit, rowMats, SHOPS[i], i, extAO, rowOcc));
+  scene.add(...mainShops);
   let row: Row | null = null,
+    rowMod: typeof import("./sets/row") | null = null,
     rowLoading: Promise<void> | null = null;
+  // Kreatekno's lobby (beats 6–9a, tahap 7), its own chunk, built as the camera nears Kreatekno
+  let lobby: Lobby | null = null,
+    lobbyLoading: Promise<void> | null = null;
+  // Wildan and Andi in the meeting room (tahap 7), their own chunk, built with the lobby; stand-ins until then
+  const pair: CastMember[] = [];
+  let pairShown = "",
+    pairFmt = "",
+    lobbyMod: typeof import("./cast/lobbyCast") | null = null;
   const buildRoom = createCompanyFront(kit);
   const anchors = billboardAnchors();
   // leaflet, binder and pencils of beats 3–4, laid out on the counter of the current layout
@@ -377,7 +402,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     lastOutKey = key;
     poseOutside(heru, dewi, st);
     street.leafL.rotation.y = st.leftLeaf;
-    if (row) row.doorHinge.rotation.y = st.kreLeaf;
+    // she keeps the smile of her nod (K4.1) out on the street and in Kreatekno's lobby (tahap 7: at the corkboard)
+    if (dewiFace !== OUT_FACE) {
+      dewiFace = OUT_FACE;
+      dewi.express(NOD_FACE);
+    }
     for (const m of [heru, dewi]) {
       if (opts.shot) m.springs?.reset(1);
       else m.springs?.poke(1.5);
@@ -397,7 +426,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const occluders = () => {
     scene.updateMatrixWorld(true);
     const out = street.batch.occ.map((g) => g.clone().applyMatrix4(street.group.matrixWorld));
-    out.push(...rowOcc, ...(row?.occ ?? []));
+    out.push(...rowOcc, ...(row?.occ ?? []), ...(lobby?.occ ?? []));
     if (room) for (const g of room.batch.occ) out.push(g.clone().applyMatrix4(room.group.matrixWorld));
     return out;
   };
@@ -458,6 +487,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       await document.fonts?.ready;
       if (disposed) return;
       const targets: AoTarget[] = [];
+      rowMod = mod;
       row = mod.buildRow(kit, rowMats, targets);
       scene.add(row.group);
       renderer.shadowMap.needsUpdate = true;
@@ -465,6 +495,60 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       await provideAO(targets);
       if (readyFired) await waitForAO().then(() => warm());
     }));
+
+  /**
+   * Builds the lobby once (after the row: it takes the place of the row's lit backdrop behind Kreatekno's glass); its
+   * AO maps load and its shaders compile in the background.
+   */
+  const loadLobby = () =>
+    (lobbyLoading ??= Promise.all([import("./sets/lobby"), loadRow()]).then(async ([mod]) => {
+      if (disposed) return;
+      const targets: AoTarget[] = [];
+      lobby = mod.buildLobby(kit, rowMats, targets);
+      scene.add(lobby.group);
+      if (row?.lobbyBackdrop) row.lobbyBackdrop.visible = false;
+      lobbyView = "";
+      renderer.shadowMap.needsUpdate = true;
+      needsRender = true;
+      await Promise.all([provideAO(targets), loadPair()]);
+      if (readyFired) await waitForAO().then(() => warm());
+    }));
+  /** Builds Wildan and Andi one slice at a time and seats them at their laptops (K8); hidden until the lobby shows. */
+  const loadPair = async () => {
+    const mod = await import("./cast/lobbyCast");
+    lobbyMod = mod;
+    for (const name of ["wildan", "andi"] as const) {
+      const m = await mod.buildMemberSliced(
+        mod.LOBBY_CAST[name],
+        { saver },
+        () => new Promise((r) => setTimeout(r, 0)),
+      );
+      if (disposed) return m.dispose();
+      m.springs?.reset(1);
+      m.mesh.visible = m.mesh.matrixWorldAutoUpdate = false;
+      scene.add(m.mesh);
+      pair.push(m);
+    }
+    lobby?.dropSeated();
+    pairShown = pairFmt = "";
+    renderer.shadowMap.needsUpdate = true;
+    needsRender = true;
+  };
+  // In the lobby the sets outside are out of sight behind its walls: the street (COMPANY), the fruit shop and the
+  // laundry are not drawn, nor the road until the camera turns to the facade (K8 → K9.1); the other shops and the
+  // end house are let go (memory) and built again, hidden, before the way back out.
+  let lobbyView = "",
+    farReleased = false;
+  const farKeep = (o: THREE.Material | THREE.Texture) => kit.shared(o) || o === rowMats.tint || o === rowMats.inside;
+  const setOutside = (shown: boolean, road: boolean) => {
+    for (const [o, on] of [
+      [street.group, shown],
+      ...mainShops.map((g) => [g, shown] as const),
+      [row?.far, shown],
+      [row?.road, road],
+    ] as const)
+      if (o) o.visible = o.matrixWorldAutoUpdate = on;
+  };
 
   // ---------- interior, rebuilt when the layout step changes ----------
   let room: CompanyFront | null = null;
@@ -578,10 +662,24 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     frustum.setFromProjectionMatrix(
       new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
     );
-    return [st.heru.body, st.dewi.body].some((b) => frustum.intersectsSphere(seenSphere.set(b.clone().setY(0.9), 1.1)));
+    return [st.heru.body, st.dewi.body].some((b) =>
+      frustum.intersectsSphere(seenSphere.set(b.clone().setY(b.y + 0.9), 1.1)),
+    );
   };
   // Bu Dewi's nod at K4.1 runs on time once the scroll reaches its hold (0..1, back when scrolled up)
   let nodT = 0;
+  // Wildan's clock (seconds of his getting up and walking out, tahap 7), following the scroll like Heru's
+  const wClk = { x: 0, v: 0 };
+  let wildanKey = "";
+  const wildanAt = (xs: number) =>
+    lobbyMod
+      ? lobbyMod.wildanTarget(
+          xs,
+          fmtT >= 0.5 ? "hp" : "pc",
+          { s: LOBBY_MARKS.turn, len: LOBBY_MARKS.turnLen },
+          { s: LOBBY_MARKS.k91, len: LOBBY_MARKS.k91Len },
+        )
+      : 0;
   const stats: WorldStats = {
     fps: 0,
     calls: 0,
@@ -742,7 +840,15 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     if (!opts.key) {
       // through the door the camera waits for Heru (issue #10): never more than a step ahead of his clock; then it
       // catches up with the scroll no faster than a quick scroll
-      const gated = heruGate(target, heruClk.x, fmtT);
+      let gated = heruGate(target, heruClk.x, fmtT);
+      // into Kreatekno (tahap 7): the camera waits at K5a.6, then in front of the door, until Bu Dewi is in and clear
+      // of its way (and the leaf open)
+      for (const g of DOOR_GATES)
+        if (gated * TAKE_SCREENS > g.x && outClk.x < LT.inside - g.lead) gated = Math.min(gated, g.x / TAKE_SCREENS);
+      // scrolled back past K4.2 while Heru and Bu Dewi are still in view in COMPANY's doorway: the camera waits out
+      // there until they have walked back in and the leaves have shut (they vanished in one frame before, tahap 7)
+      if (gated * TAKE_SCREENS < K42_PASS && outClk.x > OUT_BACK_GATE && seenAt(outClk.x))
+        gated = Math.max(gated, K42_PASS / TAKE_SCREENS);
       if (gated !== target) gate.catching = true;
       if (gate.catching) {
         const max = (CATCH_UP / TAKE_SCREENS) * dt;
@@ -760,6 +866,24 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       xs = shown * TAKE_SCREENS;
     // the rest of the row is built as the camera nears K4.1 (or straight away when the scroll jumps past it)
     if (!rowLoading && Math.max(xs, target * TAKE_SCREENS) > B5.rise - 1.5) void loadRow().catch(reportError);
+    // (early enough that the real lobby, not the row's backdrop, shows through Kreatekno's glass from K5a.4 on)
+    if (!lobbyLoading && Math.max(xs, target * TAKE_SCREENS) > LOBBY_START - 2.5) void loadLobby().catch(reportError);
+    // the shops beyond the laundry are let go once the camera is well into the lobby (K6 → K7), and built again
+    // while it is still on the corkboard on the way back
+    if (row && rowMod && !farReleased && xs > LOBBY_MARKS.truck + 0.3) {
+      row.group.remove(row.far);
+      disposeTree(row.far, farKeep);
+      farReleased = true;
+    } else if (row && rowMod && farReleased && xs < LOBBY_MARKS.truck) {
+      const targets: AoTarget[] = [];
+      row.far = rowMod.buildFar(kit, rowMats, targets, []);
+      row.group.add(row.far);
+      farReleased = false;
+      lobbyView = "";
+      void provideAO(targets).catch(reportError);
+    }
+    // (the seated stand-ins show only until Wildan and Andi are built)
+    lobby?.setPhase("k8");
     // the front room is let go out on the street from K5a.2 on, and built again on the way back (before K4.2)
     if (!roomReleased && room && xs > B5.release) {
       scene.remove(room.group);
@@ -793,6 +917,13 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // out on the street they follow the scroll as the camera shows it (along the row the camera follows them)
     else stepOutClock(outClk, xs, dt, seenAt);
     if (outClk.x !== outWas) needsRender = true;
+    {
+      const wt = wildanAt(xs),
+        was = wClk.x;
+      if (opts.key || opts.shot) wClk.x = wt;
+      else followClock(wClk, wt, dt);
+      if (wClk.x !== was) needsRender = true;
+    }
     const nodTo = xs >= NOD_AT ? 1 : 0;
     if (opts.key || opts.shot) nodT = nodTo === 1 ? 0.5 : 0;
     else if (nodT !== nodTo) nodT = nodTo > nodT ? Math.min(1, nodT + dt / NOD_S) : Math.max(0, nodT - dt / NOD_S);
@@ -812,8 +943,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     // the room's actions stop in the top views of beats 3–4 (the room is out of sight)
     const inRoom = roomInView(shown) && !topView,
-      springsBusy = !!heru?.springs?.busy || crew.some((m) => m.springs?.busy);
-    const wantsAmbient = ambient && (birdsVisible || (inRoom && stats.cast.done) || springsBusy || shadowDue);
+      springsBusy = !!heru?.springs?.busy || crew.some((m) => m.springs?.busy) || pair.some((m) => m.springs?.busy);
+    // Wildan and Andi act (and ask for frames) once the camera is at Kreatekno's door; from the street further back
+    // they sit still in the meeting room, out of sight behind the lobby's solid left wall
+    const pairSeen = xs >= LOBBY_START - 0.2 && pair.some((m) => m.mesh.visible);
+    const wantsAmbient =
+      ambient && (birdsVisible || (inRoom && stats.cast.done) || pairSeen || springsBusy || shadowDue);
     if (wantsAmbient && ts - lastAmbient >= 1000 / (saver ? 20 : 30) - 2) needsRender = true;
     acc += dt;
     if (acc > 0.5) {
@@ -863,6 +998,17 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const door = h.door * (1 - smoothstep(B5.back + 0.3, B5.back + 0.5, xs)) + (outside ? rightLeaf(outClk.x) : 0);
     if (moved || street.hinge.rotation.y !== door) shadowDue = true;
     street.hinge.rotation.y = door;
+    // Kreatekno's leaf: Heru's holding and its closer, and wide open while the camera comes through (tahap 7)
+    if (row) {
+      const camOpen =
+          smoothstep(DOOR_OPEN.from - 0.1, DOOR_OPEN.from, xs) *
+          (1 - smoothstep(DOOR_OPEN.to, DOOR_OPEN.to + 0.12, xs)),
+        kre = kreLeafFor(outClk.x, camOpen);
+      if (row.doorHinge.rotation.y !== kre) {
+        row.doorHinge.rotation.y = kre;
+        shadowDue = true;
+      }
+    }
     if (outside) {
       /* out on the street: the room is out of sight */
     } else if (ambient && inRoom) actCrew(time, shown);
@@ -881,6 +1027,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // springs follow the poses of this frame
     heru?.springs?.update(rdt);
     for (const m of crew) m.springs?.update(rdt);
+    for (const m of pair) if (m.mesh.visible) m.springs?.update(rdt);
     // shadows of moving people at most 30 times a second (the shadow pass draws every caster of the street and
     // the room, more than the frame itself; the shadow map is otherwise drawn only on changes); the small actions
     // in the room leave it as it is
@@ -897,21 +1044,125 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const close = THREE.MathUtils.smoothstep(-new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x, 0.6, 1.3);
     // late morning outside from the moment the camera backs out through the door in beat 5
     const noon = THREE.MathUtils.smoothstep(xs, B5.back + 0.22, B5.back + 0.36);
-    if (light.setInside(c.pos.z, close, noon)) shadowDue = true;
+    // Kreatekno's lobby (tahap 7): its own daylight inside; outside, golden hour comes while the camera faces away
+    // from the facade (K6 to the end of the K7 hold), and with it the shafts of light (the window's at K8, the
+    // facade's once the camera turns to it)
+    const inLobby = xs >= LOBBY_START ? 1 : 0,
+      golden = smoothstep(LOBBY_MARKS.k6, LOBBY_MARKS.k7end, xs),
+      facing = smoothstep(
+        LOBBY_MARKS.turn + 0.35 * LOBBY_MARKS.turnLen,
+        LOBBY_MARKS.turn + 0.8 * LOBBY_MARKS.turnLen,
+        xs,
+      );
+    if (light.setInside(c.pos.z, close, noon, inLobby, golden)) shadowDue = true;
+    sky.setGolden(golden);
+    lobby?.setBeams(golden, golden * facing);
     // the sun's shadow box follows the camera along the row (snapped, so the shadows do not swim)
     if (light.follow(c.pos.x)) shadowDue = true;
     // (the lamps stay lit in the dark only while the room is drawn)
     lamps.forEach((l) => (l.intensity = roomHidden || !room ? 0 : 2.0 * (1 - close)));
+    // in the lobby the first lamp light is the late sun through the meeting room's window (K8, video: the room warm
+    // and golden from its left); the room is let go out here, so its lights are free (setRoom sets them again)
+    if (xs >= LOBBY_START && !room) {
+      const l = lamps[0];
+      l.position.set(
+        lx(LOBBY.room.farX + 0.75),
+        LOBBY.floor + 1.75,
+        (LOBBY.room.window.z[0] + LOBBY.room.window.z[1]) / 2 - 0.9,
+      );
+      l.color.set("#ffb757");
+      l.distance = 7;
+      l.decay = 1.2;
+      l.intensity = 4 * golden;
+    }
     camera.position.copy(c.pos);
     camera.quaternion.copy(c.quat);
     camera.fov = c.fov;
     camera.updateProjectionMatrix();
     camera.updateMatrixWorld();
+    // in the lobby (the camera past Kreatekno's door): what shows inside and out
+    {
+      const inside = xs >= LOBBY_START && c.pos.z < -0.6,
+        facade = xs >= LOBBY_MARKS.turn,
+        v = `${!!lobby} ${!!row} ${farReleased} ${inside} ${facade}`;
+      if (v !== lobbyView) {
+        lobbyView = v;
+        // (the meeting room and its garden always, so nothing in them pops in as the camera comes through the door;
+        // the park across the road once the camera turns to the facade, with the camera inside)
+        lobby?.setView(true, inside && facade);
+        setOutside(!inside, !inside || facade);
+        shadowDue = true;
+      }
+      // seats for the format (16:9 and 9:16 see the gaps between the notes from different places, see lobbyLayout)
+      const fmt = fmtT >= 0.5 ? "hp" : "pc";
+      if (lobby && lobbyMod && pair.length && fmt !== pairFmt) {
+        pairFmt = fmt;
+        lobby.placeSeats(fmt);
+        for (const m of pair) {
+          lobbyMod.seatK8(m, m.name as LobbyCastName, fmt);
+          m.springs?.reset(1);
+        }
+        shadowDue = true;
+      }
+      // back out on the street: Wildan in his seat again (out of sight there), for when the camera comes back
+      if (lobby && lobbyMod && !pairSeen && wClk.x > 0) {
+        wClk.x = wClk.v = 0;
+        wildanKey = "";
+        lobby.placeSeats(fmt);
+        lobby.roomDoor.rotation.y = 0;
+        lobby.roomDoor.updateMatrixWorld();
+        for (const m of pair) lobbyMod.seatK8(m, m.name as LobbyCastName, fmt);
+        shadowDue = true;
+      }
+      // Wildan and Andi sit in the meeting room, drawn once the camera is at Kreatekno's door (K5a.6, still: from
+      // there the lobby's solid left wall hides the room's far end, where they sit; 30 rb triangles saved on the row)
+      const pv = pair.map(() => !!lobby && xs >= LOBBY_START - 0.2).join();
+      if (pv !== pairShown) {
+        pairShown = pv;
+        pair.forEach((m, i) => (m.mesh.visible = m.mesh.matrixWorldAutoUpdate = pv.split(",")[i] === "true"));
+        shadowDue = true;
+      }
+      // Wildan types, then gets up and walks out through the room's door; Andi types on, looking up at him
+      if (lobby && lobbyMod && pairSeen) {
+        const mod = lobbyMod,
+          wild = pair.find((m) => m.name === "wildan"),
+          andi = pair.find((m) => m.name === "andi"),
+          t = ambient ? time : 0,
+          w = wClk.x,
+          R = LOBBY.room;
+        lobby.roomDoor.rotation.y = -mod.roomDoorAt(w, fmt);
+        lobby.roomDoor.updateMatrixWorld();
+        const key = `${fmt} ${w.toFixed(4)}`;
+        if (key !== wildanKey) {
+          wildanKey = key;
+          lobby.placeSeats(fmt, [mod.chairBackAt(w), 0]);
+          shadowDue = true;
+        }
+        // his left hand on the door's inner face near its free edge
+        const push = (wc: number) => {
+          const a = -mod.roomDoorAt(wc, fmt),
+            px = -0.05,
+            pz = -(R.door[0] - R.door[1]) + 0.15;
+          return new THREE.Vector3(
+            lx(R.glassX) + px * Math.cos(a) + pz * Math.sin(a),
+            LOBBY.floor + 1.0,
+            R.door[0] - px * Math.sin(a) + pz * Math.cos(a),
+          );
+        };
+        if (wild?.mesh.visible) mod.poseWildan(wild, w, t, fmt, push);
+        if (andi?.mesh.visible) {
+          const W = mod.wildanTimes(fmt),
+            up = smoothstep(0.4, 1.4, w) * (1 - smoothstep(W.doorway, W.doorway + 2, w)),
+            head = wild?.rig.bone("head").getWorldPosition(new THREE.Vector3());
+          mod.poseAndi(andi, t, head && up > 0 ? up * mod.andiLook(andi, head) : 0);
+        }
+      }
+    }
     // beat 5 backs out over the desks: the staff's thought bubbles right by the camera step aside
     thoughts?.clear(xs > B5.rise ? c.pos : null, 2.2);
     // out on the street (beat 5) the room is not drawn (behind the facade it only costs draw calls); the open
     // door shows a backdrop of it instead. Heru and Bu Dewi show again once they come out.
-    const hide = xs > B5.back + 0.1 && c.pos.z > 0.6;
+    const hide = xs > B5.back + 0.1 && (c.pos.z > 0.6 || xs >= LOBBY_START);
     if (hide !== roomHidden) {
       roomHidden = hide;
       if (room) room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
@@ -923,7 +1174,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     // (a member out of sight is not updated either: its skeleton's matrices cost every frame)
     for (const m of [heru, ...crew])
-      if (m) m.mesh.visible = m.mesh.matrixWorldAutoUpdate = !hide || (outside && (m === heru || m.name === "dewi"));
+      if (m)
+        m.mesh.visible = m.mesh.matrixWorldAutoUpdate =
+          !hide ||
+          // (out on the street and in Kreatekno's lobby: Heru and Bu Dewi)
+          (outside && (m === heru || m.name === "dewi"));
     // props of beats 3–4; the close-up hands show in the top views (their shadows need a redraw when they change)
     const pitch = new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x;
     // a change of view is applied on the next frame (forearms, room actions)
@@ -1041,6 +1296,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     props.ready.then(() => bootStep("props")),
     document.fonts.ready.then(() => bootStep("fonts")),
     opts.shot ? loadRow() : null,
+    // stills, shots and the AO bake have the lobby from the start too
+    opts.shot ? loadLobby() : null,
   ])
     .then(waitForAO)
     .then(() => warm(true))
@@ -1069,9 +1326,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       b4Time = beat4Clock(target);
       outClk.x = scrollClock(target * TAKE_SCREENS);
       outClk.v = 0;
+      wClk.x = wildanAt(target * TAKE_SCREENS);
+      wClk.v = 0;
       nodT = target * TAKE_SCREENS >= NOD_AT ? 1 : 0;
       lastHeruKey = "";
       for (const m of crew) m.springs?.reset(opts.shot ? 1 : 0);
+      for (const m of pair) m.springs?.reset(1);
       needsRender = true;
     },
     /** Draws one more frame (tools: a frame without the shadow pass, for the draw call count). */
@@ -1098,6 +1358,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       room,
       fmtT,
       scroll: { shown: view.x, target },
+      pair,
+      clocks: { out: outClk.x, wildan: wClk.x },
+      doors: { kre: row?.doorHinge.rotation.y ?? 0, room: lobby?.roomDoor.rotation.y ?? 0 },
       counter: { ...props.fade, clock3: heru3Time, clock4: b4Time },
     }),
     keyP,
@@ -1128,6 +1391,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       sweat?.dispose();
       thoughts?.dispose();
       for (const m of crew) m.dispose();
+      for (const m of pair) m.dispose();
       renderer.dispose();
       canvas.remove();
     },

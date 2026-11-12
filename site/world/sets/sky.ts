@@ -119,6 +119,38 @@ export function buildSky(kit: Kit) {
     ),
   );
 
+  // golden hour (tahap 7, seen through Kreatekno's facade at K9.1; again in tahap 8): a second dome over the first,
+  // faded in (setGolden), drawn only while it shows
+  const goldTex = kit.canvasTex(8, 1024, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, "#7c86d4");
+    gr.addColorStop(0.34, "#a99ae0");
+    gr.addColorStop(0.43, "#eda7b8");
+    gr.addColorStop(0.475, "#ffbf8f");
+    gr.addColorStop(0.5, "#ffdca3");
+    gr.addColorStop(0.53, "#f7cbaa");
+    gr.addColorStop(1, "#f2cdb4");
+    g.fillStyle = gr;
+    g.fillRect(0, 0, w, h);
+  });
+  const goldMat = new THREE.MeshBasicMaterial({
+    map: goldTex,
+    side: THREE.BackSide,
+    fog: false,
+    toneMapped: false,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  });
+  const goldDome = new THREE.Mesh(new THREE.SphereGeometry(399, 32, 16), goldMat);
+  goldDome.visible = false;
+  group.add(goldDome);
+  /** Golden hour over the day's sky, 0 … 1. */
+  const setGolden = (k: number) => {
+    goldMat.opacity = k;
+    goldDome.visible = k > 0.001;
+  };
+
   const cloudMat = new THREE.MeshStandardMaterial({
     color: "#ffffff",
     roughness: 0.95,
@@ -259,5 +291,5 @@ export function buildSky(kit: Kit) {
     pv.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
     return frustum.setFromProjectionMatrix(pv).intersectsSphere(bounds[fmtNow]);
   };
-  return { group, setFormat, setFlight, animate, birdsInView };
+  return { group, setFormat, setFlight, animate, birdsInView, setGolden };
 }

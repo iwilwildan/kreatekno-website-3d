@@ -95,6 +95,59 @@ export class Walk {
 }
 
 /**
+ * A walk along a path laid out in time: the pace eases toward vOf(d) (accel m/s²) and down to a stop at the end.
+ * Integrated once at 120 Hz; at(t) is the distance walked t seconds after it starts.
+ */
+export class TimedWalk {
+  readonly walk: Walk;
+  readonly dur: number;
+  private ds: number[] = [0];
+  constructor(points: THREE.Vector3[], vOf: (d: number) => number, step: number, first: "L" | "R", accel = 1.6) {
+    this.walk = new Walk(points, { step, first });
+    const L = this.walk.length,
+      dt = 1 / 120;
+    let d = 0,
+      v = 0;
+    while (d < L - 1e-4 && this.ds.length < 120 * 300) {
+      const want = Math.min(vOf(d), Math.sqrt(2 * accel * Math.max(0, L - d)));
+      v = want > v ? Math.min(want, v + accel * dt) : Math.max(want, v - accel * dt);
+      d = Math.min(L, d + Math.max(v, 0.02) * dt);
+      this.ds.push(d);
+    }
+    this.dur = (this.ds.length - 1) * dt;
+  }
+  at(t: number) {
+    const k = Math.min(1, Math.max(0, t / this.dur)) * (this.ds.length - 1),
+      i = Math.floor(k),
+      f = k - i;
+    return this.ds[Math.min(i, this.ds.length - 1)] * (1 - f) + this.ds[Math.min(i + 1, this.ds.length - 1)] * f;
+  }
+  stride(t: number): Stride {
+    return this.walk.at(this.at(t));
+  }
+  /** Seconds into the walk at which the body first meets `pred` (or its end). */
+  timeAt(pred: (p: THREE.Vector3) => boolean) {
+    const n = 400;
+    let d = this.walk.length;
+    for (let i = 0; i <= n; i++)
+      if (pred(this.walk.curve.getPointAt(i / n))) {
+        d = (i / n) * this.walk.length;
+        break;
+      }
+    let k = 0;
+    while (k < this.ds.length - 1 && this.ds[k] < d) k++;
+    return (k / (this.ds.length - 1)) * this.dur;
+  }
+  /** Heading (yaw) at the start and at the end of the walk. */
+  get yaw0() {
+    return this.walk.at(0).yaw;
+  }
+  get yaw1() {
+    return this.walk.at(this.walk.length).yaw;
+  }
+}
+
+/**
  * Turning on the spot at `at` from heading `from` by `by` radians (k 0..1): the foot on the turning side opens
  * half way, the other one closes the whole way, then the first comes alongside. The body turns smoothly over the
  * steps; `feetBy` (default `by`) is where the feet end up, when the body ends turned against its feet.
@@ -138,10 +191,28 @@ type Reach = { at: THREE.Vector3; weight: number; pole: THREE.Vector3 };
 
 const _q = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
 
-/** Poses a standing member on a stride (mesh placed and turned, legs on their prints, arms swinging). */
+/**
+ * The stride on a floor of several levels (tahap 7: the lobby is two steps below the pavement): each foot's print
+ * at the floor's height under it, the body at the mean of the two (the pelvis drop of walkPose does the rest).
+ */
+export function onFloor(s: Stride, floor: (x: number, z: number) => number): Stride {
+  const yL = floor(s.L.at.x, s.L.at.z),
+    yR = floor(s.R.at.x, s.R.at.z);
+  return {
+    ...s,
+    body: s.body.clone().setY((yL + yR) / 2),
+    L: { ...s.L, at: s.L.at.clone().setY(yL) },
+    R: { ...s.R, at: s.R.at.clone().setY(yR) },
+  };
+}
+
+/**
+ * Poses a standing member on a stride (mesh placed and turned, legs on their prints, arms swinging). The prints'
+ * and the body's y are the floor's height there (0 on the street and in COMPANY; see onFloor).
+ */
 export function walkPose(m: CastMember, s: Stride, x: WalkExtra = {}) {
   const { rig, mesh } = m;
-  mesh.position.set(s.body.x, 0, s.body.z);
+  mesh.position.set(s.body.x, s.body.y, s.body.z);
   mesh.rotation.set(0, s.yaw + (x.yaw ?? 0), 0);
   mesh.updateMatrixWorld(true);
   const sw = s.swing,
@@ -159,7 +230,10 @@ export function walkPose(m: CastMember, s: Stride, x: WalkExtra = {}) {
   rig.root.position.y = 0;
   rig.root.updateMatrixWorld(true);
   const rest = restOf(m),
-    targets = { L: s.L.at.clone().setY(rest.ankle + s.L.lift), R: s.R.at.clone().setY(rest.ankle + s.R.lift) };
+    targets = {
+      L: s.L.at.clone().setY(s.L.at.y + rest.ankle + s.L.lift),
+      R: s.R.at.clone().setY(s.R.at.y + rest.ankle + s.R.lift),
+    };
   // lowest pelvis drop that keeps each leg at most REACH of its length from hip to ankle (a soft minimum of
   // both, so the pelvis does not kink where the legs trade over)
   const reach = rest.leg * REACH,

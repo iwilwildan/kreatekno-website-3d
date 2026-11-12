@@ -322,6 +322,12 @@
     display: block;
     height: calc((var(--take) + 1) * 100lvh);
   }
+  /* portrait has its own, longer timeline in the lobby (tahap 7); the page maps the scroll with the same query */
+  @media (max-aspect-ratio: 1/1) {
+    .take {
+      height: calc((var(--take-hp) + 1) * 100lvh);
+    }
+  }
   /* a jump mark sits where the scroll shows its keyframe (screens into the take × the stage height) */
   .take-mark {
     position: absolute;

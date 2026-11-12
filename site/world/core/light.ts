@@ -20,6 +20,25 @@ const SUN_DIR = new THREE.Vector3(-0.5, 0.3, 0.81).normalize();
 const NOON = { sky: new THREE.Color("#c6d3f2"), ground: new THREE.Color("#e6d8dc"), i: 1.15, env: 0.34 };
 const SUN_NOON = { color: new THREE.Color("#fff2e4"), i: 2.45 };
 const SUN_DIR_NOON = new THREE.Vector3(-0.42, 0.62, 0.66).normalize();
+/**
+ * Golden hour outside (tahap 7, video K8 - K9.1 and Master 10b; beat 9b of tahap 8 uses it again): the sun low
+ * (18°) and orange from the street's left (−x, +z), so it shines into Kreatekno's facade and through the meeting
+ * room's window; a warm sky light. Blended in while the camera faces away from the facade (K6–K8).
+ */
+export const GOLDEN = {
+  sky: new THREE.Color("#f2c3a2"),
+  ground: new THREE.Color("#e7b0a0"),
+  i: 1.0,
+  env: 0.3,
+  sun: new THREE.Color("#ffa65c"),
+  sunI: 2.9,
+};
+export const GOLDEN_DIR = new THREE.Vector3(-0.62, 0.32, 0.72).normalize();
+/**
+ * Inside Kreatekno's lobby (tahap 7): a neutral, pastel daylight from the facade and the ceiling panels, brighter
+ * and cooler than COMPANY's warm room (the videos' lobby: white ceiling, clear sticky notes, lavender walls).
+ */
+const LOBBY = { sky: new THREE.Color("#fbf9ff"), ground: new THREE.Color("#f1ebf3"), i: 1.75, env: 0.62 };
 
 export function createLight(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -43,24 +62,30 @@ export function createLight(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   scene.add(hemi, sun, sun.target);
 
   const dir = SUN_DIR.clone();
-  let noonAt = 0;
+  let sunKey = "0 0";
   /**
    * 0 outside … 1 inside, from the camera's z (the facade is at z 0); `close` 0 … 1 toward the close-up light;
-   * `noon` 0 … 1 toward late morning outside (beat 5). Returns true when the sun turned (the shadows follow).
+   * `noon` 0 … 1 toward late morning outside (beat 5); `lobby` 0 … 1 inside Kreatekno rather than COMPANY (tahap
+   * 7); `golden` 0 … 1 toward golden hour outside. Returns true when the sun turned (the shadows follow).
    */
-  const setInside = (cameraZ: number, close = 0, noon = 0) => {
+  const setInside = (cameraZ: number, close = 0, noon = 0, lobby = 0, golden = 0) => {
     const inside = THREE.MathUtils.smoothstep(-cameraZ, -0.6, 0.6);
-    const outSky = OUT.sky.clone().lerp(NOON.sky, noon),
-      outGround = OUT.ground.clone().lerp(NOON.ground, noon);
-    hemi.color.copy(outSky).lerp(IN.sky, inside).lerp(CLOSE.sky, close);
-    hemi.groundColor.copy(outGround).lerp(IN.ground, inside).lerp(CLOSE.ground, close);
-    hemi.intensity = lerp(lerp(lerp(OUT.i, NOON.i, noon), IN.i, inside), CLOSE.i, close);
-    scene.environmentIntensity = lerp(lerp(lerp(OUT.env, NOON.env, noon), IN.env, inside), CLOSE.env, close);
-    sun.color.copy(SUN.color).lerp(SUN_NOON.color, noon).lerp(SUN_CLOSE.color, close);
-    sun.intensity = lerp(lerp(SUN.i, SUN_NOON.i, noon), SUN_CLOSE.i, close);
-    if (noon === noonAt) return false;
-    noonAt = noon;
-    dir.copy(SUN_DIR).lerp(SUN_DIR_NOON, noon).normalize();
+    const outSky = OUT.sky.clone().lerp(NOON.sky, noon).lerp(GOLDEN.sky, golden),
+      outGround = OUT.ground.clone().lerp(NOON.ground, noon).lerp(GOLDEN.ground, golden),
+      inSky = IN.sky.clone().lerp(LOBBY.sky, lobby),
+      inGround = IN.ground.clone().lerp(LOBBY.ground, lobby);
+    hemi.color.copy(outSky).lerp(inSky, inside).lerp(CLOSE.sky, close);
+    hemi.groundColor.copy(outGround).lerp(inGround, inside).lerp(CLOSE.ground, close);
+    const outI = lerp(lerp(OUT.i, NOON.i, noon), GOLDEN.i, golden),
+      outEnv = lerp(lerp(OUT.env, NOON.env, noon), GOLDEN.env, golden);
+    hemi.intensity = lerp(lerp(outI, lerp(IN.i, LOBBY.i, lobby), inside), CLOSE.i, close);
+    scene.environmentIntensity = lerp(lerp(outEnv, lerp(IN.env, LOBBY.env, lobby), inside), CLOSE.env, close);
+    sun.color.copy(SUN.color).lerp(SUN_NOON.color, noon).lerp(GOLDEN.sun, golden).lerp(SUN_CLOSE.color, close);
+    sun.intensity = lerp(lerp(lerp(SUN.i, SUN_NOON.i, noon), GOLDEN.sunI, golden), SUN_CLOSE.i, close);
+    const key = `${noon} ${golden}`;
+    if (key === sunKey) return false;
+    sunKey = key;
+    dir.copy(SUN_DIR).lerp(SUN_DIR_NOON, noon).lerp(GOLDEN_DIR, golden).normalize();
     sun.position.copy(sun.target.position).addScaledVector(dir, 45);
     followKey = "";
     return true;

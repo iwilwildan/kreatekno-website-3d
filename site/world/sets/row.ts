@@ -1,11 +1,15 @@
 // Set A continued (beats 5a–5b), its own chunk, built as the camera nears K4.1: the shophouses from the shoe shop
 // to the electronics shop (the fruit shop and the laundry, seen from K1 on, are built with the street), Kreatekno's
 // office and the end house, with the pavement, kerb and road running on past them. Master 7 and the team's videos
-// K5a.1–K5a.6. The lobby inside Kreatekno is built in tahap 7; here a lit backdrop shows through the glass.
+// K5a.1–K5a.6. The lobby inside Kreatekno is its own chunk (sets/lobby, tahap 7); until it is built a lit backdrop
+// shows through the glass. The facade's glass is one-sided: dark seen from the street, nearly clear from the lobby.
+// The shops after the laundry and the end house (`far`) are let go while the camera is in the lobby and built again
+// on the way back (world/index.ts, buildFar).
 import * as THREE from "three";
 import { aoPlane, type AoTarget } from "../core/ao";
 import { Batch, C, clean, G, mtx, type Kit } from "../core/kit";
 import { END_HOUSE, KREATEKNO, ROW, SHOPS, shopX, STREET_END } from "./rowLayout";
+import { glassMaterial } from "./glass";
 import { buildShop, Tint, type RowMaterials } from "./shop";
 import { drawPaveTiles, PAVE_TILE } from "./street";
 
@@ -50,7 +54,9 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   const group = new THREE.Group();
   group.name = "row";
   const occ: THREE.BufferGeometry[] = [];
-  for (let i = 2; i < SHOPS.length; i++) group.add(buildShop(kit, M, SHOPS[i], i, ao, occ));
+  let lobbyBackdrop: THREE.Object3D | null = null;
+  const far = buildFar(kit, M, ao, occ);
+  group.add(far);
 
   // ---------- Kreatekno ----------
   const K = KREATEKNO,
@@ -72,7 +78,17 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       transparent: true,
       opacity: 0.68,
       depthWrite: false,
+    }),
+    // the same panes seen from the lobby: nearly clear, a faint reflection (video K9.1)
+    glassIn = glassMaterial(kit, { sheen: 0.45, tint: "#f6f4ff" });
+  /** A pane of the shop front: dark toward the street (+z), clear toward the lobby (each side one-sided). */
+  const pane = (B: Batch, w: number, h: number, x: number, y: number, z: number) => {
+    B.add(new THREE.PlaneGeometry(w, h), glassDown, mtx([x, y, z]), { occ: false, shadow: false });
+    B.add(new THREE.PlaneGeometry(w, h), glassIn, mtx([x, y, z - 0.012], [0, Math.PI, 0]), {
+      occ: false,
+      shadow: false,
     });
+  };
   // the door: right of the middle, two glass leaves; the right one swings in on its hinge (Heru opens it, K5a.6)
   const D = K.door,
     dx0 = D.cx - D.w / 2,
@@ -80,9 +96,13 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     glassX0 = K.x0 + 4.1,
     glassX1 = kx1 - 0.6;
   // body behind, pillars, cornice, the name band
-  KB.add(G.box(K.w, K.h, ROW.depth - 2.2), purple, mtx([kcx, K.h / 2, -2.2 - (ROW.depth - 2.2) / 2 - 0.02]), {
-    occ: false,
-  });
+  // (above the ground floor only: the lobby of tahap 7 takes the ground floor behind the facade)
+  KB.add(
+    G.box(K.w, K.h - K.band[0], ROW.depth - 2.2),
+    purple,
+    mtx([kcx, (K.h + K.band[0]) / 2, -2.2 - (ROW.depth - 2.2) / 2 - 0.02]),
+    { occ: false },
+  );
   for (const x of [K.x0 + 0.3, kx1 - 0.3])
     KB.add(G.rbox(0.6, K.h - 0.5, 0.26, 0.06), purpleL, mtx([x, (K.h - 0.5) / 2, 0.08]));
   KB.add(G.rbox(K.w + 0.06, 0.5, 0.42, 0.08), purpleL, mtx([kcx, K.h - 0.25, 0.14]));
@@ -119,14 +139,8 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       [glassX0, dx0],
       [dx1, glassX1],
     ])
-      KB.add(G.box(b - a, K.band[0], 0.02), glassDown, mtx([(a + b) / 2, K.band[0] / 2, -0.06]), {
-        occ: false,
-        shadow: false,
-      });
-    KB.add(G.box(D.w, K.band[0] - top, 0.02), glassDown, mtx([D.cx, (top + K.band[0]) / 2, -0.06]), {
-      occ: false,
-      shadow: false,
-    });
+      pane(KB, b - a, K.band[0], (a + b) / 2, K.band[0] / 2, -0.05);
+    pane(KB, D.w, K.band[0] - top, D.cx, (top + K.band[0]) / 2, -0.05);
     // plaque (its face left empty for beat 9b) and the brass lamp above it
     const pq = K.plaque;
     KT.add(G.rbox(pq.w + 0.12, pq.h + 0.12, 0.07, 0.03), "#b97a45", mtx([pq.cx, pq.y, 0.06]));
@@ -157,8 +171,17 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       }),
     );
     back.position.set((glassX0 + glassX1) / 2, K.band[0] / 2, -2.2);
+    // (hidden once the lobby is built)
+    back.name = "lobbyBackdrop";
+    const backFloor = new THREE.Mesh(
+      new THREE.BoxGeometry(glassX1 - glassX0, 0.02, 2.2),
+      new THREE.MeshStandardMaterial({ color: "#cdbfe0", roughness: 0.82 }),
+    );
+    backFloor.position.set((glassX0 + glassX1) / 2, 0.01, -1.1);
+    back.add(backFloor);
+    backFloor.position.sub(back.position);
     kg.add(back);
-    KT.add(G.box(glassX1 - glassX0, 0.02, 2.2), "#cdbfe0", mtx([(glassX0 + glassX1) / 2, 0.01, -1.1]));
+    lobbyBackdrop = back;
   }
   {
     const name = new THREE.Mesh(
@@ -181,10 +204,7 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       ])
         LB.add(G.box(ww, hh, 0.06), frame, mtx([cx, cy, 0]));
       LB.add(G.box(0.03, 0.5, 0.03), handle, mtx([handleAt, 1.05, 0.06]));
-      LB.add(G.box(w - 0.12, D.h - 0.2, 0.02), glassDown, mtx([x0 + w / 2, D.h / 2 + 0.01, 0]), {
-        occ: false,
-        shadow: false,
-      });
+      pane(LB, w - 0.12, D.h - 0.2, x0 + w / 2, D.h / 2 + 0.01, 0.006);
       LB.build();
     };
     const fixed = new THREE.Group();
@@ -201,49 +221,10 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   kg.add(kt);
   group.add(kg);
 
-  // ---------- the end house: pale blue-grey, a balcony upstairs, a rolling shutter below ----------
-  {
-    const E = END_HOUSE,
-      eg = new THREE.Group(),
-      EB = new Batch(eg),
-      ex1 = E.x0 + E.w,
-      ecx = E.x0 + E.w / 2,
-      body = mat("#d3dae6"),
-      trimE = mat("#e7ecf3"),
-      dark = mat("#4b5466", { roughness: 0.3, metalness: 0.2 });
-    eg.name = "end-house";
-    EB.add(G.box(E.w, E.h, ROW.depth), body, mtx([ecx, E.h / 2, -ROW.depth / 2 - 0.02]));
-    for (const x of [E.x0 + 0.3, ex1 - 0.3])
-      EB.add(G.rbox(0.6, E.h - 0.4, 0.2, 0.05), trimE, mtx([x, (E.h - 0.4) / 2, 0.06]));
-    EB.add(G.rbox(E.w + 0.04, 0.4, 0.38, 0.07), trimE, mtx([ecx, E.h - 0.2, 0.12]));
-    EB.add(G.rbox(E.w, 0.36, 0.3, 0.06), trimE, mtx([ecx, 3.25, 0.1]));
-    EB.add(G.rbox(E.w - 1.3, 0.3, 0.3, 0.05), trimE, mtx([ecx, 2.95, 0.08]));
-    const shutter = canvasTex(64, 256, (g, w, h) => {
-      g.fillStyle = "#dfe4ec";
-      g.fillRect(0, 0, w, h);
-      g.fillStyle = "rgba(90,100,120,.28)";
-      for (let y = 0; y < h; y += 8) g.fillRect(0, y, w, 2);
-    });
-    const sh = new THREE.Mesh(
-      new THREE.PlaneGeometry(E.w - 1.6, 2.8),
-      new THREE.MeshStandardMaterial({ map: shutter, roughness: 0.55, metalness: 0.3 }),
-    );
-    sh.position.set(ecx, 1.4, 0.01);
-    sh.receiveShadow = true;
-    eg.add(sh);
-    // balcony: slab, rail and balusters, the glass door and window behind it
-    EB.add(G.box(E.w - 1.2, 2.2, 0.04), dark, mtx([ecx, 5.35, 0.02]), { occ: false });
-    for (const x of [ecx - 0.9, ecx + 0.9]) EB.add(G.box(0.08, 2.2, 0.08), trimE, mtx([x, 5.35, 0.05]));
-    EB.add(G.box(E.w - 0.9, 0.14, 0.9), trimE, mtx([ecx, 4.2, 0.45]));
-    EB.add(G.box(E.w - 0.9, 0.08, 0.08), trimE, mtx([ecx, 5.15, 0.86]));
-    for (let k = 0; k <= 22; k++)
-      EB.add(G.box(0.05, 0.86, 0.05), trimE, mtx([E.x0 + 0.5 + (k * (E.w - 1.0)) / 22, 4.7, 0.86]));
-    EB.build();
-    occ.push(...EB.occ);
-    group.add(eg);
-  }
-
-  // ---------- pavement, kerb, road on past the street set ----------
+  // ---------- pavement, kerb, road on past the street set (seen from the lobby only through the facade) ----------
+  const road = new THREE.Group();
+  road.name = "row-road";
+  group.add(road);
   {
     const tiles = canvasTex(512, 512, drawPaveTiles);
     tiles.wrapS = tiles.wrapT = THREE.RepeatWrapping;
@@ -260,8 +241,8 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       const m = pave(tiles, pv, ao, `row-pave-${k}`, cuts[k], cuts[k + 1]);
       occ.push(clean(m.geometry).applyMatrix4(m.matrix));
     }
-    group.add(pv);
-    const SB = new Batch(group),
+    road.add(pv);
+    const SB = new Batch(road),
       L = STREET_END - PAVE_FROM;
     // the kerb starts under the rounded end of the street's (a hair lower, so the joint shows no notch)
     SB.add(G.rbox(L + 1, 0.178, 0.3, 0.05), mat(C.curb), mtx([PAVE_FROM - 1 + (L + 1) / 2, -0.071, 1.82]), {
@@ -282,6 +263,67 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       SB.add(G.box(1.8, 0.01, 0.1), dash, mtx([x, -0.145, 3.3]), { occ: false, shadow: false });
     SB.build();
   }
-  return { group, occ, doorHinge };
+  return { group, occ, doorHinge, lobbyBackdrop: lobbyBackdrop as THREE.Object3D | null, far, road };
 }
 export type Row = ReturnType<typeof buildRow>;
+
+const shutters = new WeakMap<Kit, THREE.Texture>();
+
+/**
+ * The shops from the shoe shop to the electronics shop and the end house, in a group of their own: unseen from the
+ * lobby, so the world lets them go there and builds them again (with their AO maps) on the way back out.
+ */
+export function buildFar(kit: Kit, M: RowMaterials, ao: AoTarget[], occ: THREE.BufferGeometry[]) {
+  const { mat, canvasTex } = kit;
+  const group = new THREE.Group();
+  group.name = "row-far";
+  for (let i = 2; i < SHOPS.length; i++) group.add(buildShop(kit, M, SHOPS[i], i, ao, occ));
+  // ---------- the end house: pale blue-grey, a balcony upstairs, a rolling shutter below ----------
+  {
+    const E = END_HOUSE,
+      eg = new THREE.Group(),
+      EB = new Batch(eg),
+      ex1 = E.x0 + E.w,
+      ecx = E.x0 + E.w / 2,
+      body = mat("#d3dae6"),
+      trimE = mat("#e7ecf3"),
+      dark = mat("#4b5466", { roughness: 0.3, metalness: 0.2 });
+    eg.name = "end-house";
+    EB.add(G.box(E.w, E.h, ROW.depth), body, mtx([ecx, E.h / 2, -ROW.depth / 2 - 0.02]));
+    for (const x of [E.x0 + 0.3, ex1 - 0.3])
+      EB.add(G.rbox(0.6, E.h - 0.4, 0.2, 0.05), trimE, mtx([x, (E.h - 0.4) / 2, 0.06]));
+    EB.add(G.rbox(E.w + 0.04, 0.4, 0.38, 0.07), trimE, mtx([ecx, E.h - 0.2, 0.12]));
+    EB.add(G.rbox(E.w, 0.36, 0.3, 0.06), trimE, mtx([ecx, 3.25, 0.1]));
+    EB.add(G.rbox(E.w - 1.3, 0.3, 0.3, 0.05), trimE, mtx([ecx, 2.95, 0.08]));
+    // (drawn once per world: the kit keeps its textures until the world goes, and this part is built again)
+    let shutter = shutters.get(kit);
+    if (!shutter)
+      shutters.set(
+        kit,
+        (shutter = canvasTex(64, 256, (g, w, h) => {
+          g.fillStyle = "#dfe4ec";
+          g.fillRect(0, 0, w, h);
+          g.fillStyle = "rgba(90,100,120,.28)";
+          for (let y = 0; y < h; y += 8) g.fillRect(0, y, w, 2);
+        })),
+      );
+    const sh = new THREE.Mesh(
+      new THREE.PlaneGeometry(E.w - 1.6, 2.8),
+      new THREE.MeshStandardMaterial({ map: shutter, roughness: 0.55, metalness: 0.3 }),
+    );
+    sh.position.set(ecx, 1.4, 0.01);
+    sh.receiveShadow = true;
+    eg.add(sh);
+    // balcony: slab, rail and balusters, the glass door and window behind it
+    EB.add(G.box(E.w - 1.2, 2.2, 0.04), dark, mtx([ecx, 5.35, 0.02]), { occ: false });
+    for (const x of [ecx - 0.9, ecx + 0.9]) EB.add(G.box(0.08, 2.2, 0.08), trimE, mtx([x, 5.35, 0.05]));
+    EB.add(G.box(E.w - 0.9, 0.14, 0.9), trimE, mtx([ecx, 4.2, 0.45]));
+    EB.add(G.box(E.w - 0.9, 0.08, 0.08), trimE, mtx([ecx, 5.15, 0.86]));
+    for (let k = 0; k <= 22; k++)
+      EB.add(G.box(0.05, 0.86, 0.05), trimE, mtx([E.x0 + 0.5 + (k * (E.w - 1.0)) / 22, 4.7, 0.86]));
+    EB.build();
+    occ.push(...EB.occ);
+    group.add(eg);
+  }
+  return group;
+}

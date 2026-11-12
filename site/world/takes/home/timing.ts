@@ -12,7 +12,7 @@
 // and the camera stands still there, and K5a.6 settles at Kreatekno's door. The videos' K5a.5 (the stall and the
 // electronics shop) is gone with the blank shops (user, 7 Nov): K5a.4 frames the cosmetics and electronics shops.
 // Plain numbers only: the page imports this for the stage height and the stills fallback.
-import { holdP, segmentsTotal, type Segment } from "../../core/segments";
+import { holdP, scrollTotal, segmentsTotal, type Segment } from "../../core/segments";
 
 export type KeyName =
   | "K0"
@@ -29,7 +29,11 @@ export type KeyName =
   | "K5a.2"
   | "K5a.3"
   | "K5a.4"
-  | "K5a.6";
+  | "K5a.6"
+  | "K6"
+  | "K7"
+  | "K8"
+  | "K9.1";
 
 export const SEG: Segment<KeyName>[] = [
   // issue #5: K0 → K1 in 1.0 screen (was 0.9 + 1.0): a short hold, then the scroll moves the camera at once
@@ -60,8 +64,24 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K5a.4", screens: 0.6 },
   { type: "move", from: "K5a.4", to: "K5a.6", screens: 0.5 },
   { type: "hold", from: "K5a.6", screens: 0.3 },
+  // Beats 6–9a (tahap 7, the team's videos K5a.6 → K9.1): through Kreatekno's door to the corkboard (K6), truck
+  // left to the rack (K7), on left and round to the meeting room's glass (K8), turn to the facade (K9.1). Separate
+  // timelines (user, 11 Nov): `screens` is 9:16's, which stops on each item of a hold (7 polaroids, the sign and 3
+  // books + the button, 2 × 4 sticky notes); `pc` is the scroll 16:9 takes, standing still on each keyframe with all
+  // its items in frame (PLAN tahap 7, total ±5.1 screens).
+  { type: "move", from: "K5a.6", to: "K6", screens: 0.9 },
+  { type: "hold", from: "K6", screens: 2.3, pc: 0.6 },
+  { type: "move", from: "K6", to: "K7", screens: 0.5 },
+  { type: "hold", from: "K7", screens: 1.4, pc: 0.5 },
+  { type: "move", from: "K7", to: "K8", screens: 0.6 },
+  { type: "hold", from: "K8", screens: 0.75, pc: 0.8 },
+  { type: "move", from: "K8", to: "K9.1", screens: 0.9 },
+  { type: "hold", from: "K9.1", screens: 0.3 },
 ];
+/** Length of the take on its own timeline (9:16): the unit of p in the world. */
 export const TAKE_SCREENS = segmentsTotal(SEG);
+/** Screens of scroll of the take per format (the page's height): landscape is shorter in the lobby. */
+export const TAKE_SCROLL = { pc: scrollTotal(SEG, false), hp: scrollTotal(SEG, true) };
 export const KEYS: KeyName[] = [
   "K0",
   "K1",
@@ -78,6 +98,10 @@ export const KEYS: KeyName[] = [
   "K5a.3",
   "K5a.4",
   "K5a.6",
+  "K6",
+  "K7",
+  "K8",
+  "K9.1",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
 /** Where the whip pan to K2.2 fires, as a fraction of the K2.1 → K2.2 move (time-based from there, ±0.45 s). */

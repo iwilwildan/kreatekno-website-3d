@@ -8,10 +8,49 @@ export const smoothstep = (e0: number, e1: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-export type Segment<K extends string> = { type: "hold" | "move"; from: K; to?: K; screens: number };
+/**
+ * `screens` is the segment's length on the take's own timeline (9:16, and the unit of p everywhere in the world);
+ * `pc`, when given, is its length in screens of scroll on landscape, which then has a timeline of its own (tahap 7:
+ * 9:16 stops on each item of a hold, 16:9 frames them all at once and needs less scroll).
+ */
+export type Segment<K extends string> = { type: "hold" | "move"; from: K; to?: K; screens: number; pc?: number };
 
 export function segmentsTotal<K extends string>(seg: Segment<K>[]) {
   return seg.reduce((a, s) => a + s.screens, 0);
+}
+
+/** Screens of scroll segment g takes: portrait its own length, landscape its `pc` length when it has one. */
+const scrollLen = <K extends string>(g: Segment<K>, portrait: boolean) => (portrait || g.pc == null ? g.screens : g.pc);
+
+/** Screens of scroll of the whole take on a format. */
+export function scrollTotal<K extends string>(seg: Segment<K>[], portrait: boolean) {
+  return seg.reduce((a, g) => a + scrollLen(g, portrait), 0);
+}
+
+/** Where the take is (screens on its own timeline) after s screens of scroll on a format. */
+export function screensAtScroll<K extends string>(seg: Segment<K>[], s: number, portrait: boolean) {
+  let x = 0,
+    acc = 0;
+  for (const g of seg) {
+    const len = scrollLen(g, portrait);
+    if (s <= acc + len) return x + (len > 0 ? clamp01((s - acc) / len) : 1) * g.screens;
+    acc += len;
+    x += g.screens;
+  }
+  return x;
+}
+
+/** Screens of scroll on a format at which the take is at x (screens on its own timeline): screensAtScroll's inverse. */
+export function scrollAtScreens<K extends string>(seg: Segment<K>[], x: number, portrait: boolean) {
+  let s = 0,
+    acc = 0;
+  for (const g of seg) {
+    const len = scrollLen(g, portrait);
+    if (x <= acc + g.screens) return s + (g.screens > 0 ? clamp01((x - acc) / g.screens) : 1) * len;
+    acc += g.screens;
+    s += len;
+  }
+  return s;
 }
 
 /** The segment under p (0..1 over the take), with u = 0..1 inside it. */
