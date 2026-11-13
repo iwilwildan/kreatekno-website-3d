@@ -13,6 +13,7 @@ Semua isi folder ini kecuali file ini diabaikan oleh git (`.gitignore`). Isinya 
 | `footage/blockout/` | `K2.2 - K3 blockout v3.mp4`: blockout gerak kamera K2.2 → K3 dengan label (1280×720, 24 fps, 8 dtk) | Diupload user di chat (`blockout_K22_K3_v3_label_1.mp4`), 2 Nov 2026 |
 | `footage/tahap6/` | 8 video gerak kamera 16:9 untuk tahap 6: `k41 -k4` (1920×1080, 30 fps, 6,1 dtk), `k4.2-k4.1`, `k5a.1 - k4.2`, `k5a.2 - k5a.1`, `k5a.3 - k5a.2`, `k5a.4 - k5a.3`, `k5a.5 - k5a.4`, `k5a.5 - k5a.6` (1280×720, 24 fps, 3 dtk). Nama asli dari user. Dicek 7 Nov: tujuh nama berarti "akhir - awal", hanya `k5a.5 - k5a.6` "awal - akhir"; urutan K4 → K4.1 → K4.2 → K5a.1 → … → K5a.6 (lihat plan tahap 6 di `PLAN.md`). Belum ada versi 9:16 | Downloads user, dipindah 7 Nov 2026 |
 | `footage/tahap7/` | 4 video gerak kamera 16:9 untuk tahap 7: `k6 - k5a.6`, `K6 -K7`, `K7 - K8`, `K8 - K9.1` (1280×720, 24 fps, 3,04 dtk). Nama asli dari user. Dicek 11 Nov: semuanya diputar maju, urutan K5a.6 → K6 → K7 → K8 → K9.1 (lihat plan tahap 7 di `PLAN.md`). Belum ada versi 9:16 | Downloads user, disalin 11 Nov 2026 |
+| `footage/lanjutan/` | `VID_20261113_185210.mp4` (852×480, 25 fps, 38,7 dtk): satu take kontinu K9.1 → K16 (beat 9b–16, tahap 8–10). Ringkasan per detik di log `PLAN.md` 13 Nov. Belum ada versi 9:16 | Diupload user di chat, 13 Nov 2026 |
 
 ## Belum ada di sini
 
