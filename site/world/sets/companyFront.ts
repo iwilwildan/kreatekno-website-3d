@@ -63,6 +63,27 @@ export function counterFrame(step: number) {
   };
 }
 export type CounterFrame = ReturnType<typeof counterFrame>;
+/**
+ * The front room of layout step `step` in world space, for the beats that come back to it at the end of the day
+ * (tahap 9: through the back door to the classroom): the side walls, the back wall and the wooden door in it (x range,
+ * height), the front wall's inside face, and the four staff desks (centre, yaw).
+ */
+export function roomFrame(step: number) {
+  const { P, off } = layoutParams(step);
+  return {
+    ixL: P.ixL + off[0],
+    ixR: P.ixR + off[0],
+    backZ: P.izB + off[2],
+    frontZ: -WALL_T,
+    door: { x0: P.dxL + off[0], x1: P.dxR + off[0], h: P.dH },
+    desks: (["D1", "D2", "D3", "D4"] as const).map((k) => ({
+      x: P[k + "x"] + off[0],
+      z: P[k + "z"] + off[2],
+      rot: P[k + "r"],
+    })),
+  };
+}
+export type RoomFrame = ReturnType<typeof roomFrame>;
 
 export function createCompanyFront(kit: Kit) {
   const { mat, canvasTex } = kit;

@@ -18,17 +18,18 @@ import { fitFov } from "./outside";
 import { PLAQUE_STOPS, SEG, STOP } from "./timing";
 
 const D2R = THREE.MathUtils.degToRad;
-const rig = (yaw: number, pitch: number) => new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, "YXZ"));
+export const rig = (yaw: number, pitch: number) =>
+  new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, "YXZ"));
 
-type View = { pos: THREE.Vector3; yaw: number; pitch: number; fov: number };
-const v = (x: number, y: number, z: number, yaw: number, pitch: number, fov: number): View => ({
+export type View = { pos: THREE.Vector3; yaw: number; pitch: number; fov: number };
+export const v = (x: number, y: number, z: number, yaw: number, pitch: number, fov: number): View => ({
   pos: new THREE.Vector3(x, y, z),
   yaw,
   pitch,
   fov,
 });
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
-function mix(a: View, b: View, k: number): View {
+export function mix(a: View, b: View, k: number): View {
   return {
     pos: a.pos.clone().lerp(b.pos, k),
     yaw: lerp(a.yaw, b.yaw, k),
@@ -77,9 +78,11 @@ const K9B_HP = PLAQUE_COLS.map((c) => v(c.cx, P.y, PZ + c.w / 0.88 / 2 / HP_HTAN
 // middle (video 20 s). 9:16: the door and the three in the middle, the sign's middle above
 const K11_PC = v(-1.2, 1.7, 8.7, 0, D2R(2), 36),
   K11_HP = v(-0.2, 1.75, 7.2, 0, D2R(6), 52);
+/** The K11 view for format blend t (where beats 12–13 start, takes/home/beat12). */
+export const k11View = (t: number) => mix(K11_PC, K11_HP, t);
 
 /** A move through views at times `at` (0..1): positions on a centripetal curve, paced and turned by monotone cubics. */
-function track(keys: { at: number; view: View }[]) {
+export function track(keys: { at: number; view: View }[]) {
   const curve = new THREE.CatmullRomCurve3(
     keys.map((k) => k.view.pos),
     false,

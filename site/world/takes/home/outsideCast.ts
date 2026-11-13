@@ -24,6 +24,7 @@ import { followClock } from "./heru";
 import { DOOR_GATES, DOOR_OPEN } from "./lobby";
 import { K42_PASS, TRUCK_HOLDS } from "./outside";
 import { B9, PASS_AT } from "./beat9";
+import { B12, INTO } from "./beat12";
 import { SEG, type KeyName } from "./timing";
 import { dampStep, type Damped } from "../../motion/damp";
 
@@ -279,7 +280,8 @@ const W2 = new TimedWalk(
   "L",
 );
 /** COMPANY: along its pavement from the right to the door (DATA: the door's middle at x 0), the three in a line. */
-const C_SPOT = { heru: V(-0.55, 0.85), dewi: V(0.05, 1.35), wildan: V(0.62, 0.85) };
+// (Heru and Wildan just outside the leaves' swing, at their free edges once open: video 22–23 s)
+const C_SPOT = { heru: V(-1.15, 1.15), dewi: V(0.05, 1.45), wildan: V(1.2, 1.15) };
 const HC = new TimedWalk([V(8.6, LANE9.heru), V(1.6, LANE9.heru), C_SPOT.heru], () => OUT_SPEED, 0.42, "R");
 const DC = new TimedWalk([V(9.6, 1.3), V(2.1, 1.3), C_SPOT.dewi], () => OUT_SPEED, 0.36, "L");
 const WC = new TimedWalk([V(10.6, 0.95), V(2.7, 0.95), C_SPOT.wildan], () => OUT_SPEED, 0.4, "R");
@@ -335,6 +337,18 @@ export const BT = (() => {
 /** Clock when Heru is near the electronics shop (the camera's high view, video 10.5 s). */
 const BT_HIGH = BT.h6 + H6.timeAt((p) => p.z > 0 && p.x <= KREATEKNO.x0 - 3.5);
 
+// ---------- beats 12–13 (tahap 9, the continuation video 21–24 s; greybox) ----------
+// At COMPANY's door Heru and Wildan pull its two leaves open outward (they stand clear of their swing), and Bu Dewi
+// walks in between them into the front room and stops a few steps in, where the camera passes over her head.
+const DI = new TimedWalk([C_SPOT.dewi, V(0.02, 0.4), V(0.0, -0.8), V(0.12, -2.6)], () => OUT_SPEED, 0.36, "R");
+/** Their timeline at COMPANY's door (clock seconds, after BT.end). */
+export const BT2 = (() => {
+  const open: [number, number] = [BT.end + 0.2, BT.end + 1.4],
+    di = open[1] - 0.3,
+    inside = di + DI.timeAt((p) => p.z <= -0.8);
+  return { open, di, inside, end: di + DI.dur + 0.3 };
+})();
+
 /**
  * Where the clock would be for scroll screens x if they kept up with it: coming out over the K4.2 → K5a.1 move and
  * the K5a.1 hold, then along the row so that each hold of the truck finds them in the frame, done at K5a.6.
@@ -355,7 +369,9 @@ export function scrollClock(x: number) {
     if (x <= high) return lerp(BT.passed, BT_HIGH, (x - pass) / (high - pass));
     if (x <= B9.down.s) return lerp(BT_HIGH, BT.rowEnd, (x - high) / (B9.down.s - high));
     // (the jump to COMPANY: the camera sees the sky only from here to well into its way down)
-    return lerp(BT.c0, BT.end, clamp01((x - B9.down.s) / (B9.k11.s + B9.k11.len - B9.down.s)));
+    if (x <= B12.into.s) return lerp(BT.c0, BT.end, clamp01((x - B9.down.s) / (B9.k11.s + B9.k11.len - B9.down.s)));
+    // tahap 9: the leaves open and Bu Dewi is in before the camera reaches the door
+    return lerp(BT.end, BT2.end, clamp01((x - B12.into.s) / ((INTO.door - 0.08) * B12.into.len)));
   }
   // in the lobby (tahap 7): in to the corkboard over the dolly (done as it arrives at K6), still through K6–K7; from
   // the K8 hold (the camera faces the meeting room, they are behind it) round and on toward the facade's door, half
@@ -506,7 +522,8 @@ const ph = (c: number, [a, b]: readonly [number, number]) => smoothstep(a, b, c)
  * through the right half, stepping out past the leaf's end before she turns right (D1); it shuts with the left one.
  * Beat 1 is unchanged: there Heru pushes this leaf inward.
  */
-export const rightLeaf = (c: number) => (c <= 0 ? 0 : RIGHT_OPEN * (ph(c, T.leafOpen) - ph(c, T.leafShut)));
+export const rightLeaf = (c: number) =>
+  c <= 0 ? 0 : RIGHT_OPEN * (ph(c, T.leafOpen) - ph(c, T.leafShut) + ph(c, BT2.open));
 /** The shortest turn from yaw a to yaw b. */
 const turnTo = (a: number, b: number) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
 
@@ -515,7 +532,7 @@ export function outsideState(c: number): OutsideState | null {
   if (c <= 0) return null;
   // Kreatekno's leaf: pushed open by Heru, held, and shut by its closer once he lets go (the world keeps it open
   // while the camera comes through, see kreLeafFor)
-  const leftLeaf = LEFT.open * (ph(c, T.leafOpen) - ph(c, T.leafShut)),
+  const leftLeaf = LEFT.open * (ph(c, T.leafOpen) - ph(c, T.leafShut) + ph(c, BT2.open)),
     kreLeaf = kreAt(c);
   const turn = (at: THREE.Vector3, from: number, to: number, span: readonly [number, number]) =>
     turnStride(at, from, turnTo(from, to), ph(c, span));
@@ -546,7 +563,8 @@ export function outsideState(c: number): OutsideState | null {
   else if (c < BT.d5) dewi = D4.stride(c - LT.d4);
   else if (c < BT.c0) dewi = D5.stride(c - BT.d5);
   else if (c < BT.dFace[0]) dewi = DC.stride(c - BT.dc);
-  else dewi = turn(C_SPOT.dewi, DC.yaw1, FACE_DOOR, BT.dFace);
+  else if (c < BT2.di) dewi = turn(C_SPOT.dewi, DC.yaw1, FACE_DOOR, BT.dFace);
+  else dewi = DI.stride(c - BT2.di);
   // (the lobby's floor is two steps down)
   heru = onFloor(heru, lobbyFloor);
   dewi = onFloor(dewi, lobbyFloor);

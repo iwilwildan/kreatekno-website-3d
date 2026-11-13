@@ -36,7 +36,9 @@ export type KeyName =
   | "K9.1"
   | "K9b"
   | "K10"
-  | "K11";
+  | "K11"
+  | "K12"
+  | "K13";
 
 export const SEG: Segment<KeyName>[] = [
   // issue #5: K0 → K1 in 1.0 screen (was 0.9 + 1.0): a short hold, then the scroll moves the camera at once
@@ -91,6 +93,14 @@ export const SEG: Segment<KeyName>[] = [
   { type: "move", from: "K9b", to: "K10", screens: 0.9 },
   { type: "move", from: "K10", to: "K11", screens: 0.9 },
   { type: "hold", from: "K11", screens: 0.2 },
+  // Beats 12–13 (tahap 9, the continuation video 21–34 s, greybox): Heru and Wildan pull COMPANY's leaves open, the
+  // camera follows Bu Dewi in, past the empty desks (holograms) and the counter, through the wooden back door into the
+  // classroom (K12: Wildan teaching the staff at the TV, the practice copy on its screen), then back out of the
+  // classroom and through the front room at dusk (K13, the counter frontal; passed once tahap 10 goes on)
+  { type: "move", from: "K11", to: "K12", screens: 2.8 },
+  { type: "hold", from: "K12", screens: 0.8 },
+  { type: "move", from: "K12", to: "K13", screens: 1.1 },
+  { type: "hold", from: "K13", screens: 0.2 },
 ];
 /** Length of the take on its own timeline (9:16): the unit of p in the world. */
 export const TAKE_SCREENS = segmentsTotal(SEG);
@@ -119,6 +129,8 @@ export const KEYS: KeyName[] = [
   "K9b",
   "K10",
   "K11",
+  "K12",
+  "K13",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
 
