@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata({ locale: await getLocale(), href: "/", title: t("title"), description: t("description") });
 }
 
-// FAQPage JSON-LD comes back with the FAQ beat (9a): Google only accepts it when the questions are visible.
+// FAQPage JSON-LD is in HomeStage with the FAQ beat (K8, tahap 7): the questions are visible on the sticky notes.
 export default async function HomePage() {
   return (
     <>

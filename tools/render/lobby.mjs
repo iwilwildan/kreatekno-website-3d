@@ -46,14 +46,14 @@ for (const fmt of FMTS) {
     console.log(fmt, k, `${s.calls} draw call, ${(s.tris / 1000).toFixed(1)} rb segitiga`);
   }
   // 9:16 stops on each item of a hold: its first stop too (the hold's start; hold lengths of timing.ts, in screens of
-  // the 22.95-screen take)
+  // the 24.05-screen take)
   if (fmt === "hp")
     for (const [i, k, len] of [
       [1, "K6", 2.3],
       [2, "K7", 1.4],
       [3, "K8", 0.75],
     ]) {
-      await at(keyP[i] - (len / 2 - 0.03) / 22.95);
+      await at(keyP[i] - (len / 2 - 0.03) / 24.05);
       writeDataUrl(join(OUT, `${fmt}_${k}_awal.png`), await page.evaluate(() => window.__world.canvasPNG()));
     }
   // the moves: four points each, between the keyframes

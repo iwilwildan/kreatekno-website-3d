@@ -1,6 +1,6 @@
 # Kreatekno Website 3D: Plan
 
-_Disusun 31 Okt 2026 dari interview dengan user dan dokumen repo lama. Status: tahap 0–6 selesai (tahap 6 disetujui 7 Nov). Plan induk Solusi ada di [PLAN-SOLUSI.md](PLAN-SOLUSI.md): lingkup etalase disetujui 4 Nov, struktur fondasi detail dan 12 subplan diperbarui 7 Nov; perluasan cerita inline masih draf. Serah-terima antar sesi ada di `HANDOFF.md`._
+_Disusun 31 Okt 2026 dari interview dengan user dan dokumen repo lama. Status: tahap 0–7 selesai (tahap 7 disetujui 13 Nov). Plan induk Solusi ada di [PLAN-SOLUSI.md](PLAN-SOLUSI.md): lingkup etalase disetujui 4 Nov, struktur fondasi detail dan 12 subplan diperbarui 7 Nov; perluasan cerita inline masih draf. Serah-terima antar sesi ada di `HANDOFF.md`._
 
 ## 1. Tujuan
 
@@ -189,7 +189,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 4 | Animasi beat 1–2 | Heru berjalan dan membuka pintu, aksi staf, burung, kamera K2.1 dan K2.2, inersia kamera | 3 | ✅ 1 Nov (disetujui user; belum dites di HP) |
 | 5 | Beat 3–4 | Layanan (leaflet A4 datar di konter) dan Use case (binder terbuka), tampak atas dengan tangan Heru dan Bu Dewi | 4 | ✅ 7 Nov (disetujui user; belum dites di HP Android sungguhan) |
 | 6 | Beat 5a–5b | Anggukan Bu Dewi (K4.1), kamera mundur lewat pintu (K4.2), keluar bersama (K5a.1), truck right menyusuri 8 ruko dengan panel customer journey (K5a.2–K5a.5), tiba di pintu Kreatekno (K5a.6) | 5 | ✅ selesai, disetujui 7 Nov |
-| 7 | Beat 6–9a | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi | 6 | 🟡 plan disetujui 11 Nov; langkah 1–4 disetujui 12 Nov, langkah 5–6 belum |
+| 7   | Beat 6–9a                     | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi                                                                                                 | 6                                          | ✅ 13 Nov (disetujui user; tes HP fisik lancar; temuan laju jalan ruko tetap di issue #9) |
 | 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | ⬜ |
 | 9 | Beat 12–14 | Ruang kelas, praktik saat senja dengan ORB dan pelanggan, papan kapur kecil, CTA map ungu | 8 | ⬜ |
 | 10 | Beat 15–16 | Mundur lewat jendela, malam, naik ke langit, footer di jalan gelap | 9 | ⬜ |
@@ -540,7 +540,7 @@ Keputusan (jawaban user 11 Nov dan aturan prioritas):
 | Topik      | Keputusan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Keyframe   | `KeyName` mendapat `K6`, `K7`, `K8`, `K9.1`. Semua dari frame akhir video (pc); HP dirancang sendiri                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Durasi     | Linimasa terpisah per format (user, 11 Nov). PC: K5a.6 → K6 0,9; jeda K6 0,6; K6 → K7 0,5; jeda K7 0,5; K7 → K8 0,6; jeda K8 0,8; K8 → K9.1 0,9; jeda K9.1 0,3 (ujung take sampai tahap 8), total 5,1 layar, take 15,3 → 20,4. HP: gerak sama, jeda K6 2,3, K7 1,4, K8 0,75, total 7,65, take 22,95. Disetel di review greybox                                                                                                                                                                                                                                                                                                                                                                           |
+| Durasi     | Linimasa terpisah per format (user, 11 Nov). PC: K5a.6 → K6 0,9; jeda K6 0,6; K6 → K7 0,5; jeda K7 0,5; K7 → K8 0,6; jeda K8 0,8; K8 → K9.1 0,9; jeda K9.1 0,3 (ujung take sampai tahap 8), total 5,1 layar, take 15,3 → 20,4. HP: gerak sama, jeda K6 2,3, K7 1,4, K8 0,75, total 7,65, take 22,95. Disetel di review greybox. Langkah 6 (13 Nov): K5a.6 → K6 0,9 → 2,0, take PC 21,5, HP 24,05                                                                                                                                                                                                                                                                                                                                                                           |
 | Kamera     | Rig yaw/pitch tahap 5. Lewat pintu: jalur seperti K4.1 → K4.2 dibalik (near plane dan kusen dicek, daun pintu harus terbuka penuh saat kamera lewat, aturan issue #10). Truck left frontal dengan mulai dan berhenti halus seperti truck tahap 6. K8 → K9.1: arc 180° ke kiri lalu maju, tinggi dan FOV dari frame video. Kamera diukur dari frame akhir dengan `tools/camera-solve` (bingkai gabus, rak, kaca dan fasad punya ukuran yang dipilih)                                                                                                                                                                                                                                                      |
 | Set        | Chunk baru `sets/lobby` (≤ 120 KB gzip): lantai kayu terang, dinding lavender dengan plint ungu, plafon dengan panel lampu, fasad kaca dari dalam (pintu ganda, anak tangga rendah), dinding gabus, rak dua tingkat dengan papan kayu, tanaman pot, ruang rapat (kaca berbingkai ungu, pintu kaca, meja panjang, kursi lila, laptop, whiteboard, jendela ke taman), meja resepsionis dari Master 10a. Latar lobi palsu di `row.ts` diganti lobi asli. Taman seberang (rumput, pagar tanaman, pohon low-poly) dan taman di balik jendela ruang rapat sebagai latar ringan. Maksimal dua set hidup: deret ruko dilepas setelah K6 kecuali fasad Kreatekno, dibangun ulang saat scroll mundur. Bake AO lobi |
 | Kaca       | Transparan biasa (tanpa `transmission`), gradasi pantulan dan garis kilau tipis seperti video; sticky note menempel di depan kaca, jadi HTML tidak pernah tertutup tokoh di balik kaca                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -1755,3 +1755,110 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Langkah 4 disetujui user ("langkah 4 disetujui, commit dan push dulu ke main").
 - Di-commit ke `main` dan di-push (memicu deploy Vercel): hanya file tahap 7 langkah 1–4 (set, tokoh, take lobi, linimasa PC/HP, cahaya, AO `lobby-*`, alat review dan tes `issue4*.mjs`), refactor ekspor rambut Heru di `cast/heru.ts` yang dipakai Andi, baris `refs/README.md`, dan di `PLAN.md` hanya plan tahap 7, status tahap 7 dan entri log tahap 7. Pekerjaan Solusi yang belum di-commit tidak ikut (`roster.ts`, bagian kasir di `cast/lab.ts`, messages, SEO, i18n, dll.).
 - Belum: langkah 5 (copy dan halaman) dan 6 (cek akhir, tes HP).
+
+### 2026-11-12 (tahap 7 langkah 5: copy dan halaman)
+
+- Dikerjakan di sesi terpisah atas permintaan sesi induk. Hanya langkah 5; langkah 6 (cek akhir, tes HP fisik) belum.
+- **Komponen** (`components/home/props/`, HTML asli dirender di server, ID/EN):
+  - `Corkboard.tsx`: H2 `home.testimonials.title` di strip kertas (`#h-testimoni`), 7 polaroid (`<ul>` + `<figure>`): foto pengganti tepat di atas foto abu-abu kartu 3D (ikon kamera, "[Foto]", warna lembut per kartu), cap CONTOH, kutipan, nama, usaha. `messages` `home.testimonials.items` sekarang array 7 item berisi templat dokumen tim (kunci tunggal `quote`, `name`, `business` dihapus; tidak dipakai di tempat lain). Kartu diisi satu per satu saat testimoni nyata dengan izin klien masuk.
+  - `MagazineRack.tsx`: H2 `home.articles.title` di papan kayu (`#h-artikel`), 3 artikel di buku terbuka tingkat atas (halaman kiri: kategori dengan label "Kategori:" untuk pembaca layar dan judul H3; halaman kanan: ikon buku dan "Baca artikel" ke `/artikel`, nama artikel ikut di teks tautan untuk pembaca layar), "Lihat semua artikel" di buku kiri tingkat bawah. Nomor 01–03 tidak dipakai karena di HP kamera membaca buku dari kanan ke kiri.
+  - `StickyNotes.tsx` (client, port `FaqNotes.tsx`): 8 pertanyaan `home.faq.items` di note (tombol `aria-expanded`/`aria-controls`, jawaban `role="region"`), judul di pita kaca kiri, baris bantuan + "Konsultasi gratis" (`section="faq"`) di pita kanan, pita berupa film buram (hanya isinya transparan). Klik, sentuh atau Enter membuka; note membesar menutupi tiga tetangganya ke arah tengah dua kolom yang terlihat (di HP tetap di layar), satu terbuka sekaligus, tombol Tutup, Escape; fokus kembali ke pertanyaan. Note yang terbuka menutup sendiri saat world menyembunyikannya (dicek per frame selama terbuka). Tanpa JS semua jawaban terbuka.
+  - `lobby.css` (setelah `stage.css`): versi tumpuk dan film. Satuan `cq` hanya di anak kotak anchor; di kotak itu sendiri `cq` dihitung terhadap halaman (pita FAQ sempat mengecil karena ini).
+- **World:**
+  - `takes/home/lobby.ts` `lobbyAnchors` (strip, `testi-0..6`, `rack-sign`, `article-0..2`, `rack-all`, `faq-title`, `faq-help`, `faq-0..7`; kaca menghadap +x), `copyStopAt` (ukuran kotak diukur di perhentian HP item itu, atau di keyframe PC, jadi teks 1:1: transform strip di K6 `matrix3d(1,0,0,0,0,1,…)`), `lobbyCopyFade` (masuk di ujung gerak ke jeda, pergi saat gerak berikutnya mulai; K8 setelah diam 20% sebelum berbelok).
+  - `timing.ts` `STOP`, `stopSpan`, `LOBBY_STOPS` (angka jeda per item HP dipakai bersama kamera dan halaman).
+  - `world/index.ts`: copy panel Cara kerja dan copy billboard disembunyikan setelah kamera menuju pintu Kreatekno. Temuan: headline billboard terproyeksi lewat jendela ruang rapat di K8 PC (teks kecil melayang yang dicatat di langkah 3), dan copy panel tampak terbalik dari dalam lobi.
+  - **Kamera PC K7** dinaikkan 0,12 m (0,5 → 0,62 m dari lantai) dan FOV 36° → 36,4°: papan kayu (judul artikel) sebelumnya di bawah header mengambang (atas papan ±19 px, header sampai ±76 px dari 720). Lantai tetap di dalam frame. HP tidak berubah.
+- **Halaman:**
+  - Penanda `#testimoni`, `#artikel`, `#faq`: PC di tengah jeda, HP di perhentian pertama (strip, papan, note kiri dengan judul); posisi scroll per format (`--at`, `--at-hp`). Menu header tidak diubah.
+  - JSON-LD `FAQPage` dari 8 item di `HomeStage` (komentar di `page.tsx` diperbarui).
+  - Versi tumpuk: section Testimoni, Artikel, FAQ dengan still K6, K7, K8 (kartu polaroid, buku, note akordeon).
+  - Still (`tools/render/stills.mjs` + `lib.mjs`: kunci lobi, argumen daftar kunci, posisi HP dihitung di linimasa 9:16 `--take-hp`; sebelumnya dibagi `--take` PC yang sejak linimasa terpisah berbeda): PC K6, K7, K8, K9.1 (15–42 KB), HP per perhentian K6–K6h, K7–K7e, K8, K8b, K9.1 (5–10 KB). Still lain tidak dirender ulang. Teks alt `home.stage.k6`, `k7`, `k8`, `k9_1` (ID/EN).
+  - Fallback tanpa WebGL: still lobi bergantian mengikuti scroll (`components/home/lobbyStills.ts`), copy di still lewat `quadMatrix3d` sampai still berikutnya masuk.
+- **Dicek** (render hanya di chat; build produksi port 3301):
+  - render jeda K6, K7, K8 PC 1280×720 lewat penanda menu, HP 375×812 di perhentian strip, polaroid, papan, buku, tombol, dua kelompok note, FAQ terbuka;
+  - FAQ di PC (16/16): `#faq` saat dimuat mendarat di K8, Enter membuka, Escape menutup dan fokus kembali, Tab ke Tutup, klik membuka satu saja, sentuhan membuka, panel di dalam layar, note menutup setelah pergi, copy FAQ dan testimoni `hidden` di K7, Tab tidak mengenai copy tersembunyi, `#artikel` di K7, `#testimoni` di K6;
+  - tanpa JS (PC, HP): 8 jawaban terbuka, 7 polaroid, 4 buku, JSON-LD 8 pertanyaan; reduced motion: akordeon; tanpa WebGL PC dan HP: copy di still tiap jeda/perhentian, tanpa pageerror (14/14). Di HP 375 lebar still 9:16 terpotong di sisi, sama seperti panel beat 5;
+  - console: hanya 404 `/_vercel/insights/script.js` (Vercel Analytics, hanya ada di Vercel; sudah ada sejak sebelum langkah ini);
+  - `tsc --noEmit`, ESLint, Prettier (`format:check` file yang diubah; `Journey.tsx` ikut dirapikan) dan `next build` lulus.
+- **Lanjutan setelah RAM dilegakan user ("Sudah, lanjut"):**
+  - FAQ di HP 375×812 dan 360×640: 16/16 masing-masing (cek yang sama dengan PC, klik dan sentuhan di koordinat layar). Klik `page.click` Playwright sempat menggeser halaman 449 px; itu gulir otomatis Playwright sebelum klik, bukan halaman. `focus()` di `StickyNotes` tetap diberi `preventScroll`.
+  - Diperbaiki: di note yang terbuka, baris pertama jawaban tertindih tombol Tutup kalau pertanyaannya satu baris (terlihat di 360×640). Pertanyaan yang terbuka sekarang setinggi minimal tombol itu.
+  - Render 360×640 (ID) di semua perhentian dan EN di PC 1280×720 dan HP 375×812: semua copy muat. Di perhentian buku HP, papan kayu terlihat 2,2× lebih dekat dan judulnya keluar tepi layar bersama papannya (perspektif, bukan teks meluber).
+  - `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25 (build produksi port 3301).
+  - Anggaran (`lobby.mjs`, tiap 0,004 p, maju lalu mundur ke K5a.4): PC terberat 79 draw call (K8 → K9.1) dan 103,6 rb segitiga (K5a.6), HP 69 dan 97,0 rb, sama dengan langkah 4. Angka HUD 116 draw call di perhentian strip HP adalah sisa frame sebelumnya (HUD hanya diperbarui di frame tanpa pass bayangan).
+- Langkah 5 disetujui user ("Setujui langkah 5", 12 Nov).
+- Belum: langkah 6 (cek akhir, tes HP fisik). Tidak ada commit.
+
+### 13 Nov 2026: cek UX meja, copy ruko, testimoni, copy tembus (issue #15–#17)
+
+- Dicek di build produksi lokal (Playwright, PC 1280×720, HP 375×812; render hanya di chat):
+  - Meja karyawan K2.1 dan K2.2: di PC panel depan keempat meja terpotong tepi bawah layar; di HP utuh tapi kecil (±50 px tinggi).
+  - Copy Cara kerja di panel ruko: teks mengisi 22–39% kotak copy di PC dan 31–63% di HP; isi langkah di batas minimum 13 px.
+  - Papan testimoni K6: 7 polaroid, 8 perhentian di HP.
+  - Copy ruko tembus dari dalam lobi: ada di versi yang sudah di-push (41e7e55, aturan fade copy tanpa `pastDoor`). Di kode lokal sudah disembunyikan oleh tahap 7 langkah 5 (belum di-commit); scroll maju dan mundur K5a.6 ↔ K6 di PC dan HP tidak menemukan copy ruko di dalam lobi. User: tidak perlu issue.
+- Issue dibuat setelah dikonfirmasi user: #15 kamera meja turun (PC dan HP), #16 perbesar copy panel ruko, #17 testimoni jadi 3 (satu baris, lebih besar; 4 perhentian HP).
+- Belum: pengerjaan ketiga issue. Tidak ada perubahan kode.
+
+### 2026-11-13 (tahap 7 langkah 6: cek akhir)
+
+- Dikerjakan di sesi terpisah atas permintaan sesi induk. Hanya langkah 6. Tidak ada perubahan kode: tidak ditemukan bug kecil yang jelas; temuan yang butuh keputusan dilaporkan di bawah. Semua di build produksi lokal (`next build` lulus, port 3300), Playwright dengan GPU, satu browser sekaligus. Render, frame video dan lembar perbandingan hanya di chat.
+- **Jeda dan titik lewat:** PC 1280×720 di K6, K7, K8, K9.1 dan 3 titik per gerak berdampingan dengan frame video yang sama (lembar per gerak); tablet 768×1024, HP 375×812 dan 360×640 di 16 perhentian (8 K6, 5 K7, 2 K8, K9.1) dan 3 titik per gerak; EN di PC dan HP 375. Copy muat dan tajam di semua jeda, ID dan EN.
+- **Scroll per frame** (`?hud`, `window.__world`, K5a.4 → ujung → K5a.4; rata 2 s/layar, cepat PC 1 s, potret 0,6 s; 4 viewport, 20 putaran termasuk CPU 4×):
+  - kamera melewati fasad Kreatekno selalu dengan daun pintu terbuka penuh (−1,45 rad) di 20/20 putaran;
+  - copy lobi hanya tampil di sekitar jedanya (K6 16,09–18,56, K7 18,89–20,46, K8 20,89–21,99 layar; jeda 16,2–18,5, 19,0–20,4, 21,0–21,75 plus pudar), 0 frame di luar;
+  - tidak ada tokoh muncul, hilang atau melompat di dalam frame di lobi. Wildan dan Andi mulai digambar di jeda K5a.6 (15,10) tanpa terlihat: render dengan dan tanpa mereka berbeda 0 piksel di PC dan HP;
+  - laju badan di lobi: Bu Dewi ≤ 2,47 m/s, Heru ≤ 2,69 m/s (jalan H5 1,38 m/s × 1,8), Wildan ≤ 1,91 m/s.
+- **Interaksi** (PC, tablet, HP 375, HP 360; ID 91/91, EN 45/45): `#testimoni`, `#artikel`, `#faq` saat dimuat dan lewat ganti hash mendarat di jedanya dengan copy penuh (PC xs 17,35 / 19,7 / 21,375; HP 16,286 / 19,087 / 21,135); FAQ dibuka dengan klik, Enter dan sentuhan, satu terbuka sekaligus, Tutup dan Escape menutup dan mengembalikan fokus, panel di dalam layar, halaman tidak bergeser, note menutup sendiri setelah pergi; Tab di jeda tidak mengenai copy tersembunyi; reduced motion dan tanpa JS menampilkan versi tumpuk (7 polaroid, 3 artikel, 8 note, still K6–K8, JSON-LD 8 pertanyaan; tanpa JS 8 jawaban terbuka). Tab di perhentian tengah HP 375 dan 360: 16/16.
+- **Anggaran:** `lobby.mjs` (tiap 0,002 p, maju lalu mundur, 362 titik per format): terberat PC 78 draw call · 103,6 rb segitiga, HP 67 · 97,0 rb (keduanya di K5a.6). Scroll sungguhan per jeda (maks): PC K5a.6 70 · 79 rb, K6 15 · 21 rb, K7 15 · 17 rb, K8 55 · 49 rb, K9.1 56 · 54 rb; tablet dan HP di bawah itu. Angka per keyframe yang dicetak `lobby.mjs` kadang mengulang titik sebelumnya (statistik hanya diperbarui di frame tanpa pass bayangan); angka terberat sapuan dan scroll sungguhan saling cocok.
+- **Chunk** (gzip): `sets/lobby` 8,0 KB, Wildan + Andi 11,1 KB (pembangun tokoh bersama 22,6 KB sudah dimuat bersama roster), deret ruko 3,2 KB, world 28,4 KB. Semua di bawah 120 KB.
+- **Memori** (PC, 3 putaran K5a.4 → ujung → K5a.4 dengan set dilepas dan dibangun ulang, GC dipaksa): heap JS 14,9 → 15,6 MB, geometri 152 ↔ 171, tekstur 68 ↔ 70, program 54 tetap, objek 466 ↔ 500. Tidak bocor.
+- **FPS** (laptop, GPU RTX 3050): tanpa throttle PC 65–80, HP 94–160 fps rata-rata. CPU 4×, rata 2 s/layar: PC 26,8 fps (p95 61 ms), HP 34,7–38,9 fps (p95 40–48 ms).
+- **Regresi:** `issue4-loading.mjs` 25/25. `issue4.mjs` 73/73 di percobaan ketiga; dua percobaan pertama gagal di satu cek waktu yang berbeda (preload AO ruko tablet ≤ 2,5 s, lalu settle `hp-small` 1 s/layar mundur) saat RAM bebas 0,45–0,6 GB; dengan 1,2 GB bebas lulus semua. Console: hanya 404 `/_vercel/insights/script.js` (hanya ada di Vercel). `typecheck`, `lint`, `format:check` situs lulus.
+- **Temuan, perlu keputusan (tidak diubah):**
+  1. Gerbang pintu Kreatekno (`DOOR_GATES`) menahan kamera di depan pintu sampai Bu Dewi masuk, sedangkan jam Bu Dewi di lobi maksimal 1,8× langkahnya. Scroll rata di PC: scroll masuk jeda K6 di detik 4,0 dan keluar di 5,2, kamera baru tiba di K6 di detik 6,2; kamera tertinggal ≥ 0,5 layar selama 4,9 s (maks 3,1 layar). HP dan tablet tertinggal maks 1,4 layar selama 3,1 s dan menyusul di dalam jeda K6 yang panjang. Scroll cepat PC: tertinggal maks 4,75 layar.
+  2. Ujung truck K5a.4 → K5a.6 (tahap 6, jam terikat scroll, issue #2): pada scroll rata Bu Dewi bergerak 6–7,6 m/s lalu Heru ±5 m/s masuk pintu sementara kamera sudah hampir diam di K5a.6 (xs 14,9–15,12). Langkah dibatasi ±2,5 m/s, jadi kaki meluncur.
+  3. Tersendat saat set ruko jauh dibangun ulang di jeda K6 waktu scroll mundur (xs ±18,1–18,4): 106–260 ms tanpa throttle, 534–844 ms dengan CPU 4×. Saat dilepas maju (awal jeda K7): 248–532 ms.
+  4. Tablet 768×1024: di perhentian K7c tombol "Lihat semua artikel" sepenuhnya di luar layar tetapi bisa di-Tab (kotak anchor halaman bukunya masih sebagian di layar, `quadVisible`). Di tablet copy tetangga terpotong di tepi layar pada perhentian K6, K7 dan K8.
+  5. HP dan tablet: di perhentian polaroid baris atas judul strip tampil besar, terpotong dan sebagian di bawah header; di perhentian tombol K7e teks artikel kiri sebagian di bawah header. PC K8: tepi atas pita kaca ±6 px di bawah header (teks bebas).
+- Uji HP 375×812 pertama sempat gagal menunggu world siap (fallback still saat RAM laptop ±0,6 GB); diulang dan lulus.
+- Tes HP fisik: build produksi di `http://192.168.1.13:3300/` (Wi-Fi TP-Link) atau `http://10.124.86.149:3300/` (Wi-Fi bawaan), contoh `?k=K6`, `?k=K8`, `?k=K9.1`.
+- Catatan: issue #17 (testimoni jadi 3) akan mengubah K6; cek K6 diulang setelah itu.
+- Tes HP fisik (Android user, build produksi port 3300): lancar (user, 13 Nov). Model HP dan angka FPS tidak dicatat.
+- Belum: keputusan temuan 1–5, persetujuan tahap 7. Tidak ada commit.
+
+### 2026-11-13 (tahap 7 langkah 6: perbaikan temuan)
+
+- Keputusan user ("Perbaiki temuan dulu" dan jawaban pilihan): temuan 1 dolly lebih panjang; temuan 2 tetap di issue #9 (tidak diubah); temuan 3 deret ruko jauh disembunyikan, tidak dilepas; temuan 4–5 semuanya diperbaiki (Tab tablet, judul di bawah header HP, pita K8 PC, copy tetangga tablet).
+- Diubah:
+  - `takes/home/timing.ts`: gerak K5a.6 → K6 0,9 → 2,0 layar. Take PC 20,4 → 21,5 layar scroll, HP 22,95 → 24,05. Gerbang pintu, jam tokoh, cahaya, penanda lompat dan fade still dihitung dari `SEG`, jadi ikut sendiri.
+  - `world/index.ts`:
+    - selama gerbang pintu Kreatekno menahan kamera, Heru dan Bu Dewi mengejar posisi scroll, bukan posisi kamera. Sebelumnya target jam Bu Dewi ikut tertahan tepat di depan titik gerbang, jadi ia melambat mendekatinya dan kamera menunggu lebih lama;
+    - deret ruko jauh (`row.far`) tidak lagi dilepas di K6 → K7 dan dibangun ulang saat mundur; tetap disembunyikan di lobi oleh `setOutside`. Menyimpang dari aturan "maksimal dua set hidup" (3.2) atas keputusan user;
+    - di potret (9:16), copy lobi yang kotaknya terpotong tepi layar atau header memudar (porsi di dalam layar di bawah header 0,95 → 0,995, `smoothstep`). Copy yang sedang dibaca di setiap perhentian 100% di dalam layar (diukur di tablet, 375 dan 360), tetangga yang terpotong ≤ 0,93. Copy yang pudar penuh `visibility: hidden`, jadi tidak bisa di-Tab.
+  - `takes/home/lobby.ts`: kamera PC K8 6 cm lebih tinggi. Di 1280×720 pita kaca mulai di y 86 (header sampai 76; sebelumnya 71), note bawah berakhir di 690.
+  - `sets/row.ts`: komentar. Still PC dan HP K8 dirender ulang (`stills.mjs 80 K8`, `stills.json` diperbarui). Alat tes: `issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs` ke take 21,5 / 24,05.
+- Dicek (build produksi port 3300; render hanya di chat):
+  - scroll rata 2 s/layar (PC, tablet, HP 375, HP 360): kamera tiba di jeda K6 0,16–0,41 s setelah scroll (sebelumnya PC 2,2 s, potret ±2,2 s); kamera tertinggal maks 0,86 layar selama 1,7 s (sebelumnya PC 3,1 layar selama 4,9 s). Scroll cepat: kamera tetap menunggu Bu Dewi (aturan issue #10), PC tiba di K6 2,4 s setelah scroll dari keadaan awal (sebelumnya 2,0 s);
+  - daun pintu terbuka penuh (−1,45 rad) dan Heru masih menahannya setiap kali kamera lewat; copy lobi hanya tampil di sekitar jedanya (0 frame di luar); tidak ada tokoh muncul, hilang atau melompat di dalam frame di lobi; laju di lobi Bu Dewi ≤ 2,55 m/s, Wildan ≤ 1,99 m/s;
+  - interaksi ID 87/87, EN 45/45, Tab di perhentian tengah tablet/375/360 24/24 (tablet K7c sebelumnya gagal);
+  - anggaran (`lobby.mjs`, 392 titik per format): PC terberat 79 draw call / 103,6 rb segitiga, HP 67 / 97,0 rb;
+  - memori 3 putaran K5a.4 ↔ ujung: geometri 180 dan tekstur 76 tetap, heap 14,9 → 15,7 MB;
+  - CPU 4×: PC 33,1 fps (sebelumnya 26,8), HP 37,8–44,6 fps (sebelumnya 34,7–38,9); tersendat 0,5–0,8 s saat mundur di K6 hilang;
+  - fallback tanpa WebGL di K8 PC dan HP cocok dengan still baru;
+  - `issue4-loading.mjs` 25/25, `issue4.mjs` 73/73, `typecheck`, `lint`, `format:check`, `build` lulus. Console hanya 404 Vercel Insights.
+- Belum / catatan:
+  - frame panjang yang tersisa (0,2–0,9 s) muncul di tempat berbeda tiap putaran saat RAM laptop bebas < 1 GB. Satu yang berulang: awal jeda K7 saat scroll maju (0,53 s kemarin, 0,59 s hari ini dengan CPU 4×); dugaan copy HTML K7 yang pertama kali ditampilkan, belum dibuktikan;
+  - di HP, perhentian ikhtisar K6 dan K7 sekarang hanya menampilkan copy polaroid/buku yang utuh di layar; yang terpotong tepi kosong;
+  - build akhir (dan `issue4.mjs` 73/73) ikut membawa perubahan sesi lain yang belum di-commit di `takes/home/index.ts` (issue #15, kamera meja K2.1/K2.2, sebelum lobi). File itu tidak diubah di sini;
+  - temuan 2 tetap di issue #9; persetujuan tahap 7. Tidak ada commit.
+- Tes HP fisik setelah perbaikan (Android user, build produksi port 3300, `http://192.168.1.5:3300/`; IP Wi-Fi TP-Link berubah dari .13): lancar (user, 13 Nov).
+
+### 2026-11-13 (tahap 7 disetujui)
+
+- Tahap 7 disetujui user ("Setujui tahap 7"). Status di bagian 5 jadi ✅.
+- Belum: commit dan push langkah 5–6 tahap 7 (copy, halaman, still, perbaikan temuan) lewat sesi induk, hanya file tahap 7 dan entri lognya. Checkout ini juga berisi pekerjaan Solusi dan issue #15 (`takes/home/index.ts`) yang belum di-commit dan tidak ikut. Issue #9 (laju jalan ruko) dan #15–#17 masih terbuka; #17 akan mengubah K6.
+
+### 2026-11-13 (tahap 7 langkah 5–6 di-commit)
+
+- Atas permintaan user ("commit perubahan tahap 7"): langkah 5–6 di-commit ke `main` (belum di-push). Isinya hanya file tahap 7 (props lobi, stills, `HomeStage`/`HomeTake`, `world/index.ts`, `row.ts`, `takes/home/lobby.ts`, `timing.ts`, alat `tools/render`), di `messages` hanya subtree `home`, dan di `PLAN.md` hanya status dan plan tahap 7 serta entri log tahap 7. Tidak ikut: pekerjaan Solusi, `takes/home/index.ts` dan entri log issue #15. Isi commit dicek sendiri (typecheck, ESLint, `next build`).

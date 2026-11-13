@@ -36,7 +36,15 @@ import {
 } from "./takes/home";
 import { k3View, k4View, setSafeTop } from "./takes/home/counter";
 import { B5, b5Relax, K42_PASS, panelArrivals } from "./takes/home/outside";
-import { DOOR_GATES, DOOR_OPEN, LOBBY_MARKS, LOBBY_START } from "./takes/home/lobby";
+import {
+  copyStopAt,
+  DOOR_GATES,
+  DOOR_OPEN,
+  LOBBY_MARKS,
+  LOBBY_START,
+  lobbyAnchors,
+  lobbyCopyFade,
+} from "./takes/home/lobby";
 import { LOBBY, lx } from "./sets/lobbyLayout";
 import type { Lobby } from "./sets/lobby";
 import { SEG } from "./takes/home/timing";
@@ -213,7 +221,6 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const mainShops = [0, 1].map((i) => buildShop(kit, rowMats, SHOPS[i], i, extAO, rowOcc));
   scene.add(...mainShops);
   let row: Row | null = null,
-    rowMod: typeof import("./sets/row") | null = null,
     rowLoading: Promise<void> | null = null;
   // Kreatekno's lobby (beats 6–9a, tahap 7), its own chunk, built as the camera nears Kreatekno
   let lobby: Lobby | null = null,
@@ -487,7 +494,6 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       await document.fonts?.ready;
       if (disposed) return;
       const targets: AoTarget[] = [];
-      rowMod = mod;
       row = mod.buildRow(kit, rowMats, targets);
       scene.add(row.group);
       renderer.shadowMap.needsUpdate = true;
@@ -535,11 +541,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     needsRender = true;
   };
   // In the lobby the sets outside are out of sight behind its walls: the street (COMPANY), the fruit shop and the
-  // laundry are not drawn, nor the road until the camera turns to the facade (K8 → K9.1); the other shops and the
-  // end house are let go (memory) and built again, hidden, before the way back out.
-  let lobbyView = "",
-    farReleased = false;
-  const farKeep = (o: THREE.Material | THREE.Texture) => kit.shared(o) || o === rowMats.tint || o === rowMats.inside;
+  // laundry are not drawn, nor the road until the camera turns to the facade (K8 → K9.1); nor the other shops and the
+  // end house (kept built: langkah 6).
+  let lobbyView = "";
   const setOutside = (shown: boolean, road: boolean) => {
     for (const [o, on] of [
       [street.group, shown],
@@ -601,14 +605,29 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     shadowLow = false;
   const maxDpr = () => (saver ? 1 : Math.min(devicePixelRatio || 1, coarse ? 1.5 : 2));
   let width = 1,
-    height = 1;
+    height = 1,
+    // the page's floating header's bottom (px from the stage's top)
+    safeTop = 0;
+  /** Share of a quad's bounding box inside the screen below the header. */
+  const inView = (q: Quad, top: number) => {
+    const xs = q.map((c) => c[0]),
+      ys = q.map((c) => c[1]);
+    const x0 = Math.min(...xs),
+      x1 = Math.max(...xs),
+      y0 = Math.min(...ys),
+      y1 = Math.max(...ys);
+    const iw = Math.max(0, Math.min(x1, width) - Math.max(x0, 0)),
+      ih = Math.max(0, Math.min(y1, height) - Math.max(y0, top));
+    return (iw * ih) / Math.max(1e-6, (x1 - x0) * (y1 - y0));
+  };
   const resize = () => {
     width = Math.max(1, host.clientWidth);
     height = Math.max(1, host.clientHeight);
     renderer.setPixelRatio(Math.min(maxDpr(), dprCap));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
-    setSafeTop((opts.safeTop?.() ?? 0) / height);
+    safeTop = opts.safeTop?.() ?? 0;
+    setSafeTop(safeTop / height);
     sizesKey = "";
     fmtT = opts.fmt === "pc" ? 0 : opts.fmt === "hp" ? 1 : formatT(width / height);
     sky.setFormat(fmtT);
@@ -800,6 +819,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const f = panelFace(i);
     return [{ shop: i, anchor: rectAnchor(`journey-${s.copy}`, f.cx, f.cy, f.z + 0.004, f.hw - 0.08, f.hh - 0.08) }];
   });
+  // the copy on the lobby's props (tahap 7): polaroids, books, sticky notes and their titles
+  const lobbyCopy = lobbyAnchors();
   const measureCopy = () => {
     sizesKey = `${width} ${height} ${room?.step}`;
     copySizes = {};
@@ -812,6 +833,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const holds: [Anchor, { pos: THREE.Vector3; quat: THREE.Quaternion; fov: number }][] = [
       ...props.holdAnchors().map((a) => [a, views[a.name as keyof typeof views]] as [Anchor, (typeof views)["page"]]),
       ...journey.map(({ anchor: a }) => [a, near(a.corners[0].x)] as [Anchor, (typeof views)["page"]]),
+      // the lobby's: each where the camera stands to read it (9:16 its own stop, 16:9 the keyframe)
+      ...lobbyCopy.map(
+        ({ anchor: a, hold, stop }) =>
+          [a, cameraAt(copyStopAt(hold, stop, fmtT) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
+            Anchor,
+            (typeof views)["page"],
+          ],
+      ),
     ];
     for (const [a, v] of holds) {
       holdCam.position.copy(v.pos);
@@ -868,20 +897,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     if (!rowLoading && Math.max(xs, target * TAKE_SCREENS) > B5.rise - 1.5) void loadRow().catch(reportError);
     // (early enough that the real lobby, not the row's backdrop, shows through Kreatekno's glass from K5a.4 on)
     if (!lobbyLoading && Math.max(xs, target * TAKE_SCREENS) > LOBBY_START - 2.5) void loadLobby().catch(reportError);
-    // the shops beyond the laundry are let go once the camera is well into the lobby (K6 → K7), and built again
-    // while it is still on the corkboard on the way back
-    if (row && rowMod && !farReleased && xs > LOBBY_MARKS.truck + 0.3) {
-      row.group.remove(row.far);
-      disposeTree(row.far, farKeep);
-      farReleased = true;
-    } else if (row && rowMod && farReleased && xs < LOBBY_MARKS.truck) {
-      const targets: AoTarget[] = [];
-      row.far = rowMod.buildFar(kit, rowMats, targets, []);
-      row.group.add(row.far);
-      farReleased = false;
-      lobbyView = "";
-      void provideAO(targets).catch(reportError);
-    }
+    // (the shops beyond the laundry stay built while the camera is in the lobby, only hidden there by setOutside:
+    // letting them go at K6 → K7 and building them again on the way back stalled the scroll 0.1–0.8 s, langkah 6)
     // (the seated stand-ins show only until Wildan and Andi are built)
     lobby?.setPhase("k8");
     // the front room is let go out on the street from K5a.2 on, and built again on the way back (before K4.2)
@@ -914,8 +931,16 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     const outWas = outClk.x;
     if (opts.key || opts.shot) outClk.x = scrollClock(xs);
-    // out on the street they follow the scroll as the camera shows it (along the row the camera follows them)
-    else stepOutClock(outClk, xs, dt, seenAt);
+    // out on the street they follow the scroll as the camera shows it (along the row the camera follows them). While
+    // a gate holds the camera at Kreatekno's door they follow the scroll itself: following the held camera, Bu Dewi
+    // slowed down as she neared the point it waited for, and it waited for her longer (langkah 6)
+    else
+      stepOutClock(
+        outClk,
+        gate.catching && xs >= LOBBY_START - 0.2 ? Math.max(xs, target * TAKE_SCREENS) : xs,
+        dt,
+        seenAt,
+      );
     if (outClk.x !== outWas) needsRender = true;
     {
       const wt = wildanAt(xs),
@@ -1084,7 +1109,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     {
       const inside = xs >= LOBBY_START && c.pos.z < -0.6,
         facade = xs >= LOBBY_MARKS.turn,
-        v = `${!!lobby} ${!!row} ${farReleased} ${inside} ${facade}`;
+        v = `${!!lobby} ${!!row} ${inside} ${facade}`;
       if (v !== lobbyView) {
         lobbyView = v;
         // (the meeting room and its garden always, so nothing in them pops in as the camera comes through the door;
@@ -1247,14 +1272,33 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     stats.key = c.key;
 
     const quads: Record<string, Quad | null> = {};
-    for (const a of [...anchors, ...props.copyAnchors(), ...journey.map((j) => j.anchor)]) {
-      const q = projectAnchor(a, camera, width, height);
+    // (inside Kreatekno the billboard is behind walls the HTML can't be hidden by: from K8 it projected through the
+    // meeting room's window)
+    const pastDoor = xs > LOBBY_START + 0.35;
+    for (const a of [
+      ...anchors,
+      ...props.copyAnchors(),
+      ...journey.map((j) => j.anchor),
+      ...lobbyCopy.map((l) => l.anchor),
+    ]) {
+      const q = pastDoor && anchors.includes(a) ? null : projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
     }
     if (sizesKey !== `${width} ${height} ${room?.step}`) measureCopy();
     // the panels' copy is printed on them: shown whenever a panel is on screen out on the street (its shop built)
     const fade: Record<string, number> = { ...props.fade };
-    for (const j of journey) fade[j.anchor.name] = xs > B5.back + 0.3 && (j.shop < 2 || row) ? 1 : 0;
+    // (and gone once the camera heads for Kreatekno's door: from inside the lobby the panels are seen from behind)
+    for (const j of journey) fade[j.anchor.name] = xs > B5.back + 0.3 && !pastDoor && (j.shop < 2 || row) ? 1 : 0;
+    // the lobby's copy shows at its hold, once the lobby is built (tahap 7). On 9:16 a box cut by the screen's edges
+    // or the page's header (a neighbour of the item being read, langkah 6) fades out as it leaves: the item read at a
+    // stop is always wholly in view, a cut neighbour at most 93%
+    const lf = lobbyCopyFade(xs);
+    for (const l of lobbyCopy) {
+      const q = quads[l.anchor.name];
+      fade[l.anchor.name] = lobby
+        ? lf[l.hold] * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1)
+        : 0;
+    }
     opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
     // Reveal only after the complete counter scene has been prepared and actually drawn.
     if (!readyFired && assetsReady && !disposed) {

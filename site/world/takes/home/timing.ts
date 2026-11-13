@@ -68,8 +68,10 @@ export const SEG: Segment<KeyName>[] = [
   // left to the rack (K7), on left and round to the meeting room's glass (K8), turn to the facade (K9.1). Separate
   // timelines (user, 11 Nov): `screens` is 9:16's, which stops on each item of a hold (7 polaroids, the sign and 3
   // books + the button, 2 × 4 sticky notes); `pc` is the scroll 16:9 takes, standing still on each keyframe with all
-  // its items in frame (PLAN tahap 7, total ±5.1 screens).
-  { type: "move", from: "K5a.6", to: "K6", screens: 0.9 },
+  // its items in frame (PLAN tahap 7, total ±5.1 screens). The dolly in is 2.0 screens (langkah 6, was 0.9): the
+  // camera waits for Bu Dewi to be in and clear of its way, and at her pace (at most 1.8×) that takes ±2 s, so on a
+  // steady scroll of 2 s per screen the camera no longer stands at the door while the scroll runs on.
+  { type: "move", from: "K5a.6", to: "K6", screens: 2.0 },
   { type: "hold", from: "K6", screens: 2.3, pc: 0.6 },
   { type: "move", from: "K6", to: "K7", screens: 0.5 },
   { type: "hold", from: "K7", screens: 1.4, pc: 0.5 },
@@ -104,5 +106,21 @@ export const KEYS: KeyName[] = [
   "K9.1",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
+
+/**
+ * On 9:16 a hold of the lobby stops on each of its n items in turn (tahap 7): a dwell on each, a short move between
+ * (shares of one stop's unit). Plain numbers, shared by the camera (takes/home/lobby) and the page (stills fallback,
+ * jump marks, copy sizes).
+ */
+export const STOP = { dwell: 0.17, move: 0.13 };
+/** Where the camera rests on stop i of a hold of `len` screens with n stops: from, to (screens into the hold). */
+export function stopSpan(len: number, n: number, i: number) {
+  if (n === 1) return { from: 0, to: len };
+  const unit = len / (n * STOP.dwell + (n - 1) * STOP.move),
+    from = i * (STOP.dwell + STOP.move) * unit;
+  return { from, to: from + STOP.dwell * unit };
+}
+/** Number of 9:16 stops of each lobby hold (the strip and 7 polaroids; the sign, 3 books and the button; 2 × 4 notes). */
+export const LOBBY_STOPS = { K6: 8, K7: 5, K8: 2 } as const;
 /** Where the whip pan to K2.2 fires, as a fraction of the K2.1 → K2.2 move (time-based from there, ±0.45 s). */
 export const WHIP_AT = 0.3;

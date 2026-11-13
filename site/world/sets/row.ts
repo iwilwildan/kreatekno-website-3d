@@ -3,8 +3,8 @@
 // office and the end house, with the pavement, kerb and road running on past them. Master 7 and the team's videos
 // K5a.1–K5a.6. The lobby inside Kreatekno is its own chunk (sets/lobby, tahap 7); until it is built a lit backdrop
 // shows through the glass. The facade's glass is one-sided: dark seen from the street, nearly clear from the lobby.
-// The shops after the laundry and the end house (`far`) are let go while the camera is in the lobby and built again
-// on the way back (world/index.ts, buildFar).
+// The shops after the laundry and the end house (`far`) are a group of their own, hidden while the camera is in the
+// lobby (world/index.ts setOutside; kept built since tahap 7 langkah 6).
 import * as THREE from "three";
 import { aoPlane, type AoTarget } from "../core/ao";
 import { Batch, C, clean, G, mtx, type Kit } from "../core/kit";

@@ -18,7 +18,8 @@ import { BOARD_ITEMS, GLASS_ITEMS, LOBBY, lx, RACK_ITEMS } from "../../sets/lobb
 import { KREATEKNO } from "../../sets/rowLayout";
 import { monotone } from "./counter";
 import { fitFov } from "./outside";
-import { SEG, type KeyName } from "./timing";
+import { LOBBY_STOPS, SEG, STOP, stopSpan, type KeyName } from "./timing";
+import { rectAnchor, type Anchor } from "../../core/anchors";
 
 const D2R = THREE.MathUtils.degToRad;
 const rig = (yaw: number, pitch: number) => new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, "YXZ"));
@@ -44,10 +45,13 @@ const PC = {
   // the board 2.6 m wide fills 83% of the width at 36° (vertical): 2.72 m off the wall, level with its centre
   K6: v(BX, L.board.cy, BACK + 2.72, 0, 0, 36),
   // the rack 1.7 m wide fills 90% of the width (1.63 m off its front), the camera low (0.5 m up: the video's
-  // horizon is level with the lower tier)
-  K7: v(RX, F + 0.5, BACK + L.rack.d + 1.63, 0, 0, 36),
-  // the framed glass 4.9 × 2.7 m fills the frame: 4.34 m off it, level with its middle, facing -x
-  K8: v(lx(L.room.glassX) + 4.34, F + 1.4, GZ, Math.PI / 2, 0, 36),
+  // horizon is level with the lower tier). Langkah 5: 0.12 m higher and a hair wider, so the sign (the title) comes
+  // out from under the page's floating header (its bottom at ±76 px of 720) with the floor still in frame
+  K7: v(RX, F + 0.62, BACK + L.rack.d + 1.63, 0, 0, 36.4),
+  // the framed glass 4.9 × 2.7 m fills the frame: 4.34 m off it, level with its middle, facing -x. Langkah 6: 6 cm
+  // higher, so the bands over the notes (the FAQ's title) come out from under the page's floating header (±15 px
+  // lower at 720 px; their top was 5 px under it)
+  K8: v(lx(L.room.glassX) + 4.34, F + 1.46, GZ, Math.PI / 2, 0, 36),
   // vanishing point and the facade's floor and ceiling lines: eye 1.33 m over the pavement's level, 13.4 m from the
   // glass, looking down 3° (the horizon is above the middle); the facade 9 m wide at 830 px gives 32°
   K91: v(lx(6.0), 1.33, -13.7, Math.PI, D2R(-3), 32),
@@ -86,6 +90,105 @@ const HP: Record<"K6" | "K7" | "K8", View[]> = {
 const HP91 = v(lx(6.0), 1.45, -13.7, Math.PI, D2R(-3), 58);
 
 const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.from === from && s.type === type);
+// ---------- copy on the props (langkah 5): anchors, where each is framed, when it shows ----------
+/** Plain hold starts (screens) of the three holds with copy, and when their copy leaves. */
+const holdOf = (k: "K6" | "K7" | "K8") => segmentStart(SEG, idx(k, "hold"));
+/**
+ * The copy's anchors, each a rectangle on its prop's face, a few mm in front of it: the strip and the 7 polaroids
+ * (K6), the sign, the top tier's 3 open books and the bottom tier's left book ("Lihat semua artikel", K7), the 8
+ * sticky notes and the two bands over them on the meeting room's glass (K8, facing +x, so built here).
+ */
+export function lobbyAnchors(): { anchor: Anchor; hold: "K6" | "K7" | "K8"; stop: number }[] {
+  const bz = BACK + 0.03,
+    by = L.board.cy;
+  const out: { anchor: Anchor; hold: "K6" | "K7" | "K8"; stop: number }[] = [];
+  const S = BOARD_ITEMS.strip;
+  out.push({
+    anchor: rectAnchor("board-strip", BX + S.x, by + S.y, bz + 0.0045, S.w / 2, S.h / 2),
+    hold: "K6",
+    stop: 0,
+  });
+  // 9:16: top row left to right, then the bottom row right to left (HP stops above)
+  const order = [0, 1, 2, 3, 6, 5, 4];
+  BOARD_ITEMS.polaroids.forEach((p, i) =>
+    out.push({
+      anchor: rectAnchor(`testi-${i}`, BX + p.x, by + p.y, bz + 0.0065, p.w / 2, p.h / 2),
+      hold: "K6",
+      stop: order.indexOf(i) + 1,
+    }),
+  );
+  const Sg = L.sign;
+  out.push({
+    anchor: rectAnchor("rack-sign", lx(Sg.cx), Sg.cy, BACK + 0.031, Sg.w / 2 - 0.07, Sg.h / 2 - 0.012),
+    hold: "K7",
+    stop: 0,
+  });
+  // the books' pages stand open in a shallow V from the spine (sets/lobby): the plane through their outer edges
+  const pz = BACK + 0.14 + 0.04;
+  B.slice(0, 3).forEach((b, i) =>
+    out.push({
+      anchor: rectAnchor(`article-${i}`, RX + b.x, F + b.y, pz, b.w / 2 - 0.006, b.h / 2 - 0.004),
+      hold: "K7",
+      stop: [2, 1, 0].indexOf(i) + 1,
+    }),
+  );
+  const all = B[3];
+  out.push({
+    anchor: rectAnchor("rack-all", RX + all.x, F + all.y, pz, all.w / 2 - 0.006, all.h / 2 - 0.004),
+    hold: "K7",
+    stop: 4,
+  });
+  // the glass faces the lobby (+x); seen from there, right is toward the back wall (−z)
+  const gx = lx(L.room.glassX) + 0.013;
+  const onGlass = (name: string, r: { x: number; y: number; w: number; h: number }): Anchor => {
+    const z = GZ - r.x,
+      y = F + r.y;
+    return {
+      name,
+      corners: [
+        new THREE.Vector3(gx, y + r.h / 2, z + r.w / 2),
+        new THREE.Vector3(gx, y + r.h / 2, z - r.w / 2),
+        new THREE.Vector3(gx, y - r.h / 2, z + r.w / 2),
+        new THREE.Vector3(gx, y - r.h / 2, z - r.w / 2),
+      ],
+    };
+  };
+  out.push({ anchor: onGlass("faq-title", GLASS_ITEMS.title), hold: "K8", stop: 0 });
+  out.push({ anchor: onGlass("faq-help", GLASS_ITEMS.help), hold: "K8", stop: 1 });
+  GLASS_ITEMS.notes.forEach((n, i) =>
+    out.push({
+      anchor: onGlass(`faq-${i}`, { ...n, w: n.w - 0.01, h: n.h - 0.01 }),
+      hold: "K8",
+      stop: i % 4 < 2 ? 0 : 1,
+    }),
+  );
+  return out;
+}
+
+/**
+ * Screens where an item's copy is framed as it will be read: on 9:16 its own stop, on 16:9 (t < 0.5) its hold (the
+ * camera stands still on the keyframe). The copy boxes are sized there, so the text is drawn about 1:1.
+ */
+export function copyStopAt(hold: "K6" | "K7" | "K8", stop: number, t: number) {
+  const len = SEG[idx(hold, "hold")].screens;
+  if (t < 0.5) return holdOf(hold) + len / 2;
+  const s = stopSpan(len, LOBBY_STOPS[hold], stop);
+  return holdOf(hold) + (s.from + s.to) / 2;
+}
+
+/**
+ * Opacity of each hold's copy at screens x: in as the camera settles on the hold (the move's last stretch), out as
+ * the next move starts (K8: once the camera starts to turn, after its moment still).
+ */
+export function lobbyCopyFade(x: number) {
+  const f = (from: number, to: number) => smoothstep(from - 0.12, from, x) * (1 - smoothstep(to, to + 0.06, x));
+  return {
+    K6: f(LOBBY_MARKS.k6, LOBBY_MARKS.truck),
+    K7: f(holdOf("K7"), LOBBY_MARKS.k7end),
+    K8: f(holdOf("K8"), LOBBY_MARKS.turn + TURN_STILL * LOBBY_MARKS.turnLen),
+  };
+}
+
 /** Screens where the lobby starts (the move off K5a.6). */
 export const LOBBY_START = segmentStart(SEG, idx("K5a.6", "move"));
 /**
@@ -105,8 +208,8 @@ export const LOBBY_MARKS = {
 /** On 9:16, where in its hold the camera is: on stop i, or between i and i + 1 (k 0..1). */
 function stopAt(s: number, len: number, n: number) {
   if (n === 1) return { i: 0, k: 0 };
-  const DW = 0.17,
-    MV = 0.13,
+  const DW = STOP.dwell,
+    MV = STOP.move,
     unit = len / (n * DW + (n - 1) * MV);
   const per = (DW + MV) * unit,
     i = Math.min(n - 1, Math.floor(s / per)),

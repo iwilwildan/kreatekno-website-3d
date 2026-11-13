@@ -5,6 +5,7 @@ import { clamp01, scrollAtScreens, screensAtScroll, segmentStart, smoothstep } f
 import { SEG, TAKE_SCREENS, TAKE_SCROLL, keyP, type KeyName } from "@/world/takes/home/timing";
 import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type StillsData } from "./placeHero";
 import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
+import { LOBBY_STILLS, lobbyMarks, lobbyStillFades } from "./lobbyStills";
 import stillsData from "./stills.json";
 
 const STILLS = stillsData as unknown as StillsData;
@@ -36,6 +37,8 @@ const STILL_FADES: Record<string, [number, number]> = {
   "K5a.4": [13.5, 13.9],
   "K5a.4b": [14.1, 14.28],
   "K5a.6": [14.6, 15],
+  // beats 6–9a (tahap 7): each hold's still as the camera settles, on 9:16 one per stop, K9.1 at the turn
+  ...lobbyStillFades(),
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -45,6 +48,12 @@ const ROW_STILLS = {
 /** Stills fallback: the leaflet's copy comes in on the K3 still and goes as the K4 still comes; the page's after. */
 // Both copies are fully visible at their keyframe, including when reached by a section link.
 const STILL_COPY = { leaflet: [6.7, 6.9], page: [7.7, 7.9] } as const;
+/** Screens where the hold on keyframe k starts. */
+const holdStart = (k: KeyName) =>
+  segmentStart(
+    SEG,
+    SEG.findIndex((g) => g.type === "hold" && g.from === k),
+  );
 /** A scroll step longer than this (screens; a jump link, the End key, the scrollbar) cuts instead of flying. */
 const JUMP_SCREENS = 2;
 /**
@@ -52,21 +61,24 @@ const JUMP_SCREENS = 2;
  * screens of scroll from the take's own timeline: right while they come before the lobby, where the two formats'
  * timelines part (tahap 7).
  */
-const MARKS: { id: string; key: KeyName; at?: number }[] = [
-  { id: "layanan", key: "K3" },
+const LOBBY_MARK_IDS = { K6: "testimoni", K7: "artikel", K8: "faq" } as const;
+const MARKS: { id: string; key: KeyName; at: number; atHp?: number }[] = [
+  { id: "layanan", key: "K3", at: keyP("K3") * TAKE_SCREENS },
   // "Cara kerja" lands where the camera arrives on the first panel (on 9:16 the hold's middle is between panels)
-  { id: "cara-kerja", key: "K5a.2", at: 0.06 },
+  { id: "cara-kerja", key: "K5a.2", at: holdStart("K5a.2") + 0.06 },
+  // the lobby's (tahap 7): where the two formats' timelines part, each has its own scroll position (16:9 the
+  // keyframe, 9:16 the hold's first stop), turned from the take's timeline into screens of scroll
+  ...lobbyMarks().map((m) => ({
+    id: LOBBY_MARK_IDS[m.key],
+    key: m.key,
+    at: scrollAtScreens(SEG, m.pc, false),
+    atHp: scrollAtScreens(SEG, m.hp, true),
+  })),
 ];
 const CROSSFADE_MS = 500;
 /** Share of the loading bar before the world reports its own steps: the take started, the world's code loaded. */
 const BAR_START = 0.02,
   BAR_IMPORTED = 0.08;
-/** Screens where the hold on keyframe k starts. */
-const holdStart = (k: KeyName) =>
-  segmentStart(
-    SEG,
-    SEG.findIndex((g) => g.type === "hold" && g.from === k),
-  );
 
 /**
  * The Home take: a tall section with a sticky stage. The K0 still is the first paint (LCP); the 3D world loads
@@ -188,15 +200,17 @@ export function HomeTake({
       const fmt = matchMedia(PORTRAIT_QUERY).matches ? "hp" : "pc",
         row = ROW_STILLS[fmt];
       const quads = { ...stillQuads("K0"), ...stillQuads("K3"), ...stillQuads("K4") };
-      // the journey's copy shows with its still, until the next still of the row comes in
+      // the journey's copy shows with its still, until the next still of the row comes in; the lobby's the same way
+      // with the lobby's stills (tahap 7)
       const journeyFade: Record<string, number> = {};
-      row.forEach((k, i) => {
-        const here = stillQuads(k),
-          next = STILL_FADES[row[i + 1]],
-          o = smoothstep(STILL_FADES[k][0], STILL_FADES[k][1], s) * (next ? 1 - smoothstep(next[0], next[1], s) : 1);
-        Object.assign(quads, here);
-        for (const n of Object.keys(here)) journeyFade[n] = o;
-      });
+      for (const list of [row, LOBBY_STILLS[fmt]])
+        list.forEach((k, i) => {
+          const here = stillQuads(k),
+            next = STILL_FADES[list[i + 1]],
+            o = smoothstep(STILL_FADES[k][0], STILL_FADES[k][1], s) * (next ? 1 - smoothstep(next[0], next[1], s) : 1);
+          Object.assign(quads, here);
+          for (const n of Object.keys(here)) journeyFade[n] = o;
+        });
       const sizes: Record<string, { w: number; h: number }> = {};
       for (const n of ["leaflet", "page", ...Object.keys(journeyFade)]) {
         const q = quads[n];
@@ -393,13 +407,13 @@ export function HomeTake({
       data-mode={mode}
       style={{ "--take": TAKE_SCROLL.pc, "--take-hp": TAKE_SCROLL.hp } as CSSProperties}
     >
-      {MARKS.map(({ id, key, at }) => (
+      {MARKS.map(({ id, key, at, atHp }) => (
         <span
           key={id}
           id={id}
           className="take-mark"
           data-at={key}
-          style={{ "--at": (at != null ? holdStart(key) + at : keyP(key) * TAKE_SCREENS).toFixed(3) } as CSSProperties}
+          style={{ "--at": at.toFixed(3), "--at-hp": (atHp ?? at).toFixed(3) } as CSSProperties}
         />
       ))}
       <div className="take-stage" data-stage>

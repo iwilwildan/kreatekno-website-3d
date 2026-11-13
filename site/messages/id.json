@@ -72,6 +72,10 @@
       "k5a_3": "Deretan ruko toko sepatu dan warteg dengan panel putih di lantai dua",
       "k5a_4": "Ruko toko kosmetik dan toko elektronik dengan panel putih di lantai dua, kantor Kreatekno mulai terlihat di kanan",
       "k5a_6": "Heru membuka pintu kaca kantor Kreatekno yang ungu, Bu Dewi berjalan ke pintu",
+      "k6": "Dinding gabus berbingkai ungu di lobi Kreatekno, dengan strip judul dan tujuh polaroid testimoni",
+      "k7": "Rak kayu dua tingkat di lobi Kreatekno dengan buku-buku terbuka dan papan kayu di atasnya",
+      "k8": "Delapan sticky note warna-warni di dinding kaca ruang rapat; di baliknya Wildan dan Andi bekerja di depan laptop",
+      "k9_1": "Bu Dewi dan Heru berjalan ke pintu kaca kantor Kreatekno saat sore keemasan, Wildan keluar dari ruang rapat",
       "loading": "Memuat"
     },
     "services": {
@@ -210,9 +214,43 @@
       "title": "Kata mereka yang sudah bekerja bersama kami",
       "stamp": "CONTOH",
       "photo": "[Foto]",
-      "quote": "“[Kutipan klien nyata, 1 sampai 3 kalimat]”",
-      "name": "[Nama], [peran]",
-      "business": "[Nama usaha], [kota]"
+      "items": [
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        },
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        },
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        },
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        },
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        },
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        },
+        {
+          "quote": "[Kutipan klien nyata, 1 sampai 3 kalimat]",
+          "name": "[Nama], [peran]",
+          "business": "[Nama usaha], [kota]"
+        }
+      ]
     },
     "articles": {
       "title": "Bacaan untuk pemilik usaha",

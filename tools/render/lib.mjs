@@ -56,7 +56,7 @@ export function toWebp(png, webp, quality = 80) {
 }
 
 export const FORMATS = { pc: { width: 1600, height: 900 }, hp: { width: 720, height: 1280 } };
-export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6"];
+export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6", "K6", "K7", "K8", "K9.1"];
 /**
  * Stills of beats 5a–5b on 9:16 taken where the camera stops on a panel (screens into the take), not at the
  * hold's middle (between two panels there); "b" keys are the second panel of a hold (9:16 only).
@@ -66,4 +66,35 @@ export const HP_AT = { "K5a.2": 11.75, "K5a.2b": 12.13, "K5a.3": 12.85, "K5a.3b"
 export const JOURNEY = {
   pc: { "K5a.2": ["intro", "talk"], "K5a.3": ["map", "build"], "K5a.4": ["launch", "cta"] },
   hp: { "K5a.2": ["intro"], "K5a.2b": ["talk"], "K5a.3": ["map"], "K5a.3b": ["build"], "K5a.4": ["launch"], "K5a.4b": ["cta"] },
+};
+/**
+ * The lobby (tahap 7): on 9:16 a still per stop of a hold (site/world/takes/home/timing.ts STOP, LOBBY_STOPS): K6 the
+ * strip then the polaroids, K7 the sign, the books right to left and the button, K8 the left then the right columns.
+ * Hold length (screens) and the stops' keys.
+ */
+export const LOBBY_HP = {
+  K6: { len: 2.3, keys: ["K6", "K6b", "K6c", "K6d", "K6e", "K6f", "K6g", "K6h"] },
+  K7: { len: 1.4, keys: ["K7", "K7b", "K7c", "K7d", "K7e"] },
+  K8: { len: 0.75, keys: ["K8", "K8b"] },
+};
+/** Screens from the hold's start to the middle of the camera's rest on stop i of n (stopSpan in timing.ts). */
+export function stopMid(len, n, i) {
+  const unit = len / (n * 0.17 + (n - 1) * 0.13);
+  return (i * 0.3 + 0.085) * unit;
+}
+/** The lobby's copy recorded on each still (stills fallback), per format. */
+const notes = (...i) => i.map((n) => `faq-${n}`);
+export const LOBBY_COPY = {
+  pc: {
+    K6: ["board-strip", ...[0, 1, 2, 3, 4, 5, 6].map((i) => `testi-${i}`)],
+    K7: ["rack-sign", "article-0", "article-1", "article-2", "rack-all"],
+    K8: ["faq-title", "faq-help", ...notes(0, 1, 2, 3, 4, 5, 6, 7)],
+  },
+  hp: {
+    K6: ["board-strip"],
+    K6b: ["testi-0"], K6c: ["testi-1"], K6d: ["testi-2"], K6e: ["testi-3"], K6f: ["testi-6"], K6g: ["testi-5"], K6h: ["testi-4"],
+    K7: ["rack-sign"], K7b: ["article-2"], K7c: ["article-1"], K7d: ["article-0"], K7e: ["rack-all"],
+    K8: ["faq-title", ...notes(0, 1, 4, 5)],
+    K8b: ["faq-help", ...notes(2, 3, 6, 7)],
+  },
 };

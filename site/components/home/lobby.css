@@ -1,0 +1,560 @@
+/*
+ * Beats 6–8 · the lobby (tahap 7): testimonials on the corkboard, articles on the rack's open books, the FAQ on the
+ * meeting room's glass. Loaded after stage.css (its .prop-copy rules place the boxes). Base rules are the stacked
+ * version (reduced motion, no JavaScript): after the beat 5b copy, each beat's jump mark, its still, its heading and
+ * its items as plain cards. The film's rules are in the media query below.
+ */
+.take-mark[data-at="K6"] {
+  order: 11;
+}
+.take-still[data-still="K6"] {
+  order: 12;
+}
+.board-strip {
+  order: 13;
+}
+.testi-list {
+  order: 14;
+}
+.take-mark[data-at="K7"] {
+  order: 15;
+}
+.take-still[data-still="K7"] {
+  order: 16;
+}
+.rack-sign {
+  order: 17;
+}
+.article-list {
+  order: 18;
+}
+.rack-all {
+  order: 19;
+}
+.take-mark[data-at="K8"] {
+  order: 20;
+}
+.take-still[data-still="K8"] {
+  order: 21;
+}
+.faq-title {
+  order: 22;
+}
+.note-list {
+  order: 23;
+}
+.faq-help {
+  order: 24;
+}
+.lobby-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 16px;
+  width: min(100% - 32px, 64rem);
+  margin: 0 auto 32px;
+  padding: 0;
+  list-style: none;
+}
+.lobby-list > .prop-copy {
+  width: auto;
+  margin: 0;
+}
+.lobby-copy h2 {
+  color: var(--color-navy);
+}
+
+/* polaroids: photo on top, quote and name under it; the CONTOH stamp over the photo's corner */
+.polaroid figure {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 14px 14px 18px;
+  background: var(--color-white);
+  box-shadow: 0 14px 30px -22px rgb(19 25 81 / 0.55);
+}
+.polaroid-photo {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 4px;
+  aspect-ratio: 1.36;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--tone) 16%, white),
+    color-mix(in srgb, var(--tone) 34%, white)
+  );
+  color: color-mix(in srgb, var(--tone) 70%, var(--color-navy));
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.polaroid-cam {
+  width: 2.25em;
+  height: 2.25em;
+  opacity: 0.8;
+}
+.polaroid[data-tone="0"] {
+  --tone: var(--color-purple);
+}
+.polaroid[data-tone="1"] {
+  --tone: #0891a5;
+}
+.polaroid[data-tone="2"] {
+  --tone: var(--color-violet);
+}
+.polaroid[data-tone="3"] {
+  --tone: #d6458f;
+}
+.polaroid-stamp {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 2px 8px;
+  border: 2px solid currentColor;
+  border-radius: 6px;
+  rotate: -7deg;
+  background: rgb(255 255 255 / 0.75);
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--color-purple-deep);
+}
+.polaroid blockquote p {
+  font-size: 1rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+.polaroid figcaption {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+.polaroid-name {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.polaroid-biz {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+/* the books: category and title on the left page, an icon and "Baca artikel" on the right */
+.book[data-book="0"] {
+  --cover: #8a5cc8;
+}
+.book[data-book="1"] {
+  --cover: #2f4f8a;
+}
+.book[data-book="2"] {
+  --cover: #23897e;
+}
+.book-in {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 20px;
+  height: 100%;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--color-cream);
+  box-shadow: inset 6px 0 0 var(--cover);
+}
+.book-cat {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cover);
+}
+.book-title {
+  margin-top: 6px;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  color: var(--color-navy);
+  text-wrap: balance;
+}
+.book-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.book-icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--cover);
+}
+.book-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--color-purple-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.book-arrow {
+  width: 1em;
+  height: 1em;
+}
+.rack-all .btn {
+  background: var(--color-white);
+}
+
+/* sticky notes: the question is the button, the answer under it (stacked) */
+.note {
+  --nc: #ffe680;
+  background: var(--nc);
+}
+.note:nth-child(8n + 2),
+.note:nth-child(8n + 8) {
+  --nc: #ffc2d6;
+}
+.note:nth-child(8n + 3),
+.note:nth-child(8n + 5) {
+  --nc: #a8ecf7;
+}
+.note:nth-child(8n + 4),
+.note:nth-child(8n + 6) {
+  --nc: #dcc6fb;
+}
+.note-in {
+  position: relative;
+  height: 100%;
+}
+.note-q {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 16px 48px 16px 16px;
+  text-align: left;
+  font-weight: 650;
+  line-height: 1.3;
+  color: #221b3a;
+  cursor: pointer;
+}
+.note-q:focus-visible,
+.note-x:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: -3px;
+}
+/* a small "+" marks a note that opens */
+.note-q::after {
+  content: "+";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgb(34 27 58 / 0.1);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+}
+.note[data-open] .note-q::after {
+  content: none;
+}
+.note-a {
+  padding: 0 16px 16px;
+  line-height: 1.5;
+  color: #2e2748;
+}
+.note-a p {
+  color: inherit;
+}
+.note-x {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgb(34 27 58 / 0.08);
+  color: #221b3a;
+  cursor: pointer;
+}
+.note-x-ic {
+  width: 20px;
+  height: 20px;
+}
+@media (scripting: enabled) {
+  .note:not([data-open]) .note-a {
+    display: none;
+  }
+}
+/* without JavaScript the answers stay open under their questions */
+@media (scripting: none) {
+  .note-q {
+    cursor: default;
+  }
+  .note-q::after,
+  .note-x {
+    display: none;
+  }
+}
+.faq-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+.faq-help p {
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* the lobby's jump marks sit at their own scroll position on 9:16 (its own timeline) */
+  @media (max-aspect-ratio: 1/1) {
+    .take-mark {
+      top: calc(var(--at-hp, var(--at)) * 100lvh);
+    }
+  }
+  /* the world places each item on its prop: the lists only group them for the stacked version and screen readers */
+  .lobby-list {
+    display: contents;
+  }
+
+  .board-strip.prop-copy,
+  .rack-sign.prop-copy,
+  .glass-band.prop-copy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  /* the paper strip on the corkboard (±500 × 60 px on 16:9, ±310 × 37 px on 9:16) */
+  .board-strip h2 {
+    padding-inline: 3cqw;
+    font-size: max(13px, min(4.1cqw, 44cqh));
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  /* the polaroids (0.41 × 0.54 m): the photo exactly where the 3D card prints its grey (sets/lobby: 84% of the
+     width, 52% of the height, its top 9.2% down), the quote and the name under it on the white paper */
+  .polaroid figure {
+    position: absolute;
+    inset: 0;
+    gap: 1.6cqh;
+    padding: 63.4cqh 8cqw 3.4cqh;
+    background: none;
+    box-shadow: none;
+  }
+  .polaroid-photo {
+    position: absolute;
+    top: 9.2cqh;
+    left: 8cqw;
+    right: 8cqw;
+    height: 52cqh;
+    aspect-ratio: auto;
+    gap: 1.5cqh;
+    font-size: max(10px, 5cqw);
+  }
+  .polaroid-cam {
+    width: 18cqw;
+    height: 18cqw;
+  }
+  .polaroid-stamp {
+    top: 47cqh;
+    right: 4cqw;
+    padding: 0.2cqh 2.6cqw;
+    border-width: max(1.5px, 0.8cqw);
+    border-radius: 2cqw;
+    font-size: max(9px, 5cqw);
+  }
+  .polaroid blockquote p {
+    font-size: max(11px, 6.2cqw);
+    line-height: 1.3;
+  }
+  .polaroid-name {
+    font-size: max(11px, 5.6cqw);
+    line-height: 1.25;
+  }
+  .polaroid-biz {
+    font-size: max(10px, 5cqw);
+    line-height: 1.25;
+  }
+
+  /* the wooden sign: the title as if burnt into it */
+  .rack-sign h2 {
+    font-size: max(14px, min(6.4cqw, 54cqh));
+    line-height: 1.05;
+    color: var(--color-wood-dark);
+    text-shadow: 0 1px 0 rgb(255 236 205 / 0.55);
+  }
+
+  /* the open books (0.43 × 0.26 m, two pages in a shallow V from the spine in the middle) */
+  .book-in {
+    position: absolute;
+    inset: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 9cqw;
+    padding: 8cqh 4.5cqw 7cqh;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .book-cat {
+    font-size: max(9.5px, 3cqw);
+  }
+  .book-title {
+    margin-top: 1.4cqh;
+    font-size: max(12.5px, 4.5cqw);
+    line-height: 1.2;
+  }
+  .book-right {
+    align-items: flex-start;
+  }
+  .book-icon {
+    width: max(18px, 7.5cqw);
+    height: max(18px, 7.5cqw);
+  }
+  .book-link {
+    min-height: max(28px, 15cqh);
+    font-size: max(12px, 3.9cqw);
+  }
+  .rack-all.prop-copy {
+    display: grid;
+    place-items: center;
+  }
+  .rack-all .btn {
+    --t-btn: max(12px, 3.9cqw);
+    min-height: 40px;
+    padding-inline: 4cqw;
+    box-shadow: 0 6px 16px -10px rgb(19 25 81 / 0.5);
+  }
+
+  /* the bands on the glass over the notes: a frosted film (only the fill is see-through) */
+  /* (cq units on the box itself would resolve against the page, not the box: they sit on its children) */
+  .glass-band.prop-copy {
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0;
+    border-radius: 16px;
+    background: rgb(255 255 255 / 0.82);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.9);
+  }
+  .faq-title h2 {
+    padding-inline: 4cqw;
+    font-size: max(15px, min(5.8cqw, 30cqh));
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+  .faq-help p {
+    margin: 2cqh 2cqw;
+    font-size: max(13px, min(3.6cqw, 17cqh));
+    line-height: 1.2;
+  }
+  .faq-help .btn {
+    --t-btn: max(12.5px, min(3.3cqw, 16cqh));
+    min-height: max(32px, 38cqh);
+    margin: 2cqh 2cqw;
+    padding-block: 0;
+  }
+  .faq-help .knob {
+    width: max(24px, 28cqh);
+    height: max(24px, 28cqh);
+  }
+
+  /* the sticky notes (0.825 m: ±210 px on 16:9, ±145 px on 9:16): the question under the darker tack band */
+  .note.prop-copy {
+    background: none;
+  }
+  .note-in {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .note-h {
+    flex: 1;
+    display: flex;
+  }
+  .note-q {
+    min-height: 0;
+    padding: 13cqh 8cqw 6cqh;
+    font-size: max(13px, 8.2cqw);
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+  .note-q::after {
+    top: auto;
+    bottom: 5cqh;
+    right: 6cqw;
+    width: max(20px, 12cqw);
+    height: max(20px, 12cqw);
+    font-size: max(15px, 9cqw);
+  }
+  .note-list[data-has-open] .note:not([data-open]) .note-q {
+    opacity: 0.3;
+  }
+  /* open: the note grows over its three neighbours toward the middle of the two columns in view (pitch of the notes
+     on the glass: 1.06 m across, 0.97 m down, the note 0.825 m), lifted off the glass */
+  .note[data-open] {
+    z-index: 3;
+  }
+  .note[data-open] .note-in {
+    width: 228cqw;
+    height: 218cqh;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--nc);
+    box-shadow:
+      0 1px 1px rgb(0 0 0 / 0.12),
+      0 30px 50px -20px rgb(30 20 60 / 0.6);
+    animation: note-lift 220ms var(--ease-out);
+  }
+  .note[data-open][data-col="1"] .note-in,
+  .note[data-open][data-col="3"] .note-in {
+    left: auto;
+  }
+  .note[data-open][data-col="0"] .note-in,
+  .note[data-open][data-col="2"] .note-in {
+    right: auto;
+  }
+  .note[data-open][data-row="0"] .note-in {
+    bottom: auto;
+  }
+  .note[data-open][data-row="1"] .note-in {
+    top: auto;
+  }
+  .note[data-open] .note-h {
+    flex: none;
+  }
+  .note[data-open] .note-q {
+    /* the answer starts below the Close button (its top 6cqh, 44 px) even when the question is one line */
+    min-height: calc(6cqh + 50px);
+    padding: 9cqh 32cqw 3cqh 8cqw;
+    font-family: var(--font-display);
+    font-size: max(15px, 9.6cqw);
+    font-weight: 700;
+    cursor: default;
+  }
+  .note-a {
+    padding: 0 8cqw 7cqh;
+    font-size: max(14px, 7.6cqw);
+    line-height: 1.45;
+  }
+  .note-x {
+    top: 6cqh;
+    right: 6cqw;
+  }
+  @keyframes note-lift {
+    from {
+      opacity: 0.4;
+      transform: scale(0.96);
+    }
+  }
+}

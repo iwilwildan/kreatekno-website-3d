@@ -1,5 +1,6 @@
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { getMessages, getTranslations } from "next-intl/server";
+import { JsonLd } from "@/components/JsonLd";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { BOOT_LIMIT_MS, bootLock } from "./bootLock";
 import { HomeTake } from "./HomeTake";
@@ -7,8 +8,13 @@ import { Binder, type Industry } from "./props/Binder";
 import { Journey } from "./props/Journey";
 import { Leaflet } from "./props/Leaflet";
 import { placeHero } from "./placeHero";
+import { Corkboard } from "./props/Corkboard";
+import { MagazineRack } from "./props/MagazineRack";
+import { StickyNotes } from "./props/StickyNotes";
+import { LOBBY_KEYS } from "./lobbyStills";
 import stillsData from "./stills.json";
 import "./stage.css";
+import "./lobby.css";
 
 const KEYS = [
   "K0",
@@ -27,15 +33,24 @@ const KEYS = [
   "K5a.4",
   "K5a.4b",
   "K5a.6",
+  // the lobby (tahap 7): on 9:16 one still per stop of a hold (K6: the strip, then the 7 polaroids; K7: the sign, the
+  // 3 books, the button; K8: the left and the right two columns of notes)
+  ...LOBBY_KEYS,
+  "K9.1",
 ] as const;
-/** Stills that only exist on 9:16 (the second panel of a hold); on 16:9 they repeat the hold's still. */
-const HP_ONLY: Partial<Record<(typeof KEYS)[number], string>> = {
+type Key = (typeof KEYS)[number];
+/** Stills that only exist on 9:16 (a later stop of a hold); on 16:9 they repeat the hold's still. */
+const HP_ONLY: Partial<Record<Key, string>> = {
   "K5a.2b": "K5a.2",
   "K5a.3b": "K5a.3",
   "K5a.4b": "K5a.4",
+  ...Object.fromEntries(LOBBY_KEYS.filter((k) => !/\d$/.test(k)).map((k) => [k, k.replace(/[b-h]$/, "")])),
 };
-/** The stacked version (reduced motion, no JavaScript) shows the beat 5b copy with the K5a.2 still only. */
-const STACKED = new Set(["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K5a.2"]);
+/**
+ * The stacked version (reduced motion, no JavaScript) shows the beat 5b copy with the K5a.2 still only, the lobby's
+ * with the K6, K7 and K8 stills.
+ */
+const STACKED = new Set(["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K5a.2", "K6", "K7", "K8"]);
 
 /**
  * The Home stage (STORY-STAGE.md, beats 1–4 for now: the hero on the billboard, Layanan on the leaflet and Use
@@ -47,10 +62,15 @@ export async function HomeStage() {
   const tCta = await getTranslations("cta");
   const tStage = await getTranslations("home.stage");
   const tUse = await getTranslations("home.useCase");
-  // the industries are a nested list in the messages (four tabs, four examples each)
+  const tFaq = await getTranslations("home.faq");
+  // the industries are a nested list in the messages (four tabs, four examples each), the FAQ a list of 8
   const messages = (await getMessages()) as {
-    home: { useCase: { industries: Record<string, Omit<Industry, "key">> } };
+    home: {
+      useCase: { industries: Record<string, Omit<Industry, "key">> };
+      faq: { items: { q: string; a: string }[] };
+    };
   };
+  const faq = messages.home.faq.items;
   const industries: Industry[] = Object.entries(messages.home.useCase.industries).map(([key, v]) => ({ key, ...v }));
 
   const stills = KEYS.map((k, i) => (
@@ -60,7 +80,7 @@ export async function HomeStage() {
         src={`/stills/pc/${(HP_ONLY[k] ?? k).toLowerCase()}.webp`}
         width={1600}
         height={900}
-        alt={tStage((HP_ONLY[k] ?? k).toLowerCase().replace(".", "_") as Parameters<typeof tStage>[0])}
+        alt={tStage((HP_ONLY[k] ?? k).toLowerCase().replaceAll(".", "_") as Parameters<typeof tStage>[0])}
         {...(i === 0 ? { fetchPriority: "high" as const } : { loading: "lazy" as const })}
         decoding={i === 0 ? "sync" : "async"}
       />
@@ -86,6 +106,9 @@ export async function HomeStage() {
               cta={<WhatsAppButton section="usecase" />}
             />
             <Journey />
+            <Corkboard />
+            <MagazineRack />
+            <StickyNotes title={tFaq("title")} help={tFaq("help")} closeLabel={tFaq("close")} items={faq} />
           </>
         }
         headline={
@@ -106,6 +129,18 @@ export async function HomeStage() {
             </div>
           </>
         }
+      />
+      {/* The 8 questions of the FAQ beat (K8), the same text as on the sticky notes. */}
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
       />
       {/* Puts the copy on the billboard of the K0 still before React and the world load. */}
       <script
