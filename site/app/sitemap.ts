@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { routing, type Pathname } from "@/i18n/routing";
 import { absoluteUrl } from "@/lib/seo";
 
-const PAGES: { href: Pathname; priority: number }[] = [
+const PAGES: { href: Exclude<Pathname, "/solusi/[slug]">; priority: number }[] = [
   { href: "/", priority: 1 },
   { href: "/solusi", priority: 0.8 },
   { href: "/artikel", priority: 0.8 },

@@ -5,6 +5,8 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://kreatekno.
 
 /** WhatsApp number in international format, digits only, e.g. "62812xxxxxxx". */
 export const WA_NUMBER = (process.env.NEXT_PUBLIC_WA_NUMBER || "").replace(/\D/g, "");
+export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
+export const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "";
 
 export const COMPANY = {
   name: "Kreatekno",
@@ -18,7 +20,7 @@ export const COMPANY = {
     addressCountry: "ID",
   },
   social: {
-    instagram: "", // TODO
+    instagram: INSTAGRAM_URL,
     linkedin: "", // TODO
     tiktok: "", // TODO
   },

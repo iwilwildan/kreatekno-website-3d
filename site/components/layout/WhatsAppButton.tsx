@@ -29,6 +29,9 @@ export function WhatsAppButton({ section, intent = "chat", variant = "main", cla
       target="_blank"
       rel="noopener"
       data-src={section}
+      data-contact
+      data-msg={tWa(intent)}
+      data-intent={intent}
       onClick={() => trackWhatsApp(section, intent, locale)}
       className={`${style} ${className}`}
     >

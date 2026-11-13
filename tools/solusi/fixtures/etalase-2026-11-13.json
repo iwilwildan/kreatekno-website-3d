@@ -1,0 +1,2498 @@
+{
+  "source": "prototype/solusi-etalase-v1.html (artefak AZX3Jy8e9Bmmdnu9tLL8Jb, 13 Nov 2026)",
+  "browser": "157.0.4341.46",
+  "note": "Numbers only. Replaces VISUAL 8 and 7.5 for the etalase and the tags (PLAN-REVISI-ETALASE.md section 5).",
+  "tolerance": {
+    "box": 1,
+    "font": 0.5,
+    "tag": 2
+  },
+  "views": {
+    "1920×1080": {
+      "elements": {
+        ".counter-h": {
+          "width": 1240,
+          "height": 30.8,
+          "fontSize": 28,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 1240,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 1240,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 1220,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 1240,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 1200,
+          "height": 162.78,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 960,
+            "y": 493.4
+          }
+        ],
+        "2": [
+          {
+            "x": 882.9,
+            "y": 493.4
+          },
+          {
+            "x": 1037.1,
+            "y": 493.4
+          }
+        ],
+        "3": [
+          {
+            "x": 805.9,
+            "y": 493.4
+          },
+          {
+            "x": 960,
+            "y": 493.4
+          },
+          {
+            "x": 1114.1,
+            "y": 493.4
+          }
+        ],
+        "4": [
+          {
+            "x": 728.8,
+            "y": 493.4
+          },
+          {
+            "x": 882.9,
+            "y": 493.4
+          },
+          {
+            "x": 1037.1,
+            "y": 493.4
+          },
+          {
+            "x": 1191.2,
+            "y": 493.4
+          }
+        ],
+        "5": [
+          {
+            "x": 651.7,
+            "y": 493.4
+          },
+          {
+            "x": 805.9,
+            "y": 493.4
+          },
+          {
+            "x": 960,
+            "y": 493.4
+          },
+          {
+            "x": 1114.1,
+            "y": 493.4
+          },
+          {
+            "x": 1268.3,
+            "y": 493.4
+          }
+        ],
+        "6": [
+          {
+            "x": 574.6,
+            "y": 493.4
+          },
+          {
+            "x": 728.8,
+            "y": 493.4
+          },
+          {
+            "x": 882.9,
+            "y": 493.4
+          },
+          {
+            "x": 1037.1,
+            "y": 493.4
+          },
+          {
+            "x": 1191.2,
+            "y": 493.4
+          },
+          {
+            "x": 1345.4,
+            "y": 493.4
+          }
+        ]
+      }
+    },
+    "1440×900": {
+      "elements": {
+        ".counter-h": {
+          "width": 1240,
+          "height": 30.8,
+          "fontSize": 28,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 1240,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 1240,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 1220,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 1240,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 1200,
+          "height": 162.78,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 720,
+            "y": 411.2
+          }
+        ],
+        "2": [
+          {
+            "x": 655.8,
+            "y": 411.2
+          },
+          {
+            "x": 784.2,
+            "y": 411.2
+          }
+        ],
+        "3": [
+          {
+            "x": 591.5,
+            "y": 411.2
+          },
+          {
+            "x": 720,
+            "y": 411.2
+          },
+          {
+            "x": 848.5,
+            "y": 411.2
+          }
+        ],
+        "4": [
+          {
+            "x": 527.3,
+            "y": 411.2
+          },
+          {
+            "x": 655.8,
+            "y": 411.2
+          },
+          {
+            "x": 784.2,
+            "y": 411.2
+          },
+          {
+            "x": 912.7,
+            "y": 411.2
+          }
+        ],
+        "5": [
+          {
+            "x": 463.1,
+            "y": 411.2
+          },
+          {
+            "x": 591.5,
+            "y": 411.2
+          },
+          {
+            "x": 720,
+            "y": 411.2
+          },
+          {
+            "x": 848.5,
+            "y": 411.2
+          },
+          {
+            "x": 976.9,
+            "y": 411.2
+          }
+        ],
+        "6": [
+          {
+            "x": 398.9,
+            "y": 411.2
+          },
+          {
+            "x": 527.3,
+            "y": 411.2
+          },
+          {
+            "x": 655.8,
+            "y": 411.2
+          },
+          {
+            "x": 784.2,
+            "y": 411.2
+          },
+          {
+            "x": 912.7,
+            "y": 411.2
+          },
+          {
+            "x": 1041.1,
+            "y": 411.2
+          }
+        ]
+      }
+    },
+    "1280×800": {
+      "elements": {
+        ".counter-h": {
+          "width": 1216,
+          "height": 30.8,
+          "fontSize": 28,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 1216,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 1216,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 1196,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 1216,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 1200,
+          "height": 162.78,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 640,
+            "y": 365.5
+          }
+        ],
+        "2": [
+          {
+            "x": 582.9,
+            "y": 365.5
+          },
+          {
+            "x": 697.1,
+            "y": 365.5
+          }
+        ],
+        "3": [
+          {
+            "x": 525.8,
+            "y": 365.5
+          },
+          {
+            "x": 640,
+            "y": 365.5
+          },
+          {
+            "x": 754.2,
+            "y": 365.5
+          }
+        ],
+        "4": [
+          {
+            "x": 468.7,
+            "y": 365.5
+          },
+          {
+            "x": 582.9,
+            "y": 365.5
+          },
+          {
+            "x": 697.1,
+            "y": 365.5
+          },
+          {
+            "x": 811.3,
+            "y": 365.5
+          }
+        ],
+        "5": [
+          {
+            "x": 411.6,
+            "y": 365.5
+          },
+          {
+            "x": 525.8,
+            "y": 365.5
+          },
+          {
+            "x": 640,
+            "y": 365.5
+          },
+          {
+            "x": 754.2,
+            "y": 365.5
+          },
+          {
+            "x": 868.4,
+            "y": 365.5
+          }
+        ],
+        "6": [
+          {
+            "x": 354.5,
+            "y": 365.5
+          },
+          {
+            "x": 468.7,
+            "y": 365.5
+          },
+          {
+            "x": 582.9,
+            "y": 365.5
+          },
+          {
+            "x": 697.1,
+            "y": 365.5
+          },
+          {
+            "x": 811.3,
+            "y": 365.5
+          },
+          {
+            "x": 925.5,
+            "y": 365.5
+          }
+        ]
+      }
+    },
+    "1180×820": {
+      "elements": {
+        ".counter-h": {
+          "width": 1116,
+          "height": 28.55,
+          "fontSize": 25.96,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 1116,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 1116,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 1096,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 1116,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 1116,
+          "height": 161.34,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 590,
+            "y": 374.6
+          }
+        ],
+        "2": [
+          {
+            "x": 531.5,
+            "y": 374.6
+          },
+          {
+            "x": 648.5,
+            "y": 374.6
+          }
+        ],
+        "3": [
+          {
+            "x": 473,
+            "y": 374.6
+          },
+          {
+            "x": 590,
+            "y": 374.6
+          },
+          {
+            "x": 707,
+            "y": 374.6
+          }
+        ],
+        "4": [
+          {
+            "x": 414.4,
+            "y": 374.6
+          },
+          {
+            "x": 531.5,
+            "y": 374.6
+          },
+          {
+            "x": 648.5,
+            "y": 374.6
+          },
+          {
+            "x": 765.6,
+            "y": 374.6
+          }
+        ],
+        "5": [
+          {
+            "x": 355.9,
+            "y": 374.6
+          },
+          {
+            "x": 473,
+            "y": 374.6
+          },
+          {
+            "x": 590,
+            "y": 374.6
+          },
+          {
+            "x": 707,
+            "y": 374.6
+          },
+          {
+            "x": 824.1,
+            "y": 374.6
+          }
+        ],
+        "6": [
+          {
+            "x": 297.4,
+            "y": 374.6
+          },
+          {
+            "x": 414.4,
+            "y": 374.6
+          },
+          {
+            "x": 531.5,
+            "y": 374.6
+          },
+          {
+            "x": 648.5,
+            "y": 374.6
+          },
+          {
+            "x": 765.6,
+            "y": 374.6
+          },
+          {
+            "x": 882.6,
+            "y": 374.6
+          }
+        ]
+      }
+    },
+    "1024×1366": {
+      "elements": {
+        ".counter-h": {
+          "width": 960,
+          "height": 24.78,
+          "fontSize": 22.528,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 960,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 960,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 940,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 960,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 960,
+          "height": 156.88,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 512,
+            "y": 624.1
+          }
+        ],
+        "2": [
+          {
+            "x": 414.5,
+            "y": 624.1
+          },
+          {
+            "x": 609.5,
+            "y": 624.1
+          }
+        ],
+        "3": [
+          {
+            "x": 317,
+            "y": 624.1
+          },
+          {
+            "x": 512,
+            "y": 624.1
+          },
+          {
+            "x": 707,
+            "y": 624.1
+          }
+        ],
+        "4": [
+          {
+            "x": 219.6,
+            "y": 624.1
+          },
+          {
+            "x": 414.5,
+            "y": 624.1
+          },
+          {
+            "x": 609.5,
+            "y": 624.1
+          },
+          {
+            "x": 804.4,
+            "y": 624.1
+          }
+        ],
+        "5": [
+          {
+            "x": 157.3,
+            "y": 643
+          },
+          {
+            "x": 334.7,
+            "y": 643
+          },
+          {
+            "x": 512,
+            "y": 643
+          },
+          {
+            "x": 689.3,
+            "y": 643
+          },
+          {
+            "x": 866.7,
+            "y": 643
+          }
+        ],
+        "6": [
+          {
+            "x": 146.9,
+            "y": 676.6
+          },
+          {
+            "x": 292.9,
+            "y": 676.6
+          },
+          {
+            "x": 439,
+            "y": 676.6
+          },
+          {
+            "x": 585,
+            "y": 676.6
+          },
+          {
+            "x": 731.1,
+            "y": 676.6
+          },
+          {
+            "x": 877.1,
+            "y": 676.6
+          }
+        ]
+      }
+    },
+    "820×1180": {
+      "elements": {
+        ".counter-h": {
+          "width": 756,
+          "height": 22,
+          "fontSize": 20,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 756,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 756,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 736,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 756,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 756,
+          "height": 209.83,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 410,
+            "y": 539.1
+          }
+        ],
+        "2": [
+          {
+            "x": 325.8,
+            "y": 539.1
+          },
+          {
+            "x": 494.2,
+            "y": 539.1
+          }
+        ],
+        "3": [
+          {
+            "x": 241.6,
+            "y": 539.1
+          },
+          {
+            "x": 410,
+            "y": 539.1
+          },
+          {
+            "x": 578.4,
+            "y": 539.1
+          }
+        ],
+        "4": [
+          {
+            "x": 157.4,
+            "y": 539.1
+          },
+          {
+            "x": 325.8,
+            "y": 539.1
+          },
+          {
+            "x": 494.2,
+            "y": 539.1
+          },
+          {
+            "x": 662.6,
+            "y": 539.1
+          }
+        ],
+        "5": [
+          {
+            "x": 126.8,
+            "y": 567.9
+          },
+          {
+            "x": 268.4,
+            "y": 567.9
+          },
+          {
+            "x": 410,
+            "y": 567.9
+          },
+          {
+            "x": 551.6,
+            "y": 567.9
+          },
+          {
+            "x": 693.2,
+            "y": 567.9
+          }
+        ],
+        "6": [
+          {
+            "x": 118.3,
+            "y": 594.6
+          },
+          {
+            "x": 235,
+            "y": 594.6
+          },
+          {
+            "x": 351.7,
+            "y": 594.6
+          },
+          {
+            "x": 468.3,
+            "y": 594.6
+          },
+          {
+            "x": 585,
+            "y": 594.6
+          },
+          {
+            "x": 701.7,
+            "y": 594.6
+          }
+        ]
+      }
+    },
+    "768×1024": {
+      "elements": {
+        ".counter-h": {
+          "width": 704,
+          "height": 22,
+          "fontSize": 20,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 704,
+          "height": 2481,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 704,
+          "height": 353,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 684,
+          "height": 325,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 704,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 704,
+          "height": 205.67,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 384,
+            "y": 467.8
+          }
+        ],
+        "2": [
+          {
+            "x": 310.9,
+            "y": 467.8
+          },
+          {
+            "x": 457.1,
+            "y": 467.8
+          }
+        ],
+        "3": [
+          {
+            "x": 237.8,
+            "y": 467.8
+          },
+          {
+            "x": 384,
+            "y": 467.8
+          },
+          {
+            "x": 530.2,
+            "y": 467.8
+          }
+        ],
+        "4": [
+          {
+            "x": 164.8,
+            "y": 467.8
+          },
+          {
+            "x": 310.9,
+            "y": 467.8
+          },
+          {
+            "x": 457.1,
+            "y": 467.8
+          },
+          {
+            "x": 603.2,
+            "y": 467.8
+          }
+        ],
+        "5": [
+          {
+            "x": 118,
+            "y": 481.9
+          },
+          {
+            "x": 251,
+            "y": 481.9
+          },
+          {
+            "x": 384,
+            "y": 481.9
+          },
+          {
+            "x": 517,
+            "y": 481.9
+          },
+          {
+            "x": 650,
+            "y": 481.9
+          }
+        ],
+        "6": [
+          {
+            "x": 110.2,
+            "y": 507.1
+          },
+          {
+            "x": 219.7,
+            "y": 507.1
+          },
+          {
+            "x": 329.2,
+            "y": 507.1
+          },
+          {
+            "x": 438.8,
+            "y": 507.1
+          },
+          {
+            "x": 548.3,
+            "y": 507.1
+          },
+          {
+            "x": 657.8,
+            "y": 507.1
+          }
+        ]
+      }
+    },
+    "414×896": {
+      "elements": {
+        ".counter-h": {
+          "width": 394,
+          "height": 22,
+          "fontSize": 20,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 394,
+          "height": 2453,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 394,
+          "height": 349,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 386,
+          "height": 321,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 394,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 382,
+          "height": 213.03,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 207,
+            "y": 409.5
+          }
+        ],
+        "2": [
+          {
+            "x": 158.6,
+            "y": 409.5
+          },
+          {
+            "x": 255.4,
+            "y": 409.5
+          }
+        ],
+        "3": [
+          {
+            "x": 110.1,
+            "y": 409.5
+          },
+          {
+            "x": 207,
+            "y": 409.5
+          },
+          {
+            "x": 303.9,
+            "y": 409.5
+          }
+        ],
+        "4": [
+          {
+            "x": 61.7,
+            "y": 409.5
+          },
+          {
+            "x": 158.6,
+            "y": 409.5
+          },
+          {
+            "x": 255.4,
+            "y": 409.5
+          },
+          {
+            "x": 352.3,
+            "y": 409.5
+          }
+        ],
+        "5": [
+          {
+            "x": 46.6,
+            "y": 427.3
+          },
+          {
+            "x": 126.8,
+            "y": 427.3
+          },
+          {
+            "x": 207,
+            "y": 427.3
+          },
+          {
+            "x": 287.2,
+            "y": 427.3
+          },
+          {
+            "x": 367.4,
+            "y": 427.3
+          }
+        ],
+        "6": [
+          {
+            "x": 41.8,
+            "y": 442.3
+          },
+          {
+            "x": 107.9,
+            "y": 442.3
+          },
+          {
+            "x": 174,
+            "y": 442.3
+          },
+          {
+            "x": 240,
+            "y": 442.3
+          },
+          {
+            "x": 306.1,
+            "y": 442.3
+          },
+          {
+            "x": 372.2,
+            "y": 442.3
+          }
+        ]
+      }
+    },
+    "390×844": {
+      "elements": {
+        ".counter-h": {
+          "width": 370,
+          "height": 22,
+          "fontSize": 20,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 370,
+          "height": 2453,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 370,
+          "height": 349,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 362,
+          "height": 321,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 370,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 358,
+          "height": 237.67,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 195,
+            "y": 385.8
+          }
+        ],
+        "2": [
+          {
+            "x": 149.4,
+            "y": 385.8
+          },
+          {
+            "x": 240.6,
+            "y": 385.8
+          }
+        ],
+        "3": [
+          {
+            "x": 103.8,
+            "y": 385.8
+          },
+          {
+            "x": 195,
+            "y": 385.8
+          },
+          {
+            "x": 286.2,
+            "y": 385.8
+          }
+        ],
+        "4": [
+          {
+            "x": 58.1,
+            "y": 385.8
+          },
+          {
+            "x": 149.4,
+            "y": 385.8
+          },
+          {
+            "x": 240.6,
+            "y": 385.8
+          },
+          {
+            "x": 331.9,
+            "y": 385.8
+          }
+        ],
+        "5": [
+          {
+            "x": 45,
+            "y": 403.1
+          },
+          {
+            "x": 120,
+            "y": 403.1
+          },
+          {
+            "x": 195,
+            "y": 403.1
+          },
+          {
+            "x": 270,
+            "y": 403.1
+          },
+          {
+            "x": 345,
+            "y": 403.1
+          }
+        ],
+        "6": [
+          {
+            "x": 40.6,
+            "y": 417.1
+          },
+          {
+            "x": 102.3,
+            "y": 417.1
+          },
+          {
+            "x": 164.1,
+            "y": 417.1
+          },
+          {
+            "x": 225.9,
+            "y": 417.1
+          },
+          {
+            "x": 287.7,
+            "y": 417.1
+          },
+          {
+            "x": 349.4,
+            "y": 417.1
+          }
+        ]
+      }
+    },
+    "375×812": {
+      "elements": {
+        ".counter-h": {
+          "width": 355,
+          "height": 22,
+          "fontSize": 20,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 355,
+          "height": 2453,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 355,
+          "height": 349,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 347,
+          "height": 321,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 355,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 343,
+          "height": 237.67,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 187.5,
+            "y": 371.1
+          }
+        ],
+        "2": [
+          {
+            "x": 143.6,
+            "y": 371.1
+          },
+          {
+            "x": 231.4,
+            "y": 371.1
+          }
+        ],
+        "3": [
+          {
+            "x": 99.7,
+            "y": 371.1
+          },
+          {
+            "x": 187.5,
+            "y": 371.1
+          },
+          {
+            "x": 275.3,
+            "y": 371.1
+          }
+        ],
+        "4": [
+          {
+            "x": 55.8,
+            "y": 371.1
+          },
+          {
+            "x": 143.6,
+            "y": 371.1
+          },
+          {
+            "x": 231.4,
+            "y": 371.1
+          },
+          {
+            "x": 319.2,
+            "y": 371.1
+          }
+        ],
+        "5": [
+          {
+            "x": 44.1,
+            "y": 388.2
+          },
+          {
+            "x": 115.8,
+            "y": 388.2
+          },
+          {
+            "x": 187.5,
+            "y": 388.2
+          },
+          {
+            "x": 259.2,
+            "y": 388.2
+          },
+          {
+            "x": 330.9,
+            "y": 388.2
+          }
+        ],
+        "6": [
+          {
+            "x": 39.8,
+            "y": 401.7
+          },
+          {
+            "x": 98.9,
+            "y": 401.7
+          },
+          {
+            "x": 158,
+            "y": 401.7
+          },
+          {
+            "x": 217,
+            "y": 401.7
+          },
+          {
+            "x": 276.1,
+            "y": 401.7
+          },
+          {
+            "x": 335.2,
+            "y": 401.7
+          }
+        ]
+      }
+    },
+    "360×740": {
+      "elements": {
+        ".counter-h": {
+          "width": 340,
+          "height": 44,
+          "fontSize": 20,
+          "weight": 700
+        },
+        ".frame": {
+          "width": 340,
+          "height": 2453,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".tier": {
+          "width": 340,
+          "height": 349,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".track": {
+          "width": 332,
+          "height": 321,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".prod": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".pk": {
+          "width": 216,
+          "height": 305,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".cover": {
+          "width": 196,
+          "height": 211,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 10,
+          "dy": 44
+        },
+        ".plank": {
+          "width": 340,
+          "height": 24,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".band": {
+          "width": 328,
+          "height": 237.67,
+          "fontSize": 16,
+          "weight": 400
+        },
+        ".st": {
+          "width": 112.05,
+          "height": 20,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 12,
+          "dy": 14
+        },
+        ".cover .ttl": {
+          "width": 174,
+          "height": 61.55,
+          "fontSize": 18,
+          "weight": 700,
+          "dx": 22,
+          "dy": 54
+        },
+        ".cover .sub": {
+          "width": 174,
+          "height": 35.34,
+          "fontSize": 13,
+          "weight": 600,
+          "dx": 22,
+          "dy": 123.55
+        },
+        ".cover .fit": {
+          "width": 174,
+          "height": 41,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 22,
+          "dy": 204
+        },
+        ".cover .fit small": {
+          "width": 174,
+          "height": 11,
+          "fontSize": 11,
+          "weight": 700,
+          "dx": 22,
+          "dy": 212
+        },
+        ".cover .chips > span": {
+          "width": 50.64,
+          "height": 18,
+          "fontSize": 11,
+          "weight": 600,
+          "dx": 22,
+          "dy": 227
+        },
+        ".apps": {
+          "width": 100,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        },
+        ".apps i": {
+          "width": 28,
+          "height": 28,
+          "fontSize": 16,
+          "weight": 400,
+          "dx": 12,
+          "dy": 265
+        }
+      },
+      "counts": {
+        "tiers": 7,
+        "boxes": 12
+      },
+      "tags": {
+        "1": [
+          {
+            "x": 180,
+            "y": 338.2
+          }
+        ],
+        "2": [
+          {
+            "x": 140,
+            "y": 338.2
+          },
+          {
+            "x": 220,
+            "y": 338.2
+          }
+        ],
+        "3": [
+          {
+            "x": 100,
+            "y": 338.2
+          },
+          {
+            "x": 180,
+            "y": 338.2
+          },
+          {
+            "x": 260,
+            "y": 338.2
+          }
+        ],
+        "4": [
+          {
+            "x": 60,
+            "y": 338.2
+          },
+          {
+            "x": 140,
+            "y": 338.2
+          },
+          {
+            "x": 220,
+            "y": 338.2
+          },
+          {
+            "x": 300,
+            "y": 338.2
+          }
+        ],
+        "5": [
+          {
+            "x": 42.8,
+            "y": 350.4
+          },
+          {
+            "x": 111.4,
+            "y": 350.4
+          },
+          {
+            "x": 180,
+            "y": 350.4
+          },
+          {
+            "x": 248.6,
+            "y": 350.4
+          },
+          {
+            "x": 317.2,
+            "y": 350.4
+          }
+        ],
+        "6": [
+          {
+            "x": 38.8,
+            "y": 363.3
+          },
+          {
+            "x": 95.3,
+            "y": 363.3
+          },
+          {
+            "x": 151.8,
+            "y": 363.3
+          },
+          {
+            "x": 208.2,
+            "y": 363.3
+          },
+          {
+            "x": 264.7,
+            "y": 363.3
+          },
+          {
+            "x": 321.2,
+            "y": 363.3
+          }
+        ]
+      }
+    }
+  }
+}
