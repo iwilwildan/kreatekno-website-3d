@@ -2026,3 +2026,21 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - `tsc --noEmit`, ESLint, Prettier untuk file yang diubah.
 - **Temuan di luar tahap 8:** K1 PC 122 draw call / 167 rb segitiga dengan `?shot` (seluruh deret dan lobi dimuat); kode `main` memberi angka yang sama di container ini (tahap 8 menambah ±1 rb segitiga). Batas 120 / 150 rb; log tahap 6 mencatat 119 / 147 rb.
 - **Belum:** copy plakat, halaman, still (langkah 3); `issue4*.mjs` belum dijalankan ulang (tools tanpa `node_modules` di container); still K5a.6 masih plakat lama; cahaya K11 lebih pink dari video dan jendela COMPANY belum menyala hangat; arah jalan ketiganya lewat di depan plakat (video: ke arah kamera).
+
+### 2026-11-13 (tahap 8 langkah 3: copy plakat dan halaman)
+
+- Atas permintaan user ("Lanjutkan" setelah langkah 2). Sesi cloud.
+- **Copy plakat** (`components/home/props/Plaque.tsx`, `plaque.css`, ID/EN dari `home.about`): kolom kiri judul `#h-tentang` + paragraf, kolom kanan 4 fakta dengan ikon centang + link "Kenali kami lebih jauh" ke `/tentang` (EN `/about`). HTML asli dari server; world menempelkan tiap kolom di muka plakat (`about-0`, `about-1`, `takes/home/beat9.ts` `plaqueAnchors`), ukurannya diukur di tempat kamera membacanya (16:9 jeda K9b, 9:16 perhentian kolomnya), muncul di ujung dolly ke plakat dan pergi saat kamera mundur (`plaqueCopyFade`); di 9:16 kolom yang terpotong tepi layar memudar seperti lobi. Warna tulisan kayu gelap dan tinta hangat di muka krem.
+- **Halaman:** penanda `#tentang` (16:9 tengah jeda K9b, 9:16 perhentian pertama; `components/home/plaqueStills.ts`), versi tumpuk (still K9b lalu kedua kolom sebagai section), still PC K9b, K11 dan HP K9b, K9b-2, K11 (`tools/render/stills.mjs`, `lib.mjs`: kunci plakat), fallback tanpa WebGL dengan copy di still lewat `quadMatrix3d`, teks alt `home.stage.k9b`, `k11` (ID/EN). Still K5a.6 PC/HP dirender ulang (plakat baru, lobi asli lewat kaca).
+- **Perbaikan selama langkah ini** (`world/index.ts`):
+  - Wildan tidak muncul di still K11: blok kursi per format mendudukkannya lagi setelah pose jalan; pose luar sekarang diulang setelah itu dan setelah Wildan/Andi selesai dibangun;
+  - setelah lompatan (`#tentang`, `jump`) Wildan tertinggal di ruang rapat: jamnya disetel ulang saat modulnya selesai dimuat dan saat lompat; jamnya disusulkan bila ia tidak terlihat (garis pandang dari jalan hanya lewat kaca fasad, ruang rapat tidak pernah terlihat dari luar);
+  - scroll mundur: Wildan sempat melompat (x ±22,8) karena lepas dari jalan bersama sebelum titik awalnya; syarat "bagian lobinya selesai" sekarang hanya untuk bergabung, dan saat lepas jam lobinya mulai dari titik akhirnya.
+  - lampu plakat: halo lebih redup dan lebih oranye.
+- **Dicek** (render dan screenshot hanya di chat):
+  - muat teks (overflow 0): PC 1280×720 judul 35 px, paragraf 22,8 px, fakta 23,6 px; HP 375×812 judul 25,8 / paragraf 16,8 / fakta 17,4 px; 360×640 24,7 / 16,1 / 16,7 px; ID dan EN;
+  - `#tentang` di halaman live: PC mendarat di tengah jeda K9b (24,9 layar scroll), HP di perhentian pertama (25,96); copy tampil, ketiga tokoh di trotoar; di K8 (`#faq`) copy plakat tersembunyi dan link tidak bisa di-Tab;
+  - tanpa WebGL (PC, 375, 360): still K9b dengan copy di tempatnya, `#tentang` mendarat benar; reduced motion dan tanpa JS: section Tentang dengan still K9b, still K11 tidak tampil;
+  - scroll waktu simulasi K9.1 ↔ K11 (2 dtk/layar PC dan HP maju dan mundur, 0,6 dtk/layar PC maju dan HP mundur): tidak ada tokoh melompat di frame; laju terlihat ≤ 2,56 m/s pada scroll rata; scroll cepat kamera menunggu ±4,7 dtk di gerbang plakat;
+  - `tsc --noEmit`, ESLint, `format:check` seluruh situs, `next build` lulus; chunk tahap 8 ≤ 15,5 KB gzip.
+- **Belum / catatan:** `issue4*.mjs` belum dijalankan (render SwiftShader ±5 dtk per frame di container); Playwright yang dipakai alat di container adalah 1.63.0 bawaan (bukan 1.64.1 yang disetujui untuk laptop); di HP 375 still 9:16 terpotong di sisi (sama seperti panel beat 5 dan lobi); review user.

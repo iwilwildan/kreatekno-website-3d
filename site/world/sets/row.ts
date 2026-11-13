@@ -326,9 +326,9 @@ function buildLampGlow(kit: Kit, x: number, y: number, z: number, plaqueTop: num
     new THREE.PlaneGeometry(0.6, 0.6),
     add(
       radial([
-        [0, "rgba(255,226,160,0.9)"],
-        [0.25, "rgba(255,190,110,0.35)"],
-        [1, "rgba(255,170,90,0)"],
+        [0, "rgba(255,214,140,0.7)"],
+        [0.25, "rgba(255,176,90,0.22)"],
+        [1, "rgba(255,160,80,0)"],
       ]),
     ),
   );

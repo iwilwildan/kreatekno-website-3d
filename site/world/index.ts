@@ -15,7 +15,7 @@ import { dampStep } from "./motion/damp";
 import { createCompanyFront, layoutStep, LAYOUT_STEPS, type CompanyFront } from "./sets/companyFront";
 import { createCounterProps, HANDS_PITCH } from "./sets/counterProps";
 import { buildShop, panelFace, rowMaterials } from "./sets/shop";
-import { SHOPS } from "./sets/rowLayout";
+import { KREATEKNO, SHOPS } from "./sets/rowLayout";
 import { buildSky } from "./sets/sky";
 import { billboardFace, buildStreet } from "./sets/street";
 import type { KeyName } from "./takes/home/data";
@@ -46,7 +46,7 @@ import {
   lobbyCopyFade,
 } from "./takes/home/lobby";
 import { LOBBY, lx } from "./sets/lobbyLayout";
-import { B9, PLAQUE_GATE } from "./takes/home/beat9";
+import { B9, PLAQUE_GATE, plaqueAnchors, plaqueCopyFade, plaqueStopAt } from "./takes/home/beat9";
 import type { Lobby } from "./sets/lobby";
 import { SEG } from "./takes/home/timing";
 import {
@@ -408,7 +408,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const dewi = crew.find((m) => m.name === "dewi");
     const st = outsideState(c);
     if (!heru || !dewi || !st) return false;
-    const key = `${c.toFixed(4)} ${wOut.on ? wOut.off.toFixed(4) : "-"}`;
+    // (Wildan and Andi are built after the lobby: pose again once they are there)
+    const key = `${c.toFixed(4)} ${wOut.on ? wOut.off.toFixed(4) : "-"} ${pair.length}`;
     if (key === lastOutKey) return false;
     lastOutKey = key;
     poseOutside(heru, dewi, st);
@@ -545,6 +546,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     lobby?.dropSeated();
     pairShown = pairFmt = "";
+    // (a jump before they were built set Wildan's clock without them: set it from the scroll now, tahap 8)
+    wClk.x = wildanAt(view.x * TAKE_SCREENS);
+    wClk.v = 0;
     renderer.shadowMap.needsUpdate = true;
     needsRender = true;
   };
@@ -683,6 +687,27 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   /** Whether Heru or Bu Dewi would be on screen at outside clock c (last frame's camera). */
   const frustum = new THREE.Frustum(),
     seenSphere = new THREE.Sphere(new THREE.Vector3(), 1.1);
+  /** Whether a body standing at ground point b would be on screen (last frame's camera). */
+  const seenBody = (b: THREE.Vector3) => {
+    frustum.setFromProjectionMatrix(
+      new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+    );
+    return frustum.intersectsSphere(seenSphere.set(b.clone().setY(b.y + 0.9), 1.1));
+  };
+  /**
+   * Whether Wildan at p would be on screen: as seenBody, except that from out on the street into Kreatekno he is seen
+   * only through its glass front (sets/row: from x0 + 4.1 to the right pillar) and never in the meeting room.
+   */
+  const seenWildan = (p: THREE.Vector3) => {
+    const cam = camera.position;
+    if (cam.z > 0.3 && p.z < -0.3) {
+      // from the street into Kreatekno: only through the glass front (its solid left part hides the rest)
+      const x = cam.x + ((p.x - cam.x) * cam.z) / (cam.z - p.z);
+      if (x < KREATEKNO.x0 + 4.1 || x > KREATEKNO.x0 + KREATEKNO.w - 0.6) return false;
+      if (p.x < lx(LOBBY.room.glassX) && p.z < LOBBY.roomFrom) return false;
+    }
+    return seenBody(p);
+  };
   const seenAt = (c: number) => {
     const st = outsideState(c);
     if (!st) return false;
@@ -832,6 +857,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   });
   // the copy on the lobby's props (tahap 7): polaroids, books, sticky notes and their titles
   const lobbyCopy = lobbyAnchors();
+  // and on Kreatekno's plaque (tahap 8): "Tentang Kreatekno" in two columns
+  const plaqueCopy = plaqueAnchors();
   const measureCopy = () => {
     sizesKey = `${width} ${height} ${room?.step}`;
     copySizes = {};
@@ -848,6 +875,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...lobbyCopy.map(
         ({ anchor: a, hold, stop }) =>
           [a, cameraAt(copyStopAt(hold, stop, fmtT) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
+            Anchor,
+            (typeof views)["page"],
+          ],
+      ),
+      // the plaque's: each column where the camera reads it (9:16 its own stop, 16:9 the keyframe)
+      ...plaqueCopy.map(
+        ({ anchor: a, stop }) =>
+          [a, cameraAt(plaqueStopAt(stop, fmtT) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
             Anchor,
             (typeof views)["page"],
           ],
@@ -959,21 +994,40 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     {
       const wt = wildanAt(xs),
         was = wClk.x;
+      const wild = pair.find((m) => m.name === "wildan");
       if (opts.key || opts.shot) wClk.x = wt;
-      else followClock(wClk, wt, dt);
+      // far behind the scroll and out of view (a fast scroll past the lobby, tahap 8: he has to be out with the
+      // others), he is moved there, like Heru and Bu Dewi; else he walks there
+      else if (Math.abs(wt - wClk.x) > 3 && !wOut.on && !(wild?.mesh.visible && seenWildan(wild.mesh.position))) {
+        wClk.x = wt;
+        wClk.v = 0;
+      } else followClock(wClk, wt, dt);
       if (wClk.x !== was) needsRender = true;
       // tahap 8: he joins their walk out once his own part is done (his clock at its end), from the spot it left him;
       // if their clock was already past his start then, he runs that much behind it and makes it up at 1.35× his
       // pace (never faster than they may walk in the lobby), so he never jumps between the two
       const done = !lobbyMod || wClk.x >= lobbyMod.wildanTimes(fmtT >= 0.5 ? "hp" : "pc").end - 0.02;
       if (opts.key || opts.shot) Object.assign(wOut, { on: outClk.x > BT.w2, off: 0, c: outClk.x });
-      else if (outClk.x - wOut.off > BT.w2 && done) {
+      // (his own part done is the condition to join, not to stay: scrolled back, he walks with them to his start)
+      else if (outClk.x - wOut.off > BT.w2 && (wOut.on || done)) {
         if (!wOut.on) Object.assign(wOut, { on: true, off: outClk.x - BT.w2, c: BT.w2 });
+        // (far behind them where neither he nor the place he would catch up to is in view: with them at once)
+        const at = wildanStride(outClk.x - wOut.off),
+          goal = wildanStride(outClk.x);
+        if (wOut.off > 1 && at && goal && !seenWildan(at.body) && !seenWildan(goal.body))
+          Object.assign(wOut, { off: 0, c: outClk.x });
         const next = Math.min(outClk.x - Math.max(0, wOut.off - 0.35 * dt), wOut.c + 1.8 * dt);
         wOut.off = outClk.x - next;
         wOut.c = next;
         needsRender = true;
-      } else Object.assign(wOut, { on: false, off: 0, c: 0 });
+      } else {
+        // back from their walk to his own (scrolled up): he is where his own part ends, and walks back from there
+        if (wOut.on && lobbyMod) {
+          wClk.x = lobbyMod.wildanTimes(fmtT >= 0.5 ? "hp" : "pc").end;
+          wClk.v = 0;
+        }
+        Object.assign(wOut, { on: false, off: 0, c: 0 });
+      }
     }
     const nodTo = xs >= NOD_AT ? 1 : 0;
     if (opts.key || opts.shot) nodT = nodTo === 1 ? 0.5 : 0;
@@ -1160,6 +1214,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
           lobbyMod.seatK8(m, m.name as LobbyCastName, fmt);
           m.springs?.reset(1);
         }
+        // (Wildan out with the others, tahap 8: posed on their walk again next frame, not left in his seat)
+        lastOutKey = "";
+        needsRender = true;
         shadowDue = true;
       }
       // back out on the street: Wildan in his seat again (out of sight there), for when the camera comes back
@@ -1314,6 +1371,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...props.copyAnchors(),
       ...journey.map((j) => j.anchor),
       ...lobbyCopy.map((l) => l.anchor),
+      ...plaqueCopy.map((l) => l.anchor),
     ]) {
       const q = pastDoor && anchors.includes(a) ? null : projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
@@ -1332,6 +1390,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       fade[l.anchor.name] = lobby
         ? lf[l.hold] * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1)
         : 0;
+    }
+    // the plaque's (tahap 8): at its hold, a column cut by the screen's edges on 9:16 fading as it leaves (the lobby's rule)
+    const pf = plaqueCopyFade(xs);
+    for (const l of plaqueCopy) {
+      const q = quads[l.anchor.name];
+      fade[l.anchor.name] = row ? pf * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1) : 0;
     }
     opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
     // Reveal only after the complete counter scene has been prepared and actually drawn.
@@ -1406,6 +1470,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       outClk.v = 0;
       wClk.x = wildanAt(target * TAKE_SCREENS);
       wClk.v = 0;
+      // (Wildan with the others, not behind them: a jump puts him where their clock is, tahap 8)
+      Object.assign(wOut, { on: outClk.x > BT.w2, off: 0, c: outClk.x });
+      lastOutKey = "";
       nodT = target * TAKE_SCREENS >= NOD_AT ? 1 : 0;
       lastHeruKey = "";
       for (const m of crew) m.springs?.reset(opts.shot ? 1 : 0);
@@ -1438,7 +1505,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       scroll: { shown: view.x, target },
       pair,
       // (with the walkers' timelines from the lobby on, for review tools)
-      clocks: { out: outClk.x, wildan: wClk.x, LT, BT },
+      clocks: { out: outClk.x, wildan: wClk.x, wildanOut: { ...wOut }, LT, BT },
       doors: { kre: row?.doorHinge.rotation.y ?? 0, room: lobby?.roomDoor.rotation.y ?? 0 },
       counter: { ...props.fade, clock3: heru3Time, clock4: b4Time },
     }),

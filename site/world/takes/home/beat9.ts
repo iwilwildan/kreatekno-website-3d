@@ -8,7 +8,8 @@
 // Frames of the video were read by eye (852 × 480, no labels): the plaque ±80% of the width at K9b, COMPANY's facade
 // filling the width at K11. The set's sizes come from the earlier stages; 9:16 is designed.
 import * as THREE from "three";
-import { clamp01, segmentStart } from "../../core/segments";
+import { rectAnchor, type Anchor } from "../../core/anchors";
+import { clamp01, segmentStart, smoothstep } from "../../core/segments";
 import type { CamPose } from "../../core/take";
 import { KREATEKNO, shopX } from "../../sets/rowLayout";
 import { monotone } from "./counter";
@@ -223,3 +224,24 @@ export function plaqueStopAt(i: number, t: number) {
   const unit = B9.k9b.len / (PLAQUE_STOPS * STOP.dwell + (PLAQUE_STOPS - 1) * STOP.move);
   return B9.k9b.s + (i * (STOP.dwell + STOP.move) + STOP.dwell / 2) * unit;
 }
+
+// ---------- the copy on the plaque (langkah 3): "Tentang Kreatekno" in two columns ----------
+/**
+ * The plaque's two copy boxes on its face, a few mm in front of it, a little in from its edges and the middle: the
+ * title and the paragraph left (`about-0`), the four facts and the link right (`about-1`). On 9:16 each is read at
+ * its own stop (stop i = column i).
+ */
+export function plaqueAnchors(): { anchor: Anchor; stop: number }[] {
+  const edge = 0.05,
+    seam = 0.03,
+    hh = P.h / 2 - edge,
+    z = PZ + 0.004;
+  return PLAQUE_COLS.map((c, i) => {
+    const x0 = i === 0 ? P.cx - P.w / 2 + edge : P.cx + seam,
+      x1 = i === 0 ? P.cx - seam : P.cx + P.w / 2 - edge;
+    return { anchor: rectAnchor(`about-${i}`, (x0 + x1) / 2, P.y, z, (x1 - x0) / 2, hh), stop: i };
+  });
+}
+/** Opacity of the plaque's copy at screens x: in as the dolly settles on the plaque, out as the camera pulls back. */
+export const plaqueCopyFade = (x: number) =>
+  smoothstep(B9.k9b.s - 0.15, B9.k9b.s, x) * (1 - smoothstep(B9.up.s, B9.up.s + 0.06, x));
