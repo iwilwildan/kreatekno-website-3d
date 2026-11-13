@@ -1862,3 +1862,21 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 ### 2026-11-13 (tahap 7 langkah 5–6 di-commit)
 
 - Atas permintaan user ("commit perubahan tahap 7"): langkah 5–6 di-commit ke `main` (belum di-push). Isinya hanya file tahap 7 (props lobi, stills, `HomeStage`/`HomeTake`, `world/index.ts`, `row.ts`, `takes/home/lobby.ts`, `timing.ts`, alat `tools/render`), di `messages` hanya subtree `home`, dan di `PLAN.md` hanya status dan plan tahap 7 serta entri log tahap 7. Tidak ikut: pekerjaan Solusi, `takes/home/index.ts` dan entri log issue #15. Isi commit dicek sendiri (typecheck, ESLint, `next build`).
+
+### 2026-11-13 (issue #15: kamera meja K2.1/K2.2)
+
+- Penyebab:
+  - PC: kamera solver K2.1 dan K2.2 sedikit mendongak (+3,5° dan +6,6°). Di 1280×720 tepi bawah panel depan ada di 721/771 (K2.1) dan 768/762 (K2.2) dari 720. Selama dolly K2 → K2.1 panel turun sampai 846.
+  - HP 375×812: panel utuh tapi kecil (44–49 px). Dua panel satu shot sudah selebar layar (ujung luar −6/378 dan −28/390 px), jadi kamera tidak bisa lebih dekat tanpa memotong panel. User memilih panel utuh (pilihan A, 13 Nov); kamera HP tidak dibuat lebih dekat.
+- Diubah hanya `site/world/takes/home/index.ts` (`data.json` tetap):
+  - PC: `TILT` K2.1 0,07 rad dan K2.2 0,062 rad menunduk, `DIP` 0,1 rad tunduk tambahan di tengah dolly K2 → K2.1 (nol di kedua ujung). Keduanya dikali (1 − format), jadi nol di HP.
+  - HP lebih ramping dari 9:16: K2.1 mundur 0,45 m, K2.2 mundur 0,6 m dan berputar 0,013 rad ke kiri, dikali `narrowness(aspect)` (0 di 9:16 dan lebih lebar, 1 di 375×812, maks 1,5). Tablet dan 9:16 tidak berubah.
+  - Hanyut setelah K2.1, whip, settle dan jalur K2.2 → K3 memakai kamera keyframe yang sama.
+- Dicek (Playwright, kotak layar panel depan D1–D4, kepala dan gelembung pikiran per sampel K2 → K2.1 (17 titik) → K2.2; build produksi dan dev):
+  - PC 1280×720: tepi bawah panel maks 692 dari 720 di hold dan selama dolly; 1440×900: 843 dari 900. Gelembung teratas ≥168 px, header berakhir di 76.
+  - HP 375×812: kedua panel utuh, sisi 11–20 px di hold, minimal 3–5 px saat hanyut dan settle, tinggi ±40 px. 412×915 sisi ≥3 px; 360×640 (9:16) 34–39 px, sisi ≥10 px. Tablet 768×1024 sama seperti sebelumnya.
+  - Jalur K2.2 → K3 PC dan HP mulus (posisi, pitch, yaw per 1/12 jalur). Frame PC dan HP dicek visual (hanya di chat).
+  - Komentar Penyebab/Perbaikan/Dicek/Belum di issue #15. Typecheck, ESLint dan Prettier lulus untuk file yang diubah; `next build` lulus.
+  - Still PC K2.1 dan K2.2 dirender ulang (`stills.mjs 80 K2.1,K2.2`); still HP keluar identik byte per byte (9:16 tidak berubah), `stills.json` tidak berubah.
+  - Build produksi port 3300: `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25. Dua putaran sebelumnya gagal di cek waktu loading (server baru menyala, RAM bebas 486 MB); putaran ketiga lulus semua.
+- Di-commit ke `main` setelah dikonfirmasi user ("commit jangan di push"): hanya `takes/home/index.ts`, still PC K2.1/K2.2 dan entri log ini. Belum: push dan tutup issue #15; hasil tes HP fisik belum dilaporkan.

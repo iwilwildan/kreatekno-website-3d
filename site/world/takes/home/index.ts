@@ -21,9 +21,35 @@ export { followDoorClock, heruAt, heruClock, heruGate, poseHeru, type HeruState 
 
 const SEG_K2 = SEG.find((s) => s.from === "K2" && s.type === "move")!.screens,
   SEG_K21 = SEG.find((s) => s.from === "K2.1")!.screens;
-const kf = (k: SolvedKey, t: number) => blendCam(DATA.cams.pc[k], DATA.cams.hp[k], t);
-const UP = new THREE.Vector3(0, 1, 0);
+const UP = new THREE.Vector3(0, 1, 0),
+  RIGHT = new THREE.Vector3(1, 0, 0);
 const yawQ = (a: number) => new THREE.Quaternion().setFromAxisAngle(UP, a);
+const pitchQ = (a: number) => new THREE.Quaternion().setFromAxisAngle(RIGHT, a);
+
+// Issue #15: the front panels of the desks get copy, so they stay whole, a little clear of the edges of the frame,
+// at K2.1 and K2.2 and on the way there.
+/** pc: the solved K2.1 and K2.2 cameras tilt down this much (radians; none on hp, where the panels sit mid-frame). */
+const TILT: Partial<Record<SolvedKey, number>> = { "K2.1": 0.07, "K2.2": 0.062 },
+  /** pc: extra tilt down at the middle of the dolly K2 → K2.1 (radians), as the camera comes down past Heru. */
+  DIP = 0.1;
+/**
+ * Phones narrower than 9:16 (most of them): the two panels of each shot already span the screen's width, so K2.1
+ * and K2.2 step back (metres) and K2.2 turns a little left (radians) to keep both whole. `narrow` is 0 at 9:16 and
+ * wider (the hp keyframes' own format, where they fit), 1 at 375 × 812.
+ */
+const BACK: Partial<Record<SolvedKey, number>> = { "K2.1": 0.45, "K2.2": 0.6 },
+  TURN: Partial<Record<SolvedKey, number>> = { "K2.2": 0.013 };
+const narrowness = (aspect: number) => Math.min(1.5, Math.max(0, (9 / 16 - aspect) / (9 / 16 - 375 / 812)));
+const kf = (k: SolvedKey, t: number, narrow = 0) => {
+  const c = blendCam(DATA.cams.pc[k], DATA.cams.hp[k], t);
+  if (narrow > 0 && BACK[k]) {
+    const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(c.quat).setY(0).normalize();
+    c.pos.addScaledVector(fwd, -BACK[k] * narrow);
+    c.quat.premultiply(yawQ((TURN[k] ?? 0) * narrow));
+  }
+  if (TILT[k]) c.quat.multiply(pitchQ(-TILT[k] * (1 - t)));
+  return c;
+};
 
 /** Ease with zero speed at the start and speed `m` (in units of the whole move) at the end. */
 const easeTo = (u: number, m: number) => (m - 2) * u ** 3 + (3 - m) * u ** 2;
@@ -34,10 +60,10 @@ const DRIFT = { yaw: 0.05, settle: 0.14 };
 
 const paths = new Map<string, { curve: THREE.CatmullRomCurve3; atB: number }>();
 /** Dolly path K2 → over Heru's head → K2.1 → on, measured by length; `atB` is K2.1's share of it. */
-function panPath(t: number, heru: { x: number; z: number }) {
+function panPath(t: number, heru: { x: number; z: number }, narrow: number) {
   const A = kf("K2", t),
-    B = kf("K2.1", t),
-    id = `${t.toFixed(3)} ${heru.x.toFixed(3)} ${heru.z.toFixed(3)}`;
+    B = kf("K2.1", t, narrow),
+    id = `${t.toFixed(3)} ${narrow.toFixed(3)} ${heru.x.toFixed(3)} ${heru.z.toFixed(3)}`;
   let c = paths.get(id);
   if (!c) {
     // over Heru's head (hair top 1.8 m), then down to the seated staff
@@ -58,16 +84,16 @@ function panPath(t: number, heru: { x: number; z: number }) {
 }
 
 /** Camera after K2.1, before the whip: still drifting forward and left, slowing down (u over the K2.1 move). */
-function drift(t: number, heru: { x: number; z: number }, u: number): CamPose {
-  const { B, curve, atB } = panPath(t, heru);
+function drift(t: number, heru: { x: number; z: number }, u: number, narrow: number): CamPose {
+  const { B, curve, atB } = panPath(t, heru, narrow);
   // the same speed per screen as on arrival, easing off over the move
   const k = (1 - (1 - u) ** 2) / 2,
     g = atB * ARRIVE * (SEG_K21 / SEG_K2) * k;
   return { pos: curve.getPointAt(atB + g), quat: yawQ(DRIFT.yaw * 2 * k).multiply(B.quat.clone()), fov: B.fov };
 }
 /** Camera coming into K2.2 after the whip: a little short of it and still turning right, at rest at u = 1. */
-function settle(t: number, u: number): CamPose {
-  const C = kf("K2.2", t),
+function settle(t: number, u: number, narrow: number): CamPose {
+  const C = kf("K2.2", t, narrow),
     k = (1 - u) ** 2,
     back = new THREE.Vector3(0, 0, 1).applyQuaternion(C.quat).setY(0).normalize();
   return {
@@ -94,7 +120,8 @@ export function cameraAt(
   outClock?: number,
 ): CamPose & { key: KeyName } {
   const { seg, u, start } = segmentAt(SEG, p);
-  const x = start + u * seg.screens;
+  const x = start + u * seg.screens,
+    narrow = narrowness(aspect);
   // beats 6–9a (tahap 7, greybox): in through Kreatekno's door from where the truck stopped at K5a.6
   if (x >= LOBBY_START) {
     const k56 = beat5Camera(LOBBY_START, Math.round(t * LAYOUT_STEPS), t, aspect, pairX(scrollClock(LOBBY_START)));
@@ -108,27 +135,30 @@ export function cameraAt(
   }
   if (seg.from === "K3" || seg.from === "K4") {
     if (seg.type === "hold") return { ...(seg.from === "K3" ? k3View : k4View)(t, aspect), key: seg.from };
-    return { ...beat34Camera(t, aspect, kf("K2.2", t), null, u), key: u < 0.5 ? "K3" : "K4" };
+    return { ...beat34Camera(t, aspect, kf("K2.2", t, narrow), null, u), key: u < 0.5 ? "K3" : "K4" };
   }
   if (seg.type === "move" && (seg.from === "K2.2" || seg.from === "K2.4")) {
     const s = seg.from === "K2.2" ? u * seg.screens : SEG_K22 + u * seg.screens;
     const key = s < SEG_K22 * 0.6 ? "K2.2" : s < SEG_K22 + seg.screens * 0.5 ? "K2.4" : "K3";
-    return { ...beat34Camera(t, aspect, kf("K2.2", t), s), key };
+    return { ...beat34Camera(t, aspect, kf("K2.2", t, narrow), s), key };
   }
-  if (seg.type === "hold") return { ...kf(seg.from as SolvedKey, t), key: seg.from };
+  if (seg.type === "hold") return { ...kf(seg.from as SolvedKey, t, narrow), key: seg.from };
   if (seg.from === "K2") {
-    const { A, B, curve, atB } = panPath(t, heru),
-      e = easeTo(u, ARRIVE);
+    const { A, B, curve, atB } = panPath(t, heru, narrow),
+      e = easeTo(u, ARRIVE),
+      // issue #15: coming down past Heru's head the camera looks a little lower, so Sinta's and Bayu's panels do
+      // not dip under the bottom edge on the way (most at e = 2/3, none at either end)
+      dip = DIP * (1 - t) * (27 / 4) * e ** 2 * (1 - e);
     return {
       pos: curve.getPointAt(atB * e),
-      quat: A.quat.clone().slerp(B.quat, e),
+      quat: A.quat.clone().slerp(B.quat, e).multiply(pitchQ(-dip)),
       fov: lerp(A.fov, B.fov, e),
       key: u < 0.5 ? "K2" : "K2.1",
     };
   }
   if (seg.from === "K2.1") {
-    const a = drift(t, heru, u),
-      b = settle(t, u);
+    const a = drift(t, heru, u, narrow),
+      b = settle(t, u, narrow);
     return {
       pos: a.pos.lerp(b.pos, whip),
       quat: a.quat.slerp(b.quat, whip),
