@@ -1880,3 +1880,16 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - Still PC K2.1 dan K2.2 dirender ulang (`stills.mjs 80 K2.1,K2.2`); still HP keluar identik byte per byte (9:16 tidak berubah), `stills.json` tidak berubah.
   - Build produksi port 3300: `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25. Dua putaran sebelumnya gagal di cek waktu loading (server baru menyala, RAM bebas 486 MB); putaran ketiga lulus semua.
 - Di-commit ke `main` setelah dikonfirmasi user ("commit jangan di push"): hanya `takes/home/index.ts`, still PC K2.1/K2.2 dan entri log ini. Belum: push dan tutup issue #15; hasil tes HP fisik belum dilaporkan.
+
+### 2026-11-13 (issue #16: copy Cara kerja mengisi panel ruko)
+
+- Penyebab: kotak copy panel ruko diberi `padding: 4cqh 4.5cqw` pada dirinya sendiri. Satuan `cq` di sebuah elemen mengacu ke container di atasnya, dan kotak ini tidak punya, jadi padding dihitung dari layar (PC 1280×720 57,6 / 28,8 px, HP 375×812 16,9 / 32,5 px). Area isi kotak PC 393×148 tinggal 278×90 px, dan semua ukuran teks `cqw` di dalamnya ikut mengecil: judul 22 px, judul langkah 17 px, isi di batas minimum 13 px. Tombol memakai ukuran biasa 16 px.
+- Diubah hanya blok "Copy on the panels of the row" di `site/components/home/stage.css`: padding kotak dihapus, jarak tepi pindah ke isi (`margin-inline: 6cqw`); kicker 4,4cqw, judul 10cqw, judul langkah 6,6cqw, isi 4,9cqw (line-height 1,3), tombol 5,2cqw dengan knob 10,5cqw dan panah 8cqw. Versi tumpuk (tanpa JS, reduced motion) tidak berubah; still fallback memakai CSS yang sama, still tidak dirender ulang.
+- Dicek (build produksi port 3300, Playwright, di perhentian kamera tiap panel, ID dan EN):
+  - HP 375×812 (kotak 310×117): judul 31 px, judul langkah 20 px, isi 15 px, tombol 16 px. 360×640 (297×112): 30 / 20 / 15 / 15,5 px. Tablet 768×1024 (492×185): 49 / 32 / 24 / 25,5 px. PC 1280×720 (393×148): 39 / 26 / 19 / 20,5 px. PC 1920×1080 (590×222): 59 / 39 / 29 / 31 px.
+  - Bidang teks mengisi 77–86% lebar dan 77–83% tinggi kotak. Langkah yang isinya 2 baris (ID Luncurkan, EN Build and test) mengisi 66% tinggi; ID Bangun dan uji 65% lebar. Tombol 75–84% lebar, tingginya proporsi tombol (38%). Tidak ada teks terpotong atau meluap; jarak teks ke tepi kotak minimal 9 px (360×640), ditambah inset 0,08 m kotak dari tepi panel.
+  - Still fallback (tanpa WebGL) di 375×812, 360×640, 768×1024, 1280×720 dan 1920×1080, ID dan EN: keenam blok tampil, isi sama, tidak meluap.
+  - Posisi perhentian HP di jalan ruko bergeser sejak hold lobi berubah: panel di tengah layar pada 11,78 / 12,26 / 12,74 / 13,22 / 13,70 / 14,18 layar (take 9:16 24,05). `HP_AT` di `tools/render/lib.mjs` masih memakai nilai lama (11,75 / 12,13 / 12,85 / ...); still HP yang ada masih tepat di panel, tapi nilai itu perlu diperbarui sebelum still HP dirender ulang. Tidak diubah di sini.
+  - Frame dicek visual (hanya di chat). Typecheck, ESLint, Prettier dan `next build` lulus; `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25.
+  - Komentar Penyebab/Perbaikan/Dicek/Belum di issue #16 (issuecomment-6844191924).
+- Di-commit ke `main` setelah dikonfirmasi user ("commit"): hanya `site/components/home/stage.css` dan entri log ini. Belum: push dan tutup issue #16, tes HP fisik.

@@ -789,43 +789,64 @@
 }
 
 /* Copy on the panels of the row (beat 5b): placed by the world with matrix3d at its size where the camera stops
-   (pc ±390 × 147 px, 9:16 ±285 × 110 px), laid out in the box (cqw/cqh) like print on the white panel. */
+   (pc ±393 × 148 px, 375×812 ±310 × 117 px), laid out in the box (cqw) like print on the white panel, the text
+   filling ±80% of it (#16). The box has no padding: cq units on the box itself resolve against the viewport (it
+   cannot query its own size), so the margin from its edges sits on its children. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .journey-copy.prop-copy {
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin: 0;
-    padding: 4cqh 4.5cqw;
+  }
+  .journey-copy.prop-copy > * {
+    margin-inline: 6cqw;
   }
   .journey-intro .kicker {
-    font-size: max(10px, 3.4cqw);
+    font-size: max(10px, 4.4cqw);
   }
   .journey-intro h2 {
     margin-top: 0.15em;
-    font-size: max(19px, 8cqw);
+    font-size: max(19px, 10cqw);
     line-height: 1.05;
   }
   .journey-step h3 {
     gap: 0.45em;
-    font-size: max(16px, 6cqw);
+    font-size: max(16px, 6.6cqw);
     line-height: 1.1;
   }
   .journey-step p {
     margin-top: 0.35em;
-    padding-left: calc(max(16px, 6cqw) * 1.62);
-    font-size: max(13px, 4.2cqw);
-    line-height: 1.32;
+    padding-left: calc(max(16px, 6.6cqw) * 1.62);
+    font-size: max(13px, 4.9cqw);
+    line-height: 1.3;
     text-wrap: pretty;
   }
   .journey-copy.journey-cta {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 4cqw;
+    gap: 3.5cqw;
+  }
+  .journey-copy.journey-cta > * {
+    margin-inline: 0;
+  }
+  .journey-cta .btn {
+    --t-btn: max(14px, 5.2cqw);
+    gap: 3cqw;
+    min-height: max(44px, 14.5cqw);
+    padding-left: 6cqw;
+  }
+  .journey-cta .knob {
+    width: max(32px, 10.5cqw);
+    height: max(32px, 10.5cqw);
+  }
+  .journey-cta .knob svg {
+    width: 55%;
+    height: 55%;
   }
   .journey-cta .cta-arrow {
-    width: max(22px, 8cqw);
-    height: max(22px, 8cqw);
+    width: max(20px, 8cqw);
+    height: max(20px, 8cqw);
   }
 }
