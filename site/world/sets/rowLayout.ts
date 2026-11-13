@@ -59,7 +59,9 @@ export const KREATEKNO = {
   h: 8.0,
   /** Glass door (two leaves), right of the middle; the wooden plaque and brass lamp left of it. */
   door: { cx: KX0 + 0.52 * 12.4, w: 2.1, h: 2.5 },
-  plaque: { cx: KX0 + 0.2 * 12.4, y: 1.75, w: 1.5, h: 0.9 },
+  // (tahap 8: 1.7 × 0.85 m, was 1.5 × 0.9: with its frame ±1.9:1 like the plaque filling the frame at K9b, the
+  // team's continuation video at 8 s)
+  plaque: { cx: KX0 + 0.2 * 12.4, y: 1.75, w: 1.7, h: 0.85 },
   band: [3.0, 3.75] as const,
 };
 /** The pale blue-grey end house with a balcony, right of Kreatekno. */

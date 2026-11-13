@@ -46,6 +46,8 @@ import {
   lobbyCopyFade,
 } from "./takes/home/lobby";
 import { LOBBY, lx } from "./sets/lobbyLayout";
+import { buildBeat9Grey } from "./sets/beat9Grey";
+import { B9_START, trioAt } from "./takes/home/beat9";
 import type { Lobby } from "./sets/lobby";
 import { SEG } from "./takes/home/timing";
 import {
@@ -212,6 +214,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const extAO: AoTarget[] = [];
   const street = buildStreet(kit, extAO);
   scene.add(street.group);
+  // beats 9b–11 greybox (tahap 8 langkah 1): stand-ins for the three walking to COMPANY, the plaque's copy areas
+  const grey9 = buildBeat9Grey();
+  scene.add(grey9.group);
   const sky = buildSky(kit);
   scene.add(sky.group);
   // the row of shophouses (beats 5a–5b): the fruit shop and the laundry are seen from K0 on and built with the
@@ -1141,7 +1146,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       }
       // Wildan and Andi sit in the meeting room, drawn once the camera is at Kreatekno's door (K5a.6, still: from
       // there the lobby's solid left wall hides the room's far end, where they sit; 30 rb triangles saved on the row)
-      const pv = pair.map(() => !!lobby && xs >= LOBBY_START - 0.2).join();
+      // (past K9.1 Wildan walks on as the greybox's stand-in, tahap 8 langkah 1)
+      const pv = pair.map((m) => !!lobby && xs >= LOBBY_START - 0.2 && (m.name !== "wildan" || xs <= B9_START)).join();
       if (pv !== pairShown) {
         pairShown = pv;
         pair.forEach((m, i) => (m.mesh.visible = m.mesh.matrixWorldAutoUpdate = pv.split(",")[i] === "true"));
@@ -1202,8 +1208,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       if (m)
         m.mesh.visible = m.mesh.matrixWorldAutoUpdate =
           !hide ||
-          // (out on the street and in Kreatekno's lobby: Heru and Bu Dewi)
-          (outside && (m === heru || m.name === "dewi"));
+          // (out on the street and in Kreatekno's lobby: Heru and Bu Dewi; past K9.1 the greybox's stand-ins)
+          (outside && (m === heru || m.name === "dewi") && xs <= B9_START);
+    grey9.place(trioAt(xs));
     // props of beats 3–4; the close-up hands show in the top views (their shadows need a redraw when they change)
     const pitch = new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x;
     // a change of view is applied on the next frame (forearms, room actions)

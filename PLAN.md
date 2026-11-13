@@ -1983,3 +1983,22 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Jawaban user: plan gabungan tahap 8–10; copy plakat HP 2 perhentian; langit ikut video tanpa matahari; acuan video saja; copy praktik di layar TV kelas; CTA bersama footer di K16, di wajah billboard yang menyala; hologram tanpa ORB dan pelanggan.
 - Plan tahap 8–10 ditulis di bagian 5; status tahap 8 🟡, tahap 9 dan 10 deskripsinya direvisi.
 - Belum: persetujuan plan, langkah 1 (greybox tahap 8). Tidak ada perubahan kode, tidak ada commit.
+
+### 2026-11-13 (tahap 8, plan disetujui, langkah 1: greybox K9.1 → K11)
+
+- Plan tahap 8–10 disetujui user ("Plan disetujui, mulai langkah 1"). Dikerjakan di sesi cloud (branch `claude/homepage-beats-lanjutan-qoxhfx`), dev server lokal di container, render dengan Chromium + SwiftShader.
+- Kode (greybox, belum final):
+  - `takes/home/timing.ts`: `K9b`, `K10`, `K11`, `PLAQUE_STOPS` 2. Segmen K9.1 → K9b 2,0; jeda K9b 0,6 (PC 0,8); K9b → K10 0,9; K10 → K11 0,9; jeda K11 0,2. Take 9:16 22,85 → 27,45, PC 21,5 → 26,3 layar scroll. Jeda K9.1 0,3 tetap.
+  - `takes/home/beat9.ts` (baru): kamera rig yaw/pitch lewat titik kendali (`monotone` untuk laju dan sudut, Catmull-Rom sentripetal untuk posisi). K9.1 → K9b: maju di belakang ketiganya, keluar lewat pilar sudut kanan fasad (video 2,5 s: pilar di kanan pintu), berputar melihat ke kiri sepanjang fasad, frontal di antara plakat dan pintu selagi ketiganya keluar dan berjalan ke kiri, lalu dolly in ke plakat. K9b PC: plakat + bingkai 75% lebar di FOV 36°, lampu masuk frame; HP: dua perhentian, tiap kolom 88% lebar di 50°. K9b → K10: mundur dan naik, tampak tinggi Kreatekno dan ruko elektronik, lewat atap, ke langit (K10 menengadah 24°). K10 → K11: ke kiri di langit, turun lewat billboard, atap dan papan COMPANY ke fasad frontal (K11 PC dari frame 20 s, HP pintu dan ketiganya di tengah). `trioAt`: posisi ketiganya dari scroll (greybox).
+  - `sets/beat9Grey.ts` (baru, sementara): figur pengganti Heru, Bu Dewi, Wildan dan dua kotak area copy berlabel di plakat.
+  - `sets/rowLayout.ts`: plakat 1,5 × 0,9 → 1,7 × 0,85 m (dengan bingkai ±1,9:1 seperti video 8 s). Plakat juga terlihat di K5a.6; still K5a.6 belum dirender ulang.
+  - `takes/home/lobby.ts`: `k91View` diekspor. `takes/home/index.ts`: kamera beat 9b–11 setelah K9.1. `world/index.ts`: Heru, Bu Dewi dan Wildan asli disembunyikan setelah K9.1, figur pengganti mengikuti `trioAt`.
+- Tes muat teks plakat HP (Playwright, font situs Bricolage Grotesque + Plus Jakarta Sans, kotak kolom dikurangi inset 3 cm): ukuran badan terbesar yang muat, judul 1,45×: 360 px ID 18 / EN 20 px, 375 px 19 / 21, 412 px 20,5 / 23 (kolom 1: judul + paragraf); kolom 2 (4 fakta + link) 20–23 px. Dua perhentian cukup, jauh di atas batas 13 px.
+- Dicek (render hanya di chat): 20 titik PC 1280×720 dan HP 375×812 berdampingan dengan frame video (0,8–20 s); perhentian plakat HP 375×812 dan 360×640; halaman normal `?k=K9b` PC dan HP mendarat di tengah jeda K9b (PC 23,9, HP 25,15 layar scroll), world live; console hanya gagal memuat `va.vercel-scripts.com` (Vercel Analytics, diblokir proxy container). `tsc --noEmit`, ESLint dan Prettier lulus untuk file yang diubah.
+- Anggaran (sapuan tiap 0,02 layar dari K9.1 ke K11 lalu mundur, 462 titik per format): terberat PC 175 draw call / 165 rb segitiga, HP 146 / 139 rb, keduanya tepat saat kamera keluar lewat pilar (x ±23,5 layar): lobi (31), Kreatekno, jalan, deret ruko dan ruko buah/laundry digambar bersamaan. Di atas batas 120 / 150 rb; diperbaiki di langkah 2 dengan pelepasan set (ruang rapat, taman dan lobi setelah kamera di luar, deret ruko jauh).
+- Belum / catatan untuk review:
+  - laju jalan greybox terlalu cepat (±5 m/s pada scroll 2 s/layar) karena tokoh terikat scroll; langkah 2 memakai jam tokoh yang mengejar scroll dan gerbang kamera (pola tahap 6–7);
+  - di video ketiganya berjalan ke arah kamera dan lewat di sampingnya (6,5 s); greybox lewat di depan plakat;
+  - langit K10 tanpa awan (awan situs hanya rendah di cakrawala), atap ruko masih bidang polos, plakat dan lampu masih bentuk tahap 6, cahaya sore jingga di COMPANY belum ada (golden dari lobi): langkah 2;
+  - `tools/render/issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs` masih memakai take 21,5 / 22,85.
+- Tidak ada commit.
