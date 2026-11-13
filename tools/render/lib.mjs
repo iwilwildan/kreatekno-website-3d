@@ -23,7 +23,8 @@ export async function launch({ gpu = false } = {}) {
       /* try the next installed browser */
     }
   }
-  throw new Error("No Edge or Chrome found for Playwright");
+  // (no Edge or Chrome installed, e.g. a cloud container: Playwright's own Chromium)
+  return chromium.launch({ args });
 }
 
 /** Opens a page and collects console errors and page errors. */

@@ -17,12 +17,13 @@ import type { CastMember } from "../../cast/member";
 import { onFloor, TimedWalk, turnStride, Walk, walkPose, type Stride } from "../../cast/walk";
 import { lerp } from "../../core/kit";
 import { clamp01, segmentStart, smoothstep } from "../../core/segments";
-import { lobbyFloor } from "../../sets/lobbyLayout";
+import { LOBBY, lobbyFloor, lx } from "../../sets/lobbyLayout";
 import { KREATEKNO } from "../../sets/rowLayout";
 import { DATA } from "./data";
 import { followClock } from "./heru";
 import { DOOR_GATES, DOOR_OPEN } from "./lobby";
 import { K42_PASS, TRUCK_HOLDS } from "./outside";
+import { B9, PASS_AT } from "./beat9";
 import { SEG, type KeyName } from "./timing";
 import { dampStep, type Damped } from "../../motion/damp";
 
@@ -223,6 +224,117 @@ export const LT = (() => {
   };
 })();
 
+// ---------- beats 9b–11 (tahap 8, the team's continuation video 0–21 s) ----------
+// From where the lobby's part stopped them (a step inside the facade's door), Kreatekno's leaf swings open (its
+// closer, inward) and Heru, Bu Dewi and Wildan (out of the meeting room behind them) walk out through its open half
+// one after another, turn left and walk along the pavement, Heru in front on the street side, Bu Dewi, Wildan on the
+// shop side. They pass the plaque before the camera dollies in to it (a gate), and go on along the row while the
+// camera rises into the sky. There the clock jumps (unseen: the camera looks at the sky only) to the last metres
+// along COMPANY's pavement: they walk up to its door from the right and stop side by side facing it, Heru at its
+// left leaf, Bu Dewi a step behind in the middle, Wildan at its right leaf (K11, video 19–21 s).
+/** Where Wildan stops outside the meeting room (cast/lobbyCast OUT_SPOT) and where the walk along the row ends (x). */
+const W_SPOT = V(lx(LOBBY.room.glassX) + 0.85, -6.3),
+  ROW_END = 38;
+const LANE9 = { heru: 1.2, dewi: 0.8, wildan: 0.45 };
+const H6 = new TimedWalk(
+  [
+    V(kc + 0.4, -2.0),
+    V(kc + 0.46, -0.9),
+    V(kc + 0.44, 0.25),
+    V(kc - 0.15, 0.95),
+    V(kc - 1.3, LANE9.heru),
+    V(ROW_END, LANE9.heru),
+  ],
+  () => OUT_SPEED,
+  0.42,
+  "L",
+);
+const D5 = new TimedWalk(
+  [
+    V(kc - 0.35, -2.0),
+    V(kc + 0.2, -1.35),
+    V(kc + 0.42, -0.5),
+    V(kc + 0.4, 0.3),
+    V(kc - 0.3, LANE9.dewi),
+    V(kc - 1.5, LANE9.dewi),
+    V(ROW_END + 0.9, LANE9.dewi),
+  ],
+  () => OUT_SPEED,
+  0.36,
+  "R",
+);
+const W2 = new TimedWalk(
+  [
+    W_SPOT,
+    V(W_SPOT.x + 1.0, -4.7),
+    V(kc + 0.15, -2.7),
+    V(kc + 0.42, -1.0),
+    V(kc + 0.4, 0.25),
+    V(kc - 0.4, LANE9.wildan),
+    V(kc - 1.6, LANE9.wildan),
+    V(ROW_END + 1.8, LANE9.wildan),
+  ],
+  () => OUT_SPEED,
+  0.4,
+  "L",
+);
+/** COMPANY: along its pavement from the right to the door (DATA: the door's middle at x 0), the three in a line. */
+const C_SPOT = { heru: V(-0.55, 0.85), dewi: V(0.05, 1.35), wildan: V(0.62, 0.85) };
+const HC = new TimedWalk([V(8.6, LANE9.heru), V(1.6, LANE9.heru), C_SPOT.heru], () => OUT_SPEED, 0.42, "R");
+const DC = new TimedWalk([V(9.6, 1.3), V(2.1, 1.3), C_SPOT.dewi], () => OUT_SPEED, 0.36, "L");
+const WC = new TimedWalk([V(10.6, 0.95), V(2.7, 0.95), C_SPOT.wildan], () => OUT_SPEED, 0.4, "R");
+/** Facing COMPANY's door (−z). */
+const FACE_DOOR = Math.PI;
+/** The plaque's left edge less half a metre: past it, the three are out of the K9b frame. */
+const PLAQUE_CLEAR = KREATEKNO.plaque.cx - KREATEKNO.plaque.w / 2 - 0.5;
+
+/** Their timeline in beats 9b–11 (clock seconds, after LT.end). */
+export const BT = (() => {
+  const b0 = LT.end,
+    // the leaf swings open as Heru comes to it; he goes first, Bu Dewi a little after, Wildan behind them
+    kreOpen: [number, number] = [b0 - 0.4, b0 + 0.5],
+    h6 = b0 + 0.2,
+    d5 = b0 + 0.9,
+    // (Wildan sets off from the meeting room a little before them: he has further to go)
+    w2 = b0 - 2.0,
+    heruOut = h6 + H6.timeAt((p) => p.z >= 0.3),
+    wildanOut = w2 + W2.timeAt((p) => p.z >= 0.4),
+    kreShut: [number, number] = [wildanOut + 0.4, wildanOut + 1.9],
+    passed = w2 + W2.timeAt((p) => p.z > 0 && p.x <= PLAQUE_CLEAR),
+    rowEnd = Math.max(h6 + H6.dur, d5 + D5.dur, w2 + W2.dur),
+    // COMPANY (the clock jumps here while the camera is in the sky)
+    c0 = rowEnd + 0.05,
+    hc = c0,
+    dc = c0 + 0.35,
+    wc = c0 + 0.6,
+    hFace: [number, number] = [hc + HC.dur, hc + HC.dur + 0.7],
+    dFace: [number, number] = [dc + DC.dur, dc + DC.dur + 0.7],
+    wFace: [number, number] = [wc + WC.dur, wc + WC.dur + 0.7],
+    end = Math.max(hFace[1], dFace[1], wFace[1]) + 0.2;
+  return {
+    b0,
+    kreOpen,
+    h6,
+    d5,
+    w2,
+    heruOut,
+    wildanOut,
+    kreShut,
+    passed,
+    rowEnd,
+    c0,
+    hc,
+    dc,
+    wc,
+    hFace,
+    dFace,
+    wFace,
+    end,
+  };
+})();
+/** Clock when Heru is near the electronics shop (the camera's high view, video 10.5 s). */
+const BT_HIGH = BT.h6 + H6.timeAt((p) => p.z > 0 && p.x <= KREATEKNO.x0 - 3.5);
+
 /**
  * Where the clock would be for scroll screens x if they kept up with it: coming out over the K4.2 → K5a.1 move and
  * the K5a.1 hold, then along the row so that each hold of the truck finds them in the frame, done at K5a.6.
@@ -233,6 +345,18 @@ export function scrollClock(x: number) {
     outDone = h1.s + h1.len,
     walkFrom = T.h2 + 0.6;
   if (x <= OUT_START) return 0;
+  // beats 9b–11 (tahap 8): out of the door as the camera, out through the pillar, watches the facade; past the plaque
+  // by the time it dollies in; along the row as it rises; at COMPANY's door as it comes down (K11)
+  if (x > B9.out.s) {
+    const c0 = Math.min(LT.end, LT.k91 + 1.2),
+      pass = B9.out.s + PASS_AT * B9.out.len,
+      high = B9.up.s + 0.45 * B9.up.len;
+    if (x <= pass) return lerp(c0, BT.passed, (x - B9.out.s) / (pass - B9.out.s));
+    if (x <= high) return lerp(BT.passed, BT_HIGH, (x - pass) / (high - pass));
+    if (x <= B9.down.s) return lerp(BT_HIGH, BT.rowEnd, (x - high) / (B9.down.s - high));
+    // (the jump to COMPANY: the camera sees the sky only from here to well into its way down)
+    return lerp(BT.c0, BT.end, clamp01((x - B9.down.s) / (B9.k11.s + B9.k11.len - B9.down.s)));
+  }
   // in the lobby (tahap 7): in to the corkboard over the dolly (done as it arrives at K6), still through K6–K7; from
   // the K8 hold (the camera faces the meeting room, they are behind it) round and on toward the facade's door, half
   // way there at K9.1 (they come into the frame from the left as the camera turns, video), a little further through
@@ -392,7 +516,7 @@ export function outsideState(c: number): OutsideState | null {
   // Kreatekno's leaf: pushed open by Heru, held, and shut by its closer once he lets go (the world keeps it open
   // while the camera comes through, see kreLeafFor)
   const leftLeaf = LEFT.open * (ph(c, T.leafOpen) - ph(c, T.leafShut)),
-    kreLeaf = KRE.open * (ph(c, T.kreOpen) - ph(c, LT.kreShut));
+    kreLeaf = kreAt(c);
   const turn = (at: THREE.Vector3, from: number, to: number, span: readonly [number, number]) =>
     turnStride(at, from, turnTo(from, to), ph(c, span));
   // Heru: out to the leaf, hold it, walk the row, the door, in, turn round to face her holding the leaf; then (the
@@ -406,7 +530,10 @@ export function outsideState(c: number): OutsideState | null {
   else if (c < LT.hFace[0]) heru = H4.stride(c - LT.h4);
   else if (c < LT.hTurnOut[0]) heru = turn(HERU_WAIT, H4.yaw1, HERU_WAIT_YAW, LT.hFace);
   else if (c < LT.h5) heru = turn(HERU_WAIT, HERU_WAIT_YAW, H5.yaw0, LT.hTurnOut);
-  else heru = H5.stride(c - LT.h5);
+  else if (c < BT.h6) heru = H5.stride(c - LT.h5);
+  else if (c < BT.c0) heru = H6.stride(c - BT.h6);
+  else if (c < BT.hFace[0]) heru = HC.stride(c - BT.hc);
+  else heru = turn(C_SPOT.heru, HC.yaw1, FACE_DOOR, BT.hFace);
   // Bu Dewi: out, along the row to the door, facing it; in past Heru to the corkboard, facing it; round and on
   let dewi: Stride;
   if (c < T.d2) dewi = D1.stride(c - T.d1);
@@ -416,7 +543,10 @@ export function outsideState(c: number): OutsideState | null {
   else if (c < LT.dFace[0]) dewi = D3.stride(c - LT.d3);
   else if (c < LT.dTurnOut[0]) dewi = turn(DEWI_K6, D3.yaw1, FACE_BOARD, LT.dFace);
   else if (c < LT.d4) dewi = turn(DEWI_K6, FACE_BOARD, D4.yaw0, LT.dTurnOut);
-  else dewi = D4.stride(c - LT.d4);
+  else if (c < BT.d5) dewi = D4.stride(c - LT.d4);
+  else if (c < BT.c0) dewi = D5.stride(c - BT.d5);
+  else if (c < BT.dFace[0]) dewi = DC.stride(c - BT.dc);
+  else dewi = turn(C_SPOT.dewi, DC.yaw1, FACE_DOOR, BT.dFace);
   // (the lobby's floor is two steps down)
   heru = onFloor(heru, lobbyFloor);
   dewi = onFloor(dewi, lobbyFloor);
@@ -431,7 +561,8 @@ export function outsideState(c: number): OutsideState | null {
   const held = smoothstep(T.turn[1] - 0.5, T.turn[1], c) * (1 - smoothstep(LT.release - 0.1, LT.release + 0.3, c));
   const hold = held > 0 ? { at: kreHandle(kreLeaf), weight: held } : null;
   // walking side by side they turn to each other now and then
-  const walking = (c > T.d2 + 1 && c < T.h3 - 3) || (c > LT.h5 + 1 && c < LT.end - 1.5);
+  const walking =
+    (c > T.d2 + 1 && c < T.h3 - 3) || (c > LT.h5 + 1 && c < LT.end - 1.5) || (c > BT.passed && c < BT.rowEnd - 1);
   const look = walking ? 0.3 * smoothstep(0.55, 0.85, Math.sin(c * 0.45)) : 0;
   return { heru, dewi, leftLeaf, kreLeaf, reach, hold, look };
 }
@@ -442,9 +573,33 @@ export function outsideState(c: number): OutsideState | null {
  * rule: never a closed or closing leaf as the camera comes through).
  */
 export const kreLeafFor = (c: number, camOpen: number) => {
-  const st = c > 0 ? KRE.open * (ph(c, T.kreOpen) - ph(c, LT.kreShut)) : 0;
+  const st = c > 0 ? kreAt(c) : 0;
   return Math.min(st, KRE.open * camOpen * ph(c, T.kreOpen));
 };
+/** Kreatekno's leaf at clock c: in for Bu Dewi (tahap 7), and again as the three walk out (tahap 8). */
+function kreAt(c: number) {
+  return KRE.open * (ph(c, T.kreOpen) - ph(c, LT.kreShut) + ph(c, BT.kreOpen) - ph(c, BT.kreShut));
+}
+
+/**
+ * Wildan walking out with them at clock c (tahap 8: from where his own part in the lobby left him, outside the
+ * meeting room), null before BT.w2. The world runs him a little behind their clock when his own part ended late
+ * (wildanOut there), so he never jumps from one to the other.
+ */
+export function wildanStride(c: number): Stride | null {
+  if (c <= BT.w2) return null;
+  const turn = (at: THREE.Vector3, from: number, to: number, span: readonly [number, number]) =>
+    turnStride(at, from, turnTo(from, to), ph(c, span));
+  let s: Stride;
+  if (c < BT.c0) s = W2.stride(c - BT.w2);
+  else if (c < BT.wFace[0]) s = WC.stride(c - BT.wc);
+  else s = turn(C_SPOT.wildan, WC.yaw1, FACE_DOOR, BT.wFace);
+  return onFloor(s, lobbyFloor);
+}
+/** Poses Wildan on his stride (his head turned like theirs while they walk side by side). */
+export function poseWildanOut(m: CastMember, s: Stride, look: number) {
+  walkPose(m, s, { head: [0.05, look * 0.6] });
+}
 
 /** Poses both on their state (Heru's arms reaching when they are set). */
 export function poseOutside(heru: CastMember, dewi: CastMember, s: OutsideState) {

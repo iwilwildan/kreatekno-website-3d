@@ -113,14 +113,16 @@ function track(keys: { at: number; view: View }[]) {
 
 /** Kreatekno's door, the way out for the camera's three. */
 const DOOR = KREATEKNO.door;
-/** x of the camera's way out: Kreatekno's right-hand corner pillar (0.6 m wide at the facade's right end). */
-const PILLAR_X = KREATEKNO.x0 + KREATEKNO.w - 0.3;
+/** x of the camera's way out through the facade's solid wall (inside, the lobby's left wall is at x0 + 3.1). */
+const WALL_X = KREATEKNO.x0 + 3.6;
 
-/** Shares of the move out by which Heru is out of the door and they are all past the plaque (the camera dollies in after). */
-const OUT_AT = 0.45,
-  PASS_AT = 0.84,
-  /** Their pace after (m per screen). */
-  ON_PACE = 3.5;
+/**
+ * Share of the move out by which the three are past the plaque, where the camera starts its dolly in to it (the world
+ * holds it there until they are, outsideCast BT.passed).
+ */
+export const PASS_AT = 0.84;
+/** Screens where the camera leaves its watch on the facade for the dolly in to the plaque (a gate, see PASS_AT). */
+export const PLAQUE_GATE = B9.out.s + PASS_AT * B9.out.len;
 
 const tracks = new Map<string, ReturnType<typeof track>>();
 function cached(id: string, make: () => ReturnType<typeof track>) {
@@ -133,27 +135,33 @@ function cached(id: string, make: () => ReturnType<typeof track>) {
 }
 
 /**
- * K9.1 → K9b: on toward the facade right of the three's way to the door, out through its right-hand corner pillar
- * (video 2.5 s: the pillar right of the door), round to look back left along the facade (3 s), then facing it as the
- * three come out and walk left (3.5–6.5 s), and in to the plaque once they are past it (7–8.5 s).
+ * K9.1 → K9b: on toward the facade left of the three's way to the door, out through its solid wall left of the glass
+ * (behind the plaque's side), turning right as it comes out to look along the facade at the door (video 2.5–3 s),
+ * frontal on it between the plaque and the door as the three come out and walk left (3.5–6.5 s), and in to the
+ * plaque once they are past it (7–8.5 s). The video goes out through a pillar right of the door and turns back
+ * left along the facade; turned that way the frame held the whole row, the lobby and the meeting room behind the
+ * glass at once (155 draw calls, 207 rb triangles), so the camera goes out on the plaque's side and turns right.
  */
 const outTrack = (t: number, first: View) =>
   cached(`out ${t.toFixed(3)}`, () => {
     const end = t < 0.5 ? K9B_PC : mix(K9B_PC, K9B_HP[0], t);
     // frontal on the facade between the plaque and the door, both in frame (video 3.6–5.5 s)
     const watch = new THREE.Vector3((P.cx + DOOR.cx) / 2, 1.6, 5.2);
-    const watchYaw = 0.04;
+    const T = 2 * Math.PI;
     return track([
       { at: 0, view: first },
-      { at: 0.12, view: v(lerp(first.pos.x, PILLAR_X, 0.35), 1.45, -9.4, Math.PI, 0, first.fov) },
-      { at: 0.24, view: v(PILLAR_X - 0.4, 1.6, -3.0, Math.PI - 0.05, 0, 40) },
-      // through the pillar (0.6 m wide, z −0.05 … 0.21), turning right to look back along the facade
-      { at: 0.29, view: v(PILLAR_X, 1.65, 0.1, Math.PI - 0.7, 0, 40) },
-      { at: 0.34, view: v(PILLAR_X - 0.4, 1.68, 1.6, Math.PI / 2 - 0.35, -0.02, 38) },
-      { at: 0.45, view: v(watch.x, watch.y, watch.z, watchYaw, -0.03, 36) },
+      // (over the heads, down the middle of the lobby's left half: Wildan sets off below and to the right, from the
+      // meeting room to the door, his hair at 1.77 m; well clear of the meeting room's glass and its corner post)
+      { at: 0.12, view: v(WALL_X + 1.3, 1.92, -9.4, Math.PI, -0.04, first.fov) },
+      { at: 0.22, view: v(WALL_X + 0.95, 1.9, -3.6, Math.PI, -0.02, 40) },
+      // across to the facade's solid part and through it (0.3 m thick, z −0.28 … 0.02), turning right to the door
+      { at: 0.27, view: v(WALL_X + 0.1, 1.78, -0.9, Math.PI + 0.12, 0, 40) },
+      { at: 0.3, view: v(WALL_X - 0.05, 1.68, 0.5, Math.PI + 0.55, 0, 40) },
+      { at: 0.36, view: v(WALL_X - 0.3, 1.68, 2.6, (3 * Math.PI) / 2 + 0.45, -0.02, 38) },
+      { at: 0.45, view: v(watch.x, watch.y, watch.z, T + 0.04, -0.03, 36) },
       // still watching them come out and walk left, a little on toward the plaque
-      { at: PASS_AT, view: v(watch.x - 0.6, watch.y, watch.z - 1.3, 0.02, -0.02, 36) },
-      { at: 1, view: end },
+      { at: PASS_AT, view: v(watch.x - 0.6, watch.y, watch.z - 1.3, T + 0.02, -0.02, 36) },
+      { at: 1, view: { ...end, yaw: end.yaw + T } },
     ]);
   });
 
@@ -214,77 +222,4 @@ export function plaqueStopAt(i: number, t: number) {
   if (t < 0.5) return B9.k9b.s + B9.k9b.len / 2;
   const unit = B9.k9b.len / (PLAQUE_STOPS * STOP.dwell + (PLAQUE_STOPS - 1) * STOP.move);
   return B9.k9b.s + (i * (STOP.dwell + STOP.move) + STOP.dwell / 2) * unit;
-}
-
-// ---------- the three walking (greybox stand-ins; Heru, Bu Dewi and Wildan themselves in langkah 2) ----------
-type Pt = [number, number];
-/** A polyline walked at a constant pace: point at distance d (clamped to its ends), `side` metres to its left. */
-function along(pts: Pt[], d: number, side = 0): Pt {
-  let rest = Math.max(0, d);
-  for (let i = 0; i < pts.length - 1; i++) {
-    const [ax, az] = pts[i],
-      [bx, bz] = pts[i + 1],
-      l = Math.hypot(bx - ax, bz - az);
-    if (rest <= l || i === pts.length - 2) {
-      const k = Math.min(rest, l) / l,
-        dx = (bx - ax) / l,
-        dz = (bz - az) / l;
-      // (left of the way: walking −x along the pavement, toward the street)
-      return [ax + (bx - ax) * k + dz * side, az + (bz - az) * k - dx * side];
-    }
-    rest -= l;
-  }
-  return pts[pts.length - 1];
-}
-/** Each one's place in the walk: Heru a little ahead on the left (the street side out on the pavement), Bu Dewi, Wildan. */
-const WHO = [
-  { lag: 0, side: 0.6 },
-  { lag: 0.35, side: 0 },
-  { lag: 0.7, side: -0.6 },
-] as const;
-/** Their way out (m): from inside the door, out, and left along the pavement (its kerb is at z 1.82). */
-const OUT_WAY: Pt[] = [
-  [DOOR.cx - 0.3, -7.5],
-  [DOOR.cx - 0.3, 0.5],
-  [DOOR.cx - 1.3, 1.2],
-  [shopX(4).x0, 1.2],
-];
-/** At COMPANY (K10 → K11): along the pavement from the fruit shop to the door, side by side at the end. */
-const COMPANY_WAY: Pt[] = [
-  [7.5, 1.3],
-  [1.2, 1.3],
-  [0.1, 0.7],
-];
-const wayLen = (pts: Pt[]) => pts.slice(1).reduce((a, [x, z], i) => a + Math.hypot(x - pts[i][0], z - pts[i][1]), 0);
-/** Distance along OUT_WAY to the pavement outside the door, and where the last of them (Wildan) is past the plaque. */
-const OUTSIDE = wayLen(OUT_WAY.slice(0, 2)),
-  PASSED = wayLen(OUT_WAY.slice(0, 3)) + (DOOR.cx - 1.3 - (P.cx - P.w / 2 - 0.5)) + WHO[2].lag;
-/**
- * Where the three stand at screens x (greybox): out of the door and left along the pavement from K9.1 on, past the
- * plaque before the camera dollies in to it, on along the row while it cranes up; moved (out of sight, the camera in
- * the sky) to the fruit shop for K10 → K11, then to COMPANY's door. Null before the move off K9.1.
- */
-export function trioAt(x: number): { x: number; z: number }[] | null {
-  if (x < B9.out.s) return null;
-  const jump = B9.down.s + 0.4 * B9.down.len;
-  if (x < jump) {
-    const u = (x - B9.out.s) / B9.out.len,
-      d =
-        u < OUT_AT
-          ? (u / OUT_AT) * OUTSIDE
-          : u < PASS_AT
-            ? lerp(OUTSIDE, PASSED, (u - OUT_AT) / (PASS_AT - OUT_AT))
-            : PASSED + (u - PASS_AT) * B9.out.len * ON_PACE;
-    return WHO.map((w) => {
-      const [px, pz] = along(OUT_WAY, d - w.lag, w.side);
-      return { x: px, z: pz };
-    });
-  }
-  const k = clamp01((x - jump) / (B9.k11.s - jump)),
-    total = wayLen(COMPANY_WAY);
-  return WHO.map((w, i) => {
-    const [px, pz] = along(COMPANY_WAY, k * total - w.lag * (1 - k), w.side * (1 - k));
-    // side by side at the door: Heru at its left leaf, Bu Dewi in the middle, Wildan at the right leaf
-    return { x: px + (i - 1) * 0.55 * k, z: pz };
-  });
 }

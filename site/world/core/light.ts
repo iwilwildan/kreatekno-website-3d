@@ -35,6 +35,19 @@ export const GOLDEN = {
 };
 export const GOLDEN_DIR = new THREE.Vector3(-0.62, 0.32, 0.72).normalize();
 /**
+ * Late afternoon (tahap 8: over the row and at COMPANY's door, the continuation video 13–21 s): the same low sun
+ * (its direction is kept, so the shadow map is not redrawn while it blends), deeper orange and a little weaker, a
+ * pink sky light. Blended in over golden hour as the camera rises into the sky.
+ */
+const SUNSET = {
+  sky: new THREE.Color("#eeaab4"),
+  ground: new THREE.Color("#e4a08e"),
+  i: 1.0,
+  env: 0.28,
+  sun: new THREE.Color("#ff8f4a"),
+  sunI: 2.6,
+};
+/**
  * Inside Kreatekno's lobby (tahap 7): a neutral, pastel daylight from the facade and the ceiling panels, brighter
  * and cooler than COMPANY's warm room (the videos' lobby: white ceiling, clear sticky notes, lavender walls).
  */
@@ -66,22 +79,32 @@ export function createLight(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
   /**
    * 0 outside … 1 inside, from the camera's z (the facade is at z 0); `close` 0 … 1 toward the close-up light;
    * `noon` 0 … 1 toward late morning outside (beat 5); `lobby` 0 … 1 inside Kreatekno rather than COMPANY (tahap
-   * 7); `golden` 0 … 1 toward golden hour outside. Returns true when the sun turned (the shadows follow).
+   * 7); `golden` 0 … 1 toward golden hour outside, `sunset` 0 … 1 on toward late afternoon (tahap 8; colours only).
+   * Returns true when the sun turned (the shadows follow).
    */
-  const setInside = (cameraZ: number, close = 0, noon = 0, lobby = 0, golden = 0) => {
+  const setInside = (cameraZ: number, close = 0, noon = 0, lobby = 0, golden = 0, sunset = 0) => {
     const inside = THREE.MathUtils.smoothstep(-cameraZ, -0.6, 0.6);
-    const outSky = OUT.sky.clone().lerp(NOON.sky, noon).lerp(GOLDEN.sky, golden),
-      outGround = OUT.ground.clone().lerp(NOON.ground, noon).lerp(GOLDEN.ground, golden),
+    const outSky = OUT.sky.clone().lerp(NOON.sky, noon).lerp(GOLDEN.sky, golden).lerp(SUNSET.sky, sunset),
+      outGround = OUT.ground.clone().lerp(NOON.ground, noon).lerp(GOLDEN.ground, golden).lerp(SUNSET.ground, sunset),
       inSky = IN.sky.clone().lerp(LOBBY.sky, lobby),
       inGround = IN.ground.clone().lerp(LOBBY.ground, lobby);
     hemi.color.copy(outSky).lerp(inSky, inside).lerp(CLOSE.sky, close);
     hemi.groundColor.copy(outGround).lerp(inGround, inside).lerp(CLOSE.ground, close);
-    const outI = lerp(lerp(OUT.i, NOON.i, noon), GOLDEN.i, golden),
-      outEnv = lerp(lerp(OUT.env, NOON.env, noon), GOLDEN.env, golden);
+    const outI = lerp(lerp(lerp(OUT.i, NOON.i, noon), GOLDEN.i, golden), SUNSET.i, sunset),
+      outEnv = lerp(lerp(lerp(OUT.env, NOON.env, noon), GOLDEN.env, golden), SUNSET.env, sunset);
     hemi.intensity = lerp(lerp(outI, lerp(IN.i, LOBBY.i, lobby), inside), CLOSE.i, close);
     scene.environmentIntensity = lerp(lerp(outEnv, lerp(IN.env, LOBBY.env, lobby), inside), CLOSE.env, close);
-    sun.color.copy(SUN.color).lerp(SUN_NOON.color, noon).lerp(GOLDEN.sun, golden).lerp(SUN_CLOSE.color, close);
-    sun.intensity = lerp(lerp(lerp(SUN.i, SUN_NOON.i, noon), GOLDEN.sunI, golden), SUN_CLOSE.i, close);
+    sun.color
+      .copy(SUN.color)
+      .lerp(SUN_NOON.color, noon)
+      .lerp(GOLDEN.sun, golden)
+      .lerp(SUNSET.sun, sunset)
+      .lerp(SUN_CLOSE.color, close);
+    sun.intensity = lerp(
+      lerp(lerp(lerp(SUN.i, SUN_NOON.i, noon), GOLDEN.sunI, golden), SUNSET.sunI, sunset),
+      SUN_CLOSE.i,
+      close,
+    );
     const key = `${noon} ${golden}`;
     if (key === sunKey) return false;
     sunKey = key;

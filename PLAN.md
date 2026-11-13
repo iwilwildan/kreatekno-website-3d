@@ -2002,3 +2002,27 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - langit K10 tanpa awan (awan situs hanya rendah di cakrawala), atap ruko masih bidang polos, plakat dan lampu masih bentuk tahap 6, cahaya sore jingga di COMPANY belum ada (golden dari lobi): langkah 2;
   - `tools/render/issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs` masih memakai take 21,5 / 22,85.
 - Tidak ada commit.
+
+### 2026-11-13 (tahap 8 langkah 2: set, gerak, cahaya)
+
+- Disetujui user ("Lanjut langkah 2"). Sesi cloud, dev server dan render Chromium + SwiftShader di container.
+- **Gerak** (`takes/home/outsideCast.ts`, bagian tahap 8; figur pengganti greybox dan `sets/beat9Grey.ts` dihapus):
+  - jam jalan Heru dan Bu Dewi diteruskan setelah lobi (`BT`): daun pintu Kreatekno terbuka (closer, ke dalam), Heru keluar dulu, Bu Dewi, lalu Wildan dari ruang rapat; ketiganya belok kiri di trotoar (Heru di sisi jalan, Bu Dewi, Wildan di sisi ruko), lewat plakat dan terus menyusuri deret ruko sampai x 38; daun menutup setelah Wildan lewat;
+  - selagi kamera hanya melihat langit, jam melompat ke trotoar COMPANY (dipindah tak terlihat, mekanisme `stepOutClock`); ketiganya berjalan dari kanan ke pintu dan berhenti menghadapnya: Heru di daun kiri, Bu Dewi selangkah di belakang tengah, Wildan di daun kanan (pintu dibuka di tahap 9);
+  - Wildan (`wildanStride`, `poseWildanOut`): mulai berjalan bersama setelah jam lobinya selesai; kalau jam bersama sudah lewat saat itu, ia tertinggal sebanyak selisihnya dan menyusul dengan 1,35× langkah (maks 1,8×, sama dengan lobi), jadi tidak pernah melompat. Uji scroll pertama menemukan lompatan Wildan di HP (x 23,28) sebelum mekanisme ini;
+  - gerbang kamera `PLAQUE_GATE`: kamera menunggu di depan fasad sampai ketiganya melewati plakat, baru dolly in;
+  - gerak K9.1 → K9b 2,0 → 3,0 layar (video 8,5 dtk; ±13 dtk jalan dari K9.1 sampai ketiganya lewat plakat). Take 9:16 28,45, PC 27,3 layar scroll.
+- **Kamera** (`takes/home/beat9.ts`): di lobi kamera lewat di atas kepala (1,9 m) di tengah separuh kiri lobi, Wildan berjalan di kanannya seperti video; menembus bagian fasad pejal di kiri pintu (sisi plakat) dan berbelok kanan ke pintu. Video keluar lewat pilar di kanan pintu lalu menoleh ke kiri sepanjang fasad; dengan arah itu frame memuat seluruh deret ruko, lobi dan ruang rapat sekaligus (155 draw call, 207 rb segitiga; ruang rapat terlihat 82 rb piksel di frame itu, jadi tidak bisa disembunyikan). Penyimpangan dari video demi anggaran.
+- **Set:**
+  - plakat (`sets/row.ts`): bingkai kayu gelap dengan bevel, muka krem; lampu leher angsa kuningan (pelat, lengan tabung, kap lonceng); cahaya lampu tanpa bloom: bohlam, halo dan genangan cahaya hangat additive di dinding dan plakat (`setLamp`, menyala mengikuti golden hour);
+  - atap (`sets/shop.ts` `roofRims`, `ROOF_DECK`): dak abu muda di seluruh kedalaman dan parapet warna trim tiap ruko, Kreatekno (ungu) dan ruko ujung. Sebelumnya bagian atap di atas toko terbuka;
+  - langit (`sets/sky.ts`): kubah sore jingga (ungu → pink → oranye, warna disampel dari video 14 dtk) di atas kubah golden (`setSunset`); 9 awan tinggi dalam satu mesh untuk K9b–K11 saja, hanyut ke kanan selama hyperlapse (`setHigh`); merpati K0 disembunyikan setelah pagi (`setBirds`).
+- **Cahaya** (`core/light.ts`): preset `SUNSET` (warna saja, arah matahari tetap golden, jadi shadow map tidak digambar ulang selama blend), masuk dari naik ke langit sampai turun di COMPANY.
+- **Alat:** `tools/render/lib.mjs` memakai Chromium bawaan Playwright kalau Edge/Chrome tidak ada (container cloud); `issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs` ke take 27,3 / 28,45. `debug().clocks` memuat `LT` dan `BT` untuk alat review.
+- **Dicek** (render hanya di chat):
+  - 20 titik PC 1280×720 dan HP 375×812 berdampingan dengan video;
+  - anggaran (sapuan tiap 0,04 layar K9.1 → K11, `?shot`): PC terberat 99 draw call / 124 rb segitiga, HP 85 / 122 rb; bagian keluar (tiap 0,03) PC 82 / 108 rb, HP 67 / 102 rb;
+  - scroll sungguhan dalam waktu simulasi (SwiftShader ±5 dtk per frame, world melangkah maks 0,1 dtk per frame; scroll 2 dtk/layar): PC dan HP maju, PC dan HP mundur: tidak ada tokoh yang melompat di frame, laju terlihat maks 2,53 m/s, kamera menunggu ±2 dtk di gerbang plakat;
+  - `tsc --noEmit`, ESLint, Prettier untuk file yang diubah.
+- **Temuan di luar tahap 8:** K1 PC 122 draw call / 167 rb segitiga dengan `?shot` (seluruh deret dan lobi dimuat); kode `main` memberi angka yang sama di container ini (tahap 8 menambah ±1 rb segitiga). Batas 120 / 150 rb; log tahap 6 mencatat 119 / 147 rb.
+- **Belum:** copy plakat, halaman, still (langkah 3); `issue4*.mjs` belum dijalankan ulang (tools tanpa `node_modules` di container); still K5a.6 masih plakat lama; cahaya K11 lebih pink dari video dan jendela COMPANY belum menyala hangat; arah jalan ketiganya lewat di depan plakat (video: ke arah kamera).
