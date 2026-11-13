@@ -19,10 +19,10 @@ const wait = (page, ms) =>
   page.evaluate((ms) => new Promise((r) => setTimeout(r, ms)), ms);
 const ready = (page) =>
   page.waitForFunction(() => window.__world?.ready(), null, { timeout: 30000 });
-// Tahap 7: the take has a timeline per format (lobby holds), 21.5 screens of scroll on landscape and 24.05 on
+// Tahap 7: the take has a timeline per format (lobby holds), 21.5 screens of scroll on landscape and 22.85 on
 // portrait (max-aspect-ratio 1/1, the page's PORTRAIT_QUERY). Up to the lobby both run screen for screen with the
-// world's own timeline (TAKE_SCREENS, 24.05), which is what jump() takes.
-const TAKE = { pc: 21.5, hp: 24.05 };
+// world's own timeline (TAKE_SCREENS, 22.85; issue #17), which is what jump() takes.
+const TAKE = { pc: 21.5, hp: 22.85 };
 async function open(viewport, options = {}) {
   const page = await browser.newPage({ viewport, ...options });
   const errors = [];
@@ -42,7 +42,7 @@ async function at(page, key) {
     scrollTo({
       top:
         el.offsetTop +
-        ((p * 24.05) / total) * (el.offsetHeight - stage.clientHeight),
+        ((p * 22.85) / total) * (el.offsetHeight - stage.clientHeight),
       behavior: "instant",
     });
     window.__world.world.jump(p);
@@ -69,7 +69,7 @@ async function scrollRun(page, secondsPerScreen, reverse = false) {
         total = Number(
           el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
         ),
-        world = 24.05;
+        world = 22.85;
       const range = el.offsetHeight - stage.clientHeight;
       const from = reverse ? 9.2 : 6.5,
         to = reverse ? 6.5 : 9.2;

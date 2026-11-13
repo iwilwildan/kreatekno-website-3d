@@ -3,7 +3,7 @@
 // (site/components/home/stills.json): the billboard on K0, so the copy is placed on the still before the world
 // loads; the leaflet on K3, the binder's page on K4 and the journey's panels on K5a.2–K5a.4, for the stills
 // fallback. 9:16 also gets K5a.2b, K5a.3b and K5a.4b (the second panel of those holds). The lobby (tahap 7): K6, K7,
-// K8, K9.1 with the copy on K6–K8; on 9:16 one still per stop of a hold (K6 … K6h, K7 … K7e, K8, K8b).
+// K8, K9.1 with the copy on K6–K8; on 9:16 one still per stop of a hold (K6 … K6d, K7 … K7e, K8, K8b).
 // Bake the AO first. Usage: node render/stills.mjs [quality, default 80] [keys, comma separated, default all]
 import { mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

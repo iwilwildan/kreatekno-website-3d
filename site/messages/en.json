@@ -72,7 +72,7 @@
       "k5a_3": "A row of shophouses, a shoe shop and a food stall, with white panels on the first floor",
       "k5a_4": "A cosmetics shop and an electronics shop with white panels on the first floor, the Kreatekno office coming into view on the right",
       "k5a_6": "Heru opens the glass door of the purple Kreatekno office as Bu Dewi walks up to it",
-      "k6": "A purple-framed corkboard in the Kreatekno lobby, with a title strip and seven testimonial polaroids",
+      "k6": "A purple-framed corkboard in the Kreatekno lobby, with a title strip and three testimonial polaroids",
       "k7": "A two-tier wooden rack in the Kreatekno lobby with open books and a wooden sign above it",
       "k8": "Eight colourful sticky notes on the meeting room's glass wall; behind it Wildan and Andi work at their laptops",
       "k9_1": "Bu Dewi and Heru walk to the glass door of the Kreatekno office in the golden late afternoon as Wildan leaves the meeting room",
@@ -215,26 +215,6 @@
       "stamp": "SAMPLE",
       "photo": "[Photo]",
       "items": [
-        {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
-        },
-        {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
-        },
-        {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
-        },
-        {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
-        },
         {
           "quote": "[Real client quote, 1 to 3 sentences]",
           "name": "[Name], [role]",

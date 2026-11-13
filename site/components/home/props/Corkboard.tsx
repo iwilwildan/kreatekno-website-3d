@@ -5,9 +5,9 @@ type Testimonial = { quote: string; name: string; business: string };
 
 /**
  * Beat 6 · Testimoni (tahap 7): the heading on the paper strip of the lobby's corkboard (K6), one testimonial on each
- * of its 7 polaroids: photo, quote, name, business. Until real quotes come in (with the client's permission, team
+ * of its 3 polaroids (issue #17, was 7): photo, quote, name, business. Until real quotes come in (with the client's permission, team
  * document) each card is a placeholder stamped CONTOH, replaced one by one in `home.testimonials.items`. Real HTML
- * rendered on the server; in the film the world places each block on its prop (anchors "board-strip", "testi-0..6")
+ * rendered on the server; in the film the world places each block on its prop (anchors "board-strip", "testi-0..2")
  * at its size on screen where the camera reads it, shows it at the K6 hold and hides it (not tabbable) otherwise.
  */
 export async function Corkboard() {

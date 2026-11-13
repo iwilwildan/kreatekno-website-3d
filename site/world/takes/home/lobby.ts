@@ -69,12 +69,9 @@ const glassStop = (x: number, y: number, w: number) =>
 const P = BOARD_ITEMS.polaroids,
   B = RACK_ITEMS.books;
 const HP: Record<"K6" | "K7" | "K8", View[]> = {
-  // the strip with the title over the top row, then the polaroids: top row left to right, bottom row right to left
-  // (it ends on the left, where the truck goes on)
-  K6: [
-    boardStop(0, 0.42, BOARD_ITEMS.strip.w / 0.87),
-    ...[0, 1, 2, 3, 6, 5, 4].map((i) => boardStop(P[i].x, P[i].y, P[i].w / 0.8)),
-  ],
+  // the strip with the title over the polaroids, then the 3 polaroids left to right (issue #17: the row sits lower
+  // than the old top row, so the first stop looks lower too, the whole board in frame under the header)
+  K6: [boardStop(0, 0.18, BOARD_ITEMS.strip.w / 0.87), ...P.map((p) => boardStop(p.x, p.y, p.w / 0.8))],
   // the sign with the title, the three articles right to left, then the button on the bottom tier's left
   K7: [
     rackStop(0, L.sign.cy - F - 0.12, L.sign.w / 0.85),
@@ -94,7 +91,7 @@ const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.fro
 /** Plain hold starts (screens) of the three holds with copy, and when their copy leaves. */
 const holdOf = (k: "K6" | "K7" | "K8") => segmentStart(SEG, idx(k, "hold"));
 /**
- * The copy's anchors, each a rectangle on its prop's face, a few mm in front of it: the strip and the 7 polaroids
+ * The copy's anchors, each a rectangle on its prop's face, a few mm in front of it: the strip and the 3 polaroids
  * (K6), the sign, the top tier's 3 open books and the bottom tier's left book ("Lihat semua artikel", K7), the 8
  * sticky notes and the two bands over them on the meeting room's glass (K8, facing +x, so built here).
  */
@@ -108,13 +105,12 @@ export function lobbyAnchors(): { anchor: Anchor; hold: "K6" | "K7" | "K8"; stop
     hold: "K6",
     stop: 0,
   });
-  // 9:16: top row left to right, then the bottom row right to left (HP stops above)
-  const order = [0, 1, 2, 3, 6, 5, 4];
+  // 9:16: left to right after the strip (HP stops above)
   BOARD_ITEMS.polaroids.forEach((p, i) =>
     out.push({
       anchor: rectAnchor(`testi-${i}`, BX + p.x, by + p.y, bz + 0.0065, p.w / 2, p.h / 2),
       hold: "K6",
-      stop: order.indexOf(i) + 1,
+      stop: i + 1,
     }),
   );
   const Sg = L.sign;

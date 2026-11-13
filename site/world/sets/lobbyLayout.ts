@@ -76,18 +76,14 @@ export function lobbyFloor(x: number, z: number) {
 
 // ---------- copy surfaces, each a rectangle on its prop (centre and size in metres) ----------
 
-/** Corkboard, from its centre (x right as seen from the lobby, y up): the strip, 7 polaroids (4 + 3), 4 corner notes. */
+/**
+ * Corkboard, from its centre (x right as seen from the lobby, y up): the strip, 3 polaroids in one row, 4 corner
+ * notes. Issue #17: 3 testimonials (the video's 7 in two rows, 0.41 × 0.54 m, were cut to 3), a little bigger, centred
+ * between the strip and the board's bottom, their outer edges clear of the corner notes.
+ */
 export const BOARD_ITEMS = {
   strip: { x: 0, y: 0.62, w: 1.22, h: 0.15 } as Rect,
-  polaroids: [
-    { x: -0.8, y: 0.17 },
-    { x: -0.27, y: 0.17 },
-    { x: 0.27, y: 0.17 },
-    { x: 0.8, y: 0.17 },
-    { x: -0.53, y: -0.44 },
-    { x: 0, y: -0.44 },
-    { x: 0.53, y: -0.44 },
-  ].map((p) => ({ ...p, w: 0.41, h: 0.54 })) as Rect[],
+  polaroids: [-0.66, 0, 0.66].map((x) => ({ x, y: -0.13, w: 0.52, h: 0.685 })) as Rect[],
   notes: [
     [-1.1, 0.67],
     [1.1, 0.67],

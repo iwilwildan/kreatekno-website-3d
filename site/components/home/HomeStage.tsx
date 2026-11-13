@@ -33,7 +33,7 @@ const KEYS = [
   "K5a.4",
   "K5a.4b",
   "K5a.6",
-  // the lobby (tahap 7): on 9:16 one still per stop of a hold (K6: the strip, then the 7 polaroids; K7: the sign, the
+  // the lobby (tahap 7): on 9:16 one still per stop of a hold (K6: the strip, then the 3 polaroids; K7: the sign, the
   // 3 books, the button; K8: the left and the right two columns of notes)
   ...LOBBY_KEYS,
   "K9.1",

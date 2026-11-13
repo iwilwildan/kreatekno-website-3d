@@ -7,25 +7,9 @@ import { LOBBY_STOPS, SEG, stopSpan, type KeyName } from "@/world/takes/home/tim
 type Hold = keyof typeof LOBBY_STOPS;
 const HOLDS: Hold[] = ["K6", "K7", "K8"];
 const SUFFIX = "bcdefgh";
-/** Stills of one hold: on 9:16 one per stop (K6, K6b … K6h); on 16:9 the first, the others repeat it. */
+/** Stills of one hold: on 9:16 one per stop (K6, K6b … K6d); on 16:9 the first, the others repeat it. */
 const stopsOf = (h: Hold) => Array.from({ length: LOBBY_STOPS[h] }, (_, i) => (i ? `${h}${SUFFIX[i - 1]}` : h));
-export const LOBBY_KEYS = [
-  "K6",
-  "K6b",
-  "K6c",
-  "K6d",
-  "K6e",
-  "K6f",
-  "K6g",
-  "K6h",
-  "K7",
-  "K7b",
-  "K7c",
-  "K7d",
-  "K7e",
-  "K8",
-  "K8b",
-] as const;
+export const LOBBY_KEYS = ["K6", "K6b", "K6c", "K6d", "K7", "K7b", "K7c", "K7d", "K7e", "K8", "K8b"] as const;
 
 const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.from === from && s.type === type);
 const start = (from: KeyName, type: "move" | "hold") => segmentStart(SEG, idx(from, type));

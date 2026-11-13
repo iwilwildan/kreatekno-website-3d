@@ -1893,3 +1893,27 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - Frame dicek visual (hanya di chat). Typecheck, ESLint, Prettier dan `next build` lulus; `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25.
   - Komentar Penyebab/Perbaikan/Dicek/Belum di issue #16 (issuecomment-6844191924).
 - Di-commit ke `main` setelah dikonfirmasi user ("commit"): hanya `site/components/home/stage.css` dan entri log ini. Belum: push dan tutup issue #16, tes HP fisik.
+
+### 2026-11-13 (issue #17: testimoni di papan lobi jadi tiga)
+
+- Penyebab (CR, bukan bug): papan K6 dibangun mengikuti frame akhir video `k6 - k5a.6`, 7 polaroid 0,41 × 0,54 m (4 + 3). Di HP kamera berhenti di strip lalu tiap polaroid: `LOBBY_STOPS.K6` 8, hold K6 HP 2,3 layar. Diukur di build produksi: HP 375×812 8 perhentian (17,30–19,61 layar, take 24,05), PC 1280×720 7 polaroid 169×223 px dengan kutipan di batas minimum 11 px.
+- Diubah:
+  - `world/sets/lobbyLayout.ts`: 3 polaroid satu baris di tengah papan, 0,52 × 0,685 m (1,27×), x −0,66 / 0 / 0,66, y −0,13 (tepi luar 0,92 m, catatan sudut mulai 1,015). Strip dan catatan sudut tetap.
+  - `world/sets/lobby.ts`: posisi foto abu-abu sebanding dengan tinggi kartu (0,08 m dari tengah pada kartu 0,54 m), supaya foto HTML (`cq`) tetap tepat di atasnya. Komentar.
+  - `world/takes/home/lobby.ts`: perhentian HP K6 = strip lalu polaroid 1, 2, 3 dari kiri ke kanan; anchor `testi-0..2` stop 1–3. Perhentian strip diturunkan (y 0,42 → 0,18 dari tengah papan) karena baris polaroid lebih rendah dari baris atas lama; seluruh papan masuk frame di bawah header.
+  - `world/takes/home/timing.ts`: `LOBBY_STOPS.K6` 8 → 4, hold K6 HP 2,3 → 1,1 layar (unit perhentian 1,01 → 1,03, tiap perhentian tetap 0,17 layar). Take 9:16 24,05 → 22,85 layar; PC tetap 21,5 layar scroll.
+  - `messages/{id,en}.json`: `home.testimonials.items` 3 item; alt `home.stage.k6` "tiga polaroid" / "three testimonial polaroids".
+  - Halaman: `lobbyStills.ts` (`LOBBY_KEYS` tanpa K6e–K6h), komentar `Corkboard.tsx`, `HomeStage.tsx`, `lobby.css`. Penanda `#testimoni` ikut sendiri dari `LOBBY_STOPS`.
+  - Still: PC K6 dan HP K6–K6d dirender ulang (`BASE=http://localhost:3300 stills.mjs 80 ...`), HP K6e–K6h dihapus, `stills.json` = versi HEAD + entri K6 baru. Still K7 PC/HP keluar identik byte per byte. Still K5a.6 PC/HP, K8 PC dan K9.1 HP ikut berubah saat dirender ulang tetapi bukan karena issue ini (lihat temuan); dikembalikan ke HEAD.
+  - Alat: `tools/render/lib.mjs` (`LOBBY_HP.K6` 1,1 dengan 4 kunci, `LOBBY_COPY`), komentar `stills.mjs`, take 22,85 di `issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs`.
+- Dicek (build produksi port 3300, Playwright GPU, `?hud`, kamera lewat `jump` tanpa scroll; render hanya di chat):
+  - HP 375×812 dan 360×640, tablet 768×1024: 4 perhentian di hold K6 (17,30–18,40 layar), masing-masing 0,17 layar seperti sebelumnya; polaroid di perhentiannya 297×391 (375), 285×375 (360), 385×507 px (tablet), kutipan 18,4 / 17,7 / 23,8 px, 100% di dalam layar di bawah header. Di perhentian strip hanya copy polaroid tengah yang tampil (yang terpotong tepi pudar, aturan langkah 6).
+  - PC 1280×720: 3 polaroid 215×283 px, kutipan 13,3 px (sebelumnya 169×223, 11 px). 1920×1080: 322×424 px, kutipan 20 px. Tidak ada teks meluap, ID dan EN.
+  - `#testimoni`: PC 17,85 (tengah hold), HP/tablet 17,387 (perhentian strip).
+  - Dolly K5a.6 → K6 dan truck K6 → K7 di HP (sekarang dari polaroid kanan) mulus, tidak menembus apa pun. Bu Dewi tidak masuk frame selama hold K6 dan K6 → K7 di 375, 360 dan tablet (paling dekat 0,47 m dari sumbu badannya, di samping/belakang kamera di perhentian polaroid kanan).
+  - Fallback tanpa WebGL (375, 360, 768, 1280, 1920; ID dan EN): still K6, K6b, K6c, K6d bergantian per perhentian dengan copy strip / polaroid 1 / 2 / 3; PC 3 polaroid di still K6. Versi tumpuk (reduced motion, tanpa JS): 3 polaroid dan still K6.
+  - Console hanya 404 `/_vercel/insights/script.js`.
+  - `typecheck`, `lint`, `format:check` seluruh situs dan `next build` lulus.
+  - Regresi (build produksi port 3300): `issue4-loading.mjs` 25/25, `issue4.mjs` 73/73 setelah RAM dilegakan user (RAM bebas 540–1400 MB). Dua putaran sebelumnya dengan RAM bebas 62–102 MB gagal di kasus yang berbeda-beda, semuanya sebelum lobi: cek waktu scroll di layar 6,5–9,2 (tablet, lalu HP) dan timeout menunggu world siap.
+- Temuan (tidak diubah): still K5a.6 PC dan HP di repo dirender sebelum lobi asli terlihat lewat kaca fasad dan sebelum posisi Heru tahap 7; render ulang sekarang menampilkan lobi dan Heru di dalam pintu. Still K9.1 HP berbeda 332 piksel (tokoh), K8 PC 3 piksel.
+- Di-commit ke `main` setelah dikonfirmasi user ("Commit, jangan push"): hanya file #17 dan entri log ini; di `messages` hanya testimoni dan alt K6, di `stills.json` hanya entri K6. Belum: push dan tutup issue #17, tes HP fisik.

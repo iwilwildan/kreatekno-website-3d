@@ -2,7 +2,7 @@
 // team's videos k6 - k5a.6, K6 -K7, K7 - K8, K8 - K9.1 and Master 10a/10b (where the videos never look), at the
 // sizes of sets/lobbyLayout: light wood floor, lavender walls with a purple skirting, a ceiling with light panels,
 // the glass facade from inside with two low steps (its frames and glass are Kreatekno's own, sets/row), the
-// corkboard (K6: 7 polaroids, the strip, 4 corner notes, purple pins), the two-tier rack with 6 open books and the
+// corkboard (K6: 3 polaroids, the strip, 4 corner notes, purple pins), the two-tier rack with 6 open books and the
 // wooden sign with brass nails (K7), potted plants, the meeting room behind its purple-framed glass (K8: the glass
 // door, the long table, lilac chairs, two laptops, the whiteboard, a window to the garden, the 8 sticky notes on
 // the glass), the reception desk with its slatted wall (Master 10a), and light backdrops: the park across the road
@@ -345,7 +345,7 @@ export function buildLobby(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     occ.push(...SB.occ);
   }
 
-  // ---------- corkboard (K6): purple frame, cork, the strip, 7 polaroids, 4 corner notes, purple pins ----------
+  // ---------- corkboard (K6): purple frame, cork, the strip, 3 polaroids, 4 corner notes, purple pins ----------
   const TB = new Tint();
   const Bd = L.board,
     bx = lx(Bd.cx),
@@ -396,7 +396,8 @@ export function buildLobby(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     for (const sx of [-1, 1]) pin(S.x + sx * (S.w / 2 - 0.05), S.y, bz + 0.004);
     for (const p of BOARD_ITEMS.polaroids) {
       card(p, COL.paper, 0.005);
-      card({ x: p.x, y: p.y + 0.08, w: p.w * 0.84, h: p.h * 0.52 }, COL.photo, 0.001, bz + 0.005);
+      // (the photo's place in shares of the card, as the copy's CSS puts it: 0.08 m up on the 0.54 m card)
+      card({ x: p.x, y: p.y + p.h * (0.08 / 0.54), w: p.w * 0.84, h: p.h * 0.52 }, COL.photo, 0.001, bz + 0.005);
       pin(p.x, p.y + p.h / 2 - 0.02, bz + 0.005);
     }
     for (const n of BOARD_ITEMS.notes) {

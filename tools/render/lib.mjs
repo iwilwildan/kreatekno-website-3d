@@ -69,11 +69,11 @@ export const JOURNEY = {
 };
 /**
  * The lobby (tahap 7): on 9:16 a still per stop of a hold (site/world/takes/home/timing.ts STOP, LOBBY_STOPS): K6 the
- * strip then the polaroids, K7 the sign, the books right to left and the button, K8 the left then the right columns.
+ * strip then the 3 polaroids left to right (issue #17), K7 the sign, the books right to left and the button, K8 the left then the right columns.
  * Hold length (screens) and the stops' keys.
  */
 export const LOBBY_HP = {
-  K6: { len: 2.3, keys: ["K6", "K6b", "K6c", "K6d", "K6e", "K6f", "K6g", "K6h"] },
+  K6: { len: 1.1, keys: ["K6", "K6b", "K6c", "K6d"] },
   K7: { len: 1.4, keys: ["K7", "K7b", "K7c", "K7d", "K7e"] },
   K8: { len: 0.75, keys: ["K8", "K8b"] },
 };
@@ -86,13 +86,13 @@ export function stopMid(len, n, i) {
 const notes = (...i) => i.map((n) => `faq-${n}`);
 export const LOBBY_COPY = {
   pc: {
-    K6: ["board-strip", ...[0, 1, 2, 3, 4, 5, 6].map((i) => `testi-${i}`)],
+    K6: ["board-strip", "testi-0", "testi-1", "testi-2"],
     K7: ["rack-sign", "article-0", "article-1", "article-2", "rack-all"],
     K8: ["faq-title", "faq-help", ...notes(0, 1, 2, 3, 4, 5, 6, 7)],
   },
   hp: {
     K6: ["board-strip"],
-    K6b: ["testi-0"], K6c: ["testi-1"], K6d: ["testi-2"], K6e: ["testi-3"], K6f: ["testi-6"], K6g: ["testi-5"], K6h: ["testi-4"],
+    K6b: ["testi-0"], K6c: ["testi-1"], K6d: ["testi-2"],
     K7: ["rack-sign"], K7b: ["article-2"], K7c: ["article-1"], K7d: ["article-0"], K7e: ["rack-all"],
     K8: ["faq-title", ...notes(0, 1, 4, 5)],
     K8b: ["faq-help", ...notes(2, 3, 6, 7)],

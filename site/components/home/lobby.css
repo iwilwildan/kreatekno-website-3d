@@ -342,8 +342,8 @@
     text-wrap: balance;
   }
 
-  /* the polaroids (0.41 × 0.54 m): the photo exactly where the 3D card prints its grey (sets/lobby: 84% of the
-     width, 52% of the height, its top 9.2% down), the quote and the name under it on the white paper */
+  /* the polaroids (0.52 × 0.685 m, issue #17): the photo exactly where the 3D card prints its grey (sets/lobby: 84%
+     of the width, 52% of the height, its top 9.2% down), the quote and the name under it on the white paper */
   .polaroid figure {
     position: absolute;
     inset: 0;

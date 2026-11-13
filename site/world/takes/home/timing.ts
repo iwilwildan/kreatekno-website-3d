@@ -66,13 +66,14 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K5a.6", screens: 0.3 },
   // Beats 6–9a (tahap 7, the team's videos K5a.6 → K9.1): through Kreatekno's door to the corkboard (K6), truck
   // left to the rack (K7), on left and round to the meeting room's glass (K8), turn to the facade (K9.1). Separate
-  // timelines (user, 11 Nov): `screens` is 9:16's, which stops on each item of a hold (7 polaroids, the sign and 3
+  // timelines (user, 11 Nov): `screens` is 9:16's, which stops on each item of a hold (3 polaroids, the sign and 3
   // books + the button, 2 × 4 sticky notes); `pc` is the scroll 16:9 takes, standing still on each keyframe with all
   // its items in frame (PLAN tahap 7, total ±5.1 screens). The dolly in is 2.0 screens (langkah 6, was 0.9): the
   // camera waits for Bu Dewi to be in and clear of its way, and at her pace (at most 1.8×) that takes ±2 s, so on a
   // steady scroll of 2 s per screen the camera no longer stands at the door while the scroll runs on.
   { type: "move", from: "K5a.6", to: "K6", screens: 2.0 },
-  { type: "hold", from: "K6", screens: 2.3, pc: 0.6 },
+  // issue #17: 3 polaroids (was 7), 4 stops in 1.1 screens (was 8 in 2.3): each stop takes the same scroll as before
+  { type: "hold", from: "K6", screens: 1.1, pc: 0.6 },
   { type: "move", from: "K6", to: "K7", screens: 0.5 },
   { type: "hold", from: "K7", screens: 1.4, pc: 0.5 },
   { type: "move", from: "K7", to: "K8", screens: 0.6 },
@@ -120,7 +121,7 @@ export function stopSpan(len: number, n: number, i: number) {
     from = i * (STOP.dwell + STOP.move) * unit;
   return { from, to: from + STOP.dwell * unit };
 }
-/** Number of 9:16 stops of each lobby hold (the strip and 7 polaroids; the sign, 3 books and the button; 2 × 4 notes). */
-export const LOBBY_STOPS = { K6: 8, K7: 5, K8: 2 } as const;
+/** Number of 9:16 stops of each lobby hold (the strip and 3 polaroids; the sign, 3 books and the button; 2 × 4 notes). */
+export const LOBBY_STOPS = { K6: 4, K7: 5, K8: 2 } as const;
 /** Where the whip pan to K2.2 fires, as a fraction of the K2.1 → K2.2 move (time-based from there, ±0.45 s). */
 export const WHIP_AT = 0.3;
