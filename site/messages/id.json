@@ -9,6 +9,10 @@
       "title": "Solusi Otomasi AI & WhatsApp untuk UMKM | Kreatekno",
       "description": "Kumpulan solusi asisten AI dan otomasi WhatsApp untuk UMKM. Cari masalah yang mirip dengan usaha Anda, lalu lihat cara kerja tiap solusi."
     },
+    "solutionsResults": {
+      "title": "Hasil kartu masalah | Kreatekno",
+      "description": "Urutan solusi yang paling dekat dengan masalah yang Anda pilih di kartu masalah Kreatekno."
+    },
     "articles": {
       "title": "Artikel Otomasi Bisnis & AI untuk UMKM | Kreatekno",
       "description": "Panduan praktis otomasi admin, chatbot WhatsApp, dan AI untuk UMKM, ditulis dengan bahasa sederhana untuk pemilik usaha."
@@ -320,7 +324,98 @@
     "soon": "Halaman ini dibangun di tahap berikutnya.",
     "back": "Kembali ke beranda",
     "solutions": {
-      "title": "Solusi"
+      "title": "Solusi",
+      "hero": {
+        "eyebrow": "Etalase solusi",
+        "headline": "Masalah berulang punya jalan keluar.",
+        "body": "Lihat contoh otomasi yang sudah berjalan dan ide yang siap dibuat untuk usaha Anda.",
+        "search": "Cari dari masalah Anda",
+        "cards": "Cocokkan lewat kartu",
+        "shop": "Toko solusi Kreatekno",
+        "cashier": "Heru, kasir solusi"
+      },
+      "catalog": {
+        "title": "Pilih solusi sesuai kebutuhan bisnis Anda",
+        "previous": "Geser rak {team} ke kiri",
+        "next": "Geser rak {team} ke kanan",
+        "detail": "Lihat detail",
+        "coming": "Halaman detail menyusul",
+        "live": "Sudah berjalan",
+        "idea": "Siap dibuat",
+        "fitFor": "Cocok untuk",
+        "allIndustries": "Semua bidang usaha",
+        "apps": "Aplikasi: {list}"
+      },
+      "band": {
+        "title": "Belum tahu mulai dari mana?",
+        "body": "Ceritakan masalahnya lewat pencarian, atau jawab sembilan kartu singkat.",
+        "search": "Mulai Cari",
+        "cards": "Mulai Kartu"
+      },
+      "search": {
+        "eyebrow": "Mode Cari",
+        "title": "Ceritakan pekerjaan yang bikin repot",
+        "receiptLine": "Etalase Solusi · Kasir: Heru",
+        "receipt": "STRUK PENCARIAN",
+        "term": "Masalah atau pekerjaan",
+        "termPlaceholder": "Contoh: order dari chat terlewat",
+        "industry": "Bidang usaha",
+        "team": "Tim",
+        "app": "Aplikasi",
+        "status": "Status",
+        "all": "Semua",
+        "submit": "Cari solusi",
+        "again": "Cari kembali",
+        "close": "Kembali ke etalase",
+        "found": "Ditemukan {count} solusi",
+        "range": "Menampilkan {from}–{to} dari {count}",
+        "empty": "Belum dapat solusi yang pas.",
+        "emptyBody": "Coba kurangi filter, ganti kata, atau ceritakan langsung kepada kami.",
+        "previous": "Sebelumnya",
+        "next": "Berikutnya",
+        "tagLabel": "{number}. {title}, lihat ringkasan"
+      },
+      "cards": {
+        "eyebrow": "Mode Kartu",
+        "title": "Masalah mana yang terasa dekat?",
+        "intro": "Pilih bidang usaha, lalu jawab tiga ronde. Tidak ada jawaban salah.",
+        "industry": "Bidang usaha Anda",
+        "start": "Bagikan kartu",
+        "round": "Ronde {round} dari 3",
+        "progress": "Kartu {current} dari 9",
+        "no": "Tidak",
+        "yes": "Ya",
+        "solution": "Solusi",
+        "hint": "Geser atau gunakan tombol. Panah kiri untuk Tidak, kanan untuk Ya.",
+        "close": "Kembali ke etalase",
+        "results": "Lihat rekomendasi"
+      },
+      "results": {
+        "eyebrow": "Hasil Kartu",
+        "title": "Urutan solusi untuk Anda",
+        "body": "Urutan ini berdasarkan masalah yang Anda tandai, bukan persentase keberhasilan.",
+        "emptyTitle": "Belum ada hasil yang bisa dihitung.",
+        "emptyBody": "Mulai lagi dan jawab kartu yang paling dekat dengan keadaan usaha Anda.",
+        "rank": "Rekomendasi {rank}",
+        "issues": "Masalah yang Anda tandai",
+        "consult": "Konsultasi gratis",
+        "repeat": "Ulangi Kartu",
+        "back": "Kembali ke etalase"
+      },
+      "contact": {
+        "title": "Lanjutkan obrolan",
+        "body": "Pilih kanal yang paling nyaman. Konsultasi awal gratis.",
+        "close": "Tutup",
+        "whatsapp": "WhatsApp",
+        "instagram": "Instagram",
+        "email": "Email",
+        "unavailable": "Detail kanal menyusul"
+      },
+      "detailPlaceholder": {
+        "eyebrow": "Detail solusi",
+        "body": "Halaman detail solusi ini akan dibangun pada tahap berikutnya.",
+        "back": "Kembali ke etalase"
+      }
     },
     "articles": {
       "title": "Artikel"

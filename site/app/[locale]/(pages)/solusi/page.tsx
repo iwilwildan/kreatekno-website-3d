@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { SolusiPage } from "@/components/solusi/SolusiPage";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,6 +14,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SolutionsPage() {
-  const t = await getTranslations("pages.solutions");
-  return <PagePlaceholder title={t("title")} />;
+  return <SolusiPage />;
 }

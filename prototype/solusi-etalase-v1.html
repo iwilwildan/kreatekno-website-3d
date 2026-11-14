@@ -1,0 +1,1953 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kreatekno Etalase Solusi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Prototype halaman Solusi Kreatekno sebagai toko: kasir 3D untuk mencari solusi dan kartu masalah, dan rak etalase berisi semua solusi per tim.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout concept: the Solusi page is a shop. A cashier stands behind a long counter (Three.js, code-only shapes);
+   below it, the etalase is a shelf unit in a lavender room, one tier per team, each solution a pastel box
+   with its result printed on the cover; tiers scroll sideways and grow as the catalogue grows. Searching or the problem cards happen on the counter top: the camera moves there, the
+   cashier hands over the boxes. One deliberate look: lavender shop wall, navy counter, purple action, cyan light. */
+:root{
+  color-scheme: light;
+  --wall:#131951;
+  --paper:#FFFFFF;
+  --receipt:#FFFDF7;
+  --wash:#F4F4FA;
+  --ink:#121640;
+  --muted:#565B81;
+  --navy:#131951;
+  --navy-2:#1A2160;
+  --navy-3:#0B0F3A;
+  --purple:#9F0ED6;
+  --purple-deep:#7C07A8;
+  --violet:#8C2BFA;
+  --cyan:#35EAFE;
+  --on-night:#F3F4FF;
+  --on-night-muted:#B6BBE2;
+  --line:rgba(19,25,81,.12);
+  --run:#06606C;   --run-bg:#DDF9FD;
+  --idea:#5B1BB5;  --idea-bg:#EDE3FF;
+  --ok:#1C7A43;    --ok-bg:#E1F4E8;
+  --no:#B4233A;    --no-bg:#FDE6E9;
+  --display:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --nav-h:64px;
+  --nav-top:calc(env(safe-area-inset-top,0px) + 12px);
+  --maxw:1200px;
+  --gl:max(16px,env(safe-area-inset-left,0px));
+  --gr:max(16px,env(safe-area-inset-right,0px));
+}
+@media (min-width:700px){:root{--gl:max(32px,env(safe-area-inset-left,0px));--gr:max(32px,env(safe-area-inset-right,0px))}}
+@media (max-width:640px){:root{--nav-h:56px}}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--wall);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--wall)}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:0;text-wrap:balance;font-variation-settings:"opsz" 96}
+p{margin:0}
+ul,ol,dl,dd{margin:0;padding:0;list-style:none}
+button,input,select{font:inherit}
+.ic{width:1em;height:1em;fill:currentColor;flex:none}
+:focus-visible{outline:3px solid var(--violet);outline-offset:3px;border-radius:8px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:calc(var(--maxw) + 64px);margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
+
+/* the single WebGL canvas: fixed, transparent, under the text */
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;font:600 var(--t-btn,1rem)/1 var(--body);text-decoration:none;border:0;cursor:pointer;border-radius:999px;padding:6px 6px 6px 20px;min-height:48px;transition:transform 160ms var(--ease-out),background-color 200ms ease}
+.btn:active{transform:scale(.97)}
+.btn .knob{width:36px;height:36px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+.btn .knob .ic{width:20px;height:20px}
+.btn-main{background:var(--purple);color:#fff;box-shadow:0 10px 22px -12px rgba(124,7,168,.75)}
+.btn-main:hover{background:var(--purple-deep)}
+.btn-dark{background:var(--navy);color:#fff;padding:6px 6px 6px 20px}
+.btn-dark .knob{background:rgba(255,255,255,.12)}
+.btn-dark:hover{background:var(--navy-2)}
+.btn-line{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor;padding:0 20px}
+.btn-line .ic{width:18px;height:18px}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* ---------- Header ---------- */
+.nav{position:fixed;z-index:30;left:50%;transform:translateX(-50%);top:var(--nav-top);width:min(var(--maxw),calc(100% - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));height:var(--nav-h);display:flex;align-items:center;gap:16px;padding:0 8px 0 20px;border-radius:999px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 0 0 1px rgba(19,25,81,.08),0 12px 32px -18px rgba(19,25,81,.35)}
+.nav .brand img{height:28px;width:auto;display:block}
+.nav-links{display:flex;gap:2px;margin:0 auto}
+.nav-links a{display:block;padding:9px 12px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.9375rem}
+.nav-links a:hover{background:rgba(19,25,81,.06)}
+.nav-links a[aria-current]{background:rgba(159,14,214,.1);color:var(--purple-deep)}
+.nav-end{margin-left:auto}
+.nav .btn{--t-btn:.9375rem;padding:6px 6px 6px 18px}
+.nav .btn .knob{width:34px;height:34px}
+@media (max-width:960px){.nav-links{display:none}}
+@media (max-width:420px){.nav{padding-left:14px}.nav .brand img{height:24px}.nav .btn{--t-btn:.875rem;padding-left:14px}}
+
+/* ---------- Toko (the 3D stage) ---------- */
+.toko{position:relative;height:clamp(600px,88svh,800px);overflow:hidden}
+.no3d .toko{background:linear-gradient(var(--wall) 0 72%,#CFC5E8 72% 76%,#C2B8DF 76%)}
+.focus .toko{height:100svh;min-height:600px}
+.toko > *{position:absolute;z-index:3}
+
+.hero-copy{left:max(var(--gl),calc((100% - var(--maxw)) / 2));top:calc(var(--nav-top) + var(--nav-h) + 6%);width:min(520px,46%);display:grid;gap:22px;transition:opacity 300ms ease,transform 400ms var(--ease-out)}
+.screen{display:grid;gap:14px}
+.eyebrow{font:700 .75rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--cyan)}
+.screen h1{font-size:clamp(2.4rem,4.6vw,4.1rem);color:#fff;letter-spacing:-.035em}
+.screen p{font-size:clamp(1.0625rem,1.3vw,1.2rem);color:var(--on-night-muted);max-width:44ch}
+.hero-btns{display:flex;flex-wrap:wrap;gap:10px}
+.hero-btns .btn{min-height:52px}
+.hero-btns .btn-dark{background:#fff;color:var(--navy)}
+.hero-btns .btn-dark .knob{background:rgba(19,25,81,.08)}
+.hero-btns .btn-dark:hover{background:#ECE8FA}
+.focus .hero-copy{opacity:0;visibility:hidden;transform:translateY(-16px)}
+
+
+/* phones: the title is on the TV, buttons under it, cashier below */
+@media (max-width:760px){
+  .toko{height:max(680px,100svh)}
+  .hero-copy{left:var(--gl);right:var(--gr);width:auto;top:calc(var(--nav-top) + var(--nav-h) + 14px);gap:14px}
+  .screen{padding:18px 18px 20px;border-radius:18px;background:var(--navy-3);box-shadow:0 0 0 6px #2A2F5E,0 20px 36px -22px rgba(11,15,58,.7);gap:10px}
+  .screen .eyebrow{color:var(--cyan);font-family:var(--mono);font-weight:500}
+  .screen h1{color:#fff;font-size:clamp(1.6rem,7.4vw,2.1rem)}
+  .screen p{color:var(--on-night-muted);font-size:.9375rem}
+  .hero-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hero-btns .btn{padding:0 14px;--t-btn:.9375rem}
+  .hero-btns .btn .knob{display:none}
+}
+
+/* focus mode controls */
+.exit{left:max(var(--gl),calc((100% - var(--maxw)) / 2));top:calc(var(--nav-top) + var(--nav-h) + 14px);display:none;align-items:center;gap:8px;min-height:44px;padding:0 16px 0 12px;border:0;border-radius:999px;background:rgba(255,255,255,.92);color:var(--navy);font-weight:700;font-size:.9375rem;cursor:pointer;box-shadow:0 0 0 1px var(--line),0 10px 24px -16px rgba(19,25,81,.6);text-decoration:none}
+.exit .ic{width:18px;height:18px;transform:rotate(180deg)}
+.focus .exit{display:inline-flex}
+.prog{right:max(var(--gr),calc((100% - var(--maxw)) / 2));top:calc(var(--nav-top) + var(--nav-h) + 26px);display:none;align-items:center;gap:10px;font-size:.8125rem;font-weight:600;color:var(--on-night);font-variant-numeric:tabular-nums}
+.prog .bar{width:110px;height:5px;border-radius:5px;background:rgba(255,255,255,.18);overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:width 300ms var(--ease-out)}
+.mode-kartu .prog.on{display:flex}
+
+/* the receipt paper on the counter: search + filters */
+.paper{display:none;left:max(var(--gl),calc((100% - var(--maxw)) / 2));top:calc(var(--nav-top) + var(--nav-h) + 74px);width:min(380px,40%);max-height:calc(100% - var(--nav-h) - var(--nav-top) - 100px);overflow:auto;padding:20px 20px 26px;background:var(--receipt);color:var(--ink);border-radius:6px 6px 0 0;transform:rotate(-1.5deg);box-shadow:0 28px 40px -26px rgba(11,15,58,.55),0 0 0 1px rgba(19,25,81,.06);
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 10px) no-repeat,conic-gradient(from 135deg at 50% 100%,#0000 90deg,#000 0) bottom/16px 10px repeat-x;
+  mask:linear-gradient(#000 0 0) top/100% calc(100% - 10px) no-repeat,conic-gradient(from 135deg at 50% 100%,#0000 90deg,#000 0) bottom/16px 10px repeat-x}
+.mode-cari .paper{display:grid;gap:14px;animation:slipIn 520ms var(--ease-out) both}
+@keyframes slipIn{from{opacity:0;transform:translateY(40px) rotate(-6deg)}to{opacity:1;transform:rotate(-1.5deg)}}
+.rc-h{display:grid;gap:4px;text-align:center;font:500 .75rem/1.4 var(--mono);color:var(--muted);padding-bottom:12px;border-bottom:1.5px dashed rgba(19,25,81,.25)}
+.rc-h b{font:700 .9375rem/1.2 var(--mono);letter-spacing:.06em;color:var(--navy)}
+.paper label.q{display:grid;gap:6px;font:700 .75rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.paper input{width:100%;height:48px;border:0;border-radius:10px;background:#F1EEF9;padding:0 14px;font:500 1rem var(--body);color:var(--ink)}
+.paper input::placeholder{color:#6E7296}
+.pp-f{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.flt{position:relative;display:block}
+.flt select{appearance:none;-webkit-appearance:none;width:100%;height:40px;border:0;border-radius:10px;background:#F1EEF9;padding:0 28px 0 12px;font:600 .8125rem var(--body);color:var(--navy);cursor:pointer;text-overflow:ellipsis}
+.flt select.on{background:var(--idea-bg);color:var(--idea);box-shadow:inset 0 0 0 1.5px rgba(91,27,181,.35)}
+.flt .ic{position:absolute;right:10px;top:50%;margin-top:-6px;width:12px;height:12px;pointer-events:none;color:var(--muted)}
+.paper .btn{width:100%}
+.pp-res{display:grid;gap:8px;padding-top:12px;border-top:1.5px dashed rgba(19,25,81,.25)}
+.pp-res:empty{display:none}
+.pp-res .sum{font:700 .8125rem/1.3 var(--mono);color:var(--navy)}
+.pp-res ol{display:grid;gap:6px}
+.pp-res li a{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:start;text-decoration:none;font-size:.875rem;line-height:1.35;font-weight:600;color:var(--navy)}
+.pp-res li a:hover{color:var(--purple-deep)}
+.pp-res .n{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:var(--navy);color:#fff;font:700 .75rem/1 var(--mono)}
+.pp-res .more .n{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line)}
+.pp-res .none{font-size:.875rem;color:var(--muted)}
+.pp-res .none a{color:var(--purple-deep);font-weight:700}
+.pp-tog{display:none}
+
+/* numbered tags floating above the boxes the cashier put on the counter */
+.tags{inset:0;pointer-events:none}
+.tags a{position:absolute;left:0;top:0;pointer-events:auto;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:10px;display:grid;place-items:center;background:var(--navy);color:#fff;font:700 .8125rem/1 var(--mono);text-decoration:none;box-shadow:0 8px 16px -8px rgba(11,15,58,.8),0 0 0 2px #fff;transition:opacity 200ms ease,transform 200ms var(--ease-out);opacity:0}
+.tags a.on{opacity:1}
+.tags a:hover{background:var(--purple)}
+
+/* after searching: the receipt folds into a small bar at the bottom */
+.pbar{display:none;left:50%;bottom:16px;transform:translateX(-50%);width:min(460px,calc(100% - 32px));gap:10px;padding:12px;border-radius:18px;background:var(--receipt);box-shadow:0 22px 40px -22px rgba(11,15,58,.7),0 0 0 1px rgba(19,25,81,.06)}
+.mode-cari.served .paper{display:none}
+.mode-cari.served .pbar{display:grid;animation:barIn 360ms var(--ease-out) both}
+@keyframes barIn{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translate(-50%,0)}}
+.pbar-msg{margin:0;text-align:center;font:700 .8125rem/1.3 var(--mono);color:var(--navy)}
+.pbar-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pbar .btn{min-height:46px;padding:0 12px;--t-btn:.9375rem;gap:8px}
+.pbar .btn-line{color:var(--navy)}
+/* summary card above a box (desktop) or above the bar (phone) */
+.sum{display:none;z-index:6;left:0;top:0;width:min(320px,calc(100% - 32px));gap:10px;padding:16px 16px 14px;border-radius:18px;background:var(--paper);color:var(--ink);transform:translate(-50%,-100%);box-shadow:0 24px 44px -20px rgba(11,15,58,.75),0 0 0 1px rgba(19,25,81,.08)}
+.sum.on{display:grid;animation:sumIn 200ms var(--ease-out) both}
+@keyframes sumIn{from{opacity:0;margin-top:6px}to{opacity:1;margin-top:0}}
+.sum::after{content:"";position:absolute;left:calc(50% + var(--ax,0px));bottom:-7px;width:14px;height:14px;margin-left:-7px;background:var(--paper);transform:rotate(45deg);border-radius:0 0 3px 0}
+.sum h3{font-size:1.0625rem;line-height:1.2;color:var(--navy);padding-right:4px}
+.sum .plat{display:flex;flex-wrap:wrap;gap:6px}
+.sum .plat span{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;background:var(--wash);font-size:.75rem;font-weight:600;color:var(--navy)}
+.sum .plat .ic{width:14px;height:14px}
+.sum p{font-size:.875rem;line-height:1.5;color:var(--muted)}
+.sum .btn{justify-self:start;min-height:42px;--t-btn:.875rem;padding:4px 4px 4px 16px}
+.sum .btn .knob{width:32px;height:32px}
+.sum-x{display:none}
+/* contact popup */
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(11,15,58,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.modal[hidden]{display:none}
+.modal-card{position:relative;width:min(400px,100%);display:grid;gap:14px;padding:26px 22px 22px;border-radius:24px;background:var(--paper);color:var(--ink);box-shadow:0 30px 60px -30px rgba(0,0,0,.7);animation:modalIn 260ms var(--ease-out) both}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.modal-card h2{font-size:1.5rem;color:var(--navy);padding-right:44px}
+.modal-card > p{color:var(--muted);font-size:.9375rem;margin-top:-4px}
+.modal-x{position:absolute;top:14px;right:14px;width:40px;height:40px;border:0;border-radius:999px;background:var(--wash);color:var(--navy);display:grid;place-items:center;cursor:pointer}
+.modal-x .ic{width:18px;height:18px}
+.ct-list{display:grid;gap:10px}
+.ct{display:grid;grid-template-columns:44px minmax(0,1fr) 18px;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--wash);text-decoration:none;color:var(--navy);transition:background-color 200ms ease,transform 160ms var(--ease-out)}
+.ct:hover{background:var(--idea-bg)}
+.ct:active{transform:scale(.98)}
+.ct .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.ct .ico .ic{width:22px;height:22px}
+.ct.wa .ico{background:#1C7A43}.ct.ig .ico{background:var(--purple)}.ct.em .ico{background:var(--navy)}
+.ct b{display:block;font-size:1rem}
+.ct small{display:block;font-size:.8125rem;color:var(--muted);font-weight:500}
+.ct .go{width:18px;height:18px;color:var(--muted)}
+
+/* the problem-card deck on the counter */
+.deckwrap{display:none;left:50%;bottom:6%;transform:translateX(-50%);width:min(380px,calc(100% - 32px));gap:14px;justify-items:center}
+.mode-kartu .deckwrap.on{display:grid}
+.deck{position:relative;width:100%;height:clamp(250px,40svh,320px);touch-action:none}
+.pc{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;gap:12px;padding:22px;border-radius:24px;background:var(--paper);color:var(--ink);text-align:left;box-shadow:0 30px 50px -28px rgba(11,15,58,.7),0 0 0 1px rgba(19,25,81,.06);user-select:none;-webkit-user-select:none;cursor:grab;transition:transform 380ms var(--ease-out),opacity 380ms ease}
+.pc.drag{transition:none}
+.pc[data-depth="1"]{transform:translateY(10px) scale(.96);opacity:.9}
+.pc[data-depth="2"]{transform:translateY(20px) scale(.92);opacity:.7}
+.pc[data-depth="1"],.pc[data-depth="2"]{pointer-events:none}
+.pc .k{display:flex;justify-content:space-between;gap:8px;font:700 .6875rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pc h2{align-self:center;font-size:clamp(1.45rem,4.4vw,1.85rem);color:var(--navy);letter-spacing:-.025em}
+.pc .tg{display:flex;flex-wrap:wrap;gap:6px}
+.pc .stamp{position:absolute;top:20px;padding:6px 12px;border-radius:10px;font:800 .8125rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;opacity:0;box-shadow:inset 0 0 0 2.5px currentColor}
+.pc .s-yes{left:20px;color:var(--ok);transform:rotate(-8deg)}
+.pc .s-no{right:20px;color:var(--no);transform:rotate(8deg)}
+.pc .s-up{left:50%;top:auto;bottom:20px;transform:translateX(-50%);color:var(--purple)}
+.acts{display:flex;align-items:center;justify-content:center;gap:14px}
+.act{display:grid;place-items:center;border:0;cursor:pointer;border-radius:999px;background:var(--paper);box-shadow:0 0 0 1px var(--line),0 12px 22px -12px rgba(11,15,58,.6);transition:transform 160ms var(--ease-out)}
+.act:active{transform:scale(.92)}
+.act.no,.act.yes{width:60px;height:60px}
+.act.up{width:50px;height:50px}
+.act .ic{width:26px;height:26px}
+.act.up .ic{width:20px;height:20px}
+.act.no{color:var(--no)}.act.yes{color:var(--ok)}.act.up{color:var(--purple)}
+.act-l{display:flex;justify-content:center;gap:14px;font-size:.75rem;font-weight:600;color:var(--navy);margin-top:-6px}
+.act-l span{width:60px;text-align:center}
+.act-l span:nth-child(2){width:50px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--wash);color:var(--navy);white-space:nowrap}
+
+/* industry paper (first sheet in card mode) */
+.sheet{position:relative;width:100%;display:grid;gap:14px;padding:20px;border-radius:8px;background:var(--receipt);box-shadow:0 28px 40px -26px rgba(11,15,58,.55),0 0 0 1px rgba(19,25,81,.06);text-align:center;transform:rotate(1deg)}
+.sheet h2{font-size:1.375rem;color:var(--navy)}
+.sheet p{font-size:.875rem;color:var(--muted)}
+.inds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ind{display:grid;gap:6px;justify-items:center;padding:12px 6px;border:0;border-radius:14px;background:#F1EEF9;color:var(--navy);font-weight:700;font-size:.8125rem;cursor:pointer;transition:background-color 200ms ease}
+.ind:hover{background:var(--idea-bg)}
+.ind .ic{width:22px;height:22px;color:var(--purple)}
+.skip{justify-self:center;color:var(--muted);background:none;border:0;font-weight:600;font-size:.8125rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.hint-k{font-size:.8125rem;font-weight:600;color:var(--navy);text-align:center}
+.cue{position:absolute;z-index:4;display:grid;justify-items:center;gap:2px;padding:8px 10px;border-radius:16px;background:rgba(255,255,255,.94);box-shadow:0 10px 20px -12px rgba(11,15,58,.7);pointer-events:none;font:700 .75rem/1 var(--body);color:var(--navy)}
+.cue .ic{width:26px;height:26px}
+.cue-up{left:50%;top:-74px;transform:translateX(-50%);padding:8px 16px}
+.cue-up .ic{width:34px;height:34px;color:var(--purple)}
+.cue-no,.cue-yes{top:50%;margin-top:-30px}
+.cue-no{left:-92px}.cue-no .ic{color:var(--no);transform:rotate(180deg)}
+.cue-yes{right:-92px}.cue-yes .ic{color:var(--ok)}
+@media (prefers-reduced-motion:no-preference){
+  .cue-up .ic{animation:nudgeU 1.6s var(--ease-out) infinite}
+  .cue-no .ic{animation:nudgeL 1.6s var(--ease-out) infinite}
+  .cue-yes .ic{animation:nudgeR 1.6s var(--ease-out) infinite}
+}
+@keyframes nudgeU{0%,60%,100%{transform:none}30%{transform:translateY(-5px)}}
+@keyframes nudgeL{0%,60%,100%{transform:rotate(180deg)}30%{transform:rotate(180deg) translateX(5px)}}
+@keyframes nudgeR{0%,60%,100%{transform:none}30%{transform:translateX(5px)}}
+@media (max-width:760px){
+  .cue-no,.cue-yes{top:auto;bottom:22px;margin-top:0;padding:6px 7px}
+  .deckwrap .deck{width:min(263px,calc(100% - 80px));height:clamp(300px,46svh,370px)}
+  .deckwrap .pc .k{flex-direction:column;gap:5px}
+  .cue-no{left:-50px}.cue-yes{right:-50px}
+  .cue .ic{width:22px;height:22px}
+  .cue-up{top:-64px}
+}
+.sheet .hint-k{color:var(--muted)}
+
+@media (max-width:760px){
+  .paper{left:var(--gl);right:var(--gr);width:auto;top:auto;bottom:12px;transform:none;max-height:54%;animation-name:slipUp!important}
+  @keyframes slipUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+  .paper.compact .pp-f,.paper.compact .rc-h,.paper.compact .pp-res ol,.paper.compact .pp-res .none{display:none}
+  .paper.compact .pp-tog{display:inline-flex;justify-self:start;border:0;background:none;color:var(--purple-deep);font-weight:700;font-size:.8125rem;padding:0;cursor:pointer}
+  .prog{right:auto;left:var(--gl);top:calc(var(--nav-top) + var(--nav-h) + 68px)}
+  .exit{left:var(--gl)}
+  .deckwrap{bottom:14px}
+  .deck{height:clamp(220px,34svh,280px)}
+  .sum{left:16px!important;right:16px;top:auto!important;width:auto;transform:none;padding-right:52px}
+  .sum::after{display:none}
+  .sum-x{display:grid;place-items:center;position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:999px;background:var(--wash);color:var(--navy);cursor:pointer}
+  .sum-x .ic{width:16px;height:16px}
+  .pbar{bottom:12px}
+}
+
+/* ---------- Etalase: the light cashier counter in a dark room, its front holds a recessed display window ---------- */
+/* The counter body continues the counter front of the shop scene above (same flat colour, same width), so the
+   window reads as cut into the counter. 3D draws only the planks and boxes; body, window and floor are CSS. */
+.etalase{position:relative;background:linear-gradient(var(--navy) 0 calc(100% - 60px),#0B0F3A calc(100% - 60px));overflow:hidden;--counter:#C2B8DF;--plinth:#AA9FCD;--gap:14px}
+.focus .etalase,.focus .band-wrap{display:none}
+.room{position:relative;padding:0 0 60px}
+.room .wrap{max-width:none;padding-left:0;padding-right:0}
+.counter{position:relative;background:var(--counter);padding:14px max(var(--gr),calc((100% - 1240px) / 2)) 24px max(var(--gl),calc((100% - 1240px) / 2))}
+.counter-h{position:relative;z-index:2;margin:0 0 14px;text-align:center;font-size:clamp(1.25rem,2.2vw,1.75rem);letter-spacing:-.01em;color:var(--navy)}
+.frame{position:relative;border-radius:10px;background:#2A2F6B;padding:2px 0 8px;box-shadow:inset 0 46px 40px -16px rgba(3,4,24,.96),inset 34px 0 34px -20px rgba(3,4,24,.9),inset -34px 0 34px -20px rgba(3,4,24,.9),inset 0 -20px 28px -14px rgba(3,4,24,.7),0 1px 0 rgba(255,255,255,.3),0 -3px 0 rgba(19,25,81,.22)}
+.tiers{position:relative;border-radius:10px}
+.plinth{height:20px;background:var(--plinth)}
+.tier{position:relative;padding:0 10px 28px}
+.plank{position:absolute;z-index:2;left:0;right:0;bottom:0;height:24px;display:flex;align-items:center;padding-left:14px}
+.plank h3{font:700 .75rem/1 var(--body);letter-spacing:.02em;color:var(--navy)}
+.row{position:relative;min-width:0}
+.track{display:grid;grid-auto-flow:column;grid-auto-columns:216px;column-gap:var(--gap);padding-top:20px;margin:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.track::-webkit-scrollbar{display:none}
+.track.drag{scroll-snap-type:none;cursor:grabbing}
+.track.drag a{pointer-events:none}
+.slot{scroll-snap-align:start;min-width:0}
+.prod{display:block;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.pk{position:relative;z-index:2;display:block;width:216px;height:305px;transition:transform 200ms var(--ease-out)}
+.prod:hover .pk,.prod:focus-visible .pk{transform:translateY(-6px)}
+.prod:focus-visible{outline:none}
+.prod:focus-visible .cover{outline:3px solid var(--cyan);outline-offset:3px}
+.st{position:absolute;top:14px;left:12px;height:20px;display:inline-flex;align-items:center;gap:6px;padding:0 9px;border-radius:999px;background:#fff;box-shadow:0 1px 0 rgba(19,25,81,.14);font:700 .6875rem/1 var(--body);letter-spacing:.02em;color:var(--navy);white-space:nowrap}
+.st i{width:6px;height:6px;border-radius:50%;background:var(--run)}
+.st.ide i{background:var(--idea)}
+.cover{position:absolute;left:10px;right:10px;top:44px;bottom:50px;display:flex;flex-direction:column;padding:10px 10px 10px 12px;border-radius:10px;color:var(--navy);overflow:hidden}
+.cover .fit{margin-top:auto;padding-top:8px;display:grid;gap:4px}
+.cover .fit small{font:700 .6875rem/1 var(--body);color:var(--muted)}
+.cover .chips{display:flex;flex-wrap:wrap;gap:4px}
+.cover .chips span{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px 0 5px;border-radius:999px;background:#fff;font:600 .6875rem/1 var(--body);color:var(--navy);white-space:nowrap}
+.cover .chips .ic{width:12px;height:12px;color:var(--purple)}
+.cover .chips .more{padding:0 7px}
+.cover .chips [hidden]{display:none}
+.cover .ttl{flex:none;font:700 1.125rem/1.14 var(--display);letter-spacing:-.015em;font-variation-settings:"opsz" 48;text-wrap:balance;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.cover .sub{flex:none;margin-top:8px;font:600 .8125rem/1.36 var(--body);color:rgba(19,25,81,.78);text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.apps{position:absolute;left:12px;bottom:12px;display:flex;gap:8px}
+.apps i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:0 1px 0 rgba(19,25,81,.14)}
+.apps .ic{width:17px;height:17px}
+.dekor{pointer-events:none}
+.dekor .pk{height:305px}
+.arr{position:absolute;z-index:4;top:calc(20px + 152px);margin-top:-20px;width:40px;height:40px;border:0;border-radius:999px;display:grid;place-items:center;background:#fff;color:var(--navy);cursor:pointer;box-shadow:0 0 0 1px var(--line),0 10px 20px -12px rgba(0,0,0,.6);transition:opacity 200ms ease,transform 160ms var(--ease-out)}
+.arr:active{transform:scale(.94)}
+.arr[hidden]{display:none}
+.arr:disabled{opacity:0;pointer-events:none}
+.arr .ic{width:18px;height:18px}
+.arr.prev{left:-10px}.arr.prev .ic{transform:rotate(180deg)}
+.arr.next{right:-10px}
+/* no WebGL: flat CSS version of the same counter */
+.no3d .plank{background:#B4A9D5}
+.no3d .pk{background:var(--c);border-radius:6px}
+.no3d .cover{background:#F1F1F5}
+@media (max-width:760px){
+  .counter{padding:12px 10px 18px}
+  .tier{padding:0 8px 28px}
+  .track{grid-auto-columns:216px;padding-top:16px;margin-right:-8px;padding-right:8px}
+  .arr{display:none}
+}
+.band-wrap{background:#0B0F3A;padding-bottom:clamp(40px,6vw,72px)}
+.band{display:grid;gap:16px;padding:clamp(22px,4vw,36px);border-radius:24px;background:var(--navy-2);color:var(--on-night);box-shadow:inset 0 0 0 1px rgba(182,187,226,.22)}
+@media (min-width:860px){.band{grid-template-columns:minmax(0,1fr) auto;align-items:center}}
+.band h2{font-size:clamp(1.4rem,2.6vw,2rem);color:#fff}
+.band p{color:var(--on-night-muted);margin-top:6px;max-width:52ch}
+
+/* ---------- Detail and results pages ---------- */
+.page{background:var(--paper);padding-top:calc(var(--nav-top) + var(--nav-h));padding-bottom:clamp(56px,8vw,96px);position:relative;z-index:2}
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.875rem;color:var(--muted);padding-top:clamp(24px,4vw,48px)}
+.crumb a{text-decoration:none;font-weight:600}
+.crumb a:hover{color:var(--purple)}
+.d-head{display:grid;gap:18px;padding-block:18px clamp(28px,4vw,44px)}
+.d-head h1{font-size:clamp(2.1rem,5vw,4rem);color:var(--navy);letter-spacing:-.035em;max-width:18ch}
+.d-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.d-meta time{font-size:.8125rem;color:var(--muted)}
+.answer-box{display:grid;gap:10px;max-width:70ch;padding:20px 22px;border-radius:22px;background:var(--wash);box-shadow:inset 3px 0 0 var(--purple)}
+.answer-box .q{font:700 1rem/1.35 var(--display);color:var(--purple-deep)}
+.answer-box p{font-size:1.125rem;line-height:1.65;color:var(--navy)}
+.layout{display:grid;gap:40px}
+@media (min-width:1000px){.layout{grid-template-columns:300px minmax(0,1fr);gap:64px;align-items:start}}
+.facts{border-radius:24px;background:var(--wash);padding:20px 20px 6px}
+@media (min-width:1000px){.facts{position:sticky;top:calc(var(--nav-top) + var(--nav-h) + 20px)}}
+.facts h2{font-size:1.0625rem;margin-bottom:6px}
+.veil{display:flex;gap:8px;align-items:flex-start;margin:6px 0 12px;padding:10px 12px;border-radius:14px;background:var(--paper);font-size:.8125rem;line-height:1.45;color:var(--muted)}
+.veil .ic{width:16px;height:16px;color:var(--purple);margin-top:1px}
+.facts dl > div{padding:11px 0;border-top:1px solid var(--line)}
+.facts dt{font-size:.6875rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin-top:3px;font-weight:600;color:var(--navy);font-size:.9375rem}
+.facts .watch{display:flex;align-items:center;gap:10px;margin:6px 0 14px;padding:12px 14px;border-radius:16px;background:var(--navy);color:#fff;text-decoration:none;font-weight:700;font-size:.9375rem}
+.facts .watch .ic{width:18px;height:18px;color:var(--cyan)}
+.body{min-width:0;display:grid;gap:clamp(44px,6vw,64px)}
+.sec{display:grid;gap:14px;max-width:70ch}
+.sec h2{font-size:clamp(1.6rem,3vw,2.3rem);color:var(--navy)}
+.sec .eb{font:700 .75rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
+.sec .lead{font-size:1.125rem;line-height:1.65;color:var(--navy)}
+.ticks{display:grid;gap:10px}
+.ticks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;font-size:1.0625rem;line-height:1.6}
+.ticks .ic{width:20px;height:20px;margin-top:4px}
+.t-pain .ic,.t-no .ic{color:var(--no)}
+.t-yes .ic{color:var(--ok)}
+.t-prep .ic{color:var(--purple)}
+.steps{display:grid;gap:12px;counter-reset:s}
+@media (min-width:720px){.steps{grid-template-columns:1fr 1fr}}
+.steps li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 14px;padding:16px;border-radius:18px;box-shadow:inset 0 0 0 1px var(--line);counter-increment:s}
+.steps li::before{content:counter(s);grid-row:span 2;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--wash);font:800 1.125rem/1 var(--display);color:var(--purple)}
+.steps b{font:700 1.0625rem/1.3 var(--display);color:var(--navy)}
+.steps p{font-size:.9375rem;line-height:1.55;color:var(--muted)}
+.tbl-wrap{overflow-x:auto;border-radius:18px;box-shadow:inset 0 0 0 1px var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.9375rem;min-width:520px}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:var(--wash);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{font-weight:700;color:var(--navy)}
+td.after{color:var(--ok);font-weight:600}
+.two{display:grid;gap:12px}
+@media (min-width:720px){.two{grid-template-columns:1fr 1fr}}
+.two > div{padding:18px;border-radius:20px;background:var(--wash);display:grid;gap:10px;align-content:start}
+.two h3{font-size:1.0625rem;color:var(--navy)}
+.tiles{display:grid;gap:12px}
+@media (min-width:640px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tile{padding:18px;border-radius:20px;background:var(--wash)}
+.tile b{display:block;font:800 2.4rem/1 var(--display);letter-spacing:-.04em;color:var(--navy);font-variant-numeric:tabular-nums}
+.tile b small{font-size:1.05rem;color:var(--purple);margin-left:4px}
+.tile p{margin-top:8px;font-size:.9375rem;color:var(--muted)}
+.note{font-size:.875rem;color:var(--muted)}
+.apps-l{display:grid;gap:10px}
+@media (min-width:640px){.apps-l{grid-template-columns:1fr 1fr}}
+.apps-l li{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;box-shadow:inset 0 0 0 1px var(--line);font-weight:700}
+.apps-l .ic{width:22px;height:22px;color:var(--purple)}
+.faq{display:grid;gap:12px}
+.faq > div{padding:18px 20px;border-radius:20px;background:var(--wash)}
+.faq dt{font:700 1.0625rem/1.3 var(--display);color:var(--navy)}
+.faq dd{margin-top:6px;line-height:1.6;color:var(--muted)}
+.d-cta{display:grid;gap:14px;padding:clamp(22px,4vw,36px);border-radius:26px;background:var(--navy);color:var(--on-night)}
+.d-cta h2{color:#fff;font-size:clamp(1.5rem,3vw,2.2rem)}
+.d-cta p{color:var(--on-night-muted)}
+.d-cta .btn-line{color:var(--on-night)}
+
+.res{display:grid;gap:18px;max-width:760px;margin:0 auto;padding-top:clamp(24px,4vw,48px)}
+.res h1{font-size:clamp(1.9rem,4.4vw,3rem);color:var(--navy);letter-spacing:-.03em;text-align:center}
+.res .picked{display:flex;flex-wrap:wrap;gap:6px}
+.res .picked span{padding:6px 10px;border-radius:999px;background:var(--wash);font-size:.8125rem}
+.res-list{display:grid;gap:12px}
+.res-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:18px;border-radius:22px;background:var(--paper);box-shadow:0 0 0 1px var(--line);text-decoration:none}
+.res-card:hover{box-shadow:0 0 0 1.5px rgba(159,14,214,.4)}
+.res-card h3{font-size:1.125rem;color:var(--navy)}
+.res-card p{grid-column:1;font-size:.875rem;color:var(--muted)}
+.res-card .match{grid-row:span 2;grid-column:2;display:grid;justify-items:end;gap:6px}
+.res-card .match small{font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.res .none{padding:22px;border-radius:22px;background:var(--wash)}
+
+/* ---------- Footer ---------- */
+.foot{position:relative;z-index:2;background:var(--navy-3);color:var(--on-night-muted);font-size:.8125rem}
+.foot .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:24px calc(24px + env(safe-area-inset-bottom,0px))}
+.foot img{height:22px;width:auto}
+.lang{display:flex;gap:6px;align-items:center}
+.lang button{border:0;background:transparent;color:var(--on-night-muted);font-weight:700;padding:4px 8px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:rgba(255,255,255,.1);color:#fff}
+.focus .foot{display:none}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:1ms!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-whatsapp-logo" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.61-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></symbol><symbol id="i-arrow-up-right" viewBox="0 0 256 256"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></symbol><symbol id="i-chat-circle-dots" viewBox="0 0 256 256"><path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"/></symbol><symbol id="i-receipt" viewBox="0 0 256 256"><path d="M72,104a8,8,0,0,1,8-8h96a8,8,0,0,1,0,16H80A8,8,0,0,1,72,104Zm8,40h96a8,8,0,0,0,0-16H80a8,8,0,0,0,0,16ZM232,56V208a8,8,0,0,1-11.58,7.15L192,200.94l-28.42,14.21a8,8,0,0,1-7.16,0L128,200.94,99.58,215.15a8,8,0,0,1-7.16,0L64,200.94,35.58,215.15A8,8,0,0,1,24,208V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56Zm-16,0H40V195.06l20.42-10.22a8,8,0,0,1,7.16,0L96,199.06l28.42-14.22a8,8,0,0,1,7.16,0L160,199.06l28.42-14.22a8,8,0,0,1,7.16,0L216,195.06Z"/></symbol><symbol id="i-calendar-dots" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-68-76a12,12,0,1,1-12-12A12,12,0,0,1,140,132Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,132ZM96,172a12,12,0,1,1-12-12A12,12,0,0,1,96,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,140,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Z"/></symbol><symbol id="i-books" viewBox="0 0 256 256"><path d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z"/></symbol><symbol id="i-check" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-check-circle" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></symbol><symbol id="i-list" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-globe-simple" viewBox="0 0 256 256"><path d="M128,24h0A104,104,0,1,0,232,128,104.12,104.12,0,0,0,128,24Zm87.62,96H175.79C174,83.49,159.94,57.67,148.41,42.4A88.19,88.19,0,0,1,215.63,120ZM96.23,136h63.54c-2.31,41.61-22.23,67.11-31.77,77C118.45,203.1,98.54,177.6,96.23,136Zm0-16C98.54,78.39,118.46,52.89,128,43c9.55,9.93,29.46,35.43,31.77,77Zm11.36-77.6C96.06,57.67,82,83.49,80.21,120H40.37A88.19,88.19,0,0,1,107.59,42.4ZM40.37,136H80.21c1.82,36.51,15.85,62.33,27.38,77.6A88.19,88.19,0,0,1,40.37,136Zm108,77.6c11.53-15.27,25.56-41.09,27.38-77.6h39.84A88.19,88.19,0,0,1,148.41,213.6Z"/></symbol><symbol id="i-map-pin" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></symbol><symbol id="i-storefront" viewBox="0 0 256 256"><path d="M232,96a7.89,7.89,0,0,0-.3-2.2L217.35,43.6A16.07,16.07,0,0,0,202,32H54A16.07,16.07,0,0,0,38.65,43.6L24.31,93.8A7.89,7.89,0,0,0,24,96h0v16a40,40,0,0,0,16,32v72a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V144a40,40,0,0,0,16-32V96ZM54,48H202l11.42,40H42.61Zm50,56h48v8a24,24,0,0,1-48,0Zm-16,0v8a24,24,0,0,1-35.12,21.26,7.88,7.88,0,0,0-1.82-1.06A24,24,0,0,1,40,112v-8ZM200,208H56V151.2a40.57,40.57,0,0,0,8,.8,40,40,0,0,0,32-16,40,40,0,0,0,64,0,40,40,0,0,0,32,16,40.57,40.57,0,0,0,8-.8Zm4.93-75.8a8.08,8.08,0,0,0-1.8,1.05A24,24,0,0,1,168,112v-8h48v8A24,24,0,0,1,204.93,132.2Z"/></symbol><symbol id="i-first-aid" viewBox="0 0 256 256"><path d="M216,88H168V40a16,16,0,0,0-16-16H104A16,16,0,0,0,88,40V88H40a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H88v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V168h48a16,16,0,0,0,16-16V104A16,16,0,0,0,216,88Zm0,64H160a8,8,0,0,0-8,8v56H104V160a8,8,0,0,0-8-8H40V104H96a8,8,0,0,0,8-8V40h48V96a8,8,0,0,0,8,8h56Z"/></symbol><symbol id="i-buildings" viewBox="0 0 256 256"><path d="M240,208H224V96a16,16,0,0,0-16-16H144V32a16,16,0,0,0-24.88-13.32L39.12,72A16,16,0,0,0,32,85.34V208H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM208,96V208H144V96ZM48,85.34,128,32V208H48ZM112,112v16a8,8,0,0,1-16,0V112a8,8,0,1,1,16,0Zm-32,0v16a8,8,0,0,1-16,0V112a8,8,0,1,1,16,0Zm0,56v16a8,8,0,0,1-16,0V168a8,8,0,0,1,16,0Zm32,0v16a8,8,0,0,1-16,0V168a8,8,0,0,1,16,0Z"/></symbol><symbol id="i-truck" viewBox="0 0 256 256"><path d="M255.42,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.42,117ZM192,88h34.58l9.6,24H192ZM32,72H176v64H32ZM80,208a16,16,0,1,1,16-16A16,16,0,0,1,80,208Zm81-24H111a32,32,0,0,0-62,0H32V152H176v12.31A32.11,32.11,0,0,0,161,184Zm31,24a16,16,0,1,1,16-16A16,16,0,0,1,192,208Zm48-24H223a32.06,32.06,0,0,0-31-24V128h48Z"/></symbol><symbol id="i-sparkle" viewBox="0 0 256 256"><path d="M197.58,129.06,146,110l-19-51.62a15.92,15.92,0,0,0-29.88,0L78,110l-51.62,19a15.92,15.92,0,0,0,0,29.88L78,178l19,51.62a15.92,15.92,0,0,0,29.88,0L146,178l51.62-19a15.92,15.92,0,0,0,0-29.88ZM137,164.22a8,8,0,0,0-4.74,4.74L112,223.85,91.78,169A8,8,0,0,0,87,164.22L32.15,144,87,123.78A8,8,0,0,0,91.78,119L112,64.15,132.22,119a8,8,0,0,0,4.74,4.74L191.85,144ZM144,40a8,8,0,0,1,8-8h16V16a8,8,0,0,1,16,0V32h16a8,8,0,0,1,0,16H184V64a8,8,0,0,1-16,0V48H152A8,8,0,0,1,144,40ZM248,88a8,8,0,0,1-8,8h-8v8a8,8,0,0,1-16,0V96h-8a8,8,0,0,1,0-16h8V72a8,8,0,0,1,16,0v8h8A8,8,0,0,1,248,88Z"/></symbol><symbol id="i-table" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM40,112H80v32H40Zm56,0H216v32H96ZM216,64V96H40V64ZM40,160H80v32H40Zm176,32H96V160H216v32Z"/></symbol><symbol id="i-bell" viewBox="0 0 256 256"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-instagram-logo" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"/></symbol><symbol id="i-file-text" viewBox="0 0 256 256"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-32-80a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,136Zm0,32a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,168Z"/></symbol><symbol id="i-handshake" viewBox="0 0 256 256"><path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z"/></symbol><symbol id="i-users" viewBox="0 0 256 256"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></symbol><symbol id="i-plus" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/></symbol><symbol id="i-user-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"/></symbol><symbol id="i-package" viewBox="0 0 256 256"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"/></symbol><symbol id="i-coffee" viewBox="0 0 256 256"><path d="M80,56V24a8,8,0,0,1,16,0V56a8,8,0,0,1-16,0Zm40,8a8,8,0,0,0,8-8V24a8,8,0,0,0-16,0V56A8,8,0,0,0,120,64Zm32,0a8,8,0,0,0,8-8V24a8,8,0,0,0-16,0V56A8,8,0,0,0,152,64Zm96,56v8a40,40,0,0,1-37.51,39.91,96.59,96.59,0,0,1-27,40.09H208a8,8,0,0,1,0,16H32a8,8,0,0,1,0-16H56.54A96.3,96.3,0,0,1,24,136V88a8,8,0,0,1,8-8H208A40,40,0,0,1,248,120ZM200,96H40v40a80.27,80.27,0,0,0,45.12,72h69.76A80.27,80.27,0,0,0,200,136Zm32,24a24,24,0,0,0-16-22.62V136a95.78,95.78,0,0,1-1.2,15A24,24,0,0,0,232,128Z"/></symbol><symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol><symbol id="i-book-open-text" viewBox="0 0 256 256"><path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64ZM160,88h40a8,8,0,0,1,0,16H160a8,8,0,0,1,0-16Zm48,40a8,8,0,0,1-8,8H160a8,8,0,0,1,0-16h40A8,8,0,0,1,208,128Zm0,32a8,8,0,0,1-8,8H160a8,8,0,0,1,0-16h40A8,8,0,0,1,208,160Z"/></symbol><symbol id="i-chalkboard-teacher" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H53.39a8,8,0,0,0,7.23-4.57,48,48,0,0,1,86.76,0,8,8,0,0,0,7.23,4.57H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM80,144a24,24,0,1,1,24,24A24,24,0,0,1,80,144Zm136,56H159.43a64.39,64.39,0,0,0-28.83-26.16,40,40,0,1,0-53.2,0A64.39,64.39,0,0,0,48.57,200H40V56H216ZM56,96V80a8,8,0,0,1,8-8H192a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H176a8,8,0,0,1,0-16h8V88H72v8a8,8,0,0,1-16,0Z"/></symbol><symbol id="i-check-fat" viewBox="0 0 256 256"><path d="M243.28,68.24l-24-23.56a16,16,0,0,0-22.59,0L104,136.23l-36.69-35.6a16,16,0,0,0-22.58.05l-24,24a16,16,0,0,0,0,22.61l71.62,72a16,16,0,0,0,22.63,0L243.33,90.91A16,16,0,0,0,243.28,68.24ZM103.62,208,32,136l24-24a.6.6,0,0,1,.08.08l42.35,41.09a8,8,0,0,0,11.19,0L208.06,56,232,79.6Z"/></symbol><symbol id="i-compass" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM172.42,72.84l-64,32a8.05,8.05,0,0,0-3.58,3.58l-32,64A8,8,0,0,0,80,184a8.1,8.1,0,0,0,3.58-.84l64-32a8.05,8.05,0,0,0,3.58-3.58l32-64a8,8,0,0,0-10.74-10.74ZM138,138,97.89,158.11,118,118l40.15-20.07Z"/></symbol><symbol id="i-graduation-cap" viewBox="0 0 256 256"><path d="M251.76,88.94l-120-64a8,8,0,0,0-7.52,0l-120,64a8,8,0,0,0,0,14.12L32,117.87v48.42a15.91,15.91,0,0,0,4.06,10.65C49.16,191.53,78.51,216,128,216a130,130,0,0,0,48-8.76V240a8,8,0,0,0,16,0V199.51a115.63,115.63,0,0,0,27.94-22.57A15.91,15.91,0,0,0,224,166.29V117.87l27.76-14.81a8,8,0,0,0,0-14.12ZM128,200c-43.27,0-68.72-21.14-80-33.71V126.4l76.24,40.66a8,8,0,0,0,7.52,0L176,143.47v46.34C163.4,195.69,147.52,200,128,200Zm80-33.75a97.83,97.83,0,0,1-16,14.25V134.93l16-8.53ZM188,118.94l-.22-.13-56-29.87a8,8,0,0,0-7.52,14.12L171,128l-43,22.93L25,96,128,41.07,231,96Z"/></symbol><symbol id="i-image" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z"/></symbol><symbol id="i-linkedin-logo" viewBox="0 0 256 256"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"/></symbol><symbol id="i-palette" viewBox="0 0 256 256"><path d="M200.77,53.89A103.27,103.27,0,0,0,128,24h-1.07A104,104,0,0,0,24,128c0,43,26.58,79.06,69.36,94.17A32,32,0,0,0,136,192a16,16,0,0,1,16-16h46.21a31.81,31.81,0,0,0,31.2-24.88,104.43,104.43,0,0,0,2.59-24A103.28,103.28,0,0,0,200.77,53.89Zm13,93.71A15.89,15.89,0,0,1,198.21,160H152a32,32,0,0,0-32,32,16,16,0,0,1-21.31,15.07C62.49,194.3,40,164,40,128a88,88,0,0,1,87.09-88h.9a88.35,88.35,0,0,1,88,87.25A88.86,88.86,0,0,1,213.81,147.6ZM140,76a12,12,0,1,1-12-12A12,12,0,0,1,140,76ZM96,100A12,12,0,1,1,84,88,12,12,0,0,1,96,100Zm0,56a12,12,0,1,1-12-12A12,12,0,0,1,96,156Zm88-56a12,12,0,1,1-12-12A12,12,0,0,1,184,100Z"/></symbol><symbol id="i-push-pin" viewBox="0 0 256 256"><path d="M235.32,81.37,174.63,20.69a16,16,0,0,0-22.63,0L98.37,74.49c-10.66-3.34-35-7.37-60.4,13.14a16,16,0,0,0-1.29,23.78L85,159.71,42.34,202.34a8,8,0,0,0,11.32,11.32L96.29,171l48.29,48.29A16,16,0,0,0,155.9,224c.38,0,.75,0,1.13,0a15.93,15.93,0,0,0,11.64-6.33c19.64-26.1,17.75-47.32,13.19-60L235.33,104A16,16,0,0,0,235.32,81.37ZM224,92.69h0l-57.27,57.46a8,8,0,0,0-1.49,9.22c9.46,18.93-1.8,38.59-9.34,48.62L48,100.08c12.08-9.74,23.64-12.31,32.48-12.31A40.13,40.13,0,0,1,96.81,91a8,8,0,0,0,9.25-1.51L163.32,32,224,92.68Z"/></symbol><symbol id="i-quotes" viewBox="0 0 256 256"><path d="M100,56H40A16,16,0,0,0,24,72v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,100,56Zm0,80H40V72h60ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Zm0,80H156V72h60Z"/></symbol><symbol id="i-seal-check" viewBox="0 0 256 256"><path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-11.55,39.29c-4.79,5-9.75,10.17-12.38,16.52-2.52,6.1-2.63,13.07-2.73,19.82-.1,7-.21,14.33-3.32,17.43s-10.39,3.22-17.43,3.32c-6.75.1-13.72.21-19.82,2.73-6.35,2.63-11.52,7.59-16.52,12.38S132,224,128,224s-9.15-4.92-14.11-9.69-10.17-9.75-16.52-12.38c-6.1-2.52-13.07-2.63-19.82-2.73-7-.1-14.33-.21-17.43-3.32s-3.22-10.39-3.32-17.43c-.1-6.75-.21-13.72-2.73-19.82-2.63-6.35-7.59-11.52-12.38-16.52S32,132,32,128s4.92-9.15,9.69-14.11,9.75-10.17,12.38-16.52c2.52-6.1,2.63-13.07,2.73-19.82.1-7,.21-14.33,3.32-17.43S70.51,56.9,77.55,56.8c6.75-.1,13.72-.21,19.82-2.73,6.35-2.63,11.52-7.59,16.52-12.38S124,32,128,32s9.15,4.92,14.11,9.69,10.17,9.75,16.52,12.38c6.1,2.52,13.07,2.63,19.82,2.73,7,.1,14.33.21,17.43,3.32s3.22,10.39,3.32,17.43c.1,6.75.21,13.72,2.73,19.82,2.63,6.35,7.59,11.52,12.38,16.52S224,124,224,128,219.08,137.15,214.31,142.11ZM173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"/></symbol><symbol id="i-tiktok-logo" viewBox="0 0 256 256"><path d="M224,72a48.05,48.05,0,0,1-48-48,8,8,0,0,0-8-8H128a8,8,0,0,0-8,8V156a20,20,0,1,1-28.57-18.08A8,8,0,0,0,96,130.69V88a8,8,0,0,0-9.4-7.88C50.91,86.48,24,119.1,24,156a76,76,0,0,0,152,0V116.29A103.25,103.25,0,0,0,224,128a8,8,0,0,0,8-8V80A8,8,0,0,0,224,72Zm-8,39.64a87.19,87.19,0,0,1-43.33-16.15A8,8,0,0,0,160,102v54a60,60,0,0,1-120,0c0-25.9,16.64-49.13,40-57.6v27.67A36,36,0,1,0,136,156V32h24.5A64.14,64.14,0,0,0,216,87.5Z"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 256 256"><path d="m229.7 218.3-43.3-43.3a92.2 92.2 0 1 0-11.3 11.3l43.3 43.4a8 8 0 0 0 11.3-11.4ZM40 116a76 76 0 1 1 76 76 76.1 76.1 0 0 1-76-76Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 256 256"><path d="M224 48H32a8 8 0 0 0-8 8v136a16 16 0 0 0 16 16h176a16 16 0 0 0 16-16V56a8 8 0 0 0-8-8Zm-20.6 16L128 133.2 52.6 64ZM216 192H40V74.2l82.6 75.7a8 8 0 0 0 10.8 0L216 74.2V192Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 256 256"><path d="M216 72h-84.7l-27.3-27.3A15.9 15.9 0 0 0 92.7 40H40a16 16 0 0 0-16 16v144.6A15.4 15.4 0 0 0 39.4 216h177.5a15.1 15.1 0 0 0 15.1-15.1V88a16 16 0 0 0-16-16ZM92.7 56l16 16H40V56Zm123.3 144H40V88h176Z"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 256 256"><path d="M205.7 117.7a8 8 0 0 1-11.4 0L136 59.3V216a8 8 0 0 1-16 0V59.3l-58.3 58.4a8 8 0 0 1-11.4-11.4l72-72a8 8 0 0 1 11.4 0l72 72a8 8 0 0 1 0 11.4Z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 256 256"><path d="M232.4 114.5 88.3 26.4a16 16 0 0 0-24.3 13.6v176a16 16 0 0 0 24.3 13.6l144.1-88.1a15.9 15.9 0 0 0 0-27Z"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 256 256"><path d="M128 24a104 104 0 1 0 104 104A104.2 104.2 0 0 0 128 24Zm0 192a88 88 0 1 1 88-88 88.1 88.1 0 0 1-88 88Zm-8-80V80a8 8 0 0 1 16 0v56a8 8 0 0 1-16 0Zm20 36a12 12 0 1 1-12-12 12 12 0 0 1 12 12Z"/></symbol>
+  <symbol id="i-return" viewBox="0 0 256 256"><path d="M224 128a96 96 0 0 1-94.7 96H128a95.4 95.4 0 0 1-65.9-26.2 8 8 0 0 1 11-11.6A80 80 0 1 0 71.4 71.4L51.3 92H72a8 8 0 0 1 0 16H32a8 8 0 0 1-8-8V60a8 8 0 0 1 16 0v21.3L60.1 60.3A96 96 0 0 1 224 128Z"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 256 256"><path d="M184 72H40a16 16 0 0 0-16 16v112a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a16 16 0 0 0-16-16Zm0 128H40V88h144Zm48-144v120a8 8 0 0 1-16 0V56H64a8 8 0 0 1 0-16h152a16 16 0 0 1 16 16Z"/></symbol>
+</svg>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a class="brand" href="#solusi" aria-label="Kreatekno"><img src="data:image/webp;base64,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" alt="Kreatekno" width="280" height="48"></a>
+  <ul class="nav-links">
+    <li><a href="#solusi" data-proto>Layanan</a></li>
+    <li><a href="#solusi" data-proto>Cara kerja</a></li>
+    <li><a href="#solusi" aria-current="page">Solusi</a></li>
+    <li><a href="#solusi" data-proto>Artikel</a></li>
+    <li><a href="#solusi" data-proto>Tentang</a></li>
+  </ul>
+  <div class="nav-end"><a class="btn btn-main" data-contact href="#" role="button">Konsultasi gratis<span class="knob"><svg class="ic"><use href="#i-chat-circle-dots"/></svg></span></a></div>
+</header>
+
+<main id="main">
+  <section class="toko" id="toko" aria-label="Toko solusi Kreatekno">
+    <div class="hero-copy" id="hero-copy">
+      <div class="screen">
+        <span class="eyebrow">Solusi</span>
+        <h1>Solusi AI untuk pekerjaan berulang di bisnis Anda</h1>
+        <p>Cari solusi yang Anda butuhkan, atau ceritakan masalahnya lewat kartu. Kasir kami siap mengambilkannya.</p>
+      </div>
+      <div class="hero-btns">
+        <a class="btn btn-main" href="#cari">Cari solusi<span class="knob"><svg class="ic"><use href="#i-search"/></svg></span></a>
+        <a class="btn btn-dark" href="#kartu">Kartu masalah<span class="knob"><svg class="ic"><use href="#i-cards"/></svg></span></a>
+      </div>
+    </div>
+
+    <a class="exit" href="#solusi"><svg class="ic"><use href="#i-arrow-right"/></svg>Kembali ke etalase</a>
+    <div class="prog" id="prog"><span id="prog-t"></span><span class="bar"><i id="prog-i"></i></span></div>
+
+    <form class="paper" id="paper" role="search" autocomplete="off">
+      <div class="rc-h"><b>KREATEKNO</b><span>Etalase Solusi · Kasir: Raka</span><span id="rc-no">No. 0001</span></div>
+      <label class="q" for="q">Cari solusi<input id="q" type="search" placeholder="Misalnya: tagihan, booking, stok"></label>
+      <div class="pp-f">
+        <label class="flt"><span class="sr-only">Bidang usaha</span><select id="f-ind"></select><svg class="ic"><use href="#i-caret-down"/></svg></label>
+        <label class="flt"><span class="sr-only">Tim</span><select id="f-tim"></select><svg class="ic"><use href="#i-caret-down"/></svg></label>
+        <label class="flt"><span class="sr-only">Aplikasi</span><select id="f-app"></select><svg class="ic"><use href="#i-caret-down"/></svg></label>
+        <label class="flt"><span class="sr-only">Status</span><select id="f-st"></select><svg class="ic"><use href="#i-caret-down"/></svg></label>
+      </div>
+      <button class="btn btn-main" type="submit">Ambilkan solusinya<span class="knob"><svg class="ic"><use href="#i-arrow-right"/></svg></span></button>
+      <button class="pp-tog" type="button" id="pp-tog">Lihat daftar dan filter</button>
+      <div class="pp-res" id="pp-res" aria-live="polite"></div>
+    </form>
+
+    <div class="tags" id="tags"></div>
+    <div class="sum" id="sum" role="dialog"></div>
+    <div class="pbar" id="pbar" role="region" aria-label="Hasil pencarian" aria-live="polite">
+      <p class="pbar-msg" id="pbar-msg" hidden></p>
+      <div class="pbar-btns">
+        <button class="btn btn-line" type="button" id="pb-again"><svg class="ic"><use href="#i-return"/></svg>Cari kembali</button>
+        <a class="btn btn-main" href="#" role="button" id="pb-help" data-contact>Belum dapat solusi</a>
+      </div>
+    </div>
+    <div class="deckwrap" id="deckwrap"></div>
+  </section>
+
+  <section class="etalase" id="etalase" aria-labelledby="et-h">
+    <div class="room"><div class="wrap">
+      <div class="counter" id="counter">
+        <h2 class="counter-h" id="et-h">Pilih solusi sesuai kebutuhan bisnis Anda</h2>
+        <div class="frame" id="frame"><div class="tiers" id="tiers"></div></div>
+      </div>
+      <div class="plinth" id="plinth"></div>
+    </div></div>
+  </section>
+  <div class="band-wrap"><div class="wrap"><div class="band">
+    <div><h2>Masalah Anda belum ada di etalase?</h2><p>Ceritakan satu pekerjaan yang paling ingin Anda otomatiskan. Kami bantu petakan solusinya, gratis.</p></div>
+    <a class="btn btn-main" data-contact href="#" role="button">Konsultasi gratis<span class="knob"><svg class="ic"><use href="#i-chat-circle-dots"/></svg></span></a>
+  </div></div></div>
+
+  <article class="page" id="v-detail" hidden></article>
+  <section class="page" id="v-hasil" hidden></section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <img src="data:image/webp;base64,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" alt="Kreatekno" width="240" height="41">
+    <span>Prototipe halaman Solusi (etalase). Nama klien disamarkan; isi dan angka adalah contoh.</span>
+    <div class="lang" role="group" aria-label="Bahasa"><button type="button" aria-pressed="true">Indonesia</button><button type="button" aria-pressed="false">English</button></div>
+  </div>
+</footer>
+
+<div class="modal" id="contact" role="dialog" aria-modal="true" aria-labelledby="ct-h" hidden>
+  <div class="modal-card">
+    <button class="modal-x" type="button" aria-label="Tutup"><svg class="ic"><use href="#i-x"/></svg></button>
+    <h2 id="ct-h">Konsultasi gratis</h2>
+    <p>Pilih cara yang paling nyaman untuk Anda. Tim kami akan membantu memetakan solusinya.</p>
+    <div class="ct-list">
+      <a class="ct wa" href="#" target="_blank" rel="noopener"><span class="ico"><svg class="ic"><use href="#i-whatsapp-logo"/></svg></span><span><b>WhatsApp</b><small>Chat langsung dengan tim kami</small></span><svg class="ic go"><use href="#i-arrow-right"/></svg></a>
+      <a class="ct ig" href="#" target="_blank" rel="noopener"><span class="ico"><svg class="ic"><use href="#i-instagram-logo"/></svg></span><span><b>Instagram</b><small>Kirim pesan langsung ke akun kami</small></span><svg class="ic go"><use href="#i-arrow-right"/></svg></a>
+      <a class="ct em" href="#"><span class="ico"><svg class="ic"><use href="#i-mail"/></svg></span><span><b>Email</b><small>Ceritakan kebutuhan Anda lewat email</small></span><svg class="ic go"><use href="#i-arrow-right"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+/* ============================== data ============================== */
+/* ===== Data: solusi + bank kartu masalah (contoh) =====
+   status: "jalan" = Sudah berjalan (proyek klien, disamarkan) · "ide" = Siap dibangun */
+const INDUSTRI = [
+  ['retail', 'Retail & F&B'], ['klinik', 'Klinik'], ['properti', 'Properti'],
+  ['logistik', 'Logistik'], ['jasa', 'Jasa'], ['perjalanan', 'Perjalanan']
+];
+const TIM = [
+  ['marketing', 'Marketing'], ['penjualan', 'Penjualan'], ['cs', 'Layanan pelanggan'],
+  ['operasional', 'Operasional'], ['keuangan', 'Keuangan & admin'], ['manajemen', 'Manajemen'], ['sdm', 'SDM']
+];
+const APPS = [
+  ['whatsapp', 'WhatsApp', 'i-whatsapp-logo'], ['sheets', 'Google Sheets', 'i-table'], ['instagram', 'Instagram', 'i-instagram-logo'],
+  ['gmail', 'Gmail', 'i-mail'], ['calendar', 'Google Calendar', 'i-calendar-dots'], ['drive', 'Google Drive', 'i-folder']
+];
+
+const SOLUSI = [
+  {
+    slug: 'order-grup', status: 'jalan', updated: '28 Okt 2026',
+    title: 'Order dari grup WhatsApp tercatat sendiri ke Google Sheets',
+    q: 'Bagaimana order dari grup WhatsApp bisa tercatat otomatis?',
+    result: 'Order tercatat tanpa diketik ulang',
+    industri: ['logistik', 'retail'], tim: ['operasional', 'penjualan'], apps: ['whatsapp', 'sheets'],
+    client: 'Distributor air minum, Pekanbaru', watch: 'https://claude.ai/artifact/NdWfRQpV3D8d6QNdzanTBT',
+    answer: 'Asisten order dipasang di grup WhatsApp yang sudah dipakai tim. Setiap order yang ditulis sales dicatat ke Google Sheets, tim diberi kabar di grup, dan pemilik menerima rekap setiap malam. Tim tidak perlu mengubah cara mereka mengirim order.',
+    pains: ['Satu admin membaca seluruh grup lalu mengetik ulang setiap order ke tabel.', 'Revisi order tertimbun obrolan, sehingga ada order yang terlewat.', 'Pemilik baru tahu angka penjualan keesokan paginya.'],
+    steps: [['Tim mengirim order seperti biasa', 'Sales tetap menulis di grup WhatsApp yang sama, tanpa format khusus.'], ['Asisten mencatat ordernya', 'Order tersusun rapi di Google Sheets. Kalau ada yang kurang jelas, tim ditanya dulu.'], ['Status selalu terbaru', 'Kurir cukup membalas di grup, dan status di tabel ikut berubah.'], ['Pemilik menerima rekap', 'Setiap malam, ringkasan order hari itu dikirim ke pemilik.']],
+    compare: [['Mencatat order', 'Admin mengetik ulang dari chat', 'Tercatat dari chat yang sama'], ['Tahu status pengiriman', 'Bertanya ke admin atau kurir', 'Terlihat di tabel'], ['Angka harian', 'Dihitung keesokan pagi', 'Dikirim malam itu juga']],
+    fit: ['Usaha yang menerima puluhan order sehari lewat grup chat tim.', 'Tim sales dan kurir yang sudah terbiasa memakai WhatsApp.'],
+    notFit: ['Usaha yang sudah memakai aplikasi kasir atau order online untuk semua pesanan.'],
+    prep: ['Grup WhatsApp yang dipakai untuk order', 'Daftar produk dan harga', 'Google Sheets tujuan, atau kami yang buatkan'],
+    metrics: [['3', 'jam', 'waktu admin kembali setiap hari'], ['120', 'order', 'tercatat sehari tanpa diketik ulang'], ['1', 'pesan', 'rekap untuk pemilik setiap malam']],
+    faq: [['Apakah sales harus menulis order dengan format tertentu?', 'Tidak. Asisten membaca order yang ditulis dengan bahasa sehari-hari, termasuk singkatan.'], ['Bagaimana kalau pesan ordernya kurang jelas?', 'Asisten tidak menebak. Tim ditanya dulu, dan order baru dicatat setelah datanya jelas.'], ['Di mana data order disimpan?', 'Di Google Sheets milik Anda sendiri, jadi data tetap bisa Anda buka dan bagikan kapan saja.']]
+  },
+  {
+    slug: 'booking-jasa', status: 'jalan', updated: '27 Okt 2026',
+    title: 'Booking jasa langsung dari chat pelanggan',
+    q: 'Bagaimana usaha jasa menerima booking dari WhatsApp tanpa admin standby?',
+    result: 'Booking terkonfirmasi tanpa menunggu admin',
+    industri: ['jasa'], tim: ['cs', 'operasional'], apps: ['whatsapp', 'calendar', 'sheets'],
+    client: 'Usaha jasa perawatan rumah, Riau',
+    answer: 'Asisten booking menjawab pelanggan di WhatsApp, menawarkan jadwal yang masih kosong, lalu mencatat booking ke kalender tim. Pertanyaan yang tidak bisa dijawab diteruskan ke admin lengkap dengan ringkasan chat, sehingga pelanggan tidak perlu mengulang ceritanya.',
+    pains: ['Pelanggan menunggu berjam-jam hanya untuk tahu jadwal yang tersedia.', 'Jadwal tim lapangan sering bentrok karena dicatat di beberapa tempat.', 'Chat di malam hari baru dibalas keesokan paginya.'],
+    steps: [['Pelanggan bertanya lewat chat', 'Pelanggan menghubungi nomor usaha seperti biasa.'], ['Asisten menawarkan jadwal', 'Pelanggan memilih dari jadwal yang memang masih kosong.'], ['Booking masuk ke kalender', 'Tim melihat booking baru di Google Calendar dan tabel booking.'], ['Admin menangani yang khusus', 'Permintaan di luar kebiasaan diteruskan ke admin dengan ringkasannya.']],
+    compare: [['Konfirmasi jadwal', 'Menunggu admin membalas', 'Dijawab saat itu juga'], ['Jadwal tim', 'Dicatat di beberapa tempat', 'Satu kalender bersama'], ['Chat malam hari', 'Dibalas besok pagi', 'Langsung dilayani']],
+    fit: ['Usaha jasa dengan tim lapangan dan jadwal kunjungan.', 'Usaha yang sebagian besar pelanggannya menghubungi lewat WhatsApp.'],
+    notFit: ['Jasa yang harganya selalu dinegosiasi kasus per kasus.'],
+    prep: ['Daftar layanan dan harga', 'Jam kerja dan kapasitas tim per hari', 'Kalender tim, atau kami yang buatkan'],
+    metrics: [['24', 'jam', 'pelanggan bisa booking kapan saja'], ['0', 'bentrok', 'jadwal ganda sejak memakai satu kalender'], ['5', 'menit', 'rata-rata sampai booking terkonfirmasi']],
+    faq: [['Apakah pelanggan tahu sedang dilayani asisten?', 'Ya. Asisten memperkenalkan diri dan pelanggan bisa meminta bicara dengan admin kapan saja.'], ['Bagaimana kalau pelanggan membatalkan?', 'Pembatalan tercatat dan slotnya kembali tersedia untuk pelanggan lain.']]
+  },
+  {
+    slug: 'berkas-dokumen', status: 'jalan', updated: '26 Okt 2026',
+    title: 'Berkas dokumen pelanggan dirapikan otomatis',
+    q: 'Bagaimana mengumpulkan dokumen pelanggan dari chat tanpa berantakan?',
+    result: 'Berkas lengkap dan rapi per pelanggan',
+    industri: ['perjalanan', 'jasa'], tim: ['operasional', 'keuangan'], apps: ['whatsapp', 'drive', 'sheets'],
+    client: 'Agen perjalanan, Sumatra',
+    answer: 'Pelanggan cukup mengirim foto dokumennya lewat WhatsApp. Foto dirapikan ke ukuran yang dibutuhkan, disimpan ke folder Google Drive per pelanggan, dan kelengkapannya tercatat di Google Sheets. Tim tinggal memeriksa dan memproses berkas yang sudah lengkap.',
+    pains: ['Foto dokumen dikirim miring, buram, atau terpotong.', 'Tim merapikan dan memberi nama file satu per satu.', 'Sulit melihat pelanggan mana yang berkasnya belum lengkap.'],
+    steps: [['Pelanggan mengirim foto dokumen', 'Lewat chat WhatsApp, tanpa aplikasi tambahan.'], ['Foto dirapikan', 'Dokumen disimpan dengan ukuran dan nama file yang seragam.'], ['Berkas tersimpan per pelanggan', 'Setiap pelanggan punya foldernya sendiri di Google Drive.'], ['Tim melihat kelengkapan', 'Tabel menunjukkan berkas yang sudah lengkap dan yang masih kurang.']],
+    compare: [['Merapikan foto', 'Satu per satu di komputer', 'Sudah rapi saat tersimpan'], ['Mencari berkas', 'Menggulir chat lama', 'Satu folder per pelanggan'], ['Cek kelengkapan', 'Dihitung manual', 'Terlihat di tabel']],
+    fit: ['Usaha yang mengumpulkan dokumen dari banyak pelanggan sekaligus.', 'Tim kecil yang memproses berkas untuk pengajuan ke pihak lain.'],
+    notFit: ['Dokumen yang wajib diserahkan dalam bentuk fisik asli.'],
+    prep: ['Daftar dokumen yang dibutuhkan per layanan', 'Aturan ukuran dan format file', 'Akun Google Drive usaha'],
+    metrics: [['60', '%', 'waktu merapikan berkas berkurang'], ['1', 'folder', 'per pelanggan, nama file seragam'], ['0', 'berkas', 'yang terselip di chat lama']],
+    faq: [['Apakah dokumen pelanggan aman?', 'Dokumen disimpan di Google Drive milik usaha Anda dengan akses yang Anda atur sendiri.'], ['Bagaimana kalau fotonya buram?', 'Pelanggan diminta mengirim ulang sebelum berkas dianggap lengkap.']]
+  },
+  {
+    slug: 'riset-konten', status: 'jalan', updated: '24 Okt 2026',
+    title: 'Ide konten mingguan dari tren media sosial',
+    q: 'Bagaimana menemukan ide konten media sosial setiap minggu tanpa riset manual?',
+    result: 'Daftar ide konten siap pakai setiap minggu',
+    industri: ['retail', 'jasa', 'klinik'], tim: ['marketing'], apps: ['instagram', 'sheets'],
+    client: 'Brand edukasi bisnis, Jakarta',
+    answer: 'Setiap minggu, tren dan pertanyaan yang ramai di media sosial dikumpulkan sesuai topik usaha Anda, lalu disusun menjadi daftar ide konten di Google Sheets lengkap dengan sudut pandang dan contoh judul. Tim marketing tinggal memilih dan menulis.',
+    pains: ['Tim marketing menghabiskan berjam-jam mencari ide sebelum mulai menulis.', 'Konten dibuat berdasarkan tebakan, bukan yang sedang dibicarakan audiens.'],
+    steps: [['Topik usaha ditentukan', 'Anda memilih topik dan akun yang ingin dipantau.'], ['Tren dikumpulkan', 'Pembahasan yang sedang ramai dirangkum setiap minggu.'], ['Ide konten disusun', 'Setiap ide punya sudut pandang dan contoh judul.'], ['Tim memilih', 'Ide yang dipilih masuk ke kalender konten.']],
+    compare: [['Mencari ide', 'Berjam-jam setiap minggu', 'Daftar siap setiap Senin'], ['Dasar ide', 'Tebakan', 'Pembahasan yang sedang ramai'], ['Kalender konten', 'Sering kosong', 'Terisi dari daftar ide']],
+    fit: ['Usaha yang ingin posting rutin tapi kehabisan ide.', 'Tim marketing kecil tanpa waktu riset.'],
+    notFit: ['Brand yang kontennya sepenuhnya mengikuti kampanye dari kantor pusat.'],
+    prep: ['Topik dan audiens utama usaha', 'Akun pesaing atau referensi yang ingin dipantau'],
+    metrics: [['20', 'ide', 'konten baru setiap minggu'], ['4', 'jam', 'riset mingguan yang tidak perlu lagi'], ['1', 'tabel', 'kalender konten untuk seluruh tim']],
+    faq: [['Apakah kontennya ditulis otomatis?', 'Tidak. Yang disiapkan adalah ide dan sudut pandangnya; tim Anda yang menulis dengan gaya brand.'], ['Bisa untuk platform apa saja?', 'Ide bisa dipakai untuk Instagram, TikTok, maupun platform lain yang Anda gunakan.']]
+  },
+  {
+    slug: 'cs-klinik', status: 'ide', updated: '30 Okt 2026',
+    title: 'Pertanyaan pasien terjawab di luar jam kerja',
+    q: 'Bagaimana klinik menjawab chat pasien di malam hari tanpa menambah staf?',
+    result: 'Pasien dilayani 24 jam, admin fokus ke pasien yang datang',
+    industri: ['klinik'], tim: ['cs'], apps: ['whatsapp', 'calendar'],
+    answer: 'Asisten CS menjawab pertanyaan pasien yang paling sering muncul, seperti jam praktik, harga, dan jadwal dokter, dari data klinik Anda sendiri. Pasien bisa langsung membuat janji temu, dan pertanyaan medis selalu diteruskan ke staf klinik.',
+    pains: ['Admin menjawab pertanyaan yang sama puluhan kali sehari.', 'Chat yang masuk malam hari baru dibalas keesokan paginya.'],
+    steps: [['Pasien bertanya lewat chat', 'Lewat nomor WhatsApp klinik yang sudah dikenal pasien.'], ['Asisten menjawab dari data klinik', 'Jam praktik, harga, dan jadwal dokter sesuai data Anda.'], ['Janji temu tercatat', 'Pasien memilih jadwal dan janji temu masuk ke kalender.'], ['Staf menangani pertanyaan medis', 'Pertanyaan medis selalu diteruskan ke staf klinik.']],
+    compare: [['Pertanyaan rutin', 'Dijawab admin satu per satu', 'Dijawab saat itu juga'], ['Chat malam hari', 'Dibalas besok pagi', 'Dilayani langsung'], ['Janji temu', 'Dicatat manual', 'Masuk ke kalender']],
+    fit: ['Klinik yang menerima banyak pertanyaan berulang lewat WhatsApp.'],
+    notFit: ['Layanan yang membutuhkan diagnosis lewat chat.'],
+    prep: ['Daftar layanan, harga, dan jadwal dokter', 'Pertanyaan yang paling sering diajukan pasien'],
+    faq: [['Apakah asisten memberi saran medis?', 'Tidak. Pertanyaan medis selalu diteruskan ke staf klinik.'], ['Apakah pasien bisa bicara dengan manusia?', 'Bisa, kapan saja. Asisten meneruskan chat ke admin.']]
+  },
+  {
+    slug: 'pengingat-tagihan', status: 'ide', updated: '30 Okt 2026',
+    title: 'Tagihan jatuh tempo diingatkan otomatis',
+    q: 'Bagaimana mengingatkan pelanggan soal tagihan tanpa terasa sungkan?',
+    result: 'Pembayaran lebih tepat waktu tanpa menagih manual',
+    industri: ['jasa', 'properti', 'logistik'], tim: ['keuangan'], apps: ['whatsapp', 'sheets', 'gmail'],
+    answer: 'Pengingat tagihan dikirim ke pelanggan lewat WhatsApp atau email sebelum dan saat jatuh tempo, dengan bahasa yang sopan dan sesuai gaya usaha Anda. Status pembayaran diperbarui di Google Sheets, sehingga tim keuangan tahu siapa yang perlu dihubungi langsung.',
+    pains: ['Tim keuangan menagih satu per satu dan sering merasa sungkan.', 'Tagihan terlupa karena jadwal jatuh tempo berbeda-beda.'],
+    steps: [['Tagihan tercatat', 'Daftar tagihan dan jatuh tempo ada di Google Sheets.'], ['Pengingat dikirim', 'Pelanggan menerima pengingat yang sopan sebelum jatuh tempo.'], ['Status diperbarui', 'Tagihan yang sudah dibayar ditandai lunas.'], ['Tim menindaklanjuti yang tersisa', 'Tim keuangan hanya menghubungi pelanggan yang belum membayar.']],
+    compare: [['Mengingatkan', 'Menagih satu per satu', 'Terkirim sesuai jadwal'], ['Status pembayaran', 'Dicek manual', 'Terlihat di tabel'], ['Beban tim', 'Semua pelanggan', 'Hanya yang belum membayar']],
+    fit: ['Usaha dengan tagihan rutin bulanan atau termin.'],
+    notFit: ['Usaha yang semua pembayarannya tunai di tempat.'],
+    prep: ['Daftar pelanggan dan jadwal tagihan', 'Contoh kalimat pengingat yang biasa dipakai'],
+    faq: [['Apakah pelanggan merasa ditagih mesin?', 'Kalimat pengingat mengikuti gaya bahasa usaha Anda dan bisa Anda ubah kapan saja.']]
+  },
+  {
+    slug: 'rekap-penjualan', status: 'ide', updated: '30 Okt 2026',
+    title: 'Rekap penjualan harian tanpa hitung manual',
+    q: 'Bagaimana pemilik usaha menerima rekap penjualan setiap hari tanpa menghitung sendiri?',
+    result: 'Angka penjualan sampai di HP pemilik setiap malam',
+    industri: ['retail', 'logistik'], tim: ['manajemen', 'keuangan'], apps: ['sheets', 'whatsapp'],
+    answer: 'Data penjualan dari tabel yang sudah dipakai tim dirangkum setiap malam menjadi satu pesan WhatsApp untuk pemilik: total penjualan, produk terlaris, dan perbandingan dengan hari sebelumnya. Pemilik tidak perlu membuka laptop atau menunggu laporan admin.',
+    pains: ['Pemilik baru tahu angka penjualan setelah admin selesai menghitung.', 'Laporan mingguan sering terlambat atau tidak dibuat.'],
+    steps: [['Penjualan tercatat seperti biasa', 'Tim tetap memakai tabel atau catatan yang sudah ada.'], ['Angka dirangkum', 'Total, produk terlaris, dan perbandingan harian disusun.'], ['Rekap dikirim', 'Pemilik menerima satu pesan setiap malam.'], ['Pemilik memutuskan', 'Keputusan stok dan promosi diambil dari angka hari itu.']],
+    compare: [['Melihat angka harian', 'Menunggu admin', 'Langsung di HP'], ['Laporan mingguan', 'Sering terlambat', 'Terbentuk dari rekap harian']],
+    fit: ['Pemilik toko atau distributor yang ingin memantau penjualan dari HP.'],
+    notFit: ['Usaha yang belum mencatat penjualan sama sekali.'],
+    prep: ['Tabel penjualan yang sudah dipakai tim', 'Angka apa saja yang ingin dilihat pemilik'],
+    faq: [['Kalau data penjualan masih di buku tulis?', 'Kami bantu pindahkan ke tabel sederhana lebih dulu.']]
+  },
+  {
+    slug: 'followup-prospek', status: 'ide', updated: '30 Okt 2026',
+    title: 'Calon pembeli properti tidak lagi lupa di-follow-up',
+    q: 'Bagaimana tim marketing properti menindaklanjuti setiap calon pembeli tepat waktu?',
+    result: 'Setiap prospek dihubungi kembali sesuai jadwal',
+    industri: ['properti'], tim: ['penjualan', 'marketing'], apps: ['whatsapp', 'sheets'],
+    answer: 'Setiap calon pembeli yang masuk dari iklan atau survei lokasi tercatat di Google Sheets beserta minatnya. Tim marketing menerima pengingat kapan harus menghubungi kembali, dan pesan lanjutan bisa disiapkan sesuai tipe unit yang diminati.',
+    pains: ['Prospek dari iklan tercecer di banyak chat.', 'Calon pembeli lupa dihubungi kembali setelah survei.'],
+    steps: [['Prospek masuk', 'Dari iklan, chat, atau survei lokasi.'], ['Prospek tercatat', 'Nama, minat, dan sumbernya tersimpan di tabel.'], ['Pengingat follow-up', 'Tim menerima pengingat sesuai jadwal.'], ['Tim menghubungi', 'Pesan lanjutan sesuai unit yang diminati.']],
+    compare: [['Mencatat prospek', 'Tercecer di chat', 'Satu tabel'], ['Follow-up', 'Mengandalkan ingatan', 'Ada pengingat']],
+    fit: ['Developer dan agen properti dengan banyak prospek dari iklan.'],
+    notFit: ['Penjualan yang seluruhnya lewat agen luar.'],
+    prep: ['Sumber prospek yang dipakai sekarang', 'Daftar unit dan tipe'],
+    faq: [['Apakah pesan follow-up dikirim otomatis?', 'Bisa otomatis atau hanya disiapkan untuk dikirim tim, sesuai pilihan Anda.']]
+  },
+  {
+    slug: 'carousel-konten', status: 'ide', updated: '30 Okt 2026',
+    title: 'Carousel Instagram dari satu topik',
+    q: 'Bagaimana membuat carousel Instagram lebih cepat tanpa desainer?',
+    result: 'Draf carousel siap disetujui dalam hitungan menit',
+    industri: ['retail', 'klinik'], tim: ['marketing'], apps: ['instagram', 'drive'],
+    answer: 'Anda cukup mengirim satu topik. Isi slide ditulis dengan gaya bahasa brand Anda, diisi ke template desain milik Anda, lalu dikirim sebagai pratinjau untuk disetujui. Yang disetujui disimpan ke Google Drive dan siap diposting.',
+    pains: ['Satu carousel bisa makan waktu setengah hari.', 'Posting jadi tidak rutin karena prosesnya panjang.'],
+    steps: [['Anda mengirim topik', 'Satu kalimat sudah cukup.'], ['Isi slide ditulis', 'Mengikuti gaya bahasa brand Anda.'], ['Slide dibuat dari template', 'Memakai warna dan font brand Anda.'], ['Anda menyetujui', 'Carousel yang disetujui siap diposting.']],
+    compare: [['Membuat carousel', 'Setengah hari', 'Draf dalam hitungan menit'], ['Konsistensi desain', 'Tergantung siapa yang membuat', 'Selalu memakai template brand']],
+    fit: ['Usaha yang rutin membuat konten edukasi atau promosi.'],
+    notFit: ['Konten yang selalu membutuhkan foto produk baru.'],
+    prep: ['Template desain brand', 'Contoh konten yang pernah disukai audiens'],
+    faq: [['Apakah langsung terposting?', 'Tidak. Setiap carousel menunggu persetujuan Anda.']]
+  },
+  {
+    slug: 'asisten-sop', status: 'ide', updated: '30 Okt 2026',
+    title: 'Staf baru menemukan jawaban SOP sendiri',
+    q: 'Bagaimana staf baru bisa memahami SOP tanpa terus bertanya ke atasan?',
+    result: 'Atasan tidak lagi menjawab pertanyaan yang sama',
+    industri: ['retail', 'klinik', 'properti', 'logistik', 'jasa', 'perjalanan'], tim: ['sdm', 'operasional'], apps: ['whatsapp', 'drive'],
+    answer: 'Dokumen SOP yang sudah Anda punya dijadikan asisten tanya-jawab untuk staf. Staf bertanya lewat WhatsApp dengan bahasa sehari-hari dan mendapat jawaban dari SOP Anda, lengkap dengan bagian dokumen yang menjadi sumbernya.',
+    pains: ['Staf baru bertanya hal yang sama berulang kali.', 'SOP ada, tetapi jarang dibuka karena panjang.'],
+    steps: [['SOP dikumpulkan', 'Dokumen yang sudah ada di Google Drive.'], ['Staf bertanya', 'Lewat chat dengan bahasa sehari-hari.'], ['Jawaban dari SOP Anda', 'Lengkap dengan bagian dokumen sumbernya.'], ['SOP diperbarui', 'Pertanyaan yang belum terjawab menjadi bahan perbaikan SOP.']],
+    compare: [['Menjawab pertanyaan staf', 'Atasan, berulang kali', 'Asisten, dari SOP'], ['Memakai SOP', 'Jarang dibuka', 'Ditanya setiap hari']],
+    fit: ['Usaha dengan pergantian staf yang cukup sering.'],
+    notFit: ['Usaha yang belum punya SOP tertulis sama sekali.'],
+    prep: ['Dokumen SOP yang sudah ada', 'Daftar pertanyaan yang sering ditanyakan staf'],
+    faq: [['Kalau SOP belum lengkap?', 'Pertanyaan yang belum terjawab dicatat, jadi Anda tahu bagian mana yang perlu ditulis.']]
+  },
+  {
+    slug: 'stok-menipis', status: 'ide', updated: '30 Okt 2026',
+    title: 'Peringatan stok menipis sebelum habis',
+    q: 'Bagaimana tahu stok akan habis sebelum terlambat memesan ulang?',
+    result: 'Pesan ulang tepat waktu, stok tidak kosong',
+    industri: ['retail', 'logistik'], tim: ['operasional', 'manajemen'], apps: ['sheets', 'whatsapp'],
+    answer: 'Stok di tabel gudang dipantau setiap hari. Saat sebuah barang mendekati batas minimum, tim pembelian menerima pesan WhatsApp berisi barang, sisa stok, dan perkiraan kapan habis, sehingga pemesanan ulang bisa dilakukan sebelum stok kosong.',
+    pains: ['Stok baru ketahuan habis saat pelanggan memesan.', 'Cek stok gudang dilakukan manual dan tidak rutin.'],
+    steps: [['Stok tercatat', 'Di tabel gudang yang sudah dipakai.'], ['Stok dipantau', 'Setiap hari, tanpa dicek manual.'], ['Peringatan dikirim', 'Tim menerima pesan saat stok mendekati batas.'], ['Tim memesan ulang', 'Sebelum barang benar-benar habis.']],
+    compare: [['Mengetahui stok menipis', 'Saat sudah habis', 'Sebelum habis'], ['Cek gudang', 'Manual, tidak rutin', 'Dipantau setiap hari']],
+    fit: ['Toko dan gudang dengan banyak jenis barang.'],
+    notFit: ['Usaha dengan stok yang sangat sedikit jenisnya.'],
+    prep: ['Tabel stok yang sudah dipakai', 'Batas minimum per barang'],
+    faq: [['Kalau stok dicatat di aplikasi kasir?', 'Data bisa diambil dari ekspor aplikasi kasir Anda.']]
+  },
+  {
+    slug: 'ulasan-pelanggan', status: 'ide', updated: '30 Okt 2026',
+    title: 'Keluhan pelanggan terkumpul di satu tempat',
+    q: 'Bagaimana pemilik usaha tahu keluhan pelanggan yang paling sering muncul?',
+    result: 'Pemilik melihat pola keluhan setiap minggu',
+    industri: ['retail', 'klinik', 'jasa'], tim: ['cs', 'manajemen'], apps: ['sheets', 'gmail'],
+    answer: 'Keluhan dan ulasan dari chat, email, dan formulir dikumpulkan ke satu tabel, lalu dikelompokkan per topik. Setiap minggu pemilik menerima ringkasan keluhan yang paling sering muncul, sehingga perbaikan bisa diprioritaskan.',
+    pains: ['Keluhan tercecer di chat, email, dan media sosial.', 'Pemilik tidak tahu masalah mana yang paling sering terjadi.'],
+    steps: [['Keluhan masuk', 'Dari chat, email, atau formulir.'], ['Keluhan terkumpul', 'Dalam satu tabel, dikelompokkan per topik.'], ['Ringkasan mingguan', 'Pemilik menerima topik keluhan teratas.'], ['Perbaikan diprioritaskan', 'Tim fokus pada masalah yang paling sering muncul.']],
+    compare: [['Melihat keluhan', 'Tersebar di banyak tempat', 'Satu tabel'], ['Menentukan prioritas', 'Berdasarkan ingatan', 'Berdasarkan data mingguan']],
+    fit: ['Usaha dengan banyak interaksi pelanggan setiap hari.'],
+    notFit: ['Usaha yang keluhannya sangat jarang.'],
+    prep: ['Saluran keluhan yang dipakai sekarang', 'Topik keluhan yang ingin dipantau'],
+    faq: [['Apakah keluhan dibalas otomatis?', 'Tidak harus. Fokus utamanya adalah mengumpulkan dan merangkum.']]
+  }
+];
+
+/* Ringkasan pendek (maks. 20 kata) untuk kartu ringkasan di mode Cari */
+const RINGKAS = {
+  'order-grup': 'Order yang ditulis sales di grup WhatsApp otomatis tercatat ke Google Sheets, dan pemilik menerima rekap setiap malam.',
+  'booking-jasa': 'Pelanggan memilih jadwal kosong langsung di chat WhatsApp, lalu booking tercatat otomatis ke kalender tim Anda.',
+  'berkas-dokumen': 'Pelanggan cukup mengirim foto dokumen lewat WhatsApp. Berkas dirapikan, disimpan per pelanggan, dan kelengkapannya tercatat.',
+  'riset-konten': 'Setiap minggu, tren media sosial di bidang Anda disusun menjadi daftar ide konten siap pakai untuk tim marketing.',
+  'cs-klinik': 'Pertanyaan pasien soal jam praktik, harga, dan jadwal dokter terjawab di luar jam kerja, pertanyaan medis tetap diteruskan.',
+  'pengingat-tagihan': 'Pengingat tagihan terkirim sopan lewat WhatsApp atau email sebelum jatuh tempo, dan status pembayaran diperbarui di Google Sheets.',
+  'rekap-penjualan': 'Setiap malam pemilik menerima rekap penjualan di WhatsApp: total, produk terlaris, dan perbandingan dengan hari sebelumnya.',
+  'followup-prospek': 'Calon pembeli dari iklan dan survei tercatat rapi, dan tim marketing diingatkan kapan harus menghubungi kembali.',
+  'carousel-konten': 'Anda cukup mengirim satu topik. Isi slide ditulis sesuai gaya brand Anda, lalu dikirim untuk disetujui.',
+  'asisten-sop': 'Staf bertanya lewat WhatsApp dengan bahasa sehari-hari dan mendapat jawaban dari SOP Anda, lengkap dengan sumbernya.',
+  'stok-menipis': 'Stok gudang dipantau setiap hari, dan tim pembelian menerima peringatan WhatsApp sebelum barang habis.',
+  'ulasan-pelanggan': 'Keluhan dari chat, email, dan formulir terkumpul di satu tabel, dengan ringkasan topik teratas setiap minggu.'
+};
+
+/* Bank kartu masalah: ind (industri, kosong = semua), tim, sol {slug: bobot} */
+const KARTU = [
+  { id: 'k1', t: 'Order dari grup chat sering terlewat?', ind: ['logistik', 'retail'], tim: ['operasional', 'penjualan'], sol: { 'order-grup': 3 } },
+  { id: 'k2', t: 'Admin mengetik ulang pesanan ke Excel setiap hari?', ind: ['logistik', 'retail', 'jasa'], tim: ['operasional', 'keuangan'], sol: { 'order-grup': 3, 'rekap-penjualan': 1 } },
+  { id: 'k3', t: 'Angka penjualan baru Anda ketahui keesokan harinya?', ind: ['retail', 'logistik'], tim: ['manajemen'], sol: { 'rekap-penjualan': 3, 'order-grup': 1 } },
+  { id: 'k4', t: 'Pelanggan menunggu lama hanya untuk tahu jadwal yang kosong?', ind: ['jasa', 'klinik'], tim: ['cs'], sol: { 'booking-jasa': 3, 'cs-klinik': 2 } },
+  { id: 'k5', t: 'Chat pelanggan menumpuk di luar jam kerja?', ind: ['klinik', 'jasa', 'retail', 'properti'], tim: ['cs'], sol: { 'cs-klinik': 3, 'booking-jasa': 2 } },
+  { id: 'k6', t: 'Pertanyaan harga dan jam buka dijawab berulang kali?', ind: ['klinik', 'retail', 'jasa'], tim: ['cs'], sol: { 'cs-klinik': 3, 'booking-jasa': 1 } },
+  { id: 'k7', t: 'Jadwal tim lapangan sering bentrok?', ind: ['jasa'], tim: ['operasional'], sol: { 'booking-jasa': 3 } },
+  { id: 'k8', t: 'Dokumen pelanggan dikirim berantakan lewat chat?', ind: ['perjalanan', 'jasa', 'properti'], tim: ['operasional', 'keuangan'], sol: { 'berkas-dokumen': 3 } },
+  { id: 'k9', t: 'Foto dokumen harus dirapikan satu per satu?', ind: ['perjalanan'], tim: ['operasional'], sol: { 'berkas-dokumen': 3 } },
+  { id: 'k10', t: 'Sulit melihat berkas pelanggan mana yang belum lengkap?', ind: ['perjalanan', 'properti', 'jasa'], tim: ['keuangan', 'operasional'], sol: { 'berkas-dokumen': 3 } },
+  { id: 'k11', t: 'Bingung mau posting apa minggu ini?', ind: ['retail', 'klinik', 'jasa'], tim: ['marketing'], sol: { 'riset-konten': 3, 'carousel-konten': 1 } },
+  { id: 'k12', t: 'Membuat satu carousel makan waktu berjam-jam?', ind: ['retail', 'klinik'], tim: ['marketing'], sol: { 'carousel-konten': 3 } },
+  { id: 'k13', t: 'Posting media sosial tidak rutin?', ind: ['retail', 'klinik', 'jasa', 'properti'], tim: ['marketing'], sol: { 'carousel-konten': 2, 'riset-konten': 2 } },
+  { id: 'k14', t: 'Tagihan pelanggan sering telat dibayar?', ind: ['jasa', 'properti', 'logistik'], tim: ['keuangan'], sol: { 'pengingat-tagihan': 3 } },
+  { id: 'k15', t: 'Mengingatkan tagihan satu per satu terasa sungkan?', ind: ['jasa', 'properti'], tim: ['keuangan'], sol: { 'pengingat-tagihan': 3 } },
+  { id: 'k16', t: 'Calon pembeli lupa dihubungi lagi setelah survei?', ind: ['properti'], tim: ['penjualan'], sol: { 'followup-prospek': 3 } },
+  { id: 'k17', t: 'Prospek dari iklan tidak tercatat rapi?', ind: ['properti', 'retail'], tim: ['penjualan', 'marketing'], sol: { 'followup-prospek': 3 } },
+  { id: 'k18', t: 'Staf baru terus bertanya hal yang sama?', ind: [], tim: ['sdm', 'operasional'], sol: { 'asisten-sop': 3 } },
+  { id: 'k19', t: 'SOP ada, tapi jarang dibuka?', ind: [], tim: ['sdm', 'manajemen'], sol: { 'asisten-sop': 3 } },
+  { id: 'k20', t: 'Stok habis sebelum sempat dipesan ulang?', ind: ['retail', 'logistik'], tim: ['operasional'], sol: { 'stok-menipis': 3 } },
+  { id: 'k21', t: 'Cek stok gudang masih manual?', ind: ['retail', 'logistik'], tim: ['operasional', 'manajemen'], sol: { 'stok-menipis': 2, 'rekap-penjualan': 1 } },
+  { id: 'k22', t: 'Keluhan pelanggan tercecer di banyak tempat?', ind: ['retail', 'klinik', 'jasa'], tim: ['cs', 'manajemen'], sol: { 'ulasan-pelanggan': 3 } },
+  { id: 'k23', t: 'Tidak tahu apa yang paling sering dikeluhkan pelanggan?', ind: ['retail', 'klinik', 'jasa'], tim: ['manajemen'], sol: { 'ulasan-pelanggan': 3 } },
+  { id: 'k24', t: 'Anda sendiri masih ikut membalas chat setiap hari?', ind: [], tim: ['manajemen', 'cs'], sol: { 'cs-klinik': 2, 'booking-jasa': 1, 'order-grup': 1 } }
+];
+
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = v => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const IND = Object.fromEntries(INDUSTRI), TIMS = Object.fromEntries(TIM);
+const APP = Object.fromEntries(APPS.map(a => [a[0], a]));
+const BY = Object.fromEntries(SOLUSI.map(s => [s.slug, s]));
+const ORDERED = SOLUSI.slice().sort((a, b) => (a.status === b.status ? 0 : a.status === 'jalan' ? -1 : 1));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isPhone = () => innerWidth <= 760;
+const ic = (id, cls = 'ic') => `<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const STATUS = { jalan: 'Sudah berjalan', ide: 'Siap dibuat' };
+const badge = s => s.status === 'jalan'
+  ? `<span class="badge b-jalan">${ic('i-check-circle')}${STATUS.jalan}</span>`
+  : `<span class="badge b-ide">${ic('i-sparkle')}${STATUS.ide}</span>`;
+
+// GANTI: kontak asli Kreatekno. Tiga nilai di bawah masih contoh dan dipakai oleh pop up "Konsultasi gratis".
+const CONTACT = {
+  wa: '6280000000000',               // nomor WhatsApp, format internasional tanpa + (contoh)
+  ig: 'ganti_akun_instagram',        // nama akun Instagram tanpa @ (contoh)
+  email: 'ganti-email@contoh.com'    // alamat email (contoh)
+};
+const wa = text => `https://wa.me/${CONTACT.wa}?text=` + encodeURIComponent(text);
+const WA_DEFAULT = 'Halo Kreatekno, saya mau konsultasi otomasi untuk bisnis saya.';
+// every "Konsultasi gratis" / "Belum dapat solusi" opens the contact popup (WhatsApp, Instagram, email)
+const modal = $('#contact');
+let lastFocus = null;
+function openContact(msg) {
+  const text = msg || WA_DEFAULT;
+  $('.ct.wa', modal).href = wa(text);
+  $('.ct.ig', modal).href = 'https://ig.me/m/' + CONTACT.ig;
+  $('.ct.em', modal).href = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Konsultasi gratis')}&body=${encodeURIComponent(text)}`;
+  lastFocus = document.activeElement;
+  modal.hidden = false;
+  $('.modal-x', modal).focus({ preventScroll: true });
+}
+function closeContact() {
+  modal.hidden = true;
+  if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+}
+modal.addEventListener('click', e => { if (e.target === modal || e.target.closest('.modal-x')) closeContact(); });
+modal.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const f = $$('a,button', modal), first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-contact]');
+  if (!a) return;
+  e.preventDefault();
+  openContact(a.dataset.msg);
+});
+$$('[data-proto]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+
+/* ============================== etalase: one tier per team (first team of each solution) ============================== */
+// pastel per team, derived from the brand hues (cyan, periwinkle, lilac, orchid, pink, rose, plus mint)
+const TEAMCOL = { operasional: '#87CFD7', cs: '#AD96DD', marketing: '#DC96C4', keuangan: '#90CCB7', manajemen: '#94A2D9', penjualan: '#C894DB', sdm: '#DF9DAE' };
+const teamOf = s => s.tim[0];
+const colorOf = s => TEAMCOL[teamOf(s)] || '#CDB8F8';
+// plain glyphs in each app's own colour (dark enough for 3:1 on the white circle); not brand logos
+const ETA_IND_IC = { retail: 'i-storefront', klinik: 'i-first-aid', properti: 'i-buildings', logistik: 'i-truck', jasa: 'i-handshake', perjalanan: 'i-globe-simple' };
+const fitChips = s => s.industri.length >= INDUSTRI.length ? `<span>${ic('i-globe-simple')}Semua bidang usaha</span>` : s.industri.map(i => `<span>${ic(ETA_IND_IC[i])}${esc(IND[i])}</span>`).join('');
+const APPCOL = { whatsapp: '#128C7E', sheets: '#1E8E3E', instagram: '#C2307A', gmail: '#D93025', calendar: '#1A73E8', drive: '#A86F00' };
+const TIERS = TIM.map(([k, name], i) => ({ k, name, i, list: SOLUSI.filter(s => teamOf(s) === k).sort((a, b) => (a.status === b.status ? 0 : a.status === 'jalan' ? -1 : 1)) }))
+  .filter(t => t.list.length)
+  .sort((a, b) => b.list.length - a.list.length || a.i - b.i);
+const tiersEl = $('#tiers');
+tiersEl.innerHTML = TIERS.map(t => {
+  return `
+  <section class="tier" data-team="${t.k}" style="--c:${TEAMCOL[t.k]}" aria-labelledby="t-${t.k}">
+    <div class="row">
+      <button class="arr prev" type="button" aria-label="Geser rak ${esc(t.name)} ke kiri" hidden>${ic('i-arrow-right')}</button>
+      <ul class="track">
+        ${t.list.map(s => `<li class="slot"><a class="prod" href="#s-${s.slug}" data-slug="${s.slug}"><span class="pk"><span class="st${s.status === 'ide' ? ' ide' : ''}"><i></i>${STATUS[s.status]}</span><span class="cover"><b class="ttl">${esc(s.title)}</b><span class="sub">${esc(s.result)}</span><span class="fit"><small>Cocok untuk</small><span class="chips">${fitChips(s)}</span></span></span><span class="apps" role="img" aria-label="Aplikasi: ${esc(s.apps.map(a => APP[a][1]).join(', '))}">${s.apps.map(a => `<i style="color:${APPCOL[a]}">${ic(APP[a][2])}</i>`).join('')}</span></span></a></li>`).join('')}
+      </ul>
+      <button class="arr next" type="button" aria-label="Geser rak ${esc(t.name)} ke kanan" hidden>${ic('i-arrow-right')}</button>
+    </div>
+    <div class="plank"><h3 id="t-${t.k}">${esc(t.name)}</h3></div>
+  </section>`;
+}).join('');
+const tierEls = $$('.tier', tiersEl);
+// arrows only when a tier holds more boxes than fit; mouse drag + touchpad/finger scroll everywhere
+function syncArrows() {
+  tierEls.forEach(t => {
+    const tr = $('.track', t), [pv, nx] = $$('.arr', t);
+    const over = tr.scrollWidth > tr.clientWidth + 2;
+    pv.hidden = nx.hidden = !over;
+    pv.disabled = tr.scrollLeft < 4;
+    nx.disabled = tr.scrollLeft > tr.scrollWidth - tr.clientWidth - 4;
+  });
+}
+tierEls.forEach(t => {
+  const tr = $('.track', t);
+  const step = () => (tr.querySelector('.slot')?.getBoundingClientRect().width || 220) + (parseFloat(getComputedStyle(tr).columnGap) || 16);
+  $('.arr.prev', t).addEventListener('click', () => tr.scrollBy({ left: -step(), behavior: reduce ? 'auto' : 'smooth' }));
+  $('.arr.next', t).addEventListener('click', () => tr.scrollBy({ left: step(), behavior: reduce ? 'auto' : 'smooth' }));
+  tr.addEventListener('scroll', syncArrows, { passive: true });
+  let down = null, moved = false, dragEnd = 0;
+  tr.addEventListener('click', e => { if (performance.now() - dragEnd < 300) { e.preventDefault(); e.stopPropagation(); } }, true);
+  tr.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || tr.scrollWidth <= tr.clientWidth + 2) return;
+    down = { x: e.clientX, left: tr.scrollLeft }; moved = false;
+  });
+  addEventListener('pointermove', e => {
+    if (!down) return;
+    const dx = e.clientX - down.x;
+    if (!moved && Math.abs(dx) > 6) { moved = true; tr.classList.add('drag'); }
+    if (moved) tr.scrollLeft = down.left - dx;
+  });
+  addEventListener('pointerup', () => {
+    if (!down) return;
+    down = null;
+    if (!moved) return;
+    tr.classList.remove('drag');
+    const st = step();
+    tr.scrollTo({ left: Math.round(tr.scrollLeft / st) * st, behavior: reduce ? 'auto' : 'smooth' });
+    dragEnd = performance.now(); moved = false;
+  });
+});
+addEventListener('resize', syncArrows);
+syncArrows();
+
+/* ============================== paper: search + filters ============================== */
+const fill = (sel, label, pairs) => { sel.innerHTML = `<option value="">${label}</option>` + pairs.map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join(''); };
+const fInd = $('#f-ind'), fTim = $('#f-tim'), fApp = $('#f-app'), fSt = $('#f-st'), q = $('#q'), paper = $('#paper'), ppRes = $('#pp-res');
+fill(fInd, 'Semua bidang usaha', INDUSTRI);
+fill(fTim, 'Semua tim', TIM);
+fill(fApp, 'Semua aplikasi', APPS.map(a => [a[0], a[1]]));
+fill(fSt, 'Semua status', [['jalan', STATUS.jalan], ['ide', STATUS.ide]]);
+[fInd, fTim, fApp, fSt].forEach(x => x.addEventListener('change', () => x.classList.toggle('on', !!x.value)));
+const norm = t => String(t).toLowerCase();
+function searchList() {
+  const term = norm(q.value.trim());
+  return ORDERED.filter(s =>
+    (!fInd.value || s.industri.includes(fInd.value)) &&
+    (!fTim.value || s.tim.includes(fTim.value)) &&
+    (!fApp.value || s.apps.includes(fApp.value)) &&
+    (!fSt.value || s.status === fSt.value) &&
+    (!term || norm([s.title, s.result, s.q, s.answer, ...s.pains].join(' ')).includes(term)));
+}
+const MAX_ON_COUNTER = 6;
+let receiptNo = 1;
+q.addEventListener('input', () => { kasir.want(q.value.trim() ? 'ready' : 'idle'); });
+q.addEventListener('focus', () => { if (q.value.trim()) kasir.want('ready'); });
+q.addEventListener('blur', () => { if (kasir.pose === 'ready') kasir.want('idle'); });
+const pbar = $('#pbar'), pbarMsg = $('#pbar-msg'), pbHelp = $('#pb-help');
+paper.addEventListener('submit', e => {
+  e.preventDefault();
+  const list = searchList(), term = q.value.trim();
+  $('#rc-no').textContent = 'No. ' + String(++receiptNo).padStart(4, '0');
+  pbHelp.dataset.msg = term ? 'Halo Kreatekno, saya mencari solusi untuk: ' + term + '. Saya mau konsultasi.' : WA_DEFAULT;
+  document.body.classList.add('served');
+  q.blur();
+  if (!list.length) {
+    pbarMsg.textContent = 'Belum ada solusi yang cocok';
+    pbarMsg.hidden = false;
+    counter.clear();
+    kasir.act('shrug');
+  } else {
+    pbarMsg.hidden = true;
+    counter.serve(list.slice(0, MAX_ON_COUNTER));
+  }
+});
+// "Cari kembali": the cashier takes the boxes back and the receipt comes out again, still filled in
+$('#pb-again').addEventListener('click', () => {
+  closeSum();
+  counter.clear();
+  kasir.act('lift', 520);
+  document.body.classList.remove('served');
+  document.documentElement.style.cursor = '';
+  setTimeout(() => { if (!isPhone()) q.focus({ preventScroll: true }); }, reduce ? 0 : 480);
+});
+
+/* ============================== problem cards (bank + scoring, no AI API) ============================== */
+const ROUNDS = 3, PER = 3;
+const IND_IC = { retail: 'i-storefront', klinik: 'i-first-aid', properti: 'i-buildings', logistik: 'i-truck', jasa: 'i-handshake', perjalanan: 'i-globe-simple' };
+let F = null;
+const deckwrap = $('#deckwrap'), prog = $('#prog');
+const newState = () => ({ ind: '', yes: [], no: [], seen: new Set(), round: 0, queue: [] });
+function cardScore(c, st) {
+  let s = 0;
+  if (!c.ind.length || !st.ind || c.ind.includes(st.ind)) s += st.ind && c.ind.includes(st.ind) ? 3 : 1; else s -= 2;
+  const keys = Object.keys(c.sol);
+  st.yes.forEach(y => { s += c.tim.filter(t => y.tim.includes(t)).length + keys.filter(k => k in y.sol).length * 1.5; });
+  st.no.forEach(n => { s -= keys.filter(k => k in n.sol).length * 1.5; });
+  const touched = new Set([...st.yes, ...st.no].flatMap(x => Object.keys(x.sol)));
+  if (!keys.some(k => touched.has(k))) s += .8;
+  return s + Math.random() * .3;
+}
+function pickRound(st) {
+  const pool = KARTU.filter(c => !st.seen.has(c.id)).map(c => ({ c, s: cardScore(c, st) })).sort((a, b) => b.s - a.s);
+  const out = [], used = new Set();
+  for (const { c } of pool) {
+    const main = Object.entries(c.sol).sort((a, b) => b[1] - a[1])[0][0];
+    if (used.has(main)) continue;
+    out.push(c); used.add(main);
+    if (out.length === PER) break;
+  }
+  for (const { c } of pool) { if (out.length === PER) break; if (!out.includes(c)) out.push(c); }
+  out.forEach(c => st.seen.add(c.id));
+  return out;
+}
+function results(st) {
+  const score = {};
+  st.yes.forEach(c => Object.entries(c.sol).forEach(([k, w]) => { score[k] = (score[k] || 0) + w; }));
+  st.no.forEach(c => Object.entries(c.sol).forEach(([k, w]) => { if (k in score) score[k] -= w * .5; }));
+  const max = Math.max(1, ...Object.values(score));
+  return Object.entries(score).filter(([, v]) => v > 0)
+    .map(([k, v]) => ({ s: BY[k], v, pct: Math.round(v / max * 100) }))
+    .sort((a, b) => b.v - a.v || (a.s.status === 'jalan' ? -1 : 1)).slice(0, 4);
+}
+function setProg() {
+  const done = F.yes.length + F.no.length, total = ROUNDS * PER;
+  prog.classList.add('on');
+  $('#prog-t').textContent = `Kartu ${Math.min(done + 1, total)} dari ${total}`;
+  $('#prog-i').style.width = (done / total * 100) + '%';
+}
+function startCards() {
+  F = newState();
+  prog.classList.remove('on');
+  deckwrap.classList.remove('on');
+  deckwrap.innerHTML = '';
+  kasir.deal('sheet', () => {
+    deckwrap.innerHTML = `
+      <div class="sheet">
+        <h2>Usaha Anda bergerak di bidang apa?</h2>
+        <p>Pilih satu. Setelah itu kasir menyiapkan ${ROUNDS * PER} kartu masalah untuk Anda.</p>
+        <div class="inds">${INDUSTRI.map(([v, t]) => `<button class="ind" type="button" data-ind="${v}">${ic(IND_IC[v])}${esc(t)}</button>`).join('')}</div>
+        <button class="skip" type="button" data-ind="">Lewati, pakai kartu umum</button>
+      </div>`;
+    deckwrap.classList.add('on');
+    $$('[data-ind]', deckwrap).forEach(b => b.addEventListener('click', () => { F.ind = b.dataset.ind; nextRound(); }));
+    const first = $('.ind', deckwrap); if (first) first.focus({ preventScroll: true });
+  });
+}
+function nextRound() {
+  if (F.round >= ROUNDS) return go('hasil');
+  F.round++;
+  F.queue = pickRound(F);
+  deckwrap.classList.remove('on');
+  kasir.deal('cards', renderDeck);
+}
+function renderDeck() {
+  if (route.current !== 'kartu') return;
+  setProg();
+  const tagLine = c => [...(F.ind && c.ind.includes(F.ind) ? [IND[F.ind]] : []), ...c.tim.slice(0, 1).map(t => TIMS[t])];
+  deckwrap.innerHTML = `
+    <div class="deck">${F.queue.slice().reverse().map((c, i, arr) => `
+      <div class="pc" data-id="${c.id}" data-depth="${arr.length - 1 - i}" ${arr.length - 1 - i === 0 ? 'tabindex="0" role="group" aria-roledescription="kartu masalah"' : 'aria-hidden="true"'}>
+        <span class="k"><span>Ronde ${F.round} dari ${ROUNDS}</span><span>Apakah ini terjadi?</span></span>
+        <h2>${esc(c.t)}</h2>
+        <span class="tg">${tagLine(c).map(t => `<span class="chip">${esc(t)}</span>`).join('')}</span>
+        <span class="stamp s-yes">Ya, terjadi</span><span class="stamp s-no">Tidak</span><span class="stamp s-up">Lihat solusi</span>
+      </div>`).join('')}
+      <span class="cue cue-up" aria-hidden="true">${ic('i-arrow-up')}<b>Solusi</b></span>
+      <span class="cue cue-no" aria-hidden="true">${ic('i-arrow-right')}<b>Tidak</b></span>
+      <span class="cue cue-yes" aria-hidden="true">${ic('i-arrow-right')}<b>Ya</b></span>
+    </div>
+    <p class="hint-k">Swipe/drag pertanyaannya untuk menjawab atau melihat solusi</p>`;
+  deckwrap.classList.add('on');
+  bindDrag();
+}
+const topCard = () => $('.pc[data-depth="0"]', deckwrap);
+let busy = false;
+function decide(kind) {
+  const el = topCard(); if (!el || busy) return;
+  busy = true;
+  const c = KARTU.find(k => k.id === el.dataset.id);
+  if (kind === 'yes' || kind === 'up') F.yes.push(c); else F.no.push(c);
+  const out = { yes: 'translate(140%,-6%) rotate(18deg)', no: 'translate(-140%,-6%) rotate(-18deg)', up: 'translate(0,-140%)' }[kind];
+  el.classList.remove('drag');
+  $('.s-' + kind, el).style.opacity = 1;
+  el.style.transform = out; el.style.opacity = 0;
+  if (kind === 'yes') kasir.act('nod');
+  F.queue = F.queue.filter(k => k.id !== c.id);
+  setTimeout(() => {
+    busy = false;
+    if (kind === 'up') return go('hasil');
+    if (!F.queue.length) return nextRound();
+    el.remove();
+    $$('.pc', deckwrap).forEach(p => {
+      const d = Number(p.dataset.depth) - 1; p.dataset.depth = d;
+      if (d === 0) { p.removeAttribute('aria-hidden'); p.tabIndex = 0; p.setAttribute('role', 'group'); }
+    });
+    setProg(); bindDrag();
+  }, reduce ? 10 : 300);
+}
+function bindDrag() {
+  const el = topCard(); if (!el || el.dataset.bound) return;
+  el.dataset.bound = '1';
+  let x0 = 0, y0 = 0, dx = 0, dy = 0, on = false;
+  const st = { yes: $('.s-yes', el), no: $('.s-no', el), up: $('.s-up', el) };
+  el.addEventListener('pointerdown', e => { on = true; x0 = e.clientX; y0 = e.clientY; dx = dy = 0; el.classList.add('drag'); el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => {
+    if (!on) return;
+    dx = e.clientX - x0; dy = e.clientY - y0;
+    el.style.transform = `translate(${dx}px,${dy}px) rotate(${dx / 18}deg)`;
+    st.yes.style.opacity = Math.max(0, Math.min(1, dx / 90));
+    st.no.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+    st.up.style.opacity = Math.abs(dx) < 60 ? Math.max(0, Math.min(1, -dy / 90)) : 0;
+  });
+  const end = () => {
+    if (!on) return; on = false;
+    const w = Math.min(110, el.offsetWidth * .28);
+    if (dx > w) return decide('yes');
+    if (dx < -w) return decide('no');
+    if (dy < -w && Math.abs(dx) < 60) return decide('up');
+    el.classList.remove('drag'); el.style.transform = ''; Object.values(st).forEach(s => { s.style.opacity = 0; });
+  };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  el.focus({ preventScroll: true });
+}
+document.addEventListener('keydown', e => {
+  if (route.current !== 'kartu' || !topCard()) return;
+  const k = { ArrowRight: 'yes', ArrowLeft: 'no', ArrowUp: 'up' }[e.key];
+  if (k) { e.preventDefault(); decide(k); }
+});
+function renderHasil() {
+  const res = F ? results(F) : [];
+  const picked = F ? F.yes.map(c => c.t.replace(/\?$/, '')) : [];
+  const waText = picked.length
+    ? `Halo Kreatekno, saya baru mencoba kartu masalah di website. Masalah di usaha saya${F.ind ? ' (' + IND[F.ind] + ')' : ''}:\n- ${picked.join('\n- ')}\nSaya mau konsultasi.`
+    : WA_DEFAULT;
+  $('#v-hasil').innerHTML = `
+    <div class="wrap res">
+      <nav class="crumb" aria-label="Breadcrumb" style="justify-content:center"><a href="#solusi">Solusi</a><span aria-hidden="true">/</span><span>Hasil kartu masalah</span></nav>
+      <h1>${res.length ? 'Solusi yang paling cocok untuk usaha Anda' : 'Belum ada solusi yang pas di etalase kami'}</h1>
+      ${picked.length ? `<div><p class="note" style="margin-bottom:8px">Masalah yang Anda pilih</p><div class="picked">${picked.map(p => `<span>${esc(p)}</span>`).join('')}</div></div>` : ''}
+      ${res.length ? `<div class="res-list">${res.map(r => `
+        <a class="res-card" href="#s-${r.s.slug}"><h3>${esc(r.s.title)}</h3><span class="match">${badge(r.s)}<small>Kecocokan ${r.pct}%</small></span><p>${esc(r.s.result)}</p></a>`).join('')}</div>`
+      : `<div class="none"><h3 style="color:var(--navy)">Masalah Anda mungkin belum ada di etalase.</h3><p class="note" style="margin-top:6px">Ceritakan langsung lewat chat. Kami bantu petakan solusinya, gratis.</p></div>`}
+      <div class="cta-row" style="justify-content:center">
+        <a class="btn btn-main" href="#" role="button" data-contact data-msg="${esc(waText)}">Konsultasi gratis<span class="knob">${ic('i-chat-circle-dots')}</span></a>
+        <a class="btn btn-line" href="#kartu">${ic('i-return')}Ulangi</a>
+        <a class="btn btn-line" href="#solusi">Kembali ke etalase</a>
+      </div>
+      <p class="note" style="text-align:center">Pesan chat sudah berisi masalah yang Anda pilih.</p>
+    </div>`;
+}
+
+/* ============================== detail page ============================== */
+function related(s) {
+  return SOLUSI.filter(o => o.slug !== s.slug)
+    .map(o => ({ o, w: o.tim.filter(t => s.tim.includes(t)).length * 2 + o.industri.filter(i => s.industri.includes(i)).length }))
+    .sort((a, b) => b.w - a.w).slice(0, 2).map(x => x.o);
+}
+function renderDetail(s) {
+  const jalan = s.status === 'jalan';
+  const waText = `Halo Kreatekno, saya lihat solusi "${s.title}". Saya mau konsultasi solusi serupa untuk bisnis saya.`;
+  $('#v-detail').innerHTML = `
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="#solusi">Solusi</a><span aria-hidden="true">/</span><span>${esc(IND[s.industri[0]])}</span></nav>
+      <header class="d-head">
+        <div class="d-meta">${badge(s)}${s.industri.map(i => `<span class="chip">${esc(IND[i])}</span>`).join('')}<time datetime="2026-10">Diperbarui ${esc(s.updated)}</time></div>
+        <h1>${esc(s.title)}</h1>
+        <div class="answer-box"><span class="q">${esc(s.q)}</span><p>${esc(s.answer)}</p></div>
+      </header>
+      <div class="layout">
+        <aside class="facts" aria-labelledby="ringkas">
+          <h2 id="ringkas">Ringkasan</h2>
+          ${jalan ? `<p class="veil">${ic('i-seal-check')}<span>Nama dan detail klien disamarkan atas permintaan klien.</span></p>` : `<p class="veil">${ic('i-sparkle')}<span>Ide solusi yang siap dibuat. Belum ada klien yang memakai versi ini.</span></p>`}
+          ${s.watch ? `<a class="watch" href="${s.watch}" target="_blank" rel="noopener">${ic('i-play')}Tonton cara kerjanya</a>` : ''}
+          <dl>
+            ${jalan ? `<div><dt>Klien</dt><dd>${esc(s.client)}</dd></div>` : ''}
+            <div><dt>Bidang usaha</dt><dd>${esc(s.industri.map(i => IND[i]).join(', '))}</dd></div>
+            <div><dt>Tim</dt><dd>${esc(s.tim.map(t => TIMS[t]).join(', '))}</dd></div>
+            <div><dt>Hasil utama</dt><dd>${esc(s.result)}</dd></div>
+          </dl>
+        </aside>
+        <div class="body">
+          <section class="sec"><span class="eb">Masalahnya</span><h2>Kenapa pekerjaan ini menyita waktu tim?</h2>
+            <ul class="ticks t-pain">${s.pains.map(p => `<li>${ic('i-warn')}<span>${esc(p)}</span></li>`).join('')}</ul></section>
+          <section class="sec"><span class="eb">Cara kerjanya</span><h2>${esc(s.q)}</h2><p class="lead">${esc(s.answer)}</p>
+            <ol class="steps">${s.steps.map(([t, d]) => `<li><b>${esc(t)}</b><p>${esc(d)}</p></li>`).join('')}</ol></section>
+          <section class="sec"><span class="eb">Sebelum dan sesudah</span><h2>Apa bedanya dengan cara manual?</h2>
+            <div class="tbl-wrap"><table><thead><tr><th scope="col">Pekerjaan</th><th scope="col">Cara manual</th><th scope="col">Dengan asisten</th></tr></thead>
+            <tbody>${s.compare.map(([a, b, c]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td><td class="after">${esc(c)}</td></tr>`).join('')}</tbody></table></div></section>
+          <section class="sec"><span class="eb">Cocok untuk siapa</span><h2>Apakah solusi ini cocok untuk usaha saya?</h2>
+            <div class="two"><div><h3>Cocok untuk</h3><ul class="ticks t-yes">${s.fit.map(f => `<li>${ic('i-check-circle')}<span>${esc(f)}</span></li>`).join('')}</ul></div>
+            <div><h3>Kurang cocok untuk</h3><ul class="ticks t-no">${s.notFit.map(f => `<li>${ic('i-x')}<span>${esc(f)}</span></li>`).join('')}</ul></div></div></section>
+          <section class="sec"><span class="eb">Yang perlu disiapkan</span><h2>Apa yang perlu saya siapkan?</h2>
+            <ul class="ticks t-prep">${s.prep.map(p => `<li>${ic('i-check')}<span>${esc(p)}</span></li>`).join('')}</ul></section>
+          ${jalan ? `<section class="sec"><span class="eb">Hasilnya</span><h2>Apa yang berubah setelah berjalan?</h2>
+            <div class="tiles">${s.metrics.map(([n, u, l]) => `<div class="tile"><b>${esc(n)}<small>${esc(u)}</small></b><p>${esc(l)}</p></div>`).join('')}</div>
+            <p class="note">Angka contoh. Angka asli dipakai setelah klien memberi izin.</p></section>` : ''}
+          <section class="sec"><span class="eb">Aplikasi yang dipakai</span><h2>Tetap di aplikasi yang tim Anda pakai</h2>
+            <ul class="apps-l">${s.apps.map(a => `<li>${ic(APP[a][2])}${esc(APP[a][1])}</li>`).join('')}</ul></section>
+          <section class="sec"><span class="eb">Pertanyaan umum</span><h2>Yang sering ditanyakan</h2>
+            <dl class="faq">${s.faq.map(([qq, a]) => `<div><dt>${esc(qq)}</dt><dd>${esc(a)}</dd></div>`).join('')}</dl></section>
+          <section class="d-cta"><h2>Mau solusi seperti ini untuk usaha Anda?</h2><p>Ceritakan alur kerja Anda. Kami bantu petakan solusinya, gratis.</p>
+            <div class="cta-row"><a class="btn btn-main" href="#" role="button" data-contact data-msg="${esc(waText)}">Konsultasi gratis<span class="knob">${ic('i-chat-circle-dots')}</span></a>
+            <a class="btn btn-line" href="#solusi">Kembali ke etalase</a></div></section>
+          <section class="sec" style="max-width:none"><span class="eb">Solusi terkait</span><h2>Biasanya juga dibutuhkan</h2>
+            <ul class="ticks t-prep">${related(s).map(o => `<li>${ic('i-arrow-right')}<a href="#s-${o.slug}" style="font-weight:700;color:var(--navy)">${esc(o.title)}</a></li>`).join('')}</ul></section>
+        </div>
+      </div>
+    </div>`;
+  document.title = s.title + ' | Kreatekno Solusi';
+}
+
+/* ============================== 3D ============================== */
+const toko = $('#toko');
+const canvas = $('#gl');
+let renderer = null;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+} catch (err) {
+  document.documentElement.classList.add('no3d');
+}
+const C = c => new THREE.Color(c);
+const std = (c, o = {}) => new THREE.MeshStandardMaterial({ color: C(c), roughness: .8, metalness: 0, ...o });
+const basic = c => new THREE.MeshBasicMaterial({ color: C(c) });
+
+/* --- shared product-box look: elongated rounded box in the team pastel, white label panel on the front --- */
+function roundedRectShape(w, h, r) {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+  r = Math.min(r, w / 2, h / 2);
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+const roundedRectGeo = (w, h, r) => new THREE.ShapeGeometry(roundedRectShape(w, h, r), 6);
+// same proportions as the shelf boxes (216 x 305 x 64 px)
+const BOX = { w: .5, h: .706, d: .148 };
+const boxGeo = new RoundedBoxGeometry(BOX.w, BOX.h, BOX.d, 3, .014);
+// status badge (white pill, coloured dot, label) drawn once per status on a canvas
+function badgeTex(label, dot) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 56;
+  const g = c.getContext('2d');
+  const draw = () => {
+    g.clearRect(0, 0, 256, 56);
+    g.fillStyle = '#fff'; g.beginPath(); g.roundRect(0, 0, 256, 56, 28); g.fill();
+    g.fillStyle = dot; g.beginPath(); g.arc(30, 28, 9, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#131951'; g.font = '700 26px "Plus Jakarta Sans", system-ui, sans-serif'; g.textBaseline = 'middle'; g.fillText(label, 50, 30);
+  };
+  draw();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  // redraw once the web font is ready (the first draw may use the fallback font)
+  if (document.fonts) document.fonts.load('700 26px "Plus Jakarta Sans"').then(() => { draw(); t.needsUpdate = true; }).catch(() => {});
+  return t;
+}
+const badgeMats = { jalan: new THREE.MeshBasicMaterial({ map: badgeTex('Sudah berjalan', '#06606C'), transparent: true }), ide: new THREE.MeshBasicMaterial({ map: badgeTex('Siap dibuat', '#5B1BB5'), transparent: true }) };
+const BADGE = { w: BOX.w * .5, h: BOX.w * .5 * 56 / 256 };
+const badgeGeo = new THREE.PlaneGeometry(BADGE.w, BADGE.h);
+const panelMat = std('#FFFFFF', { roughness: .5 });
+const teamMats = {};
+const teamMat = s => teamMats[teamOf(s)] || (teamMats[teamOf(s)] = std(colorOf(s), { roughness: .6 }));
+function makeProduct() {
+  const g = new THREE.Group();
+  const mesh = new THREE.Mesh(boxGeo, panelMat);
+  const badge = new THREE.Mesh(badgeGeo, badgeMats.jalan);
+  badge.position.set(-BOX.w / 2 + .037 + BADGE.w / 2, BOX.h / 2 - .037 - BADGE.h / 2, BOX.d / 2 + .002);
+  g.add(mesh, badge);
+  g.setProduct = s => { mesh.material = teamMat(s); badge.material = badgeMats[s.status] || badgeMats.jalan; };
+  return g;
+}
+
+/* --- the shop scene --- */
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b2dc, 1.7));
+const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(-3, 6, 5); scene.add(sun);
+const fill2 = new THREE.DirectionalLight(0xc9f6ff, .5); fill2.position.set(4, 2, 3); scene.add(fill2);
+
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(40, 14), basic('#131951')); wall.position.set(0, 4, -2.3); scene.add(wall);
+const wains = new THREE.Mesh(new THREE.PlaneGeometry(40, 1.5), basic('#131951')); wains.position.set(0, .95, -2.29); scene.add(wains);
+const rail = new THREE.Mesh(new THREE.BoxGeometry(40, .05, .05), basic('#232B77')); rail.position.set(0, 1.72, -2.27); scene.add(rail);
+
+// counter: one light object (top and front in the same lavender) running the full width of the screen,
+// so it never ends inside the view, even when the camera moves in for searching or the problem cards.
+const COUNTER_FRONT = '#C2B8DF';
+const counterTop = new THREE.Mesh(new THREE.BoxGeometry(40, .12, 2.6), std('#CFC5E8', { roughness: .45 })); counterTop.position.set(0, 1.0, .6); scene.add(counterTop);
+const front = new THREE.Mesh(new THREE.BoxGeometry(40, 6, 2.5), basic(COUNTER_FRONT)); front.position.set(0, -2.07, .6); scene.add(front);
+// soft tonal shadow just under the counter-top lip (same hue, a little darker: reads as depth, not as a stripe)
+const lipShadow = new THREE.Mesh(new THREE.PlaneGeometry(40, .06), new THREE.MeshBasicMaterial({ color: C('#AFA4D2') })); lipShadow.position.set(0, .91, 1.851); scene.add(lipShadow);
+
+// cash register
+const reg = new THREE.Group();
+const regBody = new THREE.Mesh(new THREE.BoxGeometry(.78, .34, .58), std('#1A2160', { roughness: .5 })); regBody.position.y = .17;
+const regKeys = new THREE.Mesh(new THREE.BoxGeometry(.6, .04, .3), std('#2A3277')); regKeys.position.set(0, .36, .1); regKeys.rotation.x = -.25;
+const regPole = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .34), std('#2A3277')); regPole.position.set(0, .5, -.16);
+const regScreen = new THREE.Mesh(new THREE.BoxGeometry(.5, .3, .04), std('#0B0F3A', { emissive: C('#35EAFE'), emissiveIntensity: .35 })); regScreen.position.set(0, .72, -.14); regScreen.rotation.x = -.15;
+reg.add(regBody, regKeys, regPole, regScreen);
+reg.position.set(.55, 1.06, -.12); reg.rotation.y = .32; scene.add(reg);
+
+// wall shelf with small stock boxes (decor), right of the cashier
+const shelfG = new THREE.Group();
+[[0, 2.75], [0, 2.05]].forEach(([, y]) => {
+  const p = new THREE.Mesh(new THREE.BoxGeometry(2.1, .06, .4), std('#B8ADD9')); p.position.set(0, y, 0); shelfG.add(p);
+});
+['#87CFD7', '#94A2D9', '#DC96C4', '#90CCB7', '#AD96DD', '#C894DB', '#87CFD7', '#DF9DAE'].forEach((c, i) => {
+  const row = i < 4 ? 2.75 : 2.05, k = i % 4;
+  const b = new THREE.Mesh(new THREE.BoxGeometry(.32, .42, .26), std(c, { roughness: .6 }));
+  b.position.set(-.75 + k * .5, row + .24, 0); b.rotation.y = (k % 2 ? -.12 : .1); shelfG.add(b);
+});
+shelfG.position.set(3.75, 0, -2.05); scene.add(shelfG);
+
+// pendant lamp
+const lamp = new THREE.Group();
+const cord = new THREE.Mesh(new THREE.CylinderGeometry(.01, .01, 2.2), basic('#2A2F5E')); cord.position.y = 1.1;
+const shade = new THREE.Mesh(new THREE.ConeGeometry(.32, .3, 24, 1, true), std('#9F0ED6', { side: THREE.DoubleSide, roughness: .4 })); shade.position.y = 0;
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(.09, 16, 12), basic('#FFF6D8')); bulb.position.y = -.12;
+lamp.add(cord, shade, bulb); lamp.position.set(-.6, 3.65, -.5); scene.add(lamp);
+
+/* --- the cashier (Raka): built from basic shapes, poses blended per frame --- */
+const kasirRoot = new THREE.Group(); kasirRoot.position.set(1.95, 0, -.95); scene.add(kasirRoot);
+const hips = new THREE.Group(); hips.position.y = .95; kasirRoot.add(hips);
+const SKIN = '#B7794E', SHIRT = '#F7F7FF', APRON = '#9F0ED6', HAIR = '#1B1B2E';
+const torso = new THREE.Mesh(new THREE.CapsuleGeometry(.32, .52, 8, 18), std(SHIRT, { roughness: .7 })); torso.position.y = .62; hips.add(torso);
+const apron = new THREE.Mesh(new THREE.BoxGeometry(.5, .66, .05), std(APRON, { roughness: .6 })); apron.position.set(0, .48, .3); hips.add(apron);
+const strapL = new THREE.Mesh(new THREE.BoxGeometry(.05, .4, .03), std(APRON)); strapL.position.set(-.17, .95, .25); strapL.rotation.z = .25; hips.add(strapL);
+const strapR = strapL.clone(); strapR.position.x = .17; strapR.rotation.z = -.25; hips.add(strapR);
+const nameTag = new THREE.Mesh(new THREE.BoxGeometry(.16, .07, .02), basic('#FFFFFF')); nameTag.position.set(.12, .66, .335); hips.add(nameTag);
+const collar = new THREE.Mesh(new THREE.TorusGeometry(.13, .035, 8, 20), std('#35EAFE')); collar.position.set(0, 1.18, 0); collar.rotation.x = Math.PI / 2; hips.add(collar);
+const headG = new THREE.Group(); headG.position.y = 1.5; hips.add(headG);
+const head = new THREE.Mesh(new THREE.SphereGeometry(.27, 28, 20), std(SKIN, { roughness: .65 })); headG.add(head);
+const hair = new THREE.Mesh(new THREE.SphereGeometry(.285, 28, 14, 0, Math.PI * 2, 0, Math.PI * .5), std(HAIR, { roughness: .9 })); hair.position.y = .03; hair.rotation.x = -.25; headG.add(hair);
+const earL = new THREE.Mesh(new THREE.SphereGeometry(.055, 12, 10), std(SKIN)); earL.position.set(-.27, -.02, 0); headG.add(earL);
+const earR = earL.clone(); earR.position.x = .27; headG.add(earR);
+const eyeGeo = new THREE.SphereGeometry(.032, 12, 10), eyeMat = basic('#121640');
+const eyeL = new THREE.Mesh(eyeGeo, eyeMat); eyeL.position.set(-.09, .02, .245); headG.add(eyeL);
+const eyeR = eyeL.clone(); eyeR.position.x = .09; headG.add(eyeR);
+const smile = new THREE.Mesh(new THREE.TorusGeometry(.07, .014, 8, 20, Math.PI), basic('#5A2A1A')); smile.position.set(0, -.08, .25); smile.rotation.z = Math.PI; headG.add(smile);
+const mouthO = new THREE.Mesh(new THREE.TorusGeometry(.034, .016, 8, 18), basic('#5A2A1A')); mouthO.position.set(0, -.1, .255); mouthO.visible = false; headG.add(mouthO);
+function arm(side) {
+  const sh = new THREE.Group(); sh.position.set(side * .43, 1.04, 0); hips.add(sh);
+  const up = new THREE.Mesh(new THREE.CapsuleGeometry(.09, .3, 6, 12), std(SHIRT, { roughness: .7 })); up.position.y = -.23; sh.add(up);
+  const el = new THREE.Group(); el.position.y = -.45; sh.add(el);
+  const fo = new THREE.Mesh(new THREE.CapsuleGeometry(.075, .26, 6, 12), std(SKIN)); fo.position.y = -.2; el.add(fo);
+  const hand = new THREE.Mesh(new THREE.SphereGeometry(.09, 14, 10), std(SKIN)); hand.position.y = -.41; el.add(hand);
+  return { sh, el, side };
+}
+const armL = arm(-1), armR = arm(1);
+
+const POSES = {
+  idle:  { y: 0,    lean: 0,    head: 0,    l: [0, .12],     r: [0, .12],     le: -.25, re: -.25 },
+  ready: { y: -.95, lean: .18,  head: .3,   l: [-.4, .05],   r: [-.4, .05],   le: -.15, re: -.15 },
+  lift:  { y: .02,  lean: .14,  head: -.02, l: [-1.25, .08], r: [-1.25, .08], le: -.3,  re: -.3 },
+  offer: { y: 0,    lean: .2,   head: .12,  l: [-.95, .1],   r: [-.95, .1],   le: -.55, re: -.55 },
+  wave:  { y: 0,    lean: 0,    head: -.05, l: [0, .12],     r: [0, 2.6],     le: -.25, re: -.35 },
+  shrug: { y: 0,    lean: 0,    head: .16,  l: [-.25, .8],   r: [-.25, .8],   le: -1.6, re: -1.6 },
+  nod:   { y: 0,    lean: .06,  head: .2,   l: [0, .12],     r: [0, .12],     le: -.25, re: -.25 }
+};
+const cur = JSON.parse(JSON.stringify(POSES.idle));
+const kasir = {
+  pose: 'idle', base: 'idle', until: 0, waveT: 0,
+  want(p) { this.base = p; if (performance.now() > this.until) this.pose = p; },
+  act(p, ms = 1100) { this.pose = p; this.until = performance.now() + (reduce ? 0 : ms); if (p === 'wave') this.waveT = performance.now(); },
+  deal(kind, done) { dealCard(kind, done); }
+};
+function stepKasir(dt, t) {
+  if (kasir.pose !== kasir.base && performance.now() > kasir.until) kasir.pose = kasir.base;
+  const P = POSES[kasir.pose];
+  const k = reduce ? 1 : 1 - Math.exp(-dt * 9);
+  cur.y += (P.y - cur.y) * k; cur.lean += (P.lean - cur.lean) * k; cur.head += (P.head - cur.head) * k;
+  cur.le += (P.le - cur.le) * k; cur.re += (P.re - cur.re) * k;
+  for (const s of ['l', 'r']) for (let i = 0; i < 2; i++) cur[s][i] += (P[s][i] - cur[s][i]) * k;
+  const breathe = reduce ? 0 : Math.sin(t * 1.7) * .012;
+  hips.position.y = .95 + cur.y + breathe;
+  hips.rotation.x = cur.lean;
+  headG.rotation.x = cur.head;
+  headG.rotation.y = reduce ? 0 : Math.sin(t * .45) * .14;
+  armL.sh.rotation.x = cur.l[0]; armL.sh.rotation.z = -cur.l[1];
+  armR.sh.rotation.x = cur.r[0]; armR.sh.rotation.z = cur.r[1];
+  armL.el.rotation.x = cur.le;
+  armR.el.rotation.x = cur.re + (kasir.pose === 'wave' && !reduce ? Math.sin((performance.now() - kasir.waveT) / 90) * .4 : 0);
+  if (kasir.pose === 'nod' && !reduce) headG.rotation.x += Math.sin((performance.now() - (kasir.until - 1100)) / 110) * .12;
+  const blink = (t % 4.2) < .12 ? .15 : 1;
+  eyeL.scale.y = eyeR.scale.y = blink;
+  // desktop: the head (and a little the eyes) turn toward the mouse, in every mode
+  const lk = reduce ? 1 : 1 - Math.exp(-dt * 7);
+  look.yaw += ((look.on ? look.tYaw : 0) - look.yaw) * lk;
+  look.pitch += ((look.on ? look.tPitch : 0) - look.pitch) * lk;
+  if (look.on || Math.abs(look.yaw) > .002) {
+    const w = look.on ? 1 : Math.min(1, Math.abs(look.yaw) / .05);
+    headG.rotation.y = headG.rotation.y * (1 - w) + look.yaw;
+    headG.rotation.x += look.pitch;
+  }
+  eyeL.position.x = -.09 + look.yaw * .045; eyeR.position.x = .09 + look.yaw * .045;
+  eyeL.position.y = eyeR.position.y = .02 - look.pitch * .05;
+  // hit: recoil away from the click, springy wobble, eyes squeezed, round mouth (about 0.8 s)
+  const ht = (performance.now() - hit.t0) / 1000;
+  if (ht >= 0 && ht < .85) {
+    const env = reduce ? 0 : Math.exp(-ht * 5.5), wob = Math.cos(ht * 22);
+    hips.rotation.z = -hit.dir * .22 * env * wob;
+    hips.position.x = -hit.dir * .06 * env * wob;
+    hips.position.y -= .04 * env;
+    hips.rotation.x -= .12 * env;
+    headG.rotation.x -= .28 * Math.exp(-ht * 7) * (reduce ? 0 : 1);
+    headG.rotation.z = -hit.dir * .3 * env * Math.cos(ht * 18 + .6);
+    armL.sh.rotation.z -= .5 * env; armR.sh.rotation.z += .5 * env;
+    const shut = ht < .45;
+    eyeL.scale.y = eyeR.scale.y = shut ? .12 : eyeL.scale.y;
+    mouthO.visible = ht < .6; smile.visible = !mouthO.visible;
+  } else {
+    hips.rotation.z = 0; hips.position.x = 0; headG.rotation.z = 0;
+    mouthO.visible = false; smile.visible = true;
+  }
+}
+const look = { on: false, tYaw: 0, tPitch: 0, yaw: 0, pitch: 0 };
+const hit = { t0: -1e9, dir: 1 };
+const _hp = new THREE.Vector3(), _kRay = new THREE.Raycaster(), _kNd = new THREE.Vector2();
+const fine = matchMedia('(hover: hover) and (pointer: fine)');
+// is the shop stage on screen and the pointer over the cashier?
+function overKasir(cx, cy) {
+  const tr = toko.getBoundingClientRect();
+  if (toko.hidden || cy < tr.top || cy > tr.bottom) return false;
+  _kNd.set((cx - tr.left) / tr.width * 2 - 1, -((cy - tr.top) / tr.height) * 2 + 1);
+  _kRay.setFromCamera(_kNd, cam);
+  return _kRay.intersectObject(kasirRoot, true).length > 0;
+}
+// the cashier is "working" while boxes or a card are moving, or while lifting/handing something over
+const kasirBusy = () => counter.anims.length > 0 || !!cardAnim || ['ready', 'lift', 'offer'].includes(kasir.pose);
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || !fine.matches) return;
+  const tr = toko.getBoundingClientRect();
+  if (toko.hidden || tr.bottom < 0) { look.on = false; return; }
+  _hp.set(kasirRoot.position.x, hips.position.y + 1.5, kasirRoot.position.z).project(cam);
+  const hx = tr.left + (_hp.x + 1) / 2 * tr.width, hy = tr.top + (1 - _hp.y) / 2 * tr.height;
+  look.tYaw = Math.max(-.61, Math.min(.61, (e.clientX - hx) / (innerWidth * .45) * .61));
+  look.tPitch = Math.max(-.26, Math.min(.26, (e.clientY - hy) / (innerHeight * .5) * .26));
+  look.on = true;
+  if (!e.target.closest || !e.target.closest('.nav, .paper, .pbar, .sum, .deckwrap, .modal, .hero-copy, .exit')) {
+    if (overKasir(e.clientX, e.clientY)) document.documentElement.style.cursor = 'pointer';
+    else if (document.documentElement.style.cursor === 'pointer' && !(sumActive() && boxAt(e.clientX, e.clientY) >= 0)) document.documentElement.style.cursor = '';
+  }
+});
+document.addEventListener('mouseleave', () => { look.on = false; });
+addEventListener('blur', () => { look.on = false; });
+// click or tap on the cashier: the hit reaction (ignored while the cashier is working)
+toko.addEventListener('click', e => {
+  if (e.target.closest('.paper, .pbar, .sum, .deckwrap, .tags a, .exit, .hero-copy')) return;
+  if (!overKasir(e.clientX, e.clientY) || kasirBusy()) return;
+  _hp.set(kasirRoot.position.x, hips.position.y + 1, kasirRoot.position.z).project(cam);
+  const tr = toko.getBoundingClientRect();
+  hit.dir = e.clientX >= tr.left + (_hp.x + 1) / 2 * tr.width ? 1 : -1;
+  hit.t0 = performance.now();
+});
+
+/* --- products the cashier puts on the counter --- */
+// Boxes go where the visitor can see them: on desktop in the counter area right of the receipt paper, on phones
+// across the counter above the bottom sheet. 1-3 boxes make one row, 4-6 two rows (the back row offset by half a
+// box); the boxes shrink when the free area is narrow. Positions come from the camera the scene is moving to.
+const _lc = new THREE.PerspectiveCamera(35, 1, .1, 60), _ray = new THREE.Raycaster(), _nd = new THREE.Vector2();
+const _pz = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), _hit = new THREE.Vector3(), _pv = new THREE.Vector3();
+function targetCam(W, H) {
+  const T = camTarget();
+  _lc.fov = T.fov; _lc.aspect = W / H; _lc.position.set(...T.pos); _lc.lookAt(...T.look);
+  _lc.updateProjectionMatrix(); _lc.updateMatrixWorld();
+  return _lc;
+}
+// world x on the plane z = z under a given screen x (px from the stage's left edge), at counter-top height
+function screenToWorldX(sx, z, W, H, y = 1.06) {
+  const c = targetCam(W, H);
+  _pv.set(c.position.x, y, z).project(c);
+  _nd.set(sx / W * 2 - 1, _pv.y);
+  _ray.setFromCamera(_nd, c);
+  _pz.constant = -z;
+  return _ray.ray.intersectPlane(_pz, _hit) ? _hit.x : c.position.x;
+}
+function counterLayout(n) {
+  const tr = toko.getBoundingClientRect(), W = tr.width, H = tr.height, phone = isPhone();
+  const rows = 1, perRow = n;
+  const zF = phone ? .45 : .95, zB = phone ? -.3 : .1;
+  let l = 22, r = W - 22;
+  if (!phone && document.body.classList.contains('served')) { l = W * .1; r = W * .9; }
+  else if (!phone) {
+    const pr = paper.getBoundingClientRect();
+    l = (pr.width ? pr.right - tr.left : W * .4) + 28; r = W - Math.max(28, W * .04);
+  }
+  const xL = screenToWorldX(l, zF, W, H), xR = screenToWorldX(r, zF, W, H);
+  const gap = .09, step1 = BOX.w + gap;
+  const need = perRow * BOX.w + (perRow - 1) * gap + (rows > 1 ? step1 / 2 : 0);
+  const sc = Math.max(.3, Math.min(phone ? .72 : .9, (xR - xL) / need));
+  const st = step1 * sc, cx = (xL + xR) / 2;
+  const rowW = (perRow - 1) * st + (rows > 1 ? st / 2 : 0);
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const row = i < perRow ? 0 : 1, k = row ? i - perRow : i;
+    pts.push([cx - rowW / 2 + k * st + (row ? st / 2 : 0), row ? zB : zF]);
+  }
+  return { pts, sc };
+}
+// the cash register: home spot in the hero; while searching it slides left behind the receipt (off-screen on phones)
+const REG_HOME = .55;
+function regTargetX() {
+  if (!document.body.classList.contains('mode-cari')) return REG_HOME;
+  const tr = toko.getBoundingClientRect();
+  if (isPhone() || document.body.classList.contains('served')) return screenToWorldX(-240, -.12, tr.width, tr.height);
+  const pr = paper.getBoundingClientRect();
+  return pr.width ? screenToWorldX(pr.left - tr.left + pr.width * .42, -.12, tr.width, tr.height) : REG_HOME;
+}
+const counterPool = Array.from({ length: MAX_ON_COUNTER }, () => { const p = makeProduct(); p.visible = false; scene.add(p); return p; });
+const tagsEl = $('#tags');
+const counter = {
+  anims: [], shown: [],
+  clear() {
+    const now = performance.now();
+    counterPool.forEach(p => {
+      if (!p.visible) return;
+      this.anims.push({ p, t0: now, dur: reduce ? 1 : 460, from: p.position.clone(), to: new THREE.Vector3(1.95, .5, -.4), arc: .35, hide: true });
+    });
+    this.shown = []; tagsEl.innerHTML = '';
+  },
+  serve(list) {
+    this.clear();
+    const reused = new Set(counterPool.slice(0, list.length));
+    this.anims = this.anims.filter(a => !reused.has(a.p));
+    this.shown = list;
+    kasir.base = 'idle';
+    kasir.act('ready', 380);
+    const base = performance.now() + (reduce ? 0 : 420);
+    const L = counterLayout(list.length), sc = L.sc;
+    setTimeout(() => kasir.act('lift', 260 + list.length * 160), reduce ? 0 : 380);
+    list.forEach((s, i) => {
+      const p = counterPool[i];
+      p.setProduct(s); p.scale.setScalar(sc); p.visible = true;
+      p.position.set(1.95, .45, -.35); p.rotation.set(0, (i % 2 ? -.12 : .12), 0);
+      const [x, z] = L.pts[i];
+      this.anims.push({ p, t0: base + i * (reduce ? 0 : 150), dur: reduce ? 1 : 560, from: new THREE.Vector3(1.95, .45, -.35), to: new THREE.Vector3(x, 1.06 + BOX.h * sc / 2, z), arc: .55 });
+    });
+    tagsEl.innerHTML = list.map((s, i) => `<a href="#s-${s.slug}" data-i="${i}" aria-label="${i + 1}. ${esc(s.title)}, lihat ringkasan">${i + 1}</a>`).join('');
+  },
+  step(now) {
+    this.anims = this.anims.filter(a => {
+      const u = Math.min(1, Math.max(0, (now - a.t0) / a.dur));
+      const e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      a.p.position.lerpVectors(a.from, a.to, e);
+      if (a.arc) a.p.position.y += Math.sin(Math.PI * u) * a.arc;
+      if (u >= 1) { if (a.hide) a.p.visible = false; return false; }
+      return true;
+    });
+  },
+  // after a resize, move the boxes already on the counter to the new layout (no animation)
+  relayout() {
+    if (!this.shown.length || this.anims.length) return;
+    const L = counterLayout(this.shown.length);
+    this.shown.forEach((s, i) => { const p = counterPool[i]; p.scale.setScalar(L.sc); p.position.set(L.pts[i][0], 1.06 + BOX.h * L.sc / 2, L.pts[i][1]); });
+  },
+  reset() { counterPool.forEach(p => { p.visible = false; }); this.anims = []; this.shown = []; tagsEl.innerHTML = ''; }
+};
+
+/* --- summary card for a box on the counter: title, apps, short summary, link to the detail page --- */
+const sumEl = $('#sum');
+let sumI = -1, sumHideT = 0;
+const sumActive = () => document.body.classList.contains('mode-cari') && document.body.classList.contains('served');
+function openSum(i) {
+  clearTimeout(sumHideT);
+  const s = counter.shown[i];
+  if (!s) return;
+  if (i !== sumI || !sumEl.classList.contains('on')) {
+    sumI = i;
+    sumEl.innerHTML = `<button class="sum-x" type="button" aria-label="Tutup ringkasan">${ic('i-x')}</button>
+      <h3>${esc(s.title)}</h3>
+      <div class="plat" aria-label="Platform">${s.apps.map(a => `<span>${ic(APP[a][2])}${esc(APP[a][1])}</span>`).join('')}</div>
+      <p>${esc(RINGKAS[s.slug] || s.result)}</p>
+      <a class="btn btn-main" href="#s-${s.slug}">Lihat detail<span class="knob">${ic('i-arrow-right')}</span></a>`;
+    sumEl.setAttribute('aria-label', 'Ringkasan ' + s.title);
+    sumEl.classList.add('on');
+  }
+  placeSum();
+}
+function closeSum() { clearTimeout(sumHideT); sumI = -1; sumEl.classList.remove('on'); }
+function closeSumSoon() { clearTimeout(sumHideT); sumHideT = setTimeout(closeSum, 240); }
+function placeSum() {
+  if (sumI < 0) return;
+  const tr = toko.getBoundingClientRect();
+  if (isPhone()) {
+    const br = pbar.getBoundingClientRect();
+    sumEl.style.left = sumEl.style.top = '';
+    sumEl.style.bottom = (tr.bottom - br.top + 12) + 'px';
+    return;
+  }
+  const p = counterPool[sumI];
+  v3.set(p.position.x, p.position.y + BOX.h * p.scale.y / 2 + .02, p.position.z).project(cam);
+  const bx = (v3.x + 1) / 2 * tr.width, by = (1 - v3.y) / 2 * tr.height;
+  const w = sumEl.offsetWidth || 320, x = Math.max(16 + w / 2, Math.min(tr.width - 16 - w / 2, bx));
+  sumEl.style.bottom = '';
+  sumEl.style.left = x + 'px'; sumEl.style.top = (by - 30) + 'px';
+  sumEl.style.setProperty('--ax', (bx - x) + 'px');
+}
+sumEl.addEventListener('pointerenter', () => clearTimeout(sumHideT));
+sumEl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') closeSumSoon(); });
+sumEl.addEventListener('click', e => { if (e.target.closest('.sum-x')) closeSum(); });
+const _ray2 = new THREE.Raycaster(), _np = new THREE.Vector2();
+function boxAt(cx, cy) {
+  if (!counter.shown.length) return -1;
+  const tr = toko.getBoundingClientRect();
+  _np.set((cx - tr.left) / tr.width * 2 - 1, -((cy - tr.top) / tr.height) * 2 + 1);
+  _ray2.setFromCamera(_np, cam);
+  const hit = _ray2.intersectObjects(counterPool.slice(0, counter.shown.length).filter(p => p.visible), true)[0];
+  if (!hit) return -1;
+  let o = hit.object;
+  while (o && !counterPool.includes(o)) o = o.parent;
+  return counterPool.indexOf(o);
+}
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || isPhone() || !sumActive()) return;
+  const t = e.target.closest ? e.target : null;
+  if (t && t.closest('.sum')) { clearTimeout(sumHideT); return; }
+  if (t && t.closest('.pbar, .nav, .exit, .modal')) { if (sumI >= 0) closeSumSoon(); document.documentElement.style.cursor = ''; return; }
+  const tag = t && t.closest('.tags a');
+  const i = tag ? Number(tag.dataset.i) : boxAt(e.clientX, e.clientY);
+  document.documentElement.style.cursor = i >= 0 ? 'pointer' : '';
+  if (i >= 0) openSum(i); else if (sumI >= 0) closeSumSoon();
+});
+toko.addEventListener('click', e => {
+  if (!sumActive() || e.target.closest('.sum, .pbar, .exit, .tags a, .paper')) return;
+  const i = boxAt(e.clientX, e.clientY);
+  if (i >= 0) openSum(i); else closeSum();
+});
+tagsEl.addEventListener('click', e => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  e.preventDefault();
+  openSum(Number(a.dataset.i));
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!modal.hidden) closeContact(); else closeSum();
+});
+
+/* --- the card / sheet the cashier puts down in card mode --- */
+const cardMesh = new THREE.Group();
+const cardBody = new THREE.Mesh(new THREE.BoxGeometry(.95, .02, 1.2), [basic('#E9E4F5'), basic('#E9E4F5'), basic('#FFFFFF'), basic('#9F0ED6'), basic('#E9E4F5'), basic('#E9E4F5')]);
+cardMesh.add(cardBody); cardMesh.visible = false; scene.add(cardMesh);
+let cardAnim = null;
+let relayoutT = 0;
+addEventListener('resize', () => { clearTimeout(relayoutT); relayoutT = setTimeout(() => counter.relayout(), 250); });
+function dealCard(kind, done) {
+  if (!renderer || reduce) { done(); return; }
+  kasir.act('ready', 360);
+  setTimeout(() => kasir.act('offer', 700), 360);
+  const target = isPhone() ? new THREE.Vector3(1.95, 1.08, .6) : new THREE.Vector3(1.4, 1.08, .9);
+  cardBody.material[2].color.set(kind === 'sheet' ? '#FFFDF7' : '#FFFFFF');
+  cardMesh.visible = true;
+  cardMesh.position.set(1.95, .5, -.35); cardMesh.rotation.set(-1.1, 0, 0);
+  cardAnim = { t0: performance.now() + 360, dur: 620, from: new THREE.Vector3(1.95, .5, -.35), to: target, done };
+}
+function stepCard(now) {
+  if (!cardAnim) return;
+  const a = cardAnim, u = Math.min(1, Math.max(0, (now - a.t0) / a.dur));
+  const e = 1 - Math.pow(1 - u, 3);
+  cardMesh.position.lerpVectors(a.from, a.to, e); cardMesh.position.y += Math.sin(Math.PI * u) * .6;
+  cardMesh.rotation.x = -1.1 * (1 - e); cardMesh.rotation.z = Math.sin(Math.PI * u) * .25;
+  if (u >= 1) { cardAnim = null; setTimeout(() => { cardMesh.visible = false; a.done(); }, 120); }
+}
+
+/* --- cameras: hero framing vs focus on the counter top --- */
+const cam = new THREE.PerspectiveCamera(35, 1, .1, 60);
+const camState = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 35, ready: false };
+// hero framing, raised or lowered (same angle) so the counter-top lip sits LIP_GAP px above the bottom of the
+// shop stage: the counter front then runs straight into the etalase window instead of leaving a tall empty band
+const LIP_Y = .88, LIP_GAP = 8;
+let heroH = 0;
+function heroTarget() {
+  const base = isPhone() ? { pos: [1.95, 3.1, 7.2], look: [1.95, 2.85, 0], fov: 41 } : { pos: [.32, 2.3, 6.5], look: [.32, 2.12, 0], fov: 35 };
+  if (!heroH) return base;
+  const cz = base.pos[2], dist = cz - 1.9;
+  const ppu = heroH / (2 * dist * Math.tan(THREE.MathUtils.degToRad(base.fov / 2)));
+  const axis = base.pos[1] + (base.look[1] - base.pos[1]) * dist / cz;
+  const d = LIP_Y + (heroH / 2 - LIP_GAP) / ppu - axis;
+  return { pos: [base.pos[0], base.pos[1] + d, cz], look: [base.look[0], base.look[1] + d, 0], fov: base.fov };
+}
+function camTarget() {
+  const phone = isPhone(), focus = document.body.classList.contains('focus');
+  if (focus && phone && document.body.classList.contains('mode-cari') && counter.shown.length) return { pos: [1.95, 3.45, 4.75], look: [1.95, 1.3, -.1], fov: 46 };
+  if (focus) return phone ? { pos: [1.95, 4.3, 5.6], look: [1.95, 1.45, -.2], fov: 46 } : { pos: [1.4, 3.9, 6.3], look: [1.4, 1.35, .15], fov: 36 };
+  return heroTarget();
+}
+function stepCam(dt) {
+  const T = camTarget();
+  const k = !camState.ready || reduce ? 1 : 1 - Math.exp(-dt * 3.4);
+  camState.pos.lerp(new THREE.Vector3(...T.pos), k);
+  camState.look.lerp(new THREE.Vector3(...T.look), k);
+  camState.fov += (T.fov - camState.fov) * k;
+  camState.ready = true;
+  cam.position.copy(camState.pos); cam.fov = camState.fov; cam.lookAt(camState.look);
+}
+
+/* --- etalase shelf: orthographic pass, 1 world unit = 1 CSS px, every part placed from its HTML box ---
+   Each part is tilted a little around its front face so the top faces show (like the reference),
+   while the front face still lands exactly on its HTML rectangle, so the HTML text sits on the cover. */
+const TILT = .2, COS = Math.cos(TILT), SIN = Math.sin(TILT);
+const geoCache = new Map();
+function rbox(w, h, d, r) {
+  w = Math.max(2, Math.round(w)); h = Math.max(2, Math.round(h)); d = Math.max(2, Math.round(d));
+  r = Math.max(.5, Math.min(r, w / 2 - .5, h / 2 - .5, d / 2 - .5));
+  const k = `b${w}|${h}|${d}|${r}`;
+  let g = geoCache.get(k);
+  if (!g) { g = new RoundedBoxGeometry(w, h, d, 3, r); g.translate(0, 0, -d / 2); geoCache.set(k, g); }
+  return g;
+}
+function rrect(w, h, r) {
+  w = Math.max(2, Math.round(w)); h = Math.max(2, Math.round(h));
+  const k = `p${w}|${h}|${r}`;
+  let g = geoCache.get(k);
+  if (!g) { g = roundedRectGeo(w, h, r); geoCache.set(k, g); }
+  return g;
+}
+const rakScene = new THREE.Scene(), rakBoxes = new THREE.Scene();
+for (const sc of [rakScene, rakBoxes]) {
+  sc.add(new THREE.HemisphereLight(0xffffff, 0xe6defc, 2.35));
+  const d = new THREE.DirectionalLight(0xffffff, .95); d.position.set(-.35, .9, 1); sc.add(d);
+}
+const rakCam = new THREE.OrthographicCamera(0, 1, 0, -1, 1, 4000); rakCam.position.z = 2000;
+const tilted = mat => { const m = new THREE.Mesh(rbox(10, 10, 10, 2), mat); m.rotation.x = TILT; return m; };
+// one draw call per kind of part: planks, product boxes + label panels, decor boxes + panels + bands
+function clampChips() {
+  $$('.cover .chips', tiersEl).forEach(box => {
+    box.querySelector('.more')?.remove();
+    const items = [...box.children]; items.forEach(c => { c.hidden = false; });
+    if (!items.length) return;
+    // the chip block sits at the panel bottom, so rows move when it shrinks: measure from the first chip each time
+    const lineH = items[0].offsetHeight + 4, third = () => items[0].offsetTop + lineH * 2;
+    const over = () => items.filter(c => !c.hidden).some(c => c.offsetTop >= third());
+    if (!over()) return;
+    const more = document.createElement('span'); more.className = 'more'; box.appendChild(more);
+    let hidden = 0;
+    for (let i = items.length - 1; i > 0 && (hidden === 0 || over() || more.offsetTop >= third()); i--) {
+      items[i].hidden = true; hidden++; more.textContent = '+' + hidden;
+    }
+  });
+}
+clampChips();
+if (document.fonts) document.fonts.ready.then(clampChips);
+const prodEls = $$('.prod', tiersEl).map(a => ({ s: BY[a.dataset.slug], pk: $('.pk', a), cover: $('.cover', a), slot: a.closest('.slot') }));
+const decoEls = $$('.dekor .pk', tiersEl).map(pk => ({ pk, team: pk.closest('.tier').dataset.team }));
+const plankEls = $$('.plank', tiersEl), trackEls = $$('.track', tiersEl);
+const inst = (n, mat, sc) => { const m = new THREE.InstancedMesh(rbox(10, 10, 10, 2), mat, Math.max(1, n)); m.count = n; m.frustumCulled = false; sc.add(m); return m; };
+const planks = inst(plankEls.length, std('#B4A9D5', { roughness: .55 }), rakScene);
+const prodBoxes = inst(prodEls.length, std('#FFFFFF', { roughness: .62 }), rakBoxes);
+const panelMat2 = std('#FFFFFF', { roughness: .45, depthTest: false });
+const prodPanels = inst(prodEls.length, std('#F1F1F5', { roughness: .5, depthTest: false }), rakBoxes); prodPanels.renderOrder = 2;
+
+const decoBoxes = inst(decoEls.length * 4, std('#FFFFFF', { roughness: .62 }), rakBoxes);
+const decoPanels = inst(decoEls.length * 4, panelMat2, rakBoxes); decoPanels.renderOrder = 2;
+// the lighter stripe near the bottom of each decor box front (product boxes carry the app icons there instead)
+const bandMat = std('#FFFFFF', { roughness: .5, depthTest: false });
+const decoBands = inst(decoEls.length * 4, bandMat, rakBoxes); decoBands.renderOrder = 2;
+const tint = (hex, k) => new THREE.Color(hex).lerp(new THREE.Color('#ffffff'), k);
+// soft contact shadow: a blurred ellipse drawn just below each box, behind it, so the box sits on the plank
+function softShadowTex() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 32;
+  const g = c.getContext('2d');
+  g.setTransform(1, 0, 0, .25, 0, 0);
+  const rg = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+  rg.addColorStop(0, 'rgba(0,0,0,.95)'); rg.addColorStop(.5, 'rgba(0,0,0,.7)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const shadowMat = new THREE.MeshBasicMaterial({ color: 0x05071f, map: softShadowTex(), transparent: true, opacity: 1, depthWrite: false });
+const boxShadows = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), shadowMat, Math.max(1, prodEls.length + decoEls.length));
+boxShadows.count = prodEls.length + decoEls.length; boxShadows.frustumCulled = false; rakBoxes.add(boxShadows);
+const _sh = new THREE.Object3D();
+function setShadow(i, cx, bottom, w, lift = 0) {
+  const k = 1 - Math.min(1, lift / 6) * .25;
+  _sh.position.set(cx, -(bottom + 8), -30); _sh.scale.set(w * 1.24 * k, 40, 1);
+  _sh.updateMatrix(); boxShadows.setMatrixAt(i, _sh.matrix);
+}
+prodEls.forEach((p, i) => prodBoxes.setColorAt(i, tint(colorOf(p.s), 0)));
+decoEls.forEach((d, i) => { for (let j = 0; j < 4; j++) { decoBoxes.setColorAt(i * 4 + j, tint(TEAMCOL[d.team], .28)); decoBands.setColorAt(i * 4 + j, tint(TEAMCOL[d.team], .62)); } });
+const etalaseEl = $('#etalase'), frameEl = $('#frame');
+const R = el => el.getBoundingClientRect();
+const rect = (left, top, width, height) => ({ left, top, width, height });
+function place(m, r, d, rad, z = 0) {
+  m.geometry = rbox(r.width, r.height / COS, d, rad);
+  m.position.set(r.left + r.width / 2, -(r.top + r.height / 2), z);
+}
+const _o = new THREE.Object3D(); _o.rotation.x = TILT;
+function setInst(im, i, r, gw, gh, z = 0, lift = 0) {
+  _o.position.set(r.left + r.width / 2, -(r.top + r.height / 2) - lift, z);
+  _o.scale.set(r.width / gw, r.height / COS / gh, 1);
+  _o.updateMatrix(); im.setMatrixAt(i, _o.matrix);
+}
+// a panel lying on a box front: same tilt, drawn after the boxes without depth test (it only ever sits on its own box)
+function setPanel(im, i, r, gw, gh, boxZ) {
+  _o.position.set(r.left + r.width / 2, -(r.top + r.height / 2), boxZ + 2);
+  _o.scale.set(r.width / gw, r.height / COS / gh, 1);
+  _o.updateMatrix(); im.setMatrixAt(i, _o.matrix);
+}
+function scissorTo(r) {
+  const x0 = Math.max(0, r.left), y0 = Math.max(0, r.top), x1 = Math.min(W, r.right), y1 = Math.min(H, r.bottom);
+  if (x1 <= x0 || y1 <= y0) return false;
+  renderer.setScissor(x0, H - y1, x1 - x0, y1 - y0);
+  return true;
+}
+function sizeInst(im, w, h, d, rad) { const g = rbox(w, h / COS, d, rad); if (im.geometry !== g) im.geometry = g; return { width: Math.max(2, Math.round(w)), height: Math.max(2, Math.round(h / COS)) }; }
+function sizePanel(im, w, h, rad) { const g = rrect(w, h / COS, rad); if (im.geometry !== g) im.geometry = g; return { width: Math.max(2, Math.round(w)), height: Math.max(2, Math.round(h / COS)) }; }
+function rakFrame() {
+  const sr = R(etalaseEl);
+  if (etalaseEl.hidden || !visibleRect(sr)) return;
+  if (geoCache.size > 400) { geoCache.forEach(g => g.dispose()); geoCache.clear(); }
+  renderer.setViewport(0, 0, W, H);
+  rakCam.left = 0; rakCam.right = W; rakCam.top = 0; rakCam.bottom = -H; rakCam.updateProjectionMatrix();
+  // the planks inside the recessed window (body, window and plinth are CSS)
+  const fr = R(frameEl);
+  if (plankEls.length) {
+    const k0 = R(plankEls[0]), q0 = sizeInst(planks, k0.width, k0.height, 52, 4);
+    plankEls.forEach((el, i) => setInst(planks, i, R(el), q0.width, q0.height, 8));
+    planks.instanceMatrix.needsUpdate = true;
+  }
+  renderer.autoClear = false;
+  if (scissorTo(sr)) { renderer.clear(false, true, false); renderer.render(rakScene, rakCam); }
+  // boxes: products then decor, drawn per tier inside that tier's scroll window
+  if (prodEls.length) {
+    const b0 = R(prodEls[0].pk), c0 = R(prodEls[0].cover);
+    const bp = sizeInst(prodBoxes, b0.width, b0.height, 64, 6), cp = sizePanel(prodPanels, c0.width, c0.height, 10);
+    prodEls.forEach((p, i) => {
+      const r = R(p.pk), sr2 = R(p.slot);
+      setInst(prodBoxes, i, r, bp.width, bp.height, 0);
+      setPanel(prodPanels, i, R(p.cover), cp.width, cp.height, 0);
+      setShadow(i, r.left + r.width / 2, sr2.bottom, r.width, sr2.bottom - r.bottom);
+    });
+    prodBoxes.instanceMatrix.needsUpdate = prodPanels.instanceMatrix.needsUpdate = true;
+  }
+  if (decoEls.length) {
+    const d0 = R(decoEls[0].pk), gap = 6, bw = (d0.width - gap) / 2, bh = d0.height / 2;
+    const dp = sizeInst(decoBoxes, bw, bh, 56, 8), lp = sizePanel(decoPanels, bw * .62, bh * .26, 5), np = sizePanel(decoBands, bw - 14, bh * .13, 3);
+    decoEls.forEach((d, i) => {
+      const r = R(d.pk);
+      setShadow(prodEls.length + i, r.left + r.width / 2, r.bottom, r.width);
+      for (let j = 0; j < 4; j++) {
+        const col = j % 2, row = j >> 1;
+        const left = r.left + col * (bw + gap), top = r.top + (1 - row) * bh;
+        setInst(decoBoxes, i * 4 + j, rect(left, top, bw, bh), dp.width, dp.height, 0);
+        setPanel(decoPanels, i * 4 + j, rect(left + bw * .19, top + bh * .2, bw * .62, bh * .26), lp.width, lp.height, 0);
+        setPanel(decoBands, i * 4 + j, rect(left + 7, top + bh * .64, bw - 14, bh * .13), np.width, np.height, 0);
+      }
+    });
+    decoBoxes.instanceMatrix.needsUpdate = decoPanels.instanceMatrix.needsUpdate = decoBands.instanceMatrix.needsUpdate = true;
+  }
+  if (boxShadows.count) {
+    boxShadows.instanceMatrix.needsUpdate = true;
+  }
+  for (const tr of trackEls) {
+    const r = R(tr);
+    const clip = { left: Math.max(r.left, fr.left), right: Math.min(r.right, fr.right), top: Math.max(r.top, sr.top), bottom: Math.min(r.bottom, sr.bottom) };
+    if (!scissorTo(clip)) continue;
+    renderer.clear(false, true, false);
+    renderer.render(rakBoxes, rakCam);
+  }
+  renderer.autoClear = true;
+}
+
+/* --- loop --- */
+const v3 = new THREE.Vector3();
+let last = performance.now(), W = 0, H = 0;
+function size() {
+  if (!renderer) return;
+  const w = innerWidth, h = innerHeight;
+  if (w === W && h === H) return;
+  W = w; H = h;
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, isPhone() ? 1.5 : 2));
+  renderer.setSize(w, h, false);
+}
+function visibleRect(r) { return r.bottom > 0 && r.top < H && r.right > 0 && r.left < W && r.width > 0 && r.height > 0; }
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (!renderer || document.hidden) return;
+  size();
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  const t = now / 1000;
+  renderer.setScissorTest(true);
+  renderer.setScissor(0, 0, W, H); renderer.setViewport(0, 0, W, H); renderer.clear(true, true, true);
+
+  // shop scene inside the stage
+  const r = toko.getBoundingClientRect();
+  if (!toko.hidden && visibleRect(r)) {
+    if (!document.body.classList.contains('focus')) heroH = r.height;
+    stepKasir(dt, t); counter.step(now); stepCard(now); stepCam(dt);
+    cam.aspect = r.width / r.height; cam.updateProjectionMatrix();
+    lamp.rotation.z = reduce ? 0 : Math.sin(t * .8) * .03;
+    reg.position.x += (regTargetX() - reg.position.x) * (reduce ? 1 : 1 - Math.exp(-dt * 4));
+    if (sumI >= 0) placeSum();
+    const x = r.left, y = H - r.bottom;
+    renderer.setScissor(x, y, r.width, r.height); renderer.setViewport(x, y, r.width, r.height);
+    renderer.render(scene, cam);
+    // numbered tags follow the boxes on the counter
+    const tags = tagsEl.children;
+    counter.shown.forEach((s, i) => {
+      const p = counterPool[i], a = tags[i]; if (!a) return;
+      v3.set(p.position.x, p.position.y + BOX.h * p.scale.y / 2 + .16, p.position.z).project(cam);
+      a.style.transform = `translate(${((v3.x + 1) / 2 * r.width).toFixed(1)}px,${((1 - v3.y) / 2 * r.height).toFixed(1)}px)`;
+      a.classList.toggle('on', p.position.y > 1.06 + BOX.h * p.scale.y * .3);
+    });
+  }
+
+  // the shelf unit in the etalase
+  if (!document.body.classList.contains('focus')) rakFrame();
+}
+if (renderer) { size(); addEventListener('resize', size); requestAnimationFrame(frame); }
+
+/* ============================== routing ============================== */
+const route = { current: 'solusi' };
+const views = { detail: $('#v-detail'), hasil: $('#v-hasil') };
+function go(h) { location.hash = h; }
+function onRoute() {
+  if (!modal.hidden) modal.hidden = true;
+  const h = location.hash.slice(1) || 'solusi';
+  let v = 'solusi';
+  if (h === 'cari' || h === 'kartu' || h === 'hasil') v = h;
+  else if (h.startsWith('s-') && BY[h.slice(2)]) v = 'detail';
+  const prev = route.current;
+  route.current = v;
+  const focus = v === 'cari' || v === 'kartu';
+  const shop = v === 'solusi' || focus;
+  document.body.classList.toggle('focus', focus);
+  document.body.classList.toggle('mode-cari', v === 'cari');
+  document.body.classList.toggle('mode-kartu', v === 'kartu');
+  toko.hidden = !shop; $('#etalase').hidden = !shop || focus; $('.band-wrap').hidden = !shop || focus;
+  views.detail.hidden = v !== 'detail'; views.hasil.hidden = v !== 'hasil';
+  if (v === 'detail') renderDetail(BY[h.slice(2)]); else document.title = 'Kreatekno Etalase Solusi';
+  if (v === 'hasil') renderHasil();
+  if (v !== 'cari') { counter.reset(); paper.classList.remove('compact'); document.body.classList.remove('served'); closeSum(); document.documentElement.style.cursor = ''; }
+  if (v !== 'kartu') { deckwrap.classList.remove('on'); prog.classList.remove('on'); cardAnim = null; cardMesh.visible = false; }
+  if (v === 'cari' && prev !== 'cari') {
+    document.body.classList.remove('served'); closeSum();
+    kasir.act('wave', 1300);
+    ppRes.innerHTML = '';
+    setTimeout(() => { if (!isPhone()) q.focus({ preventScroll: true }); }, reduce ? 0 : 500);
+  }
+  if (v === 'kartu' && prev !== 'kartu') startCards();
+  if (v === 'solusi' && prev !== 'solusi') kasir.want('idle');
+  if (prev !== v) window.scrollTo(0, 0);
+}
+addEventListener('hashchange', onRoute);
+onRoute();
+
+</script>
+
+</body></html>

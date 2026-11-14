@@ -9,6 +9,10 @@
       "title": "AI & WhatsApp Automation Solutions for SMEs | Kreatekno",
       "description": "AI assistant and WhatsApp automation solutions for SMEs. Find the problem that matches your business, then see how each solution works."
     },
+    "solutionsResults": {
+      "title": "Problem-card results | Kreatekno",
+      "description": "An ordered list of solutions matched to the problems you selected in Kreatekno's problem cards."
+    },
     "articles": {
       "title": "Business Automation & AI Articles for SMEs | Kreatekno",
       "description": "Practical guides to admin automation, WhatsApp chatbots and AI for SMEs, written in plain language for business owners."
@@ -320,7 +324,98 @@
     "soon": "This page comes in the next build step.",
     "back": "Back to the home page",
     "solutions": {
-      "title": "Solutions"
+      "title": "Solutions",
+      "hero": {
+        "eyebrow": "Solution shop",
+        "headline": "Repetitive problems have a way out.",
+        "body": "Browse automation already in use and ideas ready to build for your business.",
+        "search": "Search by your problem",
+        "cards": "Match with cards",
+        "shop": "Kreatekno solution shop",
+        "cashier": "Heru, solution cashier"
+      },
+      "catalog": {
+        "title": "Choose a solution that fits your business",
+        "previous": "Slide the {team} shelf left",
+        "next": "Slide the {team} shelf right",
+        "detail": "View details",
+        "coming": "Detail page coming soon",
+        "live": "In use",
+        "idea": "Ready to build",
+        "fitFor": "Good for",
+        "allIndustries": "All industries",
+        "apps": "Apps: {list}"
+      },
+      "band": {
+        "title": "Not sure where to begin?",
+        "body": "Describe the problem in Search, or answer nine quick cards.",
+        "search": "Start Search",
+        "cards": "Start Cards"
+      },
+      "search": {
+        "eyebrow": "Search mode",
+        "title": "Tell us which work gets in the way",
+        "receiptLine": "Solution Shop · Cashier: Heru",
+        "receipt": "SEARCH RECEIPT",
+        "term": "Problem or task",
+        "termPlaceholder": "Example: orders in chat get missed",
+        "industry": "Industry",
+        "team": "Team",
+        "app": "App",
+        "status": "Status",
+        "all": "All",
+        "submit": "Find solutions",
+        "again": "Search again",
+        "close": "Back to the shop",
+        "found": "Found {count} solutions",
+        "range": "Showing {from}–{to} of {count}",
+        "empty": "No close match yet.",
+        "emptyBody": "Try fewer filters, another phrase, or tell us about it directly.",
+        "previous": "Previous",
+        "next": "Next",
+        "tagLabel": "{number}. {title}, see summary"
+      },
+      "cards": {
+        "eyebrow": "Card mode",
+        "title": "Which problems feel familiar?",
+        "intro": "Choose your industry, then answer three rounds. There are no wrong answers.",
+        "industry": "Your industry",
+        "start": "Deal the cards",
+        "round": "Round {round} of 3",
+        "progress": "Card {current} of 9",
+        "no": "No",
+        "yes": "Yes",
+        "solution": "Solution",
+        "hint": "Swipe or use the buttons. Left arrow means No, right arrow means Yes.",
+        "close": "Back to the shop",
+        "results": "See recommendations"
+      },
+      "results": {
+        "eyebrow": "Card results",
+        "title": "Your solution order",
+        "body": "This order reflects the problems you marked. It is not a success percentage.",
+        "emptyTitle": "There is no result to calculate yet.",
+        "emptyBody": "Start again and answer the cards closest to your business today.",
+        "rank": "Recommendation {rank}",
+        "issues": "Problems you marked",
+        "consult": "Free consultation",
+        "repeat": "Repeat Cards",
+        "back": "Back to the shop"
+      },
+      "contact": {
+        "title": "Continue the conversation",
+        "body": "Choose the channel that feels easiest. The first consultation is free.",
+        "close": "Close",
+        "whatsapp": "WhatsApp",
+        "instagram": "Instagram",
+        "email": "Email",
+        "unavailable": "Channel details coming soon"
+      },
+      "detailPlaceholder": {
+        "eyebrow": "Solution details",
+        "body": "This solution detail page will be built in a later stage.",
+        "back": "Back to the shop"
+      }
     },
     "articles": {
       "title": "Articles"

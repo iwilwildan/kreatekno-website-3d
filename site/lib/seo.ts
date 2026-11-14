@@ -3,13 +3,15 @@ import { getPathname } from "@/i18n/navigation";
 import { routing, type Locale, type Pathname } from "@/i18n/routing";
 import { COMPANY, SITE_URL } from "./site";
 
-export function absoluteUrl(locale: Locale, href: Pathname) {
+type StaticPathname = Exclude<Pathname, "/solusi/[slug]">;
+
+export function absoluteUrl(locale: Locale, href: StaticPathname) {
   const path = getPathname({ locale, href });
   return SITE_URL + (path === "/" ? "" : path);
 }
 
 /** Canonical URL plus hreflang alternates for every locale (and x-default → Indonesian). */
-export function alternates(locale: Locale, href: Pathname): Metadata["alternates"] {
+export function alternates(locale: Locale, href: StaticPathname): Metadata["alternates"] {
   const languages: Record<string, string> = {};
   for (const l of routing.locales) languages[l] = absoluteUrl(l, href);
   languages["x-default"] = absoluteUrl(routing.defaultLocale, href);
@@ -23,7 +25,7 @@ export function pageMetadata({
   description,
 }: {
   locale: Locale;
-  href: Pathname;
+  href: StaticPathname;
   title: string;
   description: string;
 }): Metadata {
@@ -37,6 +39,44 @@ export function pageMetadata({
       title,
       description,
       url: absoluteUrl(locale, href),
+      locale: locale === "id" ? "id_ID" : "en_US",
+      alternateLocale: locale === "id" ? "en_US" : "id_ID",
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+
+export function solutionDetailMetadata({
+  locale,
+  slug,
+  title,
+  description,
+}: {
+  locale: Locale;
+  slug: string;
+  title: string;
+  description: string;
+}): Metadata {
+  const pathFor = (target: Locale) =>
+    getPathname({ locale: target, href: { pathname: "/solusi/[slug]", params: { slug } } });
+  const canonical = SITE_URL + pathFor(locale);
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical,
+      languages: {
+        id: SITE_URL + pathFor("id"),
+        en: SITE_URL + pathFor("en"),
+        "x-default": SITE_URL + pathFor("id"),
+      },
+    },
+    openGraph: {
+      type: "website",
+      siteName: COMPANY.name,
+      title,
+      description,
+      url: canonical,
       locale: locale === "id" ? "id_ID" : "en_US",
       alternateLocale: locale === "id" ? "en_US" : "id_ID",
     },

@@ -10,6 +10,8 @@ export const routing = defineRouting({
   pathnames: {
     "/": "/",
     "/solusi": { id: "/solusi", en: "/solutions" },
+    "/solusi/hasil": { id: "/solusi/hasil", en: "/solutions/results" },
+    "/solusi/[slug]": { id: "/solusi/[slug]", en: "/solutions/[slug]" },
     "/artikel": { id: "/artikel", en: "/articles" },
     "/tentang": { id: "/tentang", en: "/about" },
     "/kebijakan-privasi": { id: "/kebijakan-privasi", en: "/privacy-policy" },
