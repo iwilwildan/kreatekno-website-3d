@@ -1424,7 +1424,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       classroom = classMod.buildClassroom(kit, room.step);
       holos = classMod.buildHolograms(
         kit,
-        roomFrame(room.step).desks.map((d) => new THREE.Vector3(d.x, 1.5, d.z)),
+        roomFrame(room.step).desks.map((d) => new THREE.Vector3(d.x, 1.56, d.z)),
       );
       scene.add(classroom.group, holos.group);
       crewInClass = false;
@@ -1697,6 +1697,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       heru,
       crew,
       room,
+      holos,
       fmtT,
       scroll: { shown: view.x, target },
       pair,
