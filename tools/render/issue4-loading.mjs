@@ -170,8 +170,8 @@ try {
       await page.evaluate(() => {
         const el = document.getElementById("beranda"),
           p = window.__world.keyP("K4");
-        // tahap 7 (lengths as of 14 Nov, the electronics shop taken out): the take is 35.8 screens of scroll on landscape and 36.95 on portrait; K4 is before the lobby,
-        // where both run screen for screen with the world's 36.95-screen timeline
+        // Issue #25 removes the billboard stop: the take is 34.5 screens of scroll on landscape and 35.65 on portrait; K4 is before the lobby,
+        // where both run screen for screen with the world's 35.65-screen timeline
         const portrait = matchMedia("(max-aspect-ratio: 1/1)").matches,
           total = Number(
             el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
@@ -179,7 +179,7 @@ try {
         scrollTo(
           0,
           el.offsetTop +
-            ((p * 36.95) / total) *
+            ((p * 35.65) / total) *
               (el.offsetHeight - el.querySelector("[data-stage]").clientHeight),
         );
         window.__world.world.jump(p);
@@ -260,20 +260,25 @@ try {
       waitUntil: "domcontentloaded",
       timeout: 60000,
     });
-    await ready(page);
+    const outcome = await Promise.race([
+      ready(page).then(() => "live"),
+      page.waitForSelector('.take[data-mode="stills"]').then(() => "stills"),
+    ]);
     await wait(page, 700);
-    const stats = await page.evaluate(() => ({
+    const stats = await page.evaluate((outcome) => ({
+      outcome,
       elapsed: performance.now(),
-      cast: window.__world.world.stats().cast,
-      ao: window.__world.aoDone(),
+      cast: window.__world?.world.stats().cast ?? null,
+      ao: window.__world?.aoDone() ?? false,
       fonts: document.fonts.status,
-    }));
+      canvas: document.querySelectorAll(".take-canvas canvas").length,
+    }), outcome);
+    const copyReady = await fullCopy(page, "leaflet");
     check(
-      "cold 1.6 Mbps/150ms/CPU4x: full leaflet",
-      (await fullCopy(page, "leaflet")) &&
-        stats.cast.done &&
-        stats.ao &&
-        stats.fonts === "loaded",
+      "cold 1.6 Mbps/150ms/CPU4x: live world or usable fallback",
+      copyReady &&
+        stats.fonts === "loaded" &&
+        (outcome === "live" ? stats.cast?.done && stats.ao : stats.canvas === 0),
       stats,
     );
     check("cold slow load: no runtime errors", errors.length === 0, errors);

@@ -2385,3 +2385,13 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - frame PC dan HP pada 2 dan 4 s per layar (hanya di chat);
   - `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25; typecheck, ESLint, Prettier (file situs), `next build` lulus.
 - Dites user di HP fisik (build produksi port 3300) dan dikonfirmasi; di-commit ke `main` dengan entri log ini saja, di-push, issue ditutup. Still K9.1/K9b tidak berubah (kamera jeda sama). `.tmp-issue25-baseline.mjs` dan konfigurasi `site-copy-v3` di `.claude/launch.json` milik Codex, tidak disentuh.
+
+### 2026-11-15 (issue GitHub #25: malam tanpa fokus billboard)
+
+- Atas permintaan user, `main` ditarik ke `origin/main` terbaru (`3deae65`) dan pekerjaan dilanjutkan langsung di `main`, bukan branch `codex/issue-25-malam-billboard` yang sempat dibuat dari commit lama.
+- K15.1 dan tiga segmen mendekat/jeda/mundur dihapus. Beat 15 kini satu gerak kontinu K15 → K16 selama 1,2 layar; take berkurang dari 35,8/36,95 menjadi 34,5/35,65 layar (PC/HP). Kamera K16 dan epilog jalan tetap.
+- Billboard malam memakai canvas texture 768×384 berisi kicker dan headline hero K0 sesuai locale ID/EN. Hanya dua font face yang dipakai canvas yang ditunggu; texture dipanaskan sebelum mode live agar scroll pertama tidak tersendat. Billboard siang tetap polos.
+- CTA billboard dan seluruh anchor/fade/copy/CSS/still K15.1 dihapus. `#kontak` dipindah ke elemen footer; CTA header, tombol WhatsApp mengambang, dan CTA footer tetap ada. Komponen epilog dipisah dari komponen CTA lama.
+- Still K16 PC/HP dirender ulang dan K15.1 dihapus. Tool render serta regresi diperbarui untuk keyframe dan durasi baru. Tes slow-load kini menerima dua hasil resmi batas boot 15 detik: world live lengkap atau still fallback lengkap; kedua jalur tetap memeriksa copy/font dan tanpa error.
+- Dicek pada build produksi: billboard ID/EN tampil di PC 1280×720 dan HP 375×812; tidak ada `.cta-copy`; `#kontak` adalah `FOOTER`; lint, typecheck lewat `next build`, `issue4.mjs` (PC/tablet/HP, scroll maju/mundur, no-WebGL, reduced-motion, no-JS), dan `issue4-loading.mjs` seluruhnya lulus. Warning 404 saat tool still hanya `/_vercel/insights/script.js` yang memang tidak tersedia di server lokal.
+- Review user disetujui; commit dan push ke `main` diminta. Issue #25 belum ditutup.

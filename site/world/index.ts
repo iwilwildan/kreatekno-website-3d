@@ -57,7 +57,7 @@ import {
 } from "./takes/home/beat9";
 import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
-import { B15, ctaAnchors, ctaFade, epilogueFade, nightAt } from "./takes/home/beat15";
+import { B15, epilogueFade, nightAt } from "./takes/home/beat15";
 import { buildNight } from "./sets/night";
 import type { Holograms } from "./sets/holograms";
 import { classFrame, classSeat } from "./sets/classLayout";
@@ -188,7 +188,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     "cast:fajar": 0.4,
     hands: 0.5,
     props: 0.1,
-    fonts: 0.1,
+    billboard: 0.1,
     compile: 3,
     blur: 1,
     draw: 1,
@@ -893,8 +893,6 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const lobbyCopy = lobbyAnchors();
   // and on Kreatekno's plaque (tahap 8): "Tentang Kreatekno" in two columns
   const plaqueCopy = plaqueAnchors();
-  // and on the lit billboard at night (tahap 10): the CTA, in the hero's boxes (fixed size, no measuring)
-  const ctaCopy = ctaAnchors();
   // and on the classroom's TV (tahap 9): "Praktik naik kelas", placed per layout step of the room
   let practice = { step: -1, anchor: practiceAnchor(0) };
   const practiceCopy = () => {
@@ -1576,7 +1574,6 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...lobbyCopy.map((l) => l.anchor),
       ...plaqueCopy.map((l) => l.anchor),
       practiceCopy(),
-      ...ctaCopy,
     ]) {
       const q = pastDoor && anchors.includes(a) ? null : projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
@@ -1604,9 +1601,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     // the TV's (tahap 9): at the K12 hold, while the classroom is shown
     fade.practice = classroom?.group.visible ? practiceCopyFade(xs) : 0;
-    // the CTA's (tahap 10): at the K15.1 hold; the epilogue over the road at K16 (screen-space, no anchor)
-    const cf = ctaFade(xs);
-    for (const a of ctaCopy) fade[a.name] = cf;
+    // the epilogue over the road at K16 (screen-space, no anchor)
     fade.epilogue = epilogueFade(xs);
     opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
     // Reveal only after the complete counter scene has been prepared and actually drawn.
@@ -1647,7 +1642,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     setsAO,
     castReady,
     props.ready.then(() => bootStep("props")),
-    document.fonts.ready.then(() => bootStep("fonts")),
+    street.ready.then(() => bootStep("billboard")),
     opts.shot ? loadRow() : null,
     // stills, shots and the AO bake have the lobby from the start too
     opts.shot ? loadLobby() : null,
@@ -1776,8 +1771,7 @@ function billboardAnchors() {
 /** Width / height of each anchor, so the page can size the HTML boxes without distorting the text. */
 export function anchorAspects() {
   const out: Record<string, number> = {};
-  // (and the CTA's at night, tahap 10: the same shapes on the same face)
-  for (const a of [...billboardAnchors(), ...ctaAnchors()])
+  for (const a of billboardAnchors())
     out[a.name] = a.corners[0].distanceTo(a.corners[1]) / a.corners[0].distanceTo(a.corners[2]);
   return out;
 }

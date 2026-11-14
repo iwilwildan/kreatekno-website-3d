@@ -8,7 +8,7 @@ import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
 import { LOBBY_STILLS, lobbyMarks, lobbyStillFades } from "./lobbyStills";
 import { PLAQUE_STILLS, plaqueMark, plaqueStillFades } from "./plaqueStills";
 import { CLASS_STILLS, classMark, classStillFades } from "./classStills";
-import { NIGHT_STILLS, epilogueStill, nightMark, nightStillFades } from "./nightStills";
+import { NIGHT_STILLS, epilogueStill, nightStillFades } from "./nightStills";
 import stillsData from "./stills.json";
 
 const STILLS = stillsData as unknown as StillsData;
@@ -93,13 +93,6 @@ const MARKS: { id: string; key: KeyName; at: number; atHp?: number }[] = [
   // and the classroom's TV (tahap 9)
   ...[classMark()].map((m) => ({
     id: "praktik",
-    key: m.key,
-    at: scrollAtScreens(SEG, m.pc, false),
-    atHp: scrollAtScreens(SEG, m.hp, true),
-  })),
-  // and the CTA on the lit billboard (tahap 10)
-  ...[nightMark()].map((m) => ({
-    id: "kontak",
     key: m.key,
     at: scrollAtScreens(SEG, m.pc, false),
     atHp: scrollAtScreens(SEG, m.hp, true),
@@ -258,7 +251,7 @@ export function HomeTake({
           smoothstep(STILL_COPY.page[0], STILL_COPY.page[1], s) *
           (1 - smoothstep(STILL_FADES["K4.1"][0], STILL_FADES["K4.1"][1], s)),
         ...journeyFade,
-        // (tahap 10: the CTA's card on 9:16 fades with its title, by its anchor's name; the epilogue with K16)
+        // the epilogue comes in with K16
         epilogue: smoothstep(epilogueStill()[0], epilogueStill()[1], s),
       };
       placeAnchors(el, quads, STILLS.aspect, quadMatrix3d, { fade, sizes });

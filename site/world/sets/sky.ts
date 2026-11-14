@@ -194,7 +194,7 @@ export function buildSky(kit: Kit) {
   const nightDome = new THREE.Mesh(new THREE.SphereGeometry(397, 32, 16), nightMat);
   nightDome.visible = false;
   group.add(nightDome);
-  /** Night over the sunset, 0 … 1 (the K0 clouds go with the light: the billboard at K15.1 is framed as at K0). */
+  /** Night over the sunset, 0 … 1 (the K0 clouds go with the light as the camera pulls back to K16). */
   let starry = false;
   const setNight = (k: number) => {
     nightMat.opacity = k;

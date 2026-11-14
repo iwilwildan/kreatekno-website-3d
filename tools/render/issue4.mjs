@@ -19,10 +19,10 @@ const wait = (page, ms) =>
   page.evaluate((ms) => new Promise((r) => setTimeout(r, ms)), ms);
 const ready = (page) =>
   page.waitForFunction(() => window.__world?.ready(), null, { timeout: 30000 });
-// Tahap 7 (lengths as of 14 Nov, the electronics shop taken out): the take has a timeline per format (lobby holds), 35.8 screens of scroll on landscape and 36.95 on
+// Issue #25 removes the billboard stop: the take has a timeline per format (lobby holds), 34.5 screens of scroll on landscape and 35.65 on
 // portrait (max-aspect-ratio 1/1, the page's PORTRAIT_QUERY). Up to the lobby both run screen for screen with the
-// world's own timeline (TAKE_SCREENS, 36.95; tahap 8), which is what jump() takes.
-const TAKE = { pc: 35.8, hp: 36.95 };
+// world's own timeline (TAKE_SCREENS, 35.65; tahap 8), which is what jump() takes.
+const TAKE = { pc: 34.5, hp: 35.65 };
 async function open(viewport, options = {}) {
   const page = await browser.newPage({ viewport, ...options });
   const errors = [];
@@ -42,7 +42,7 @@ async function at(page, key) {
     scrollTo({
       top:
         el.offsetTop +
-        ((p * 36.95) / total) * (el.offsetHeight - stage.clientHeight),
+        ((p * 35.65) / total) * (el.offsetHeight - stage.clientHeight),
       behavior: "instant",
     });
     window.__world.world.jump(p);
@@ -69,7 +69,7 @@ async function scrollRun(page, secondsPerScreen, reverse = false) {
         total = Number(
           el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
         ),
-        world = 36.95;
+        world = 35.65;
       const range = el.offsetHeight - stage.clientHeight;
       const from = reverse ? 9.2 : 6.5,
         to = reverse ? 6.5 : 9.2;

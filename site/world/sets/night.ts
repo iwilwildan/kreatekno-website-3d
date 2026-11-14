@@ -46,7 +46,7 @@ export function buildNight(kit: Kit) {
 
   // ---------- stars: on the sky the night shots look at (toward −z, low over the roofs: video 36–38.7 s) ----------
   {
-    // (the K15.1 and K16 cameras face −z and see the sky from the roofs up to ±15°: most stars are low, in front)
+    // (the K15 → K16 camera faces −z and sees the sky from the roofs up to ±15°: most stars are low, in front)
     const n = 1700,
       pos = new Float32Array(n * 3),
       size = new Float32Array(n);

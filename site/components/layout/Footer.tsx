@@ -23,7 +23,7 @@ export async function Footer() {
   const link = "inline-block py-1.5 no-underline hover:text-white";
 
   return (
-    <footer className="bg-navy-3 text-on-night-muted">
+    <footer id="kontak" className="bg-navy-3 text-on-night-muted">
       <div className="mx-auto grid max-w-(--container-site) gap-10 px-6 pt-16 pb-10 text-[.9375rem] sm:grid-cols-2 lg:grid-cols-[1.7fr_repeat(3,1fr)]">
         <div className="grid content-start gap-3">
           <Image

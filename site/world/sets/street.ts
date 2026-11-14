@@ -24,6 +24,60 @@ export function billboardFace() {
   return { cx, cy, z, hw, hh };
 }
 
+/** K0's decorative hero copy, refreshed once the self-hosted page fonts are ready. */
+function heroBillboardTexture(kit: Kit) {
+  // At its widest K16 framing 768 px is still more than twice the displayed width.
+  const texture = kit.canvasTex(768, 384, (g, w, h) => {
+    g.fillStyle = "#f2f0fa";
+    g.fillRect(0, 0, w, h);
+  });
+  const root = getComputedStyle(document.documentElement),
+    display = root.getPropertyValue("--font-bricolage").trim() || "sans-serif",
+    body = root.getPropertyValue("--font-jakarta").trim() || "sans-serif",
+    kicker = document.querySelector<HTMLElement>(".hero-kicker")?.textContent?.trim() ?? "",
+    headline = document.querySelector<HTMLElement>(".hero-title")?.textContent?.trim() ?? "";
+  const draw = () => {
+    const canvas = texture.image as HTMLCanvasElement,
+      g = canvas.getContext("2d")!;
+    g.fillStyle = "#f2f0fa";
+    g.fillRect(0, 0, canvas.width, canvas.height);
+    g.textBaseline = "top";
+    g.fillStyle = "#7c07a8";
+    g.font = `700 21px ${body}`;
+    g.fillText(kicker.toLocaleUpperCase(document.documentElement.lang), 50, 52, canvas.width - 100);
+
+    let size = 58,
+      lines: string[] = [];
+    const words = headline.split(/\s+/),
+      maxWidth = canvas.width - 100;
+    do {
+      g.font = `700 ${size}px ${display}`;
+      lines = [];
+      let line = "";
+      for (const word of words) {
+        const next = line ? `${line} ${word}` : word;
+        if (line && g.measureText(next).width > maxWidth) {
+          lines.push(line);
+          line = word;
+        } else line = next;
+      }
+      if (line) lines.push(line);
+      if (lines.length <= 3 && lines.length * size * 1.04 <= 235) break;
+      size -= 2;
+    } while (size >= 36);
+    g.fillStyle = "#131951";
+    lines.forEach((line, i) => g.fillText(line, 50, 101 + i * size * 1.04));
+    texture.needsUpdate = true;
+  };
+  // Only request the two faces used by this canvas. Waiting for the whole FontFaceSet also
+  // includes unrelated weights and can push a throttled phone past the world's 15 s boot limit.
+  const ready = Promise.allSettled([
+    document.fonts.load(`700 21px ${body}`, kicker),
+    document.fonts.load(`700 58px ${display}`, headline),
+  ]).then(draw);
+  return { texture, ready };
+}
+
 export function buildStreet(kit: Kit, ao: AoTarget[]) {
   const { mat, canvasTex } = kit;
   const ext = new THREE.Group();
@@ -301,14 +355,23 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       mtx([E.xaR - 0.02, cyF, za / 2]),
     );
   }
-  // roof, roof box, billboard with its truss (its face lit at night, tahap 10)
+  // roof, roof box, billboard with its truss (its K0 hero copy lights up at night, issue #25)
   const roofY = E.yP - 0.36;
+  const heroBillboard = heroBillboardTexture(kit);
   const faceMat = new THREE.MeshStandardMaterial({
     color: "#f2f0fa",
     roughness: 0.7,
     emissive: "#ece8fa",
     emissiveIntensity: 0.38,
   });
+  const nightFaceMat = new THREE.MeshStandardMaterial({
+    map: heroBillboard.texture,
+    roughness: 0.7,
+    emissive: "#ffffff",
+    emissiveMap: heroBillboard.texture,
+    emissiveIntensity: 0.82,
+  });
+  let nightBillboard: THREE.Mesh;
   {
     X.add(
       G.box(E.xfR - E.xfL, 0.1, 12),
@@ -347,6 +410,11 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.06]),
     );
     X.add(G.box(w - 0.18, panelH - 0.18, 0.03), faceMat, mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.05]));
+    nightBillboard = new THREE.Mesh(new THREE.PlaneGeometry(w - 0.2, panelH - 0.2), nightFaceMat);
+    nightBillboard.name = "night-billboard-copy";
+    nightBillboard.position.set(cx, E.ybB + ledge + panelH / 2, zb - 0.05 + 0.016);
+    nightBillboard.visible = false;
+    ext.add(nightBillboard);
     X.add(G.rbox(w + 0.12, ledge, 0.36, 0.06), fr, mtx([cx, E.ybB + ledge / 2, zb]));
     const legs = [0.106, 0.503, 0.887].map((f) => E.xbL + f * w),
       legTop = E.ybB,
@@ -500,10 +568,11 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
     doorGlass.emissive.copy(white).lerp(lilac, k);
     doorGlass.emissiveIntensity = DAY.door + 0.95 * k;
     faceMat.emissiveIntensity = DAY.face + 0.75 * k;
+    nightBillboard.visible = k > 0.3;
     signGlow.visible = k > 0.3;
   };
 
-  return { group: ext, batch: X, hinge, leafL, backdrop, setNight };
+  return { group: ext, batch: X, hinge, leafL, backdrop, setNight, ready: heroBillboard.ready };
 }
 
 /** The paving tiles (one tile per texture; the pavement repeats it every 30 / 11 m along the street). */

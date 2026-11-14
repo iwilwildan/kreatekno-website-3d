@@ -8,27 +8,17 @@ const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.fro
 const start = (from: KeyName, type: "move" | "hold") => segmentStart(SEG, idx(from, type));
 const len = (from: KeyName, type: "move" | "hold") => SEG[idx(from, type)].screens;
 
-/** The night's stills: K15.1 (the lit billboard, the CTA on it), K16 (the night street, the epilogue). */
-export const NIGHT_KEYS = ["K15.1", "K16"] as const;
+/** The night street at K16, including the lit billboard and the epilogue. */
+export const NIGHT_KEYS = ["K16"] as const;
 
-/** Stills fallback: screens over which each crossfades in, at the end of the crane up and of the pull back. */
+/** Stills fallback: crossfade to K16 during the continuous crane up and pull back. */
 export function nightStillFades(): Record<string, [number, number]> {
-  const up = start("K15", "move"),
-    back = start("K15.1", "move");
+  const wide = start("K15", "move");
   return {
-    "K15.1": [up + 0.8 * len("K15", "move"), start("K15.1", "hold")],
-    K16: [back + 0.6 * len("K15.1", "move"), start("K16", "hold")],
+    K16: [wide + 0.6 * len("K15", "move"), start("K16", "hold")],
   };
 }
 
-/** The stills with copy (the CTA on K15.1), then K16, per format: the CTA goes as K16 comes. */
-export const NIGHT_STILLS = { pc: ["K15.1", "K16"], hp: ["K15.1", "K16"] };
-
-/** Jump mark #kontak: the middle of the K15.1 hold (the CTA). */
-export function nightMark() {
-  const h0 = start("K15.1", "hold"),
-    at = h0 + len("K15.1", "hold") / 2;
-  return { key: "K15.1" as const, pc: at, hp: at };
-}
+export const NIGHT_STILLS = { pc: ["K16"], hp: ["K16"] };
 /** Screens where the epilogue is shown on the stills fallback: from the K16 still in. */
 export const epilogueStill = () => nightStillFades().K16;

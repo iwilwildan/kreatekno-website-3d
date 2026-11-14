@@ -43,7 +43,6 @@ export type KeyName =
   | "K12"
   | "K13"
   | "K15"
-  | "K15.1"
   | "K16";
 
 export const SEG: Segment<KeyName>[] = [
@@ -107,13 +106,10 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K12", screens: 0.8 },
   { type: "move", from: "K12", to: "K13", screens: 1.1 },
   // Beats 14–16 (tahap 10, the continuation video 33.5–38.7 s, greybox): back out through COMPANY's open door to its
-  // facade as night falls (K15, passed), up to the lit billboard on its roof (K15.1: the CTA on its face, framed like
-  // the hero at K0; user 14 Nov: the video's wide frame leaves the billboard too small to read), then up and back to
-  // the night street (K16: the epilogue on the road, the site's footer after it)
+  // facade as night falls (K15, passed), then crane up and back in one continuous move to the night street (K16: the
+  // billboard stays small in the wide frame with the K0 hero copy printed on it; the epilogue is on the road)
   { type: "move", from: "K13", to: "K15", screens: 0.8 },
-  { type: "move", from: "K15", to: "K15.1", screens: 0.8 },
-  { type: "hold", from: "K15.1", screens: 0.8 },
-  { type: "move", from: "K15.1", to: "K16", screens: 0.9 },
+  { type: "move", from: "K15", to: "K16", screens: 1.2 },
   { type: "hold", from: "K16", screens: 1.0 },
 ];
 /** Length of the take on its own timeline (9:16): the unit of p in the world. */
@@ -146,7 +142,6 @@ export const KEYS: KeyName[] = [
   "K12",
   "K13",
   "K15",
-  "K15.1",
   "K16",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
