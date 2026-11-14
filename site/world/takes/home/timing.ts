@@ -33,7 +33,15 @@ export type KeyName =
   | "K6"
   | "K7"
   | "K8"
-  | "K9.1";
+  | "K9.1"
+  | "K9b"
+  | "K10"
+  | "K11"
+  | "K12"
+  | "K13"
+  | "K15"
+  | "K15.1"
+  | "K16";
 
 export const SEG: Segment<KeyName>[] = [
   // issue #5: K0 → K1 in 1.0 screen (was 0.9 + 1.0): a short hold, then the scroll moves the camera at once
@@ -80,6 +88,30 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K8", screens: 0.75, pc: 0.8 },
   { type: "move", from: "K8", to: "K9.1", screens: 0.9 },
   { type: "hold", from: "K9.1", screens: 0.3 },
+  // Beats 9b–11 (tahap 8, the team's continuation video, greybox): out through the facade's solid wall with Heru, Bu
+  // Dewi and Wildan, round to the plaque left of the door (K9b; 9:16 stops on its two columns), back and up over the
+  // roofs into the sky (K10, passed), left along the row up there and down at COMPANY as the three reach its door (K11)
+  { type: "move", from: "K9.1", to: "K9b", screens: 3.0 },
+  { type: "hold", from: "K9b", screens: 0.6, pc: 0.8 },
+  { type: "move", from: "K9b", to: "K10", screens: 0.9 },
+  { type: "move", from: "K10", to: "K11", screens: 0.9 },
+  { type: "hold", from: "K11", screens: 0.2 },
+  // Beats 12–13 (tahap 9, the continuation video 21–34 s, greybox): Heru and Wildan pull COMPANY's leaves open, the
+  // camera follows Bu Dewi in, past the empty desks (holograms) and the counter, through the wooden back door into the
+  // classroom (K12: Wildan teaching the staff at the TV, the practice copy on its screen), then back out of the
+  // classroom and through the front room at dusk (K13, the counter frontal, passed)
+  { type: "move", from: "K11", to: "K12", screens: 2.8 },
+  { type: "hold", from: "K12", screens: 0.8 },
+  { type: "move", from: "K12", to: "K13", screens: 1.1 },
+  // Beats 14–16 (tahap 10, the continuation video 33.5–38.7 s, greybox): back out through COMPANY's open door to its
+  // facade as night falls (K15, passed), up to the lit billboard on its roof (K15.1: the CTA on its face, framed like
+  // the hero at K0; user 14 Nov: the video's wide frame leaves the billboard too small to read), then up and back to
+  // the night street (K16: the epilogue on the road, the site's footer after it)
+  { type: "move", from: "K13", to: "K15", screens: 0.8 },
+  { type: "move", from: "K15", to: "K15.1", screens: 0.8 },
+  { type: "hold", from: "K15.1", screens: 0.8 },
+  { type: "move", from: "K15.1", to: "K16", screens: 0.9 },
+  { type: "hold", from: "K16", screens: 1.0 },
 ];
 /** Length of the take on its own timeline (9:16): the unit of p in the world. */
 export const TAKE_SCREENS = segmentsTotal(SEG);
@@ -105,6 +137,14 @@ export const KEYS: KeyName[] = [
   "K7",
   "K8",
   "K9.1",
+  "K9b",
+  "K10",
+  "K11",
+  "K12",
+  "K13",
+  "K15",
+  "K15.1",
+  "K16",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
 
@@ -123,5 +163,7 @@ export function stopSpan(len: number, n: number, i: number) {
 }
 /** Number of 9:16 stops of each lobby hold (the strip and 3 polaroids; the sign, 3 books and the button; 2 × 4 notes). */
 export const LOBBY_STOPS = { K6: 4, K7: 5, K8: 2 } as const;
+/** 9:16 stops on the plaque (K9b, tahap 8): its left column (title, paragraph), then its right (facts, link). */
+export const PLAQUE_STOPS = 2;
 /** Where the whip pan to K2.2 fires, as a fraction of the K2.1 → K2.2 move (time-based from there, ±0.45 s). */
 export const WHIP_AT = 0.3;

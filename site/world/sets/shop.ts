@@ -130,6 +130,9 @@ export function buildShop(kit: Kit, M: RowMaterials, s: Shop, i: number, ao: AoT
       occ: false,
     });
   }
+  // the roof (tahap 8: the camera rises over the row): a grey deck over the whole depth inside a parapet in the trim
+  T.add(G.box(W, 0.06, ROW.depth), ROOF_DECK, mtx([cx, H + 0.03, -ROW.depth / 2]));
+  roofRims(B, trim, x0, x1, H);
   // pillars with bases and capitals, cornice and parapet, the first-floor band, the hood over the opening
   for (const x of [x0 + ROW.pillar / 2, x1 - ROW.pillar / 2]) {
     B.add(G.rbox(ROW.pillar, H - 0.7, 0.22, 0.07), trim, mtx([x, (H - 0.7) / 2, 0.08]));
@@ -184,6 +187,20 @@ export function buildShop(kit: Kit, M: RowMaterials, s: Shop, i: number, ao: AoT
   tint.castShadow = inside.castShadow = false;
   g.add(tint, inside);
   return g;
+}
+
+/** Roof deck colour (video 12.5 s: a light warm grey). */
+export const ROOF_DECK = "#b4b0b4";
+/** A parapet round a flat roof from x0 to x1 at height h, over the row's depth (its front over the cornice). */
+export function roofRims(B: Batch, m: THREE.Material, x0: number, x1: number, h: number) {
+  const W = x1 - x0,
+    cx = (x0 + x1) / 2,
+    D = ROW.depth,
+    rh = 0.3,
+    t = 0.18;
+  B.add(G.rbox(W, rh, t, 0.04), m, mtx([cx, h + rh / 2, 0.08]));
+  B.add(G.rbox(W, rh, t, 0.04), m, mtx([cx, h + rh / 2, -D + t / 2]));
+  for (const x of [x0 + t / 2, x1 - t / 2]) B.add(G.rbox(t, rh, D, 0.04), m, mtx([x, h + rh / 2, -D / 2]));
 }
 
 /** The goods of each shop (videos K5a.1–K5a.5), in the shop's own space: x across the opening, z into it. */

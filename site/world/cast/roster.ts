@@ -19,6 +19,6 @@ export const CAST = {
 export type CastName = keyof typeof CAST;
 
 export { buildMember, buildMemberSliced } from "./member";
-export { applyPose, K2_POSES } from "./poses";
+export { applyPose, CLASS_POSES, K2_POSES } from "./poses";
 export { act, createPhone, createSweat, createThought, lookYaw } from "./acts";
 export { buildCloseHands, type CloseHands } from "./closeHand";

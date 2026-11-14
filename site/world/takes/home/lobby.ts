@@ -85,6 +85,8 @@ const HP: Record<"K6" | "K7" | "K8", View[]> = {
   ],
 };
 const HP91 = v(lx(6.0), 1.45, -13.7, Math.PI, D2R(-3), 58);
+/** The K9.1 view for format blend t (where beats 9b–11 start, takes/home/beat9). */
+export const k91View = (t: number) => mix(PC.K91, HP91, t);
 
 const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.from === from && s.type === type);
 // ---------- copy on the props (langkah 5): anchors, where each is framed, when it shows ----------

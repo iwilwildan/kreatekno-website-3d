@@ -150,6 +150,60 @@ export function buildSky(kit: Kit) {
     goldMat.opacity = k;
     goldDome.visible = k > 0.001;
   };
+  // late afternoon (tahap 8: the sky after the plaque, over the row and COMPANY, the continuation video 13–20 s): purple
+  // at the top through pink to orange at the horizon, no sun in sight; a third dome over the golden one
+  const sunsetTex = kit.canvasTex(8, 1024, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, "#5e4b96");
+    gr.addColorStop(0.3, "#8a64a6");
+    gr.addColorStop(0.4, "#c07aa8");
+    gr.addColorStop(0.45, "#e48fa5");
+    gr.addColorStop(0.48, "#fb9f98");
+    gr.addColorStop(0.5, "#ffb070");
+    gr.addColorStop(0.53, "#ffc25a");
+    gr.addColorStop(1, "#f6c09c");
+    g.fillStyle = gr;
+    g.fillRect(0, 0, w, h);
+  });
+  const sunsetMat = goldMat.clone();
+  sunsetMat.map = sunsetTex;
+  const sunsetDome = new THREE.Mesh(new THREE.SphereGeometry(398, 32, 16), sunsetMat);
+  sunsetDome.visible = false;
+  group.add(sunsetDome);
+  /** Late afternoon over the golden hour, 0 … 1. */
+  const setSunset = (k: number) => {
+    sunsetMat.opacity = k;
+    sunsetDome.visible = k > 0.001;
+  };
+
+  // night (tahap 10, greybox: the continuation video 36–38.7 s): deep navy at the top to a violet glow at the
+  // horizon; a fourth dome over the sunset's (the stars come in langkah 2)
+  const nightTex = kit.canvasTex(8, 1024, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, "#060818");
+    gr.addColorStop(0.3, "#0a0f2a");
+    gr.addColorStop(0.44, "#121838");
+    gr.addColorStop(0.49, "#1c2248");
+    gr.addColorStop(0.5, "#252a56");
+    gr.addColorStop(1, "#1f2148");
+    g.fillStyle = gr;
+    g.fillRect(0, 0, w, h);
+  });
+  const nightMat = goldMat.clone();
+  nightMat.map = nightTex;
+  const nightDome = new THREE.Mesh(new THREE.SphereGeometry(397, 32, 16), nightMat);
+  nightDome.visible = false;
+  group.add(nightDome);
+  /** Night over the sunset, 0 … 1 (the K0 clouds go with the light: the billboard at K15.1 is framed as at K0). */
+  let starry = false;
+  const setNight = (k: number) => {
+    nightMat.opacity = k;
+    nightDome.visible = k > 0.001;
+    if (starry !== k > 0.5) {
+      starry = k > 0.5;
+      setFormat(fmtNow === "pc" ? 0 : 1);
+    }
+  };
 
   const cloudMat = new THREE.MeshStandardMaterial({
     color: "#ffffff",
@@ -213,11 +267,45 @@ export function buildSky(kit: Kit) {
   }
   let fmtNow: Fmt = "pc";
 
+  // ---------- high clouds (tahap 8: K10, the sky over the row, video 13–15.5 s) ----------
+  // Spread along the row 45–60 m behind it, 26–58 m up: from the camera rising over the roofs and looking up they
+  // fill the frame about five at a time, a fifth of its width each. One merged mesh, drawn only in that part of the
+  // take (they would otherwise sit in the hero's sky); they drift right over the hyperlapse (setHigh).
+  const high = new THREE.Group();
+  {
+    const r = rng(907),
+      parts: THREE.BufferGeometry[] = [];
+    for (let i = 0; i < 9; i++) {
+      const g = cloudGeo(41 + i),
+        x = -20 + i * 9.4 + (r() - 0.5) * 3,
+        y = 26 + ((i * 5) % 9) * 3.6 + r() * 2,
+        z = -44 - r() * 12,
+        w = 17 + r() * 7;
+      g.scale(w / 3.4, w / 3.4, w / 3.4);
+      g.translate(x, y, z);
+      parts.push(g);
+    }
+    const m = new THREE.Mesh(mergeGeometries(parts), cloudMat);
+    m.frustumCulled = false;
+    high.add(m);
+  }
+  high.visible = false;
+  group.add(high);
+  /** The high clouds: shown or not, and how far they have drifted (0 … 1 over the hyperlapse). */
+  const setHigh = (on: boolean, drift = 0) => {
+    high.visible = on;
+    high.position.x = drift * 14;
+  };
+  /** The pigeons of K0 (they are gone once the take leaves the street's morning). */
+  const setBirds = (on: boolean) => {
+    for (const fmt of ["pc", "hp"] as const) for (const b of birds[fmt]) b.g.visible = on;
+  };
+
   /** Shows the clouds and birds composed for the nearer keyframe format. */
   const setFormat = (t: number) => {
     fmtNow = t < 0.5 ? "pc" : "hp";
-    perFmt.pc.visible = fmtNow === "pc";
-    perFmt.hp.visible = fmtNow === "hp";
+    perFmt.pc.visible = fmtNow === "pc" && !starry;
+    perFmt.hp.visible = fmtNow === "hp" && !starry;
   };
 
   let speed = 0;
@@ -291,5 +379,5 @@ export function buildSky(kit: Kit) {
     pv.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
     return frustum.setFromProjectionMatrix(pv).intersectsSphere(bounds[fmtNow]);
   };
-  return { group, setFormat, setFlight, animate, birdsInView, setGolden };
+  return { group, setFormat, setFlight, animate, birdsInView, setGolden, setSunset, setNight, setHigh, setBirds };
 }

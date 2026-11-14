@@ -2,7 +2,8 @@
 // the neighbours, the pavement and the road. Ported from prototype/k0-k2/src/scene.js ("EXTERIOR").
 import * as THREE from "three";
 import { aoPlane, type AoTarget } from "../core/ao";
-import { Batch, C, G, mtx, rectPath, rng, roundRect, type Kit } from "../core/kit";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { Batch, C, clean, G, mtx, rectPath, rng, roundRect, type Kit } from "../core/kit";
 import { DATA } from "../takes/home/data";
 
 const E = DATA.ext;
@@ -212,7 +213,10 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
     X.add(G.box(2 * dw + 0.08, 0.09, 0.34), met, mtx([0, doorH - 0.045, -0.12]));
     X.add(G.box(2 * dw, 0.03, 0.34), met, mtx([0, 0.015, -0.12]));
   }
-  // sign: white pill plaque, orange rim, extruded COMPANY letters (Nunito ExtraBold outlines)
+  // sign: white pill plaque, orange rim, extruded COMPANY letters (Nunito ExtraBold outlines). At night (tahap 10,
+  // video 36–38.7 s: an orange rim round amber letters) an unlit copy of the rim and the letters a few mm in front
+  // shows instead, drawn only then (one draw call; by day the sign stays in the awning's batch)
+  const signParts: [THREE.BufferGeometry, string][] = [];
   {
     const w = E.xsR - E.xsL,
       h = E.ysT - E.ysB,
@@ -241,6 +245,8 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       mat(C.orange, { roughness: 0.5 }),
       mtx([cx, cy, 0.15]),
     );
+    // (the night copies are flat, the front faces only: the extruded letters are ±24 k triangles)
+    signParts.push([new THREE.ShapeGeometry(ring, 24).applyMatrix4(mtx([cx, cy, 0.2])), "#ff7424"]);
     const sp = new THREE.ShapePath();
     for (const c of DATA.glyphs.cmds as [string, ...number[]][]) {
       if (c[0] === "M") sp.moveTo(c[1], c[2]);
@@ -260,6 +266,8 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
     });
     letters.translate(-(bx0 + bx1) / 2, -(by0 + by1) / 2, 0);
     X.add(letters, mat(C.orange, { roughness: 0.5 }), mtx([cx, cy, 0.16], [0, 0, 0], k), { occ: false });
+    const flat = new THREE.ShapeGeometry(sp.toShapes(), 8).translate(-(bx0 + bx1) / 2, -(by0 + by1) / 2, 0);
+    signParts.push([flat.applyMatrix4(mtx([cx, cy, 0.235], [0, 0, 0], k)), "#ffbf45"]);
   }
   // awning: ribbed orange canopy; side profile extruded along the street in short segments with a groove between
   {
@@ -293,8 +301,14 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       mtx([E.xaR - 0.02, cyF, za / 2]),
     );
   }
-  // roof, roof box, billboard with its truss
+  // roof, roof box, billboard with its truss (its face lit at night, tahap 10)
   const roofY = E.yP - 0.36;
+  const faceMat = new THREE.MeshStandardMaterial({
+    color: "#f2f0fa",
+    roughness: 0.7,
+    emissive: "#ece8fa",
+    emissiveIntensity: 0.38,
+  });
   {
     X.add(
       G.box(E.xfR - E.xfL, 0.1, 12),
@@ -332,16 +346,7 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       fr,
       mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.06]),
     );
-    X.add(
-      G.box(w - 0.18, panelH - 0.18, 0.03),
-      new THREE.MeshStandardMaterial({
-        color: "#f2f0fa",
-        roughness: 0.7,
-        emissive: "#ece8fa",
-        emissiveIntensity: 0.38,
-      }),
-      mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.05]),
-    );
+    X.add(G.box(w - 0.18, panelH - 0.18, 0.03), faceMat, mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.05]));
     X.add(G.rbox(w + 0.12, ledge, 0.36, 0.06), fr, mtx([cx, E.ybB + ledge / 2, zb]));
     const legs = [0.106, 0.503, 0.887].map((f) => E.xbL + f * w),
       legTop = E.ybB,
@@ -454,7 +459,51 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
   ext.add(backdrop);
   X.build();
 
-  return { group: ext, batch: X, hinge, leafL, backdrop };
+  const signGlow = new THREE.Mesh(
+    mergeGeometries(
+      signParts.map(([g, hex]) => {
+        const n = clean(g),
+          c = new THREE.Color(hex),
+          a = new Float32Array(n.attributes.position.count * 3);
+        for (let i = 0; i < a.length; i += 3) a.set([c.r, c.g, c.b], i);
+        n.setAttribute("color", new THREE.BufferAttribute(a, 3));
+        return n;
+      }),
+    ),
+    new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }),
+  );
+  signGlow.visible = false;
+  ext.add(signGlow);
+  // night (tahap 10, video 35–38.7 s): the shop window and the door's frosted glass glow lilac-white from inside, the
+  // sign's rim and letters are lit, the billboard's face shines white
+  const DAY = { glow: glowMat.emissiveIntensity, door: doorGlass.emissiveIntensity, face: faceMat.emissiveIntensity };
+  // (at night the window and the door glow from a cool lilac map of their own: the warm one tinted stays pink)
+  const nightGlow = canvasTex(256, 128, (g, w, h) => {
+    const r = g.createRadialGradient(w * 0.45, h * 0.45, 4, w * 0.5, h * 0.5, w * 0.62);
+    r.addColorStop(0, "#f4f1ff");
+    r.addColorStop(0.45, "#d9d3ff");
+    r.addColorStop(0.85, "#a99cf2");
+    r.addColorStop(1, "#8d7ee6");
+    g.fillStyle = r;
+    g.fillRect(0, 0, w, h);
+  });
+  const white = new THREE.Color("#ffffff"),
+    lilac = new THREE.Color("#e6e2ff");
+  let nightNow = -1;
+  const setNight = (k: number) => {
+    if (k === nightNow) return;
+    nightNow = k;
+    const map = k > 0.5 ? nightGlow : glowTex;
+    if (glowMat.emissiveMap !== map) glowMat.emissiveMap = doorGlass.emissiveMap = map;
+    glowMat.emissive.copy(white).lerp(lilac, k);
+    glowMat.emissiveIntensity = DAY.glow + 0.55 * k;
+    doorGlass.emissive.copy(white).lerp(lilac, k);
+    doorGlass.emissiveIntensity = DAY.door + 0.95 * k;
+    faceMat.emissiveIntensity = DAY.face + 0.75 * k;
+    signGlow.visible = k > 0.3;
+  };
+
+  return { group: ext, batch: X, hinge, leafL, backdrop, setNight };
 }
 
 /** The paving tiles (one tile per texture; the pavement repeats it every 30 / 11 m along the street). */

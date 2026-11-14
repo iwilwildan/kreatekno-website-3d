@@ -25,6 +25,11 @@ export type StillsData = {
   hp: StillAnchors;
 };
 
+/**
+ * Anchors with the shape of a billboard anchor (tahap 10: the CTA on the billboard's face at night, in the hero's
+ * boxes): their width / height, where the stills' data only has the billboard's.
+ */
+const SAME_SHAPE: Record<string, string> = { "cta-face": "face", "cta-top": "faceTop", "cta-bottom": "faceBottom" };
 /** CSS width of the anchored boxes; the text inside is styled at this size (≈ on-screen size at K0). */
 export const BOX_W = { landscape: 560, portrait: 280 };
 export const PORTRAIT_QUERY = "(max-aspect-ratio: 1/1)";
@@ -100,14 +105,22 @@ export function placeAnchors(
   root.querySelectorAll<HTMLElement>("[data-anchor]").forEach((el) => {
     const name = (portrait ? el.dataset.portrait : el.dataset.landscape) || "";
     if (!name) {
-      el.style.cssText = "";
+      // not anchored in this orientation, but faded with another (tahap 10: the CTA's card on 9:16 with the title
+      // on the billboard, the epilogue over the road): the CSS places it, the world's fade shows it
+      const by = el.dataset.fadeBy,
+        o = by ? (props?.fade[by] ?? 0) : 1;
+      el.style.cssText = !by ? "" : o < 0.01 ? "visibility:hidden" : `visibility:visible;opacity:${o.toFixed(3)}`;
       return;
     }
     const q = quads[name];
     // copy on the props of beats 3–4: boxed at its on-screen size at the hold (sharp text there), faded by the
-    // world, out of reach (tab, tap, screen reader focus) while hidden
+    // world, out of reach (tab, tap, screen reader focus) while hidden. `data-fixed` (tahap 10, the CTA on the
+    // billboard): a box of the hero's fixed size instead (BOX_W, the anchor's shape), its text styled in px
     if (el.hasAttribute("data-fade")) {
-      const size = props?.sizes[name],
+      const fixed = el.hasAttribute("data-fixed"),
+        bw = portrait ? BOX_W.portrait : BOX_W.landscape,
+        shape = aspect[name] ?? aspect[SAME_SHAPE[name]],
+        size = fixed ? (shape ? { w: bw, h: bw / shape } : undefined) : props?.sizes[name],
         o = props?.fade[name] ?? 0;
       if (!q || !size || o < 0.01) {
         el.style.cssText = "visibility:hidden";

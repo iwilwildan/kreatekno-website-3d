@@ -6,6 +6,9 @@ import { SEG, TAKE_SCREENS, TAKE_SCROLL, keyP, type KeyName } from "@/world/take
 import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type StillsData } from "./placeHero";
 import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
 import { LOBBY_STILLS, lobbyMarks, lobbyStillFades } from "./lobbyStills";
+import { PLAQUE_STILLS, plaqueMark, plaqueStillFades } from "./plaqueStills";
+import { CLASS_STILLS, classMark, classStillFades } from "./classStills";
+import { NIGHT_STILLS, epilogueStill, nightMark, nightStillFades } from "./nightStills";
 import stillsData from "./stills.json";
 
 const STILLS = stillsData as unknown as StillsData;
@@ -39,6 +42,12 @@ const STILL_FADES: Record<string, [number, number]> = {
   "K5a.6": [14.6, 15],
   // beats 6–9a (tahap 7): each hold's still as the camera settles, on 9:16 one per stop, K9.1 at the turn
   ...lobbyStillFades(),
+  // beats 9b–11 (tahap 8): the plaque as the dolly reaches it (9:16 its right column after), COMPANY's door
+  ...plaqueStillFades(),
+  // beats 12–13 (tahap 9): the class at the TV as the camera comes through the back door, the front room at dusk
+  ...classStillFades(),
+  // beats 14–16 (tahap 10): the lit billboard at the end of the crane up, the night street
+  ...nightStillFades(),
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -70,6 +79,27 @@ const MARKS: { id: string; key: KeyName; at: number; atHp?: number }[] = [
   // keyframe, 9:16 the hold's first stop), turned from the take's timeline into screens of scroll
   ...lobbyMarks().map((m) => ({
     id: LOBBY_MARK_IDS[m.key],
+    key: m.key,
+    at: scrollAtScreens(SEG, m.pc, false),
+    atHp: scrollAtScreens(SEG, m.hp, true),
+  })),
+  // the plaque's (tahap 8), the same way
+  ...[plaqueMark()].map((m) => ({
+    id: "tentang",
+    key: m.key,
+    at: scrollAtScreens(SEG, m.pc, false),
+    atHp: scrollAtScreens(SEG, m.hp, true),
+  })),
+  // and the classroom's TV (tahap 9)
+  ...[classMark()].map((m) => ({
+    id: "praktik",
+    key: m.key,
+    at: scrollAtScreens(SEG, m.pc, false),
+    atHp: scrollAtScreens(SEG, m.hp, true),
+  })),
+  // and the CTA on the lit billboard (tahap 10)
+  ...[nightMark()].map((m) => ({
+    id: "kontak",
     key: m.key,
     at: scrollAtScreens(SEG, m.pc, false),
     atHp: scrollAtScreens(SEG, m.hp, true),
@@ -203,7 +233,7 @@ export function HomeTake({
       // the journey's copy shows with its still, until the next still of the row comes in; the lobby's the same way
       // with the lobby's stills (tahap 7)
       const journeyFade: Record<string, number> = {};
-      for (const list of [row, LOBBY_STILLS[fmt]])
+      for (const list of [row, LOBBY_STILLS[fmt], PLAQUE_STILLS[fmt], CLASS_STILLS[fmt], NIGHT_STILLS[fmt]])
         list.forEach((k, i) => {
           const here = stillQuads(k),
             next = STILL_FADES[list[i + 1]],
@@ -228,6 +258,8 @@ export function HomeTake({
           smoothstep(STILL_COPY.page[0], STILL_COPY.page[1], s) *
           (1 - smoothstep(STILL_FADES["K4.1"][0], STILL_FADES["K4.1"][1], s)),
         ...journeyFade,
+        // (tahap 10: the CTA's card on 9:16 fades with its title, by its anchor's name; the epilogue with K16)
+        epilogue: smoothstep(epilogueStill()[0], epilogueStill()[1], s),
       };
       placeAnchors(el, quads, STILLS.aspect, quadMatrix3d, { fade, sizes });
     };

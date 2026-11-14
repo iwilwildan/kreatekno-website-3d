@@ -10,7 +10,7 @@ import { aoPlane, type AoTarget } from "../core/ao";
 import { Batch, C, clean, G, mtx, type Kit } from "../core/kit";
 import { END_HOUSE, KREATEKNO, ROW, SHOPS, shopX, STREET_END } from "./rowLayout";
 import { glassMaterial } from "./glass";
-import { buildShop, Tint, type RowMaterials } from "./shop";
+import { buildShop, ROOF_DECK, roofRims, Tint, type RowMaterials } from "./shop";
 import { drawPaveTiles, PAVE_TILE } from "./street";
 
 /** Where the pavement of sets/street.ts (with its own baked AO) ends; the row's pavement starts there. */
@@ -55,6 +55,7 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   group.name = "row";
   const occ: THREE.BufferGeometry[] = [];
   let lobbyBackdrop: THREE.Object3D | null = null;
+  let lamp: ReturnType<typeof buildLampGlow> | null = null;
   const far = buildFar(kit, M, ao, occ);
   group.add(far);
 
@@ -106,6 +107,9 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   for (const x of [K.x0 + 0.3, kx1 - 0.3])
     KB.add(G.rbox(0.6, K.h - 0.5, 0.26, 0.06), purpleL, mtx([x, (K.h - 0.5) / 2, 0.08]));
   KB.add(G.rbox(K.w + 0.06, 0.5, 0.42, 0.08), purpleL, mtx([kcx, K.h - 0.25, 0.14]));
+  // the roof (seen from the camera's rise in tahap 8): a grey deck over the whole depth inside a parapet
+  KT.add(G.box(K.w, 0.06, ROW.depth), ROOF_DECK, mtx([kcx, K.h + 0.03, -ROW.depth / 2]));
+  roofRims(KB, purpleL, K.x0, kx1, K.h);
   KB.add(G.rbox(K.w, K.band[1] - K.band[0], 0.34, 0.07), purpleL, mtx([kcx, (K.band[0] + K.band[1]) / 2, 0.13]));
   // upstairs: one long window, framed, with mullions and a transom, a pilaster in the middle
   {
@@ -141,13 +145,36 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     ])
       pane(KB, b - a, K.band[0], (a + b) / 2, K.band[0] / 2, -0.05);
     pane(KB, D.w, K.band[0] - top, D.cx, (top + K.band[0]) / 2, -0.05);
-    // plaque (its face left empty for beat 9b) and the brass lamp above it
-    const pq = K.plaque;
-    KT.add(G.rbox(pq.w + 0.12, pq.h + 0.12, 0.07, 0.03), "#b97a45", mtx([pq.cx, pq.y, 0.06]));
-    KT.add(G.box(pq.w, pq.h, 0.04), "#f4ead6", mtx([pq.cx, pq.y, 0.09]));
-    KT.add(G.box(0.05, 0.05, 0.32), "#c8963c", mtx([pq.cx, pq.y + 0.8, 0.14]));
-    KT.add(G.cyl(0.05, 0.15, 0.2, 16), "#d8a84a", mtx([pq.cx, pq.y + 0.68, 0.3]));
-    KT.add(G.sph(0.05, 10, 8), "#fff4cc", mtx([pq.cx, pq.y + 0.58, 0.3]));
+    // the plaque (its face carries the beat 9b copy, tahap 8): dark wood frame with a lighter bevel, a cream face;
+    // and the brass gooseneck lamp above it: wall plate, arm curving out and down, bell shade (video 7–8 s)
+    const pq = K.plaque,
+      pTop = pq.y + pq.h / 2;
+    KT.add(G.rbox(pq.w + 0.15, pq.h + 0.15, 0.06, 0.025), "#5e3620", mtx([pq.cx, pq.y, 0.055]));
+    KT.add(G.rbox(pq.w + 0.05, pq.h + 0.05, 0.06, 0.012), "#7c4c2c", mtx([pq.cx, pq.y, 0.06]));
+    KT.add(G.box(pq.w, pq.h, 0.04), "#f8e6c2", mtx([pq.cx, pq.y, 0.09]));
+    const brass = mat("#c99a42", { roughness: 0.32, metalness: 0.65 });
+    const L0 = pTop + 0.36;
+    KB.add(G.rbox(0.11, 0.16, 0.03, 0.01), brass, mtx([pq.cx, L0, 0.035]));
+    KB.add(
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3([
+          new THREE.Vector3(pq.cx, L0, 0.04),
+          new THREE.Vector3(pq.cx, L0 + 0.07, 0.14),
+          new THREE.Vector3(pq.cx, L0 + 0.04, 0.25),
+          new THREE.Vector3(pq.cx, L0 - 0.04, 0.3),
+        ]),
+        16,
+        0.014,
+        8,
+      ),
+      brass,
+      new THREE.Matrix4(),
+    );
+    KB.add(G.cyl(0.032, 0.11, 0.11, 20, true), brass, mtx([pq.cx, L0 - 0.1, 0.3]));
+    KB.add(G.cyl(0.032, 0.032, 0.03, 12), brass, mtx([pq.cx, L0 - 0.04, 0.3]));
+    // the bulb and its glow on the wall and the plaque (additive, no bloom): lit at golden hour (setLamp)
+    lamp = buildLampGlow(kit, pq.cx, L0 - 0.14, 0.3, pTop);
+    kg.add(lamp.group);
     // the lobby through the glass (built in tahap 7): a lit back wall with the corkboard facing the door
     const lobby = canvasTex(512, 160, (g, w, h) => {
       const gr = g.createLinearGradient(0, 0, 0, h);
@@ -263,9 +290,77 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
       SB.add(G.box(1.8, 0.01, 0.1), dash, mtx([x, -0.145, 3.3]), { occ: false, shadow: false });
     SB.build();
   }
-  return { group, occ, doorHinge, lobbyBackdrop: lobbyBackdrop as THREE.Object3D | null, far, road };
+  /** The plaque's lamp, 0 (off) … 1 (lit, golden hour and later). */
+  const setLamp = (k: number) => lamp?.set(k);
+  return { group, occ, doorHinge, lobbyBackdrop: lobbyBackdrop as THREE.Object3D | null, far, road, setLamp };
 }
 export type Row = ReturnType<typeof buildRow>;
+
+/**
+ * The plaque lamp's light, all unlit and additive (toneMapped off, so it reads warm on any exposure): the bulb, a
+ * small halo round it, and a soft pool on the wall and the plaque below, brightest under the shade. `set(k)` fades it.
+ */
+function buildLampGlow(kit: Kit, x: number, y: number, z: number, plaqueTop: number) {
+  const group = new THREE.Group();
+  group.name = "plaque-lamp";
+  const radial = (stops: [number, string][]) =>
+    kit.canvasTex(128, 128, (g, w, h) => {
+      const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+      for (const [o, c] of stops) gr.addColorStop(o, c);
+      g.fillStyle = gr;
+      g.fillRect(0, 0, w, h);
+    });
+  const add = (map: THREE.Texture) =>
+    new THREE.MeshBasicMaterial({
+      map,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false,
+      opacity: 0,
+    });
+  const bulbMat = new THREE.MeshBasicMaterial({ color: "#fff3cf", toneMapped: false });
+  const bulb = new THREE.Mesh(G.sph(0.035, 12, 8), bulbMat);
+  bulb.position.set(x, y + 0.02, z);
+  const halo = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.6, 0.6),
+    add(
+      radial([
+        [0, "rgba(255,214,140,0.7)"],
+        [0.25, "rgba(255,176,90,0.22)"],
+        [1, "rgba(255,160,80,0)"],
+      ]),
+    ),
+  );
+  halo.position.set(x, y, z + 0.03);
+  // the pool: a wide ellipse centred a little under the shade, over the plaque's top half (a few mm off it)
+  const pool = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.4, 1.3),
+    add(
+      radial([
+        [0, "rgba(255,196,96,0.42)"],
+        [0.35, "rgba(255,170,70,0.18)"],
+        [1, "rgba(255,150,60,0)"],
+      ]),
+    ),
+  );
+  pool.position.set(x, plaqueTop + 0.05, 0.118);
+  for (const m of [bulb, halo, pool]) {
+    m.castShadow = m.receiveShadow = false;
+    m.renderOrder = 2;
+    group.add(m);
+  }
+  const off = new THREE.Color("#b9a78a"),
+    on = new THREE.Color("#fff3cf");
+  const set = (k: number) => {
+    (halo.material as THREE.MeshBasicMaterial).opacity = k;
+    (pool.material as THREE.MeshBasicMaterial).opacity = k;
+    halo.visible = pool.visible = k > 0.002;
+    bulbMat.color.copy(off).lerp(on, k);
+  };
+  set(0);
+  return { group, set };
+}
 
 const shutters = new WeakMap<Kit, THREE.Texture>();
 
@@ -293,6 +388,8 @@ export function buildFar(kit: Kit, M: RowMaterials, ao: AoTarget[], occ: THREE.B
     for (const x of [E.x0 + 0.3, ex1 - 0.3])
       EB.add(G.rbox(0.6, E.h - 0.4, 0.2, 0.05), trimE, mtx([x, (E.h - 0.4) / 2, 0.06]));
     EB.add(G.rbox(E.w + 0.04, 0.4, 0.38, 0.07), trimE, mtx([ecx, E.h - 0.2, 0.12]));
+    EB.add(G.box(E.w, 0.06, ROW.depth), mat(ROOF_DECK, { roughness: 0.9 }), mtx([ecx, E.h + 0.03, -ROW.depth / 2]));
+    roofRims(EB, trimE, E.x0, ex1, E.h);
     EB.add(G.rbox(E.w, 0.36, 0.3, 0.06), trimE, mtx([ecx, 3.25, 0.1]));
     EB.add(G.rbox(E.w - 1.3, 0.3, 0.3, 0.05), trimE, mtx([ecx, 2.95, 0.08]));
     // (drawn once per world: the kit keeps its textures until the world goes, and this part is built again)

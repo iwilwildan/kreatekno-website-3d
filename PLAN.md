@@ -190,14 +190,14 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 5   | Beat 3–4                      | Layanan (leaflet A4 datar di konter) dan Use case (binder terbuka), tampak atas dengan tangan Heru dan Bu Dewi                                                                               | 4                                          | ✅ 7 Nov (disetujui user; belum dites di HP Android sungguhan)                                  |
 | 6   | Beat 5a–5b                    | Anggukan Bu Dewi (K4.1), kamera mundur lewat pintu (K4.2), keluar bersama (K5a.1), truck right menyusuri 8 ruko dengan panel customer journey (K5a.2–K5a.5), tiba di pintu Kreatekno (K5a.6) | 5                                          | ✅ selesai, disetujui 7 Nov                                                                     |
 | 7   | Beat 6–9a                     | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi                                                                                                 | 6                                          | ✅ 13 Nov (disetujui user; tes HP fisik lancar; temuan laju jalan ruko tetap di issue #9) |
-| 8   | Beat 9b–11                    | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY                                                                                                                       | 7                                          | ⬜                                                                                              |
-| 9   | Beat 12–14                    | Ruang kelas, praktik saat senja dengan ORB dan pelanggan, papan kapur kecil, CTA map ungu                                                                                                    | 8                                          | ⬜                                                                                              |
-| 10  | Beat 15–16                    | Mundur lewat jendela, malam, naik ke langit, footer di jalan gelap                                                                                                                           | 9                                          | ⬜                                                                                              |
-| 11  | Pengerasan HP dan fallback    | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP                                                                                                      | 10                                         | ⬜                                                                                              |
+| 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | 🟡 langkah 1–3 selesai (13 Nov), cek akhir bersama tahap 10 (14 Nov); menunggu review dan tes HP fisik |
+| 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review dan tes HP fisik |
+| 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review; `issue4*.mjs` dan tes HP fisik di laptop |
+| 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
 | 12  | Solusi v1 dan detail          | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail                                                                                               | fondasi 1–3; halaman depan dimajukan 7 Nov | 🟡 S5 disetujui; D0–D3 dan Order Grup OG0–OG4 selesai teknis 8 Nov, menunggu review final pilot |
-| 13  | Solusi: Tonton lama           | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1                                                                                   | 12                                         | ⬜ belum mulai; keputusan integrasi terbuka                                                     |
-| 14  | Halaman lain                  | Artikel (MDX, 3 artikel awal), Tentang, Kebijakan Privasi                                                                                                                                    | 1, input tim                               | ⬜                                                                                              |
-| 15  | QA dan tayang                 | Tes otomatis, audit, analytics, Vercel, domain                                                                                                                                               | semua                                      | ⬜                                                                                              |
+| 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
+| 14 | Halaman lain | Artikel (MDX, 3 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | ⬜ |
+| 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
 
 Tahap 14 tidak bergantung pada 3D, jadi bisa dikerjakan kapan saja setelah tahap 1 kalau input tim sudah ada.
 
@@ -568,6 +568,54 @@ Langkah (berhenti untuk review di chat di akhir tiap langkah; screenshot dan fra
 **Selesai bila** urutan K5a.6 → K9.1 mengikuti video, testimoni, artikel dan FAQ terbaca dan bisa dipakai di pc dan HP, Wildan dan Andi mirip turnaround, dalam anggaran, dan disetujui user.
 
 Catatan untuk tim: tambahkan K9.1 ke dokumen (pengganti K9a), 7 polaroid, rak dua tingkat 6 buku, note 4 × 2, ruang rapat sebidang dinding gabus, Heru menahan pintu dari dalam, Wildan keluar ruang rapat di K9.1; versi 9:16 beat 6–9a belum ada.
+
+#### Plan tahap 8–10 (disusun 13 Nov dari video lanjutan dan jawaban user, menunggu persetujuan)
+
+Satu plan untuk tiga tahap karena acuannya satu video kontinu (keputusan user 13 Nov). Dibangun dan direview per tahap: tahap 8 (K9.1 → K11), tahap 9 (K11 → K13), tahap 10 (K13 → K16). Acuan: `refs/footage/lanjutan/VID_20261113_185210.mp4` (852×480, 25 fps, 38,7 dtk, 16:9, tanpa versi 9:16) dan set yang sudah ada di kode. Master Lokasi dan dokumen tim tidak ada di container cloud; acuannya video saja (user). Urutan prioritas: video > dokumen tim.
+
+**Isi video dan keyframe baru** (nama dipilih di sini; video tidak berlabel):
+
+| Gerak | Detik | Kamera | Isi |
+|---|---|---|---|
+| K9.1 → K9b | 0–8,5 | Ikut tokoh ke fasad, keluar menembus pilar fasad (2,4–3 s), arc di trotoar, mundur ke kiri sambil tokoh lewat dekat kamera (wajah Heru dan Bu Dewi close-up ±6,5 s), dolly in ke plakat | Wildan keluar ruang rapat dan ikut Heru dan Bu Dewi. Ketiganya keluar pintu Kreatekno dan berjalan ke kiri. K9b: plakat kayu kosong berbingkai tua dengan lampu kuningan menyala, memenuhi frame, dinding ungu. Golden hour |
+| K9b → K10 | 8,5–15 | Mundur dan crane up (tampak atas serong fasad Kreatekno dan ruko elektronik), lewat atap ruko, sampai langit saja. K10 titik lewat | Ketiganya tetap berjalan ke kiri di trotoar. Langit ungu ke jingga dengan awan low-poly, tanpa matahari terlihat |
+| K10 → K11 | 15–21 | Crane down di COMPANY (sudah ±60 m ke kiri): billboard kosong di rangkanya, atap, jendela lantai 2, papan COMPANY, kanopi | Sore jingga, jendela depan bercahaya hangat. Ketiganya datang dari kanan dan berjalan ke pintu (membelakangi kamera) |
+| K11 → K12 | 21–31 | Ikut Bu Dewi lewat pintu kaca, maju melewati meja staf ke pintu kayu di kanan konter, masuk kelas | Heru (daun kiri) dan Wildan (daun kanan) membuka pintu, Bu Dewi masuk di tengah. Ruang depan: lampu gantung menyala, meja staf kosong, hologram kubus ungu berorbit di atas tiap meja. K12: Wildan berdiri menunjuk TV beroda, Bayu, Sinta, Nadia, Fajar duduk di 4 meja (2 × 2), jendela sore di kiri, rak binder warna-warni di kanan |
+| K12 → K13 | 31–33,5 | Dolly mundur keluar kelas lewat pintu kayu, terus mundur di ruang depan. K13 titik lewat (konter frontal) | Time-lapse: cahaya berganti dari sore jingga ke biru senja; lampu gantung dan hologram makin menonjol. Ruangan tanpa tokoh |
+| K13 → K15 | 33,5–36 | Dolly mundur lewat pintu kaca yang terbuka sampai frontal fasad COMPANY | Malam. Jendela depan dan ambang pintu bercahaya ungu-putih |
+| K15 → K16 | 36–38,7 | Crane up sambil mundur, makin lebar | K16: jalan malam dua lajur di sepertiga bawah, deret ruko dengan rolling door tertutup, lampu kecil di atap, langit berbintang, billboard menyala putih |
+
+**Selisih dengan dokumen tim (ikut video):** Wildan ikut ke COMPANY dan membuka pintu; matahari tidak terlihat saat hyperlapse; K13 tanpa papan kapur, ORB, pelanggan, Heru dan Bu Dewi di konter (diganti hologram kubus di ruang kosong); tanpa dolly in ke map ungu K14; keluar lewat pintu, bukan jendela. K14 tidak dipakai sebagai keyframe.
+
+Keputusan (jawaban user 13 Nov):
+
+| Topik | Keputusan |
+|---|---|
+| Keyframe | `KeyName` mendapat `K9b`, `K10`, `K11`, `K12`, `K13`, `K15`, `K16`. K10, K13 dan K15 titik lewat. PC dari frame video; HP dirancang sendiri |
+| Durasi (usulan, disetel di greybox) | K9.1 → K9b 1,3; jeda K9b PC 0,8 / HP 2 perhentian; K9b → K10 0,9; K10 → K11 0,9; jeda K11 0,2; K11 → K12 1,3; jeda K12 PC 0,8; K12 → K13 0,8; K13 → K15 0,7; K15 → K16 0,9; jeda K16 PC 1,0. ±9,6 layar, take PC 21,5 → ±31 |
+| Kamera | Rig yaw/pitch tahap 5, waktu dari titik kendali `monotone`. Lewat pintu dan pilar: near plane, kusen dan daun pintu dicek (aturan issue #10: pintu terbuka penuh saat kamera lewat, kamera menunggu tokoh). Crane di langit memakai FOV dari frame video; perpindahan ±60 m ke kiri terjadi saat hanya langit yang terlihat |
+| Tokoh | Wildan berjalan bersama Heru dan Bu Dewi dari lobi ke COMPANY (langkah campuran tahap 6, jam mengejar scroll maju dan mundur, dipindah hanya di luar frame). Di pintu COMPANY Heru dan Wildan menarik daun pintu, Bu Dewi masuk. Di kelas Wildan berdiri menunjuk TV; Bayu, Sinta, Nadia, Fajar duduk (pose duduk tokoh yang sudah ada). Ketiga pejalan dan staf disembunyikan di luar frame sesudahnya; ruang depan K13 kosong |
+| Hologram | Logo Kreatekno 3D mengikuti render referensi user (14 Nov): kubus membulat mengilap (sisi cyan, magenta, violet), tiga koin tebal dengan alur C terukir (cyan besar kiri belakang, magenta kecil kanan belakang, violet terbesar kanan depan) beredar di orbit tipis bercahaya cyan → violet → magenta dengan percikan kecil, glow additive tanpa bloom, di atas 4 meja staf. Menghadap kamera, berayun ±14°, melayang; koin beredar pelan (loop ambient) |
+| Cahaya | Golden (`GOLDEN`, tahap 7) di K9.1–K9b; langit berganti ke sore jingga selama crane (tanpa matahari terlihat, awan hanyut); preset sore jingga untuk COMPANY luar dan ruang depan (lampu gantung menyala); time-lapse K12 → K13 ke senja biru; preset malam K15–K16 (bintang dalam shader kubah langit, cek `mediump` Android, billboard dan jendela menyala dengan bidang additive). Tanpa post-processing |
+| Set | Plakat kayu dan lampu kuningan di kiri pintu Kreatekno (sudah ada sebagai plakat kosong, detail dan lampu menyala ditambah); atap deret ruko (dak, parapet, tangga atap sederhana) untuk crane; COMPANY malam (rolling door ruko tertutup, lampu atap). Chunk baru `sets/classroom` (≤ 120 KB gzip): ruang kelas 4 meja kecil 2 × 2 dengan kursi oranye, TV beroda, jendela lebar di kiri, rak binder di kanan, lampu gantung; pintu kayu ruang depan bisa dibuka. Maksimal dua set hidup; lobi dilepas setelah K9b, kelas dibangun saat kamera mendekati pintu kayu. Bake AO set baru |
+| Copy 9b | Plakat = `home.about` (judul, paragraf, 4 fakta, link "Kenali kami lebih jauh" ke `/tentang`), HTML lewat anchor `matrix3d`. HP: copy tetap di plakat, kamera berhenti 2 kali (judul + paragraf, lalu 4 fakta + link), dicek dengan tes muat teks 360 px di greybox |
+| Copy 13 | Layar TV kelas = `home.practice` (label "Praktik naik kelas" + body) saat jeda K12 |
+| CTA dan footer K16 | CTA `home.cta` (judul, body, Konsultasi gratis, Ketemu langsung) di wajah billboard yang menyala, menyambung hero K0; menyimpang dari "billboard tanpa tulisan" dokumen tim (user). Footer situs (`Footer` yang sudah dirender setelah panggung) dan kalimat epilog `home.footer.epilogue` di jalan gelap |
+| HP | Copy tetap di props seperti lobi: perhentian per kelompok copy (plakat 2, TV 1, billboard dan footer ditentukan di greybox) |
+| Halaman | Penanda lompat `#tentang` (K9b), `#praktik` (K12), `#kontak` (K16). Versi tumpuk: section Tentang, Praktik, CTA dengan still. Still PC K9b, K11, K12, K13, K16 dan HP per perhentian; fallback tanpa WebGL lewat `quadMatrix3d` |
+| Anggaran | Draw call < 120, segitiga < 150 ribu di setiap titik. Titik terberat: pintu COMPANY (jalan, ruang depan, 3 tokoh) dan K12 (kelas, 5 tokoh) |
+
+Langkah (berhenti untuk review di chat di akhir tiap langkah; screenshot dan frame video hanya di chat):
+
+1. **Tahap 8, ukur dan greybox:** kamera K9b, K10, K11 dari frame video; jalur keluar lobi lewat pilar, crane ke langit dan turun di COMPANY; plakat, atap dan area copy berupa kotak; posisi tokoh sementara; tes muat teks plakat HP 360 px; urutan frame berdampingan dengan video.
+2. **Tahap 8, set, gerak, cahaya:** plakat dan lampu, atap ruko, langit sore dan pergantian golden → jingga, Wildan berjalan, ketiganya tiba di pintu COMPANY.
+3. **Tahap 8, copy dan halaman:** plakat Tentang (ID/EN), `#tentang`, versi tumpuk, still, fallback. Cek akhir tahap 8 (seperti langkah 6 tahap 7), review user.
+4. **Tahap 9:** greybox K11 → K13, pintu COMPANY dibuka Heru dan Wildan, set kelas (chunk), hologram, pose duduk staf dan Wildan mengajar, time-lapse senja, copy TV, `#praktik`, still. Cek akhir, review user.
+5. **Tahap 10:** greybox K13 → K16, keluar pintu, preset malam, bintang, billboard menyala, rolling door, CTA di billboard, footer dan epilog di jalan, `#kontak`, still. Cek akhir seluruh take (scroll maju dan mundur, anggaran, memori, `issue4*.mjs`, console, `build`, `typecheck`, `lint`, `format:check`, tes HP fisik), review user.
+
+**Selesai bila** urutan K9.1 → K16 mengikuti video, copy Tentang, Praktik, CTA dan footer terbaca dan bisa dipakai di PC dan HP, hologram dan malam terlihat tanpa bloom, dalam anggaran, dan disetujui user.
+
+Catatan untuk tim: tambahkan K9b–K16 sesuai video; Wildan ikut ke COMPANY; hologram menggantikan ORB dan pelanggan; CTA pindah ke billboard K16; keluar lewat pintu; versi 9:16 beat 9b–16 belum ada.
 
 ### Tahap 5 sampai 10: Home beat demi beat
 
@@ -1978,6 +2026,230 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Temuan (tidak diubah): still K5a.6 PC dan HP di repo dirender sebelum lobi asli terlihat lewat kaca fasad dan sebelum posisi Heru tahap 7; render ulang sekarang menampilkan lobi dan Heru di dalam pintu. Still K9.1 HP berbeda 332 piksel (tokoh), K8 PC 3 piksel.
 - Di-commit ke `main` setelah dikonfirmasi user ("Commit, jangan push"): hanya file #17 dan entri log ini; di `messages` hanya testimoni dan alt K6, di `stills.json` hanya entri K6. Belum: push dan tutup issue #17, tes HP fisik.
 
+### 2026-11-13 (tahap 8 riset: video lanjutan K9.1 → K16)
+
+- Branch `claude/homepage-beats-lanjutan-qoxhfx` (dari `main` 035ed68) untuk lanjutan beat Home, sesi cloud.
+- Acuan baru dari user di chat: `VID_20261113_185210.mp4` (852×480, 25 fps, 38,7 dtk, 16:9, satu take kontinu tanpa potongan), disalin ke `refs/footage/lanjutan/`. Isinya K9.1 sampai akhir take (beat 9b–16, tahap 8–10):
+  - 0–2,4 s: lanjutan K9.1, Heru dan Bu Dewi berjalan ke pintu fasad, Wildan keluar ruang rapat dan ikut. 2,4–3 s: kamera keluar menembus pilar fasad.
+  - 3–7 s: di trotoar, ketiganya keluar pintu Kreatekno dan berjalan ke kiri melewati kamera (wajah Heru dan Bu Dewi close-up ±6,5 s). 7–8,5 s: dolly in ke plakat kayu kosong dengan lampu kuningan di kiri pintu, plakat memenuhi frame (K9b).
+  - 8,5–12,5 s: mundur dan crane up, ketiganya tetap berjalan ke kiri di trotoar, lalu lewat atap ruko. 12,5–15 s: langit golden ungu-jingga dengan awan low-poly, tanpa matahari terlihat. 15–18,5 s: crane down di COMPANY (billboard kosong, atap, papan COMPANY), cahaya sore jingga.
+  - 18,5–23,5 s: ketiganya tiba di pintu COMPANY; Heru (daun kiri) dan Wildan (daun kanan) membuka pintu, Bu Dewi masuk di tengah, kamera ikut masuk. 24–27 s: ruang depan saat sore, lampu gantung menyala, meja staf kosong dengan hologram kubus ungu berorbit di atas tiap meja.
+  - 27–31 s: maju ke pintu kayu kanan konter, masuk ruang kelas: Wildan mengajar di depan TV beroda, Bayu, Sinta, Nadia, Fajar di 4 meja, jendela sore di kiri, rak binder di kanan (K12).
+  - 31–34 s: mundur keluar kelas, cahaya berganti biru senja/malam (time-lapse), ruang depan kosong dengan hologram. 34–36 s: mundur lewat pintu kaca COMPANY. 36–38,7 s: crane up sambil mundur, jalan malam, langit berbintang, billboard menyala tanpa tulisan, rolling door ruko tertutup (K16).
+- Selisih dengan dokumen tim: Wildan ikut ke COMPANY; tanpa matahari terlihat di langit; K13 tanpa papan kapur, ORB, pelanggan, Heru dan Bu Dewi di konter; tanpa dolly in ke map ungu (K14); keluar lewat pintu, bukan jendela (beat 15). Video tidak punya versi 9:16.
+- Copy yang sudah ada di `messages`: `home.about` (9b), `home.practice` (13), `home.cta` (14), `home.footer.epilogue` (16).
+- Riset: three.js 0.186.1 tetap (rilis baru tidak ditemukan dengan catatan migrasi yang relevan); glow hologram dan billboard malam tanpa bloom memakai quad additive bergradasi; langit malam dan bintang dalam satu shader kubah, cek presisi `mediump` di Android.
+- Container cloud ini tidak berisi isi `refs/` lain (dokumen tim, Master Lokasi, turnaround, video tahap sebelumnya).
+- Jawaban user: plan gabungan tahap 8–10; copy plakat HP 2 perhentian; langit ikut video tanpa matahari; acuan video saja; copy praktik di layar TV kelas; CTA bersama footer di K16, di wajah billboard yang menyala; hologram tanpa ORB dan pelanggan.
+- Plan tahap 8–10 ditulis di bagian 5; status tahap 8 🟡, tahap 9 dan 10 deskripsinya direvisi.
+- Belum: persetujuan plan, langkah 1 (greybox tahap 8). Tidak ada perubahan kode, tidak ada commit.
+
+### 2026-11-13 (tahap 8, plan disetujui, langkah 1: greybox K9.1 → K11)
+
+- Plan tahap 8–10 disetujui user ("Plan disetujui, mulai langkah 1"). Dikerjakan di sesi cloud (branch `claude/homepage-beats-lanjutan-qoxhfx`), dev server lokal di container, render dengan Chromium + SwiftShader.
+- Kode (greybox, belum final):
+  - `takes/home/timing.ts`: `K9b`, `K10`, `K11`, `PLAQUE_STOPS` 2. Segmen K9.1 → K9b 2,0; jeda K9b 0,6 (PC 0,8); K9b → K10 0,9; K10 → K11 0,9; jeda K11 0,2. Take 9:16 22,85 → 27,45, PC 21,5 → 26,3 layar scroll. Jeda K9.1 0,3 tetap.
+  - `takes/home/beat9.ts` (baru): kamera rig yaw/pitch lewat titik kendali (`monotone` untuk laju dan sudut, Catmull-Rom sentripetal untuk posisi). K9.1 → K9b: maju di belakang ketiganya, keluar lewat pilar sudut kanan fasad (video 2,5 s: pilar di kanan pintu), berputar melihat ke kiri sepanjang fasad, frontal di antara plakat dan pintu selagi ketiganya keluar dan berjalan ke kiri, lalu dolly in ke plakat. K9b PC: plakat + bingkai 75% lebar di FOV 36°, lampu masuk frame; HP: dua perhentian, tiap kolom 88% lebar di 50°. K9b → K10: mundur dan naik, tampak tinggi Kreatekno dan ruko elektronik, lewat atap, ke langit (K10 menengadah 24°). K10 → K11: ke kiri di langit, turun lewat billboard, atap dan papan COMPANY ke fasad frontal (K11 PC dari frame 20 s, HP pintu dan ketiganya di tengah). `trioAt`: posisi ketiganya dari scroll (greybox).
+  - `sets/beat9Grey.ts` (baru, sementara): figur pengganti Heru, Bu Dewi, Wildan dan dua kotak area copy berlabel di plakat.
+  - `sets/rowLayout.ts`: plakat 1,5 × 0,9 → 1,7 × 0,85 m (dengan bingkai ±1,9:1 seperti video 8 s). Plakat juga terlihat di K5a.6; still K5a.6 belum dirender ulang.
+  - `takes/home/lobby.ts`: `k91View` diekspor. `takes/home/index.ts`: kamera beat 9b–11 setelah K9.1. `world/index.ts`: Heru, Bu Dewi dan Wildan asli disembunyikan setelah K9.1, figur pengganti mengikuti `trioAt`.
+- Tes muat teks plakat HP (Playwright, font situs Bricolage Grotesque + Plus Jakarta Sans, kotak kolom dikurangi inset 3 cm): ukuran badan terbesar yang muat, judul 1,45×: 360 px ID 18 / EN 20 px, 375 px 19 / 21, 412 px 20,5 / 23 (kolom 1: judul + paragraf); kolom 2 (4 fakta + link) 20–23 px. Dua perhentian cukup, jauh di atas batas 13 px.
+- Dicek (render hanya di chat): 20 titik PC 1280×720 dan HP 375×812 berdampingan dengan frame video (0,8–20 s); perhentian plakat HP 375×812 dan 360×640; halaman normal `?k=K9b` PC dan HP mendarat di tengah jeda K9b (PC 23,9, HP 25,15 layar scroll), world live; console hanya gagal memuat `va.vercel-scripts.com` (Vercel Analytics, diblokir proxy container). `tsc --noEmit`, ESLint dan Prettier lulus untuk file yang diubah.
+- Anggaran (sapuan tiap 0,02 layar dari K9.1 ke K11 lalu mundur, 462 titik per format): terberat PC 175 draw call / 165 rb segitiga, HP 146 / 139 rb, keduanya tepat saat kamera keluar lewat pilar (x ±23,5 layar): lobi (31), Kreatekno, jalan, deret ruko dan ruko buah/laundry digambar bersamaan. Di atas batas 120 / 150 rb; diperbaiki di langkah 2 dengan pelepasan set (ruang rapat, taman dan lobi setelah kamera di luar, deret ruko jauh).
+- Belum / catatan untuk review:
+  - laju jalan greybox terlalu cepat (±5 m/s pada scroll 2 s/layar) karena tokoh terikat scroll; langkah 2 memakai jam tokoh yang mengejar scroll dan gerbang kamera (pola tahap 6–7);
+  - di video ketiganya berjalan ke arah kamera dan lewat di sampingnya (6,5 s); greybox lewat di depan plakat;
+  - langit K10 tanpa awan (awan situs hanya rendah di cakrawala), atap ruko masih bidang polos, plakat dan lampu masih bentuk tahap 6, cahaya sore jingga di COMPANY belum ada (golden dari lobi): langkah 2;
+  - `tools/render/issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs` masih memakai take 21,5 / 22,85.
+- Tidak ada commit.
+
+### 2026-11-13 (tahap 8 langkah 2: set, gerak, cahaya)
+
+- Disetujui user ("Lanjut langkah 2"). Sesi cloud, dev server dan render Chromium + SwiftShader di container.
+- **Gerak** (`takes/home/outsideCast.ts`, bagian tahap 8; figur pengganti greybox dan `sets/beat9Grey.ts` dihapus):
+  - jam jalan Heru dan Bu Dewi diteruskan setelah lobi (`BT`): daun pintu Kreatekno terbuka (closer, ke dalam), Heru keluar dulu, Bu Dewi, lalu Wildan dari ruang rapat; ketiganya belok kiri di trotoar (Heru di sisi jalan, Bu Dewi, Wildan di sisi ruko), lewat plakat dan terus menyusuri deret ruko sampai x 38; daun menutup setelah Wildan lewat;
+  - selagi kamera hanya melihat langit, jam melompat ke trotoar COMPANY (dipindah tak terlihat, mekanisme `stepOutClock`); ketiganya berjalan dari kanan ke pintu dan berhenti menghadapnya: Heru di daun kiri, Bu Dewi selangkah di belakang tengah, Wildan di daun kanan (pintu dibuka di tahap 9);
+  - Wildan (`wildanStride`, `poseWildanOut`): mulai berjalan bersama setelah jam lobinya selesai; kalau jam bersama sudah lewat saat itu, ia tertinggal sebanyak selisihnya dan menyusul dengan 1,35× langkah (maks 1,8×, sama dengan lobi), jadi tidak pernah melompat. Uji scroll pertama menemukan lompatan Wildan di HP (x 23,28) sebelum mekanisme ini;
+  - gerbang kamera `PLAQUE_GATE`: kamera menunggu di depan fasad sampai ketiganya melewati plakat, baru dolly in;
+  - gerak K9.1 → K9b 2,0 → 3,0 layar (video 8,5 dtk; ±13 dtk jalan dari K9.1 sampai ketiganya lewat plakat). Take 9:16 28,45, PC 27,3 layar scroll.
+- **Kamera** (`takes/home/beat9.ts`): di lobi kamera lewat di atas kepala (1,9 m) di tengah separuh kiri lobi, Wildan berjalan di kanannya seperti video; menembus bagian fasad pejal di kiri pintu (sisi plakat) dan berbelok kanan ke pintu. Video keluar lewat pilar di kanan pintu lalu menoleh ke kiri sepanjang fasad; dengan arah itu frame memuat seluruh deret ruko, lobi dan ruang rapat sekaligus (155 draw call, 207 rb segitiga; ruang rapat terlihat 82 rb piksel di frame itu, jadi tidak bisa disembunyikan). Penyimpangan dari video demi anggaran.
+- **Set:**
+  - plakat (`sets/row.ts`): bingkai kayu gelap dengan bevel, muka krem; lampu leher angsa kuningan (pelat, lengan tabung, kap lonceng); cahaya lampu tanpa bloom: bohlam, halo dan genangan cahaya hangat additive di dinding dan plakat (`setLamp`, menyala mengikuti golden hour);
+  - atap (`sets/shop.ts` `roofRims`, `ROOF_DECK`): dak abu muda di seluruh kedalaman dan parapet warna trim tiap ruko, Kreatekno (ungu) dan ruko ujung. Sebelumnya bagian atap di atas toko terbuka;
+  - langit (`sets/sky.ts`): kubah sore jingga (ungu → pink → oranye, warna disampel dari video 14 dtk) di atas kubah golden (`setSunset`); 9 awan tinggi dalam satu mesh untuk K9b–K11 saja, hanyut ke kanan selama hyperlapse (`setHigh`); merpati K0 disembunyikan setelah pagi (`setBirds`).
+- **Cahaya** (`core/light.ts`): preset `SUNSET` (warna saja, arah matahari tetap golden, jadi shadow map tidak digambar ulang selama blend), masuk dari naik ke langit sampai turun di COMPANY.
+- **Alat:** `tools/render/lib.mjs` memakai Chromium bawaan Playwright kalau Edge/Chrome tidak ada (container cloud); `issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs` ke take 27,3 / 28,45. `debug().clocks` memuat `LT` dan `BT` untuk alat review.
+- **Dicek** (render hanya di chat):
+  - 20 titik PC 1280×720 dan HP 375×812 berdampingan dengan video;
+  - anggaran (sapuan tiap 0,04 layar K9.1 → K11, `?shot`): PC terberat 99 draw call / 124 rb segitiga, HP 85 / 122 rb; bagian keluar (tiap 0,03) PC 82 / 108 rb, HP 67 / 102 rb;
+  - scroll sungguhan dalam waktu simulasi (SwiftShader ±5 dtk per frame, world melangkah maks 0,1 dtk per frame; scroll 2 dtk/layar): PC dan HP maju, PC dan HP mundur: tidak ada tokoh yang melompat di frame, laju terlihat maks 2,53 m/s, kamera menunggu ±2 dtk di gerbang plakat;
+  - `tsc --noEmit`, ESLint, Prettier untuk file yang diubah.
+- **Temuan di luar tahap 8:** K1 PC 122 draw call / 167 rb segitiga dengan `?shot` (seluruh deret dan lobi dimuat); kode `main` memberi angka yang sama di container ini (tahap 8 menambah ±1 rb segitiga). Batas 120 / 150 rb; log tahap 6 mencatat 119 / 147 rb.
+- **Belum:** copy plakat, halaman, still (langkah 3); `issue4*.mjs` belum dijalankan ulang (tools tanpa `node_modules` di container); still K5a.6 masih plakat lama; cahaya K11 lebih pink dari video dan jendela COMPANY belum menyala hangat; arah jalan ketiganya lewat di depan plakat (video: ke arah kamera).
+
+### 2026-11-13 (tahap 8 langkah 3: copy plakat dan halaman)
+
+- Atas permintaan user ("Lanjutkan" setelah langkah 2). Sesi cloud.
+- **Copy plakat** (`components/home/props/Plaque.tsx`, `plaque.css`, ID/EN dari `home.about`): kolom kiri judul `#h-tentang` + paragraf, kolom kanan 4 fakta dengan ikon centang + link "Kenali kami lebih jauh" ke `/tentang` (EN `/about`). HTML asli dari server; world menempelkan tiap kolom di muka plakat (`about-0`, `about-1`, `takes/home/beat9.ts` `plaqueAnchors`), ukurannya diukur di tempat kamera membacanya (16:9 jeda K9b, 9:16 perhentian kolomnya), muncul di ujung dolly ke plakat dan pergi saat kamera mundur (`plaqueCopyFade`); di 9:16 kolom yang terpotong tepi layar memudar seperti lobi. Warna tulisan kayu gelap dan tinta hangat di muka krem.
+- **Halaman:** penanda `#tentang` (16:9 tengah jeda K9b, 9:16 perhentian pertama; `components/home/plaqueStills.ts`), versi tumpuk (still K9b lalu kedua kolom sebagai section), still PC K9b, K11 dan HP K9b, K9b-2, K11 (`tools/render/stills.mjs`, `lib.mjs`: kunci plakat), fallback tanpa WebGL dengan copy di still lewat `quadMatrix3d`, teks alt `home.stage.k9b`, `k11` (ID/EN). Still K5a.6 PC/HP dirender ulang (plakat baru, lobi asli lewat kaca).
+- **Perbaikan selama langkah ini** (`world/index.ts`):
+  - Wildan tidak muncul di still K11: blok kursi per format mendudukkannya lagi setelah pose jalan; pose luar sekarang diulang setelah itu dan setelah Wildan/Andi selesai dibangun;
+  - setelah lompatan (`#tentang`, `jump`) Wildan tertinggal di ruang rapat: jamnya disetel ulang saat modulnya selesai dimuat dan saat lompat; jamnya disusulkan bila ia tidak terlihat (garis pandang dari jalan hanya lewat kaca fasad, ruang rapat tidak pernah terlihat dari luar);
+  - scroll mundur: Wildan sempat melompat (x ±22,8) karena lepas dari jalan bersama sebelum titik awalnya; syarat "bagian lobinya selesai" sekarang hanya untuk bergabung, dan saat lepas jam lobinya mulai dari titik akhirnya.
+  - lampu plakat: halo lebih redup dan lebih oranye.
+- **Dicek** (render dan screenshot hanya di chat):
+  - muat teks (overflow 0): PC 1280×720 judul 35 px, paragraf 22,8 px, fakta 23,6 px; HP 375×812 judul 25,8 / paragraf 16,8 / fakta 17,4 px; 360×640 24,7 / 16,1 / 16,7 px; ID dan EN;
+  - `#tentang` di halaman live: PC mendarat di tengah jeda K9b (24,9 layar scroll), HP di perhentian pertama (25,96); copy tampil, ketiga tokoh di trotoar; di K8 (`#faq`) copy plakat tersembunyi dan link tidak bisa di-Tab;
+  - tanpa WebGL (PC, 375, 360): still K9b dengan copy di tempatnya, `#tentang` mendarat benar; reduced motion dan tanpa JS: section Tentang dengan still K9b, still K11 tidak tampil;
+  - scroll waktu simulasi K9.1 ↔ K11 (2 dtk/layar PC dan HP maju dan mundur, 0,6 dtk/layar PC maju dan HP mundur): tidak ada tokoh melompat di frame; laju terlihat ≤ 2,56 m/s pada scroll rata; scroll cepat kamera menunggu ±4,7 dtk di gerbang plakat;
+  - `tsc --noEmit`, ESLint, `format:check` seluruh situs, `next build` lulus; chunk tahap 8 ≤ 15,5 KB gzip.
+- **Belum / catatan:** `issue4*.mjs` belum dijalankan (render SwiftShader ±5 dtk per frame di container); Playwright yang dipakai alat di container adalah 1.63.0 bawaan (bukan 1.64.1 yang disetujui untuk laptop); di HP 375 still 9:16 terpotong di sisi (sama seperti panel beat 5 dan lobi); review user.
+
+### 2026-11-13 (tahap 9 langkah 1: greybox K11 → K13)
+
+- Atas permintaan user ("Lanjutkan" setelah tahap 8 langkah 3). Tahap 9 dikerjakan dengan pola tahap 8: langkah 1 greybox, langkah 2 set/gerak/cahaya, langkah 3 copy dan halaman, review di akhir tiap langkah. Pertanyaan tahap 9 sudah dijawab di plan gabungan (copy praktik di layar TV, hologram tanpa ORB dan pelanggan); riset tahap 8 (glow additive tanpa bloom) berlaku untuk hologram.
+- Kode (greybox, belum final):
+  - `takes/home/timing.ts`: `K12`, `K13`. K11 → K12 2,8; jeda K12 0,8; K12 → K13 1,1; jeda K13 0,2 (ujung take sementara sampai tahap 10). Take 9:16 28,45 → 33,35.
+  - `takes/home/beat12.ts` (baru): kamera dari video 21–34 dtk. Mendekat ke pintu COMPANY selagi daunnya dibuka, masuk di belakang Bu Dewi (video 22–24), melihat seluruh ruang depan dari dalam pintu (24–26), lewat di atas kepalanya melalui celah meja tengah, memutari ujung kanan konter ke pintu kayu belakang, masuk kelas (26,5–29). K12: dari belakang kelas, tinggi, Wildan di kiri TV dan staf di meja (9:16: layar TV 88% lebar untuk copy). K12 → K13: mundur lurus keluar pintu belakang, di atas konter, ke tengah ruang (K13: konter frontal). Mengikuti layout ruang depan per format (`roomFrame`).
+  - `sets/companyFront.ts` `roomFrame` (baru): dinding, pintu belakang dan meja staf di ruang dunia per layout step. `sets/classLayout.ts` (baru): kelas 5,7 m di balik dinding belakang, lebih sempit dari ruang depan (3 m kiri, 3,3 m kanan pintu): TV beroda, posisi Wildan, meja 2 × 2 (baris jauh Sinta, Nadia; dekat Bayu, Fajar), jendela kiri, rak binder kanan. `sets/classroom.ts` (sementara): kelas berupa kotak, layar TV berlabel area copy, figur pengganti staf dan Wildan, kubus ungu pengganti hologram di atas meja ruang depan.
+  - `takes/home/outsideCast.ts` `BT2`: Heru dan Wildan berdiri di luar ayunan daun (di ujung bebasnya), kedua daun terbuka keluar, Bu Dewi berjalan masuk beberapa langkah.
+  - `world/index.ts`: ruang depan dibangun ulang dari naik ke langit (K9b → K10) dan tampil sejak daun mulai terbuka; staf, gelembung pikiran dan HP Sinta tidak tampil (staf di kelas); logika lobi (cahaya, set luar) tidak berlaku lagi di COMPANY; Andi disembunyikan di COMPANY; Heru, Bu Dewi dan Wildan tidak digambar setelah kamera lewat pintu belakang; kelas hanya digambar dari dekat pintu belakang.
+- Dicek (render hanya di chat): 18 titik PC 1280×720 dan HP 375×812 berdampingan dengan video 21,5–33,5 dtk. Anggaran (sapuan tiap 0,05 layar K11 → K13): PC terberat 110 draw call / 129 rb segitiga, HP 109 / 132 rb (keduanya di ujung jeda K11 dengan ruang depan tampil lewat pintu). Sebelum kelas dibatasi ke dekat pintu belakang: 137 draw call (kotak greybox kelas, ±45 mesh, di balik dinding). `tsc --noEmit`, ESLint, Prettier untuk file yang diubah.
+- Belum / untuk langkah 2: dinding belakang ruang depan belum berlubang dan daun pintu kayu belum terbuka (kamera menembus dinding: frame cokelat polos di video 28,5 dan 31,5 dtk); cahaya sore di dalam dan time-lapse ke senja biru (video 31–33,5); tangan Heru dan Wildan di daun pintu dan gerbang kamera di pintu COMPANY; set kelas detail (chunk sendiri, digabung per material), staf duduk dan Wildan mengajar (tokoh asli), hologram kubus berorbit dengan glow; Bu Dewi dipindah dari ruang depan sebelum K13 (video: ruang kosong).
+
+### 2026-11-14 (tahap 9 langkah 2: set, gerak, cahaya)
+
+- Atas permintaan user ("Lanjutkan" setelah greybox tahap 9). Proses kerja sesi sempat di-restart di tengah langkah ini; perubahan di working tree utuh dan pekerjaan dilanjutkan.
+- **Set:**
+  - ruang depan (`sets/companyFront.ts`): dinding belakang berlubang di pintu kayu (geometri bentuk dengan UV bidang yang sama, jadi peta AO tetap); daun pintu pada engsel di tepi kirinya (`backDoor`), terbuka ke ruang depan saat kamera mendekat dan tetap terbuka sampai K13 (video 28–33 dtk); kusen di sekeliling lubang;
+  - kelas (`sets/classroom.ts`, chunk sendiri dimuat saat kamera naik ke langit): dinding dengan jendela lebar berbingkai oranye (langit sore di baliknya, tanpa cahaya), skirting oranye, TV beroda dengan layar putih (tempat copy praktik, langkah 3), meja 2 × 2 dengan buku catatan dan kursi oranye, rak binder warna-warni, lampu gantung dengan kap oranye. Satu mesh berwarna per vertex + bagian tanpa cahaya: 4 draw call. Tata letak `sets/classLayout.ts` (meja sedalam meja ruang depan supaya pose duduk K2 pas, `classSeat`);
+  - hologram (`sets/holograms.ts`): kubus ungu-magenta-biru berputar, dua cincin tipis, tiga titik cahaya berlari di cincin, glow ungu additive menghadap kamera, melayang naik-turun; instanced, 4 draw call untuk keempatnya; jalan di loop ambient.
+- **Gerak:**
+  - Heru (tangan kanan) dan Wildan (tangan kiri) memegang tepi bebas daun pintu COMPANY saat menariknya terbuka (`outsideCast` `wildanReach`, `poseWildanOut`);
+  - gerbang kamera di pintu COMPANY: kamera menunggu sampai daun terbuka dan Bu Dewi di dalam (`BT2.inside`);
+  - staf (Sinta, Nadia, Bayu, Fajar) duduk di kelas menghadap TV dengan pose duduk K2, tetes keringat K2 disembunyikan (`createSweat` `setVisible`); kembali ke meja masing-masing kalau scroll naik keluar COMPANY;
+  - Wildan mengajar di kiri TV, tangan kiri menunjuk layar, dipindah ke kelas saat kamera sudah lewat pintu COMPANY (di balik pintu belakang yang masih tertutup); dipose sekali per layout, pose jalannya dilewati selama mengajar.
+- **Cahaya** (`core/light.ts`): `EVE`, ruang depan dan kelas jingga hangat sore hari (mengikuti `sunset`, tidak berlaku di lobi); `DUSK`, time-lapse ke senja biru selama kamera mundur dari kelas (video 31–33,5 dtk), lampu gantung tetap hangat.
+- **Dicek** (render hanya di chat):
+  - 18 titik PC 1280×720 dan HP 375×812 berdampingan dengan video 21,5–33,5 dtk;
+  - anggaran (sapuan tiap 0,05 layar K11 → K13): PC terberat 110 draw call / 136 rb segitiga, HP 109 / 139 rb (ujung jeda K11); K12 33 draw call;
+  - scroll waktu simulasi K11 → K13 (2 dtk/layar, PC maju dan HP mundur): laju terlihat ≤ 2,37 m/s. Lompatan yang terdeteksi: Wildan dipindah ke kelas (x 29,6–29,7) di balik pintu belakang yang masih tertutup (uji frustum tidak memperhitungkan dinding; frame diperiksa, ia tidak terlihat), dan satu pada frame pertama setelah halaman dimuat langsung di `?k=K11` (sebelum modul lobi termuat, selama still memudar ke canvas);
+  - `tsc --noEmit`, ESLint, Prettier untuk file yang diubah.
+- **Belum / langkah 3:** copy praktik di layar TV, `#praktik`, still K12/K13, fallback dan versi tumpuk. Catatan: pose staf masih pose kerja K2 (Sinta memegang HP tanpa HP-nya, Fajar dan Nadia pose menggaruk/menopang dagu), belum pose mendengarkan; ruang depan sore kurang jingga dibanding video; patch cahaya pagi di lantai ruang depan masih tampil saat senja.
+
+### 2026-11-14 (tahap 9 langkah 3: copy dan halaman)
+
+- Atas permintaan user ("Lanjutkan langkah berikutnya" setelah langkah 2).
+- **Copy di layar TV** (`components/home/props/Practice.tsx`, `practice.css`): `home.practice` (label "Praktik naik kelas" + satu kalimat) sebagai slide: garis ungu kecil, label navy, kalimat. HTML lewat anchor `practice` di layar putih TV (`beat12.ts` `practiceAnchor` per layout step, diukur di tengah jeda K12, `practiceCopyFade`: masuk saat kamera tiba di kelas, keluar saat mundur). Muncul hanya selama kelas tampil. PC 299 × 158 px (judul 22 px, kalimat 13,4 px), HP 375 px 313 × 167 px, HP 360 px EN 301 × 160 px; tidak ada yang meluap.
+- **Set dan kamera disesuaikan supaya copy terbaca dan frame mendekati video 30 dtk:** TV diperbesar ke 1,9 × 1,07 m (86") dan dinaikkan sedikit; Wildan bergeser 20 cm ke kiri; titik tunjuknya di tepi kiri layar (tidak menutup copy); baris meja maju 25–35 cm; kamera K12 PC turun dari 2,15 ke 1,85 m, di tengah kelas, fov 50 (TV ±23% lebar frame seperti di video, Fajar terlihat di kanan).
+- **Perbaikan:**
+  - halaman yang dibuka langsung di K12 (atau lompat ke sana) membuat Wildan tertinggal duduk di ruang rapat lobi: pose mengajar diulang setelah kursi lobi dipasang (`teachKey` di-reset bersama `seatK8`);
+  - garis tipis putus-putus di tengah layar TV: sisi tiang stand TV yang hampir sejajar arah pandang kamera menang uji kedalaman di SwiftShader walau berada 8 cm di belakang layar (dibuktikan dengan raycast dan toggle `colorWrite`/`depthTest`). Tiang sekarang berhenti di strip bawah bingkai.
+- **Halaman:** penanda lompat `#praktik` (tengah jeda K12); still K12 dan K13 PC/HP (`tools/render` KEYS + `LOBBY_COPY` K12, `stills.json`), copy di still K12 pada fallback tanpa WebGL (`classStills.ts`: K12 masuk di 93% gerak masuk, K13 di tengah gerak keluar); versi tumpuk: penanda, still K12, copy praktik setelah copy plakat (order 29–31); alt still K12 dan K13 (`home.stage.k12`, `k13`, ID dan EN).
+- Panjang take di tool review diperbarui: PC 32,2, HP 33,35 layar (`issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs`).
+- **Dicek** (render hanya di chat):
+  - K12 PC 1280×720 dan HP 375×812 dengan copy, fade masuk (70% di 0,45 layar sebelum tengah jeda) dan keluar;
+  - fallback tanpa WebGL `#praktik` di 1280×720, 375×812, 360×640: mendarat di still K12 dengan copy terlihat, tanpa luapan;
+  - versi tumpuk (reduced motion dan tanpa JS) 375 px: urutan still K9b → fakta plakat → still K12 → copy praktik; still K13 tidak tampil;
+  - anggaran K11 → K13 (sapuan 0,1 layar): PC 110 draw call / 136 rb segitiga, HP 109 / 139 rb, sama dengan langkah 2;
+  - `tsc --noEmit`, ESLint, Prettier.
+- **Belum:** pose mendengarkan untuk staf di kelas; ruang depan sore kurang jingga; patch cahaya pagi di lantai saat senja; tahap 10 (K13 → K16).
+
+### 2026-11-14 (tahap 10 langkah 1: greybox K13 → K16)
+
+- Atas permintaan user ("Lanjutkan tahap berikutnya"). Pola tahap 8–9: langkah 1 greybox, langkah 2 set/gerak/cahaya, langkah 3 copy dan halaman.
+- **Riset:** three.js 0.186.1 tetap (rilis lebih baru tidak ditemukan dengan catatan migrasi). Bintang: lapisan `Points` terpisah di atas kubah langit (satu draw call, posisi acak tetap, kelip di vertex shader) lebih aman di `mediump` Android daripada hash per piksel di shader kubah; dipakai di langkah 2.
+- **Keputusan user (14 Nov):** di frame lebar video (38,7 dtk) billboard ±10% lebar layar PC, CTA tidak terbaca. Kamera berhenti di billboard dulu (K15.1, framing K0 versi malam), lalu crane up mundur ke frame lebar K16 (epilog, lalu footer). Take +1 layar.
+- **Kode (greybox):**
+  - `takes/home/timing.ts`: `K15`, `K15.1`, `K16`. K13 jadi titik lewat (jeda 0,2 dihapus). K13 → K15 0,8; K15 → K15.1 0,8; jeda K15.1 0,8; K15.1 → K16 0,9; jeda K16 1,0. Take 9:16 33,35 → 37,45, PC 32,2 → 36,3 layar scroll.
+  - `takes/home/beat15.ts` (baru): mundur lurus dari K13 lewat pintu COMPANY yang terbuka (video 33,5–35 dtk) ke fasad frontal malam (K15, titik lewat, video 36 dtk); crane up melewati papan nama dan atap ke billboard (K15.1 = kamera K0 hasil solver, PC dan HP); crane up sambil mundur ke jalan malam (K16 PC dari frame video 38,6 dtk: COMPANY ±31% lebar di kiri, dasar fasad ±63% tinggi, atap ±25%, tiga ruko di kanan; HP: billboard di atas, COMPANY di tengah, jalan di bawah). `nightAt`: senja → malam saat kamera keluar pintu. `ctaAt`, `ctaFade`, `epilogueFade` untuk langkah 3.
+  - `takes/home/beat12.ts`, `components/home/classStills.ts`: K13 tanpa jeda (still K13 masuk di ujung gerak K12 → K13).
+  - `core/light.ts` preset `NIGHT`; `sets/sky.ts` kubah malam (`setNight`), awan K0 disembunyikan saat malam; awan tinggi tahap 8 juga.
+  - `sets/nightGrey.ts` (baru, sementara): muka billboard menyala putih dengan area CTA berlabel, rolling door abu di bukaan 6 ruko.
+  - `world/index.ts`: ruang depan, hologram dan props konter dilepas lagi saat kamera ±5 m di luar pintu (75% gerak K13 → K15; pintu menampilkan backdrop). Sebelumnya K16 PC 144 draw call (61 dari ruang depan lewat pintu) dan K15 PC 129.
+  - Panjang take di tool review: PC 36,3, HP 37,45 (`issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs`).
+- **Tes muat CTA** (copy `home.cta` dan tombol "Konsultasi gratis", "Ketemu langsung" di kotak hero, karena K15.1 = kamera K0): 1280×720, 1920×1080, 375×812, 360×640, ID dan EN, tanpa luapan. Epilog di permukaan jalan akan ±11 px dan miring di K16 PC; diusulkan sebagai teks lurus di pita jalan gelap.
+- **Dicek** (render hanya di chat): 8 titik PC 1280×720 berdampingan dengan video 33,5–38,6 dtk dan HP 375×812; ujung halaman (footer naik setelah jeda K16, PC); anggaran (sapuan tiap 0,05 layar K13 → akhir take): PC terberat 118 draw call / 138 rb segitiga, HP 118 / 138 rb (keduanya sesaat sebelum ruang depan dilepas); K15.1 PC 20, K16 PC 72 / 118 rb, HP 43; `tsc --noEmit`, ESLint, Prettier.
+- **Belum / langkah 2:** malam masih gelap rata (video: fasad abu terang, jendela dan ambang pintu bercahaya ungu-putih, genangan cahaya di trotoar, papan COMPANY menyala jingga), bintang, lampu kecil di atap, billboard menyala sungguhan, rolling door ruko, daun pintu COMPANY menutup setelah kamera keluar (video 36 dtk), garis jalan, `street.backdrop` versi malam (sekarang gambar siang lewat pintu di K15), pita terang di tepi bawah frame K16 (kemungkinan batas shadow map), sambungan jalan → footer (tepi keras). Langkah 3: CTA di billboard, epilog, footer, `#kontak`, still, cek akhir seluruh take.
+
+### 2026-11-14 (tahap 10 langkah 2: set, gerak, cahaya malam)
+
+- Atas permintaan user ("Lanjutkan" setelah greybox). Usulan epilog sebagai teks lurus di pita jalan tidak dikoreksi user; dipakai di langkah 3.
+- **Set malam** (`sets/night.ts`, baru, menggantikan `sets/nightGrey.ts`; satu grup yang hanya digambar saat malam):
+  - bintang: 1.700 `Points` di kubah, kebanyakan rendah (0,5–25°) di sisi yang dilihat kamera K15.1/K16; titik digambar di shader, bukan tekstur (sprite 64 px di titik 2–3 px mengambil mip terkecil dan hampir transparan: render pertama tanpa bintang), ukuran ikut `pixelRatio`;
+  - lampu kecil hangat di atas parapet COMPANY dan enam ruko (`PointsMaterial`, tekstur tanpa mipmap);
+  - genangan cahaya lilac di trotoar depan jendela dan pintu, halo putih lembut di belakang billboard (quad additive, tanpa bloom);
+  - rolling door berbilah di bukaan enam ruko dengan kotak gulungan dan rel bawah (satu material); garis putus-putus jalan di z 7,2 (frame K16);
+  - aspal lebih gelap saat malam (material jalan kit, dipakai bersama `street` dan `row`).
+- **Jalan COMPANY** (`sets/street.ts` `setNight`): jendela toko dan kaca pintu memakai peta cahaya lilac sendiri saat malam (peta hangat yang diwarnai tetap pink); muka billboard lebih terang; papan COMPANY menyala lewat salinan datar tanpa cahaya (bingkai jingga, huruf amber) di depan papan, hanya digambar saat malam. Material papan siang tetap di batch kanopi, jadi K1 tetap 122 draw call (pemisahan material sempat membuatnya 124; salinan dari huruf ekstrusi sempat +24 rb segitiga).
+- **Gerak:** daun pintu COMPANY menutup sendiri di depan kamera yang mundur (42–52% gerak K13 → K15; video 35–36 dtk, sedikit lebih awal); lampu gantung ruang depan meredup bersamaan (36–53%; jangkauannya 6 m sampai ke kanopi); ruang depan, hologram dan props konter dilepas di 53% setelah daun tertutup; backdrop pintu tidak tampil saat itu (celah daun akan menampilkan ruang siang). Wildan tidak digambar lagi setelah kamera meninggalkan kelas (sebelumnya ikut digambar di balik dinding, ±22 rb segitiga).
+- **Cahaya:** `NIGHT` disetel ke video (fasad abu-lilac terang; matahari 0,15 supaya bayangan diagonal pagi tidak tampak); kubah malam lebih gelap di dekat cakrawala.
+- **Kamera:** K16 PC lebih dekat (z 25,5, y 8,4, −12,5°) supaya trotoar seberang (z 12,1) di bawah frame; K16 HP z 17,5.
+- **Dicek** (render hanya di chat):
+  - 8 titik PC 1280×720 berdampingan dengan video 33,5–38,6 dtk, HP 375×812;
+  - anggaran K13 → akhir take (render langsung per titik tiap 0,025–0,05 layar; `stats()` di `?shot` kadang tidak diperbarui saat frame bayangan): PC terberat 116 draw call / 128 rb segitiga, HP 112 / 122 rb (sesaat sebelum ruang depan dilepas); K15.1 PC 23, K16 PC 66 / 101 rb, HP 45;
+  - tidak ada lompatan saat ruang depan dilepas: kamera sama, ruang tampil vs tidak, beda rata-rata 0,23 per kanal (hanya celah daun);
+  - diam di K16 halaman live: 1 render dalam 20 dtk (sama dengan K9b), tidak ada shadow map yang digambar terus;
+  - K0, K1, K5a.2 siang dibanding still: tidak berubah (beda K5a.2 karena tokoh di jalan, bukan set malam);
+  - `tsc --noEmit`, ESLint, Prettier.
+- **Belum / langkah 3:** CTA di billboard (kotak hero, K15.1), epilog di pita jalan K16, sambungan jalan → footer, `#kontak`, still K15.1 dan K16, fallback tanpa WebGL, versi tumpuk, alt teks, cek akhir seluruh take (`issue4*.mjs`, `build`, tes HP fisik). Catatan: ruang depan K13 masih hangat (video: biru senja), dari tahap 9.
+
+### 2026-11-14 (tahap 10 langkah 3: CTA, epilog, halaman; cek akhir)
+
+- Atas permintaan user ("Lanjutkan" setelah langkah 2).
+- **CTA di billboard** (`components/home/props/NightCta.tsx`, `cta.css`, `home.cta` + tombol "Konsultasi gratis" dan "Ketemu langsung", ID/EN): K15.1 memakai kamera K0, jadi CTA mengambil kotak hero di muka billboard dengan bentuk yang sama (`beat15.ts` `ctaAnchors`: `cta-top`, `cta-bottom`, `cta-face`). Kotak berukuran tetap seperti hero (560 / 280 px, diskalakan `matrix3d`) dengan ukuran huruf hero yang sudah dites muat di langkah 1, tetapi memudar seperti copy props (`data-fade` + `data-fixed`, `placeAnchors`). 16:9: judul di atas, kalimat dan dua tombol di bawah; 9:16: judul di seluruh muka, kalimat dan tombol jadi kartu di pita bawah layar yang memudar bersama judul (`data-fade-by`). Muncul di ujung crane up, hilang saat kamera mundur (`ctaFade`), tidak bisa di-Tab di luar jeda.
+- **Epilog** (`home.footer.epilogue`): teks lurus di pita jalan K16 di atas gradien yang menggelap ke warna footer (`--color-navy-3`), sehingga panggung yang lepas dari sticky langsung bersambung ke footer tanpa tepi. Muncul saat kamera tiba di K16 (`epilogueFade`). Footer situs tetap `Footer` setelah panggung (komentar `page.tsx` dan `Footer.tsx` diperbarui).
+- **Halaman:** penanda lompat `#kontak` (tengah jeda K15.1, `components/home/nightStills.ts`); still K15.1 dan K16 PC/HP; fallback tanpa WebGL dengan CTA di still K15.1 (`stills.json`) dan epilog di still K16; versi tumpuk: penanda, still K15.1, CTA, still K16, epilog, lalu footer (order 32–37); alt `home.stage.k15_1`, `k16` (ID/EN); `tools/render/lib.mjs` KEYS dan copy K15.1.
+- **Perbaikan:** HP Sinta dan gelembung pikiran dibuat setelah aturan tampil/sembunyi ruang depan dijalankan, sehingga pada halaman yang dibuka langsung di malam hari (`#kontak`, `?k=K15.1`) keduanya melayang di ambang pintu COMPANY. Ini juga penyebab gelembung pikiran di tepi still K13 tahap 9. Aturannya sekarang dijalankan lagi saat keduanya dibuat (`castPropsFresh`). Still K11, K12, K13 PC/HP dirender ulang.
+- **Dicek** (screenshot hanya di chat):
+  - CTA live: PC 1280×720 judul 34 px, kalimat 14,5 px, tombol 13 px dalam kotak 560 × 140 / 110, tanpa luapan; HP 375×812 judul 21 px, kartu 345 × 220 px; HP 360×640 EN tanpa luapan;
+  - fallback tanpa WebGL `#kontak` di 1280×720, 375×812, 360×640: mendarat di still K15.1 dengan CTA; ujung take: still K16 dengan epilog, lalu footer bersambung;
+  - versi tumpuk (reduced motion dan tanpa JS) 375 px: copy praktik → still K15.1 → judul CTA → kalimat dan tombol → still K16 → epilog → footer;
+  - `next build`, `typecheck`, `lint` (1 peringatan lama di `opengraph-image.tsx`), `format:check` seluruh situs lulus;
+  - `issue4.mjs` (server produksi port 3300): panjang take 36,3 / 37,45, copy K3/K4 dan tab binder lulus; berhenti di cek "2 dtk/layar mengikuti scroll" (lag 0,40, harus menetap < 1 dtk) karena render SwiftShader ±5 dtk per frame. `issue4-loading.mjs`: 12 cek lulus (fallback, kanvas dilepas, tanpa error), berhenti di batas 30 dtk menunggu world termuat (SwiftShader). Keduanya perlu dijalankan di laptop dengan GPU.
+- **Belum:** tes HP fisik (Android murah, FPS); `issue4*.mjs` di laptop; ruang depan K13 masih hangat (tahap 9); pose mendengarkan staf (tahap 9); review user untuk tahap 8–10.
+
+### 2026-11-14 (sisa tahap 9: pose kelas dan K13 senja)
+
+- Atas permintaan user ("Rapikan dulu dua sisa tahap 9").
+- **Pose mendengarkan** (`cast/poses.ts` `CLASS_POSES`, dipakai `world/index.ts` saat staf pindah ke kelas): duduk tegak menghadap TV, kepala rata ke arah layar, tangan di meja dekat buku catatan; Bayu menulis di bukunya, tangan Nadia terlipat; senyum kecil. Sebelumnya pose kerja K2 (Sinta memegang HP tanpa HP, Fajar menggaruk kepala, Nadia bertopang dagu). Kembali ke pose K2 saat scroll naik keluar COMPANY (seperti sebelumnya).
+- **K13 senja** (video 33 dtk):
+  - pintu kayu belakang menutup lagi setelah kamera mundur keluar kelas dan melewati konter (42–58% gerak K12 → K13); kelas digambar sampai 60%, setelah pintu tertutup. Sebelumnya pintu tetap terbuka dan menampilkan langit sore lewat kelas yang sudah tidak digambar;
+  - genangan cahaya oranye di lantai di bawah tiap lampu gantung (quad additive, `companyFront` `setEvening`), 40% sore, penuh saat senja, padam bersama lampu saat kamera keluar (tahap 10);
+  - bercak cahaya jendela di lantai dan dinding: tetap putih pagi di beat 1–5; di COMPANY sore jadi jingga matahari rendah dan memudar menjelang senja (sebelumnya bercak pagi tetap tampil saat senja).
+- Still K12, K13 PC/HP dirender ulang.
+- **Dicek** (render hanya di chat): K12, K13 dan gerak keluar PC/HP berdampingan dengan video 25, 30, 33 dtk; K2.2 siang tidak berubah; anggaran K11 → K15 (render langsung tiap 0,05 layar): PC terberat 110 / 136 rb, HP 108 / 139 rb (jeda K11, sama dengan tahap 9); `tsc --noEmit`, ESLint, Prettier.
+- **Belum:** ruang depan sore (video 25 dtk) masih kurang jingga dan berkas matahari di lantai tidak masuk frame kamera masuk; dinding K13 sedikit lebih ungu dari video.
+
+### 2026-11-14 (hologram jadi logo Kreatekno 3D)
+
+- Atas permintaan user: pengganti ORB (kubus) seharusnya logo Kreatekno 3D; warna sisi dan lingkaran, ukuran tiga lingkaran disesuaikan dengan logo, objek melayang diperbaiki dan dibuat lebih bagus.
+- **Sebelumnya** (`sets/holograms.ts`): kubus tembus pandang (sisi belakang tampak dan bertumpuk) berwarna ungu, magenta dan biru, dua cincin orbit putih dan tiga bola kecil yang tidak ada di logo.
+- **Sekarang:**
+  - kubus padat dilihat dari sudut, sisi kiri cyan `#35EAFE`, kanan ungu `#9F0ED6`, bawah violet `#8C2BFA` (`assets/brand/README.md`). Tiap sisi berwarna sama dengan sisi seberangnya, jadi dari arah mana pun tetap tiga warna logo;
+  - tiga simpul berwarna sama dengan sisinya: cincin terbuka ke kubus, bulatan di dalam, tangkai ke sudut kubus dengan leher melebar. Ukuran diukur dari piksel `kreatekno-mark.png` (jari-jari heksagon R): pusat simpul atas 0,545 R dari sudut dengan arah hampir datar, simpul bawah 0,54 R, cincin 0,36–0,46 R, bulatan 0,23 R, tangkai 0,21 R. Kubus 5% lebih lebar dan miring 3,5° seperti di logo. Hasil tampak depan diukur terhadap logo: lebar/tinggi 1,161 lawan 1,160, posisi cincin, kubus dan simpul bawah selisih < 1%, puncak kubus 3%;
+  - simpul berupa plat tebal 0,11 R dengan bevel di bidang sudut-sudutnya. Unlit dengan warna logo yang tepat; sisi yang berpaling (tebal plat, sisi kubus saat berayun) lebih gelap;
+  - ukuran ±0,6 × 0,52 m (setara lebar monitor, video 25 dtk), melayang di atas meja pada 1,56 m. Menghadap kamera, berayun ±23° dengan fase berbeda tiap meja, naik-turun 3 cm. Glow additive bergradasi cyan ke ungu di belakangnya;
+  - 2 draw call untuk keempatnya (sebelumnya 4), ±2,1 rb segitiga per logo.
+- Still K13 PC/HP dirender ulang (`stills.json` tidak berubah).
+- **Dicek** (render hanya di chat): tampak depan berdampingan dengan logo; close-up berayun; frame cerita K11 → K12 (sore) dan K13 (senja) PC/HP berdampingan dengan video 25 dtk. Anggaran (render langsung K10 → K15): PC terberat 109 / 138 rb, HP 107 / 141 rb, di bawah 120 / 150 rb. `tsc --noEmit`, ESLint, Prettier.
+- **Belum:** review user; tes HP fisik.
+
+### 2026-11-14 (hologram mengikuti render referensi user)
+
+- Atas permintaan user dengan gambar referensi ("Bikin seperti ini semirip mungkin"): kubus mengilap dengan tiga koin di orbit, bukan logo datar yang ditebalkan.
+- **`sets/holograms.ts` ditulis ulang:**
+  - kubus `RoundedBoxGeometry` (addon three) dilihat dari sudut seperti logo: sisi kiri cyan, kanan magenta, bawah violet yang gelap dekat sudut tengah dan terang di ujung bawah (warna dibaca dari piksel referensi);
+  - tiga koin tebal dengan tepi membulat, alur C terukir di mukanya (bulatan tengah dijembatani ke tepi ke arah kubus, dasar alur gelap). Ukuran dari referensi: cyan 0,37 A di kiri belakang, magenta 0,23 A di kanan belakang, violet 0,43 A di kanan depan (A = sisi kubus 0,18 m; kubus 1,12 A). Koin sedikit menghadap kiri atas sehingga tebalnya tampak di kanan bawah, dan sedikit di depan garis orbit supaya garis lewat di belakangnya;
+  - orbit berupa pita tipis di bidangnya (radius 1,62 A, miring 35°, roll 7°), inti terang dengan glow lembut, gradasi cyan → violet → magenta, paling terang di kedua ujung, ditambah percikan kecil di sampingnya;
+  - kilau dari shader unlit dengan cahaya tetap dari kiri atas di ruang kamera: pantulan putih di tepi membulat dan bibir koin, plus rim light. Tampilannya sama saat sore dan senja;
+  - glow violet di belakang orbit dan glow berwarna di tiap koin (additive, tanpa bloom);
+  - menghadap kamera dan berayun ±14°, melayang naik-turun 3 cm, koin beredar 0,3 rad/dtk. Di still (waktu 0) susunannya sama dengan referensi;
+  - 4 draw call untuk keempatnya, ±2,2 rb segitiga per hologram.
+- Still K13 PC/HP dirender ulang (`stills.json` tidak berubah).
+- **Dicek** (render hanya di chat): tampak depan berdampingan dengan referensi; close-up saat koin beredar; frame cerita K11 → K12 dan K13 PC/HP. Anggaran (render langsung): PC terberat 112 / 141,5 rb, HP 110 / 144 rb (jeda K11), di bawah 120 / 150 rb. `tsc --noEmit`, ESLint, Prettier.
+- **Belum:** review user; tes HP fisik. Latar referensi gelap, di ruang depan yang terang kontras kilaunya lebih lembut.
+
 ### 2026-11-13 (Solusi: update artefak v1 dibandingkan dan dites)
 
 - Artefak v1 `AZX3Jy8e9Bmmdnu9tLL8Jb` versi terbaru dibaca dan dibandingkan dengan `prototype/solusi-etalase-v1.html` (salinan 4 Nov). Berubah hanya kotak etalase dan kotak di meja: `.pk` tetap 216×305 berisi judul, ringkasan dan chip "Cocok untuk" (bidang usaha, maks. 2 baris dengan +N), status pindah ke kiri atas, ikon aplikasi 28 px berwarna, slot dekor dihapus (tier 190 → 353 px, frame 1340 → 2481 px di desktop), kotak di meja tegak 0,5×0,706×0,148 dengan badge status, selalu satu baris. Logika Cari, Kartu, kasir, kamera dan kontak tidak berubah.
@@ -2076,3 +2348,4 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - Anggaran: 27 draw call; 94,7 rb segitiga PC dan 66,2 rb HP (mode hemat), angka `renderer.info` frame terakhir. Chunk (gzip): panggung 13,0 KB; three 82,3 + 69,0 KB dan pembangun tokoh 25,9 KB dibagi dengan world Home. Di halaman non-Home itu tambahan sekitar 190 KB gzip. Siap 3,3 s setelah scroll di build produksi (SwiftShader, CPU laptop sandbox).
   - Typecheck, ESLint dan Prettier untuk file baru, `next build` lulus.
 - Belum: tes di HP fisik (FPS, panas, waktu siap), still fallback (sekarang kotak kosong yang memudar masuk), komentar `Footer.tsx` dan `page.tsx` soal footer jalan malam beat 16 belum disesuaikan. Pertanyaan terbuka: footer jalan malam beat 16 tetap lalu disusul footer ini, dihapus, atau digabung.
+

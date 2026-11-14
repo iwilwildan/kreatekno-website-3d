@@ -13,7 +13,7 @@ const SOCIAL = [
   { key: "tiktok", label: "TikTok", Icon: TiktokLogo },
 ] as const;
 
-/** Site footer. Once beat 16 exists, Home swaps it for the footer on the night road. */
+/** Site footer. On Home it follows the night road of beat 16 (tahap 10), whose epilogue fades into its colour. */
 export async function Footer() {
   const t = await getTranslations("footer");
   const tNav = await getTranslations("nav");
