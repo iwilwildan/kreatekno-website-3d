@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { COMPANY } from "@/lib/site";
+import { FooterOffice } from "./FooterOffice";
 import { NAV_ITEMS } from "./nav-items";
 import { WhatsAppButton } from "./WhatsAppButton";
 
@@ -33,6 +34,7 @@ export async function Footer() {
             className="h-7 w-auto self-start"
           />
           <p>{t("tagline")}</p>
+          <FooterOffice />
         </div>
 
         <nav aria-labelledby="ft-pages">
