@@ -49,6 +49,8 @@ import { LOBBY, lx } from "./sets/lobbyLayout";
 import { B9, PLAQUE_GATE, plaqueAnchors, plaqueCopyFade, plaqueStopAt } from "./takes/home/beat9";
 import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
+import { B15, nightAt } from "./takes/home/beat15";
+import { buildNightGrey } from "./sets/nightGrey";
 import type { Holograms } from "./sets/holograms";
 import { classFrame, classSeat } from "./sets/classLayout";
 import { turnStride, walkPose } from "./cast/walk";
@@ -226,6 +228,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   scene.add(street.group);
   const sky = buildSky(kit);
   scene.add(sky.group);
+  // the night street's stand-ins (tahap 10 langkah 1, greybox)
+  const nightGrey = buildNightGrey();
+  scene.add(nightGrey.group);
   // the row of shophouses (beats 5a–5b): the fruit shop and the laundry are seen from K0 on and built with the
   // street; the rest of the row is its own chunk, built as the camera nears K4.1 (loadRow)
   const rowMats = rowMaterials(),
@@ -1204,10 +1209,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const sunset = smoothstep(B9.up.s + 0.25 * B9.up.len, B9.down.s + 0.3 * B9.down.len, xs);
     // tahap 9: the time-lapse to dusk as the camera backs out of the classroom
     const dusk = smoothstep(B12.out.s + 0.1 * B12.out.len, B12.out.s + 0.85 * B12.out.len, xs);
-    if (light.setInside(c.pos.z, close, noon, inLobby, golden, sunset, dusk)) shadowDue = true;
+    // tahap 10: night falls as the camera comes out through COMPANY's door (greybox)
+    const night = nightAt(xs);
+    if (light.setInside(c.pos.z, close, noon, inLobby, golden, sunset, dusk, night)) shadowDue = true;
     sky.setGolden(golden);
     sky.setSunset(sunset);
-    sky.setHigh(xs > B9.up.s + 0.2 * B9.up.len, clamp01((xs - B9.up.s) / (B9.k11.s - B9.up.s)));
+    sky.setNight(night);
+    nightGrey.setNight(night);
+    sky.setHigh(xs > B9.up.s + 0.2 * B9.up.len && night < 0.5, clamp01((xs - B9.up.s) / (B9.k11.s - B9.up.s)));
     sky.setBirds(xs < LOBBY_START);
     row?.setLamp(golden);
     lobby?.setBeams(golden, golden * facing);
@@ -1355,7 +1364,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // door shows a backdrop of it instead. Heru and Bu Dewi show again once they come out.
     // (tahap 9: at COMPANY again, the room shows from the moment the leaves start to open; the staff are in the
     // classroom)
-    const hide = atCompany ? xs < B12.into.s - 0.05 : xs > B5.back + 0.1 && (c.pos.z > 0.6 || xs >= LOBBY_START);
+    // (tahap 10: and let go of again once the camera is ±5 m out on the street (K15 costs 129 draw calls with it):
+    // the open door shows the backdrop from there; langkah 2 shuts the leaves, as in the video)
+    const hide = atCompany
+      ? xs < B12.into.s - 0.05 || xs > B15.exit.s + 0.75 * B15.exit.len
+      : xs > B5.back + 0.1 && (c.pos.z > 0.6 || xs >= LOBBY_START);
     if (hide !== roomHidden || atCompany !== roomAtCompany) {
       roomHidden = hide;
       roomAtCompany = atCompany;
@@ -1677,6 +1690,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       timer.dispose();
+      nightGrey.dispose();
       disposeTree(scene);
       kit.dispose();
       light.dispose();

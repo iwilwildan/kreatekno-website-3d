@@ -14,6 +14,7 @@ import { LOBBY_START, lobbyCamera } from "./lobby";
 import { B5, beat5Camera } from "./outside";
 import { B9_START, beat9Camera } from "./beat9";
 import { B12_START, beat12Camera } from "./beat12";
+import { B15_START, beat15Camera } from "./beat15";
 import { pairX, scrollClock } from "./outsideCast";
 import { LAYOUT_STEPS } from "../../sets/companyFront";
 import { SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
@@ -124,6 +125,8 @@ export function cameraAt(
   const { seg, u, start } = segmentAt(SEG, p);
   const x = start + u * seg.screens,
     narrow = narrowness(aspect);
+  // beats 14–16 (tahap 10, greybox): out through COMPANY's door at nightfall, up to the billboard, back to the street
+  if (x > B15_START) return { ...beat15Camera(x, t, aspect), key: seg.type === "hold" || u < 0.5 ? seg.from : seg.to! };
   // beats 12–13 (tahap 9, greybox): into COMPANY, through the back door to the classroom, back out at dusk
   if (x > B12_START) return { ...beat12Camera(x, t, aspect), key: seg.type === "hold" || u < 0.5 ? seg.from : seg.to! };
   // beats 9b–11 (tahap 8): out of the lobby to the plaque, up into the sky and down at COMPANY

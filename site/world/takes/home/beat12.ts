@@ -30,7 +30,6 @@ export const B12 = {
   into: seg("K11", "move"),
   k12: seg("K12", "hold"),
   out: seg("K12", "move"),
-  k13: seg("K13", "hold"),
 };
 /** Screens where beats 12–13 start: the move off K11. */
 export const B12_START = B12.into.s;
@@ -61,7 +60,7 @@ export function k12View(step: number, t: number): View {
   const hp = look(hpPos, new THREE.Vector3(C.tv.x, C.tv.y - 0.05, C.tv.z), 50);
   return mix(pc, hp, t);
 }
-/** K13 for layout step `step`: the counter frontal from the middle of the room, as dusk falls. */
+/** K13 (passed) for layout step `step`: the counter frontal from the middle of the room, as dusk falls. */
 export function k13View(step: number, t: number): View {
   const F = counterFrame(step);
   const pos = new THREE.Vector3(F.cx + 0.2, 1.8, F.zFront + 5.6 - 1.2 * t);
@@ -131,7 +130,7 @@ export function beat12Camera(x: number, t: number, aspect: number): CamPose {
   let view: View;
   if (x < B12.k12.s) view = intoTrack(step, t)((x - B12.into.s) / B12.into.len);
   else if (x < B12.out.s) view = k12View(step, t);
-  else if (x < B12.k13.s) view = outTrack(step, t)((x - B12.out.s) / B12.out.len);
+  else if (x < B12.out.s + B12.out.len) view = outTrack(step, t)((x - B12.out.s) / B12.out.len);
   else view = k13View(step, t);
   return { pos: view.pos, quat: rig(view.yaw, view.pitch), fov: fitFov(view.fov, t, aspect) };
 }

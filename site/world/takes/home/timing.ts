@@ -38,7 +38,10 @@ export type KeyName =
   | "K10"
   | "K11"
   | "K12"
-  | "K13";
+  | "K13"
+  | "K15"
+  | "K15.1"
+  | "K16";
 
 export const SEG: Segment<KeyName>[] = [
   // issue #5: K0 → K1 in 1.0 screen (was 0.9 + 1.0): a short hold, then the scroll moves the camera at once
@@ -96,11 +99,19 @@ export const SEG: Segment<KeyName>[] = [
   // Beats 12–13 (tahap 9, the continuation video 21–34 s, greybox): Heru and Wildan pull COMPANY's leaves open, the
   // camera follows Bu Dewi in, past the empty desks (holograms) and the counter, through the wooden back door into the
   // classroom (K12: Wildan teaching the staff at the TV, the practice copy on its screen), then back out of the
-  // classroom and through the front room at dusk (K13, the counter frontal; passed once tahap 10 goes on)
+  // classroom and through the front room at dusk (K13, the counter frontal, passed)
   { type: "move", from: "K11", to: "K12", screens: 2.8 },
   { type: "hold", from: "K12", screens: 0.8 },
   { type: "move", from: "K12", to: "K13", screens: 1.1 },
-  { type: "hold", from: "K13", screens: 0.2 },
+  // Beats 14–16 (tahap 10, the continuation video 33.5–38.7 s, greybox): back out through COMPANY's open door to its
+  // facade as night falls (K15, passed), up to the lit billboard on its roof (K15.1: the CTA on its face, framed like
+  // the hero at K0; user 14 Nov: the video's wide frame leaves the billboard too small to read), then up and back to
+  // the night street (K16: the epilogue on the road, the site's footer after it)
+  { type: "move", from: "K13", to: "K15", screens: 0.8 },
+  { type: "move", from: "K15", to: "K15.1", screens: 0.8 },
+  { type: "hold", from: "K15.1", screens: 0.8 },
+  { type: "move", from: "K15.1", to: "K16", screens: 0.9 },
+  { type: "hold", from: "K16", screens: 1.0 },
 ];
 /** Length of the take on its own timeline (9:16): the unit of p in the world. */
 export const TAKE_SCREENS = segmentsTotal(SEG);
@@ -131,6 +142,9 @@ export const KEYS: KeyName[] = [
   "K11",
   "K12",
   "K13",
+  "K15",
+  "K15.1",
+  "K16",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
 

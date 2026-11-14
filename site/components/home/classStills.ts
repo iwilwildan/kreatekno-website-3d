@@ -13,7 +13,7 @@ export const CLASS_KEYS = ["K12", "K13"] as const;
 
 /**
  * Stills fallback: screens over which each crossfades in. K12 as the camera comes through the back door, K13 as it
- * comes back over the counter into the room.
+ * comes back over the counter into the room (K13 is passed: in at the end of the move).
  */
 export function classStillFades(): Record<string, [number, number]> {
   const i0 = start("K11", "move"),
@@ -22,7 +22,7 @@ export function classStillFades(): Record<string, [number, number]> {
     ol = len("K12", "move");
   return {
     K12: [i0 + 0.93 * il, start("K12", "hold")],
-    K13: [o0 + 0.5 * ol, start("K13", "hold")],
+    K13: [o0 + 0.5 * ol, o0 + ol],
   };
 }
 

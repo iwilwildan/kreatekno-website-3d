@@ -176,6 +176,34 @@ export function buildSky(kit: Kit) {
     sunsetDome.visible = k > 0.001;
   };
 
+  // night (tahap 10, greybox: the continuation video 36–38.7 s): deep navy at the top to a violet glow at the
+  // horizon; a fourth dome over the sunset's (the stars come in langkah 2)
+  const nightTex = kit.canvasTex(8, 1024, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, "#080c22");
+    gr.addColorStop(0.3, "#0f1638");
+    gr.addColorStop(0.44, "#1c2350");
+    gr.addColorStop(0.5, "#33376e");
+    gr.addColorStop(1, "#2a2c58");
+    g.fillStyle = gr;
+    g.fillRect(0, 0, w, h);
+  });
+  const nightMat = goldMat.clone();
+  nightMat.map = nightTex;
+  const nightDome = new THREE.Mesh(new THREE.SphereGeometry(397, 32, 16), nightMat);
+  nightDome.visible = false;
+  group.add(nightDome);
+  /** Night over the sunset, 0 … 1 (the K0 clouds go with the light: the billboard at K15.1 is framed as at K0). */
+  let starry = false;
+  const setNight = (k: number) => {
+    nightMat.opacity = k;
+    nightDome.visible = k > 0.001;
+    if (starry !== k > 0.5) {
+      starry = k > 0.5;
+      setFormat(fmtNow === "pc" ? 0 : 1);
+    }
+  };
+
   const cloudMat = new THREE.MeshStandardMaterial({
     color: "#ffffff",
     roughness: 0.95,
@@ -275,8 +303,8 @@ export function buildSky(kit: Kit) {
   /** Shows the clouds and birds composed for the nearer keyframe format. */
   const setFormat = (t: number) => {
     fmtNow = t < 0.5 ? "pc" : "hp";
-    perFmt.pc.visible = fmtNow === "pc";
-    perFmt.hp.visible = fmtNow === "hp";
+    perFmt.pc.visible = fmtNow === "pc" && !starry;
+    perFmt.hp.visible = fmtNow === "hp" && !starry;
   };
 
   let speed = 0;
@@ -350,5 +378,5 @@ export function buildSky(kit: Kit) {
     pv.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
     return frustum.setFromProjectionMatrix(pv).intersectsSphere(bounds[fmtNow]);
   };
-  return { group, setFormat, setFlight, animate, birdsInView, setGolden, setSunset, setHigh, setBirds };
+  return { group, setFormat, setFlight, animate, birdsInView, setGolden, setSunset, setNight, setHigh, setBirds };
 }
