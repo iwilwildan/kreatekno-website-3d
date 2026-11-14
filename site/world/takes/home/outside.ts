@@ -60,11 +60,7 @@ const holds = (["K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6"] as const).map((k) =
 });
 
 /** hp: which panels each hold shows, as shop indices (for the copy's on-screen size, panelArrivals). */
-const HP_PANELS = [
-  [0, 1],
-  [2, 3],
-  [4, 5],
-];
+const HP_PANELS = [[0, 1], [2, 3], [4]];
 /** On 9:16 the share of a hold between its first panel and its second (screens). */
 const HP_SHIFT = 0.16;
 
@@ -231,8 +227,8 @@ export function beat5Camera(x: number, step: number, t: number, aspect: number, 
 export const b5Relax = (x: number) => smoothstep(B5.rise + 0.45 * RISE, B5.rise + 0.85 * RISE, x);
 
 /**
- * Scroll points on the row near each panel (screens): pc one per hold K5a.2–K5a.4, 9:16 one per panel (two in a
- * hold). The world measures the copy's on-screen size from the cameras there (the truck faces the panels square on,
+ * Scroll points on the row near each panel (screens): pc one per hold K5a.2–K5a.4, 9:16 one per panel (two in the
+ * K5a.2 and K5a.3 holds). The world measures the copy's on-screen size from the cameras there (the truck faces the panels square on,
  * so the size is the same wherever it passes them).
  */
 export function panelArrivals(hp: boolean) {

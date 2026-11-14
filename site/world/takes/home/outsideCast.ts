@@ -338,7 +338,7 @@ export const BT = (() => {
     end,
   };
 })();
-/** Clock when Heru is near the electronics shop (the camera's high view, video 10.5 s). */
+/** Clock when Heru is near the last shop before Kreatekno (the camera's high view, video 10.5 s). */
 const BT_HIGH = BT.h6 + H6.timeAt((p) => p.z > 0 && p.x <= KREATEKNO.x0 - 3.5);
 
 // ---------- beats 12–13 (tahap 9, the continuation video 21–24 s; greybox) ----------

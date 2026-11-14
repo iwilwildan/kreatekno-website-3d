@@ -11,7 +11,7 @@ import * as THREE from "three";
 import { rectAnchor, type Anchor } from "../../core/anchors";
 import { clamp01, segmentStart, smoothstep } from "../../core/segments";
 import type { CamPose } from "../../core/take";
-import { KREATEKNO, shopX } from "../../sets/rowLayout";
+import { KREATEKNO, SHOPS, shopX } from "../../sets/rowLayout";
 import { monotone } from "./counter";
 import { k91View } from "./lobby";
 import { fitFov } from "./outside";
@@ -174,11 +174,12 @@ const K10 = v(32, 15.5, 7.5, 0, D2R(24), 40);
 const upTrack = (t: number) =>
   cached(`up ${t.toFixed(3)}`, () => {
     const a = t < 0.5 ? K9B_PC : mix(K9B_PC, K9B_HP[1], t);
-    const e5 = shopX(5);
+    // (the last shop left of Kreatekno: the electronics shop until it was taken out, user 14 Nov)
+    const e5 = shopX(SHOPS.length - 1);
     return track([
       { at: 0, view: a },
       { at: 0.12, view: v(P.cx - 0.6, 2.4, 4.6, -0.05, D2R(-6), 40) },
-      // high in front of the electronics shop, looking down at Kreatekno's front and the three on the pavement
+      // high in front of the last shop, looking down at Kreatekno's front and the three on the pavement
       { at: 0.38, view: v(e5.cx, 9.5, 14.5, -0.42, D2R(-30), 40) },
       { at: 0.6, view: v(e5.cx - 1.5, 12.5, 12.0, -0.3, D2R(-26), 40) },
       // over the roofs, looking along them (video 12.5–13 s)

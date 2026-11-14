@@ -2,7 +2,7 @@
 // scene into site/public/stills/{pc,hp}/k0..k4.webp, and writes where the anchors sit on them
 // (site/components/home/stills.json): the billboard on K0, so the copy is placed on the still before the world
 // loads; the leaflet on K3, the binder's page on K4 and the journey's panels on K5a.2–K5a.4, for the stills
-// fallback. 9:16 also gets K5a.2b, K5a.3b and K5a.4b (the second panel of those holds). The lobby (tahap 7): K6, K7,
+// fallback. 9:16 also gets K5a.2b and K5a.3b (the second panel of those holds). The lobby (tahap 7): K6, K7,
 // K8, K9.1 with the copy on K6–K8; on 9:16 one still per stop of a hold (K6 … K6d, K7 … K7e, K8, K8b).
 // Bake the AO first. Usage: node render/stills.mjs [quality, default 80] [keys, comma separated, default all]
 import { mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -24,7 +24,7 @@ for (const [fmt, vp] of Object.entries(FORMATS)) {
   const lobbyStops = {};
   for (const [hold, { len, keys }] of Object.entries(LOBBY_HP))
     keys.forEach((k, i) => (lobbyStops[k] = { hold, len, at: stopMid(len, keys.length, i) }));
-  const keys = fmt === "hp" ? [...KEYS.filter((k) => !(k in LOBBY_HP)), "K5a.2b", "K5a.3b", "K5a.4b", ...Object.keys(lobbyStops)] : KEYS;
+  const keys = fmt === "hp" ? [...KEYS.filter((k) => !(k in LOBBY_HP)), "K5a.2b", "K5a.3b", ...Object.keys(lobbyStops)] : KEYS;
   for (const k of keys.filter((k) => !ONLY || ONLY.has(k))) {
     const stop = fmt === "hp" ? lobbyStops[k] : undefined;
     const at = fmt === "hp" ? HP_AT[k] : undefined;

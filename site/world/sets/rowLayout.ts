@@ -2,14 +2,14 @@
 // only (no three.js), shared by the world (set, camera, copy anchors) and the page. Metres, the world frame of
 // sets/street.ts: x along the street, y up, z toward the street, the facades at z 0.
 // Every shop is 7 m wide like the fruit shop and the laundry of K1 (Master 7: 0.62 × COMPANY's 11.6 m); its
-// first-floor panel carries the customer journey: fruit = kicker and heading, laundry … cosmetics = steps 1–4,
-// electronics = the "Konsultasi gratis" button pointing on to Kreatekno's door. The videos' internet café and stall
-// (blank panels) are left out (user, 7 Nov): six shops, then Kreatekno.
+// first-floor panel carries the customer journey: fruit = kicker and heading, laundry … cosmetics = steps 1–4.
+// The videos' internet café and stall (blank panels) are left out (user, 7 Nov), and the electronics shop with its
+// "Konsultasi gratis" panel too (user, 14 Nov): five shops, then Kreatekno.
 import { DATA } from "../takes/home/data";
 
-export type PanelCopy = "intro" | "talk" | "map" | "build" | "launch" | "cta" | null;
+export type PanelCopy = "intro" | "talk" | "map" | "build" | "launch" | null;
 export type Shop = {
-  id: "buah" | "laundry" | "sepatu" | "warteg" | "kosmetik" | "elektronik";
+  id: "buah" | "laundry" | "sepatu" | "warteg" | "kosmetik";
   /** Facade colour and its lighter trim (pillars, bands). */
   body: string;
   trim: string;
@@ -22,7 +22,6 @@ export const SHOPS: Shop[] = [
   { id: "sepatu", body: "#f0a9c6", trim: "#f6c3d8", copy: "map" },
   { id: "warteg", body: "#a6dbe6", trim: "#bfe7ef", copy: "build" },
   { id: "kosmetik", body: "#b6d58f", trim: "#c9e2a8", copy: "launch" },
-  { id: "elektronik", body: "#93dcc8", trim: "#ade6d6", copy: "cta" },
 ];
 
 const X0 = DATA.ext.xfR + 0.06;
@@ -45,13 +44,13 @@ export const ROW = {
   panel: { w: 5.2, h: 2.06, y: 5.25, z: 0.12 },
 } as const;
 
-/** Left and right edge and centre of shop i (0 = fruit … 7 = electronics). */
+/** Left and right edge and centre of shop i (0 = fruit … 4 = cosmetics). */
 export function shopX(i: number) {
   const x0 = ROW.x0 + i * ROW.pitch;
   return { x0, x1: x0 + ROW.w, cx: x0 + ROW.w / 2 };
 }
 
-/** Kreatekno's office after the electronics shop (video K5a.6: ±1.75 shops wide), its door, plaque and lamp. */
+/** Kreatekno's office after the last shop (video K5a.6: ±1.75 shops wide), its door, plaque and lamp. */
 const KX0 = shopX(SHOPS.length - 1).x1 + ROW.gap;
 export const KREATEKNO = {
   x0: KX0,

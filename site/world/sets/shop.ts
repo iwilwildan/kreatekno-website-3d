@@ -1,7 +1,7 @@
 // One two-storey shophouse of the row (Master 7 and the team's videos K5a.1–K5a.6): pillars, the first-floor band,
 // the white panel upstairs (the customer journey's copy sits on it as HTML, tahap 6 langkah 4), and the open shop
 // front with white folding doors pushed aside and the shop's goods inside. Shared by the main bundle (the fruit
-// shop and the laundry are seen from K0/K1 on) and the row chunk (./row, the other six).
+// shop and the laundry are seen from K0/K1 on) and the row chunk (./row, the other three).
 // Per shop: the front wall (its own material for its baked AO map), trim, body colour, white parts, and one
 // vertex-coloured mesh for the inside and the goods: ±6 draw calls, culled per shop.
 import * as THREE from "three";
@@ -343,27 +343,6 @@ function goods(id: Shop["id"], I: Tint, cx: number, ow: number, oh: number, deep
       I.add(G.rbox(0.9, 0.95, 0.5, 0.04), "#fbfafa", mtx([cx + 1.75, 0.48, z(0.6)]));
       I.add(G.cyl(0.06, 0.06, 0.2, 10), "#e88aa6", mtx([cx + 1.6, 1.05, z(0.6)]));
       I.add(G.cyl(0.05, 0.05, 0.14, 10), "#c9a0dc", mtx([cx + 1.85, 1.02, z(0.6)]));
-      break;
-    }
-    case "elektronik": {
-      // dark shelves with TVs, microwaves and speakers
-      const level = shelf(cx, ow - 0.4, 2.2, 0.5, 4, "#3a3d47");
-      const items: [number, number, string][] = [
-        [0.62, 0.38, "#1e2028"],
-        [0.5, 0.3, "#c9ccd3"],
-        [0.3, 0.42, "#2b2d36"],
-        [0.55, 0.34, "#1e2028"],
-      ];
-      for (let k = 0; k < 4; k++) {
-        let x = cx - (ow - 0.6) / 2;
-        while (x < cx + (ow - 0.6) / 2 - 0.3) {
-          const [w, h, col] = pick(items);
-          I.add(G.box(w, h, 0.36), col, mtx([x + w / 2, level(k) + h / 2, z(deep - 0.28)]));
-          if (col === "#1e2028")
-            I.add(G.box(w - 0.06, h - 0.06, 0.01), "#3d4766", mtx([x + w / 2, level(k) + h / 2, z(deep - 0.465)]));
-          x += w + 0.08;
-        }
-      }
       break;
     }
   }

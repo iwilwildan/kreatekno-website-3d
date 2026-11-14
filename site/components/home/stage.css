@@ -240,8 +240,7 @@
   margin-top: 20px;
 }
 
-/* beat 5b · the customer journey (stacked: the K5a.2 still, then the heading, the four steps and the button as
-   plain blocks; the other stills of beats 5a–5b only exist for the stills fallback) */
+/* beat 5b · the customer journey (stacked: the K5a.2 still, then the heading and the four steps as plain blocks; the other stills of beats 5a–5b only exist for the stills fallback) */
 .take-mark[data-at="K5a.2"] {
   order: 6;
 }
@@ -253,9 +252,6 @@
 }
 .journey-step {
   order: 9;
-}
-.journey-cta {
-  order: 10;
 }
 .take-still[data-stack="no"] {
   display: none;
@@ -305,16 +301,6 @@
 }
 .journey-step[data-step="launch"] {
   --acc: var(--color-navy);
-}
-.journey-cta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.cta-arrow {
-  width: 28px;
-  height: 28px;
-  color: var(--color-purple-deep);
 }
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
@@ -821,32 +807,5 @@
     font-size: max(13px, 4.9cqw);
     line-height: 1.3;
     text-wrap: pretty;
-  }
-  .journey-copy.journey-cta {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 3.5cqw;
-  }
-  .journey-copy.journey-cta > * {
-    margin-inline: 0;
-  }
-  .journey-cta .btn {
-    --t-btn: max(14px, 5.2cqw);
-    gap: 3cqw;
-    min-height: max(44px, 14.5cqw);
-    padding-left: 6cqw;
-  }
-  .journey-cta .knob {
-    width: max(32px, 10.5cqw);
-    height: max(32px, 10.5cqw);
-  }
-  .journey-cta .knob svg {
-    width: 55%;
-    height: 55%;
-  }
-  .journey-cta .cta-arrow {
-    width: max(20px, 8cqw);
-    height: max(20px, 8cqw);
   }
 }

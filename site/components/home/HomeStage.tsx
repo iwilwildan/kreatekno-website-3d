@@ -40,7 +40,6 @@ const KEYS = [
   "K5a.3",
   "K5a.3b",
   "K5a.4",
-  "K5a.4b",
   "K5a.6",
   // the lobby (tahap 7): on 9:16 one still per stop of a hold (K6: the strip, then the 3 polaroids; K7: the sign, the
   // 3 books, the button; K8: the left and the right two columns of notes)
@@ -58,7 +57,6 @@ type Key = (typeof KEYS)[number];
 const HP_ONLY: Partial<Record<Key, string>> = {
   "K5a.2b": "K5a.2",
   "K5a.3b": "K5a.3",
-  "K5a.4b": "K5a.4",
   ...Object.fromEntries(LOBBY_KEYS.filter((k) => !/\d$/.test(k)).map((k) => [k, k.replace(/[b-h]$/, "")])),
   "K9b-2": "K9b",
 };
