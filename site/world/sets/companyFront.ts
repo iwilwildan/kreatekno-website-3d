@@ -153,7 +153,28 @@ export function createCompanyFront(kit: Kit) {
       mtx([cxR, 0, (zFront + P.izB) / 2], [-Math.PI / 2, 0, 0]),
       { res: 0.9, maxDist: 1.1, strength: 0.95 },
     );
-    aoPlane(ao, id("back"), grp, W, H, wallM, mtx([cxR, H / 2, P.izB]), { res: 0.75, maxDist: 1.2, shadow: true });
+    const backWall = aoPlane(ao, id("back"), grp, W, H, wallM, mtx([cxR, H / 2, P.izB]), {
+      res: 0.75,
+      maxDist: 1.2,
+      shadow: true,
+    });
+    {
+      // (tahap 9: a hole for the wooden back door, which opens into the classroom behind; the plane's own UVs, so
+      // its baked AO map sits where it did)
+      const sh = new THREE.Shape();
+      sh.moveTo(-W / 2, -H / 2);
+      sh.lineTo(W / 2, -H / 2);
+      sh.lineTo(W / 2, H / 2);
+      sh.lineTo(-W / 2, H / 2);
+      sh.closePath();
+      sh.holes.push(rectPath(P.dxL - cxR, -H / 2, P.dxR - cxR, P.dH - H / 2));
+      const g = new THREE.ShapeGeometry(sh),
+        pos = g.attributes.position,
+        uv = g.attributes.uv;
+      for (let i = 0; i < pos.count; i++) uv.setXY(i, (pos.getX(i) + W / 2) / W, (pos.getY(i) + H / 2) / H);
+      backWall.geometry.dispose();
+      (backWall as THREE.Mesh<THREE.BufferGeometry>).geometry = g;
+    }
     aoPlane(ao, id("left"), grp, D, H, wallM, mtx([P.ixL, H / 2, (zFront + P.izB) / 2], [0, Math.PI / 2, 0]), {
       res: 0.75,
       maxDist: 1.2,
@@ -204,23 +225,27 @@ export function createCompanyFront(kit: Kit) {
     B.add(G.box(W, 0.1, 0.03), mat(C.base), mtx([cxR, 0.05, P.izB + 0.015]));
     B.add(G.box(0.03, 0.1, D), mat(C.base), mtx([P.ixL + 0.015, 0.05, (zFront + P.izB) / 2]));
     B.add(G.box(0.03, 0.1, D), mat(C.base), mtx([P.ixR - 0.015, 0.05, (zFront + P.izB) / 2]));
-    // back door
+    // back door: the frame round the opening, the leaf on a hinge at its left edge (seen from the room) that swings
+    // into the room (tahap 9: the camera goes through to the classroom behind; closed until then)
+    const backDoor = new THREE.Group();
     {
       const w = P.dxR - P.dxL,
-        x = (P.dxL + P.dxR) / 2;
-      B.add(G.rbox(w + 0.14, P.dH + 0.07, 0.05, 0.02), mat("#f1e3dc"), mtx([x, (P.dH + 0.07) / 2, P.izB + 0.025]));
-      B.add(
-        G.rbox(w - 0.04, P.dH - 0.04, 0.05, 0.015),
-        mat(C.door, { roughness: 0.7 }),
-        mtx([x, P.dH / 2, P.izB + 0.05]),
-      );
+        x = (P.dxL + P.dxR) / 2,
+        jamb = 0.07,
+        frame = mat("#f1e3dc");
+      for (const xx of [P.dxL - jamb / 2, P.dxR + jamb / 2])
+        B.add(G.rbox(jamb, P.dH + jamb, 0.12, 0.02), frame, mtx([xx, (P.dH + jamb) / 2, P.izB]));
+      B.add(G.rbox(w + 2 * jamb, jamb, 0.12, 0.02), frame, mtx([x, P.dH + jamb / 2, P.izB]));
+      backDoor.position.set(P.dxL + 0.02, 0, P.izB + 0.03);
+      const LB = new Batch(backDoor),
+        lw = w - 0.04;
+      LB.add(G.rbox(lw, P.dH - 0.04, 0.05, 0.015), mat(C.door, { roughness: 0.7 }), mtx([lw / 2, P.dH / 2, 0]));
       for (const yy of [P.dH * 0.72, P.dH * 0.3])
-        B.add(G.rbox(w - 0.3, P.dH * 0.34, 0.02, 0.01), mat("#d39770", { roughness: 0.7 }), mtx([x, yy, P.izB + 0.08]));
-      B.add(
-        G.sph(0.035, 10, 8),
-        mat("#d8c2a0", { roughness: 0.35, metalness: 0.5 }),
-        mtx([P.dxR - 0.12, 1.02, P.izB + 0.1]),
-      );
+        for (const zz of [0.03, -0.03])
+          LB.add(G.rbox(lw - 0.26, P.dH * 0.34, 0.02, 0.01), mat("#d39770", { roughness: 0.7 }), mtx([lw / 2, yy, zz]));
+      LB.add(G.sph(0.035, 10, 8), mat("#d8c2a0", { roughness: 0.35, metalness: 0.5 }), mtx([lw - 0.1, 1.02, 0.05]));
+      LB.build();
+      grp.add(backDoor);
     }
     // shelves with stacked stationery, paper rolls
     const shelf = (x0: number, x1: number, top: number, zF: number, depth: number, rows: string[][]) => {
@@ -588,7 +613,7 @@ export function createCompanyFront(kit: Kit) {
       ).add(grp.position),
       rotY: 0,
     };
-    return { group: grp, batch: B, lampLights, step, spots };
+    return { group: grp, batch: B, lampLights, step, spots, backDoor };
   };
 }
 export type CompanyFront = ReturnType<ReturnType<typeof createCompanyFront>>;

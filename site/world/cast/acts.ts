@@ -283,7 +283,11 @@ export function createSweat(crew: CastMember[]) {
     geo.dispose();
     material.dispose();
   };
-  return { update, dispose };
+  /** Shown or not (tahap 9: no sweat in the classroom at the end of the day, their work done for them). */
+  const setVisible = (on: boolean) => {
+    for (const d of drops) d.mesh.visible = on;
+  };
+  return { update, dispose, setVisible };
 }
 
 /** Thought bubble: how high its centre sits over the crown and how far to the side (m), paper slabs in Bayu's stack. */

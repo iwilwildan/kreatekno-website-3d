@@ -38,9 +38,20 @@ export function classFrame(step: number) {
       { ...desk(-1.15, 1), who: "bayu" },
       { ...desk(1.05, 1), who: "fajar" },
     ] as const,
-    deskSize: { w: 1.0, d: 0.55, h: 0.72 },
+    // (as the front room's desks, so the staff's seated K2 poses fit them: sets/companyFront dD, dHt)
+    deskSize: { w: 1.0, d: 0.665, h: 0.72 },
     window: { x: ixL, z0: front + 0.8, z1: front + 4.4, y0: 0.9, y1: 2.4 },
     shelf: { x: ixR - 0.2, z0: front + 1.2, z1: front + 4.2, h: 2.0 },
   };
 }
 export type ClassFrame = ReturnType<typeof classFrame>;
+
+/**
+ * Where a member of the staff sits in the classroom: behind their desk facing the TV (−z, yaw π), as far back from
+ * it as at their desks in the front room (sets/companyFront `seat`: 0.25 m plus half the desk's depth).
+ */
+export function classSeat(C: ClassFrame, who: string) {
+  const d = C.desks.find((k) => k.who === who);
+  if (!d) return null;
+  return { x: d.x, z: d.z + 0.25 + C.deskSize.d / 2, rotY: Math.PI };
+}

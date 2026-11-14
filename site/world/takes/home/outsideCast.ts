@@ -45,6 +45,10 @@ const LEFT = { hinge: V(-DW + 0.05, -0.1), w: DW - 0.07, open: -1.4 };
 const RIGHT_OPEN = 1.4;
 const leftEdge = (angle: number) =>
   new THREE.Vector3(LEFT.w, 1.0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).add(LEFT.hinge);
+/** COMPANY's right leaf: hinge at the door's right edge, the leaf toward −x (sets/street.ts). */
+const RIGHT = { hinge: V(DW - 0.05, -0.1), w: DW - 0.07 };
+const rightEdge = (angle: number) =>
+  new THREE.Vector3(-RIGHT.w, 1.0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle).add(RIGHT.hinge);
 /**
  * Kreatekno's hinged leaf (sets/row.ts): hinge at the door's right edge, opening inward, nearly square to the
  * facade when open (tahap 7: the camera passes through the opening beside it).
@@ -575,6 +579,9 @@ export function outsideState(c: number): OutsideState | null {
   const push =
     smoothstep(T.kreOpen[0] - 0.3, T.kreOpen[0], c) * (1 - smoothstep(T.kreOpen[1] - 0.2, T.kreOpen[1] + 0.3, c));
   if (push > 0) reach = { at: kreHandle(kreLeaf), weight: push };
+  // tahap 9: his right hand on the left leaf's free edge as he pulls it open and holds it
+  const pull = smoothstep(BT2.open[0] - 0.4, BT2.open[0], c);
+  if (pull > 0) reach = { at: leftEdge(leftLeaf), weight: pull };
   // his left hand on the open leaf's handle from inside, once he has turned round to her, until she is past him
   const held = smoothstep(T.turn[1] - 0.5, T.turn[1], c) * (1 - smoothstep(LT.release - 0.1, LT.release + 0.3, c));
   const hold = held > 0 ? { at: kreHandle(kreLeaf), weight: held } : null;
@@ -614,9 +621,17 @@ export function wildanStride(c: number): Stride | null {
   else s = turn(C_SPOT.wildan, WC.yaw1, FACE_DOOR, BT.wFace);
   return onFloor(s, lobbyFloor);
 }
-/** Poses Wildan on his stride (his head turned like theirs while they walk side by side). */
-export function poseWildanOut(m: CastMember, s: Stride, look: number) {
-  walkPose(m, s, { head: [0.05, look * 0.6] });
+/** Wildan's left hand on COMPANY's right leaf as he pulls it open and holds it (tahap 9), null before. */
+export function wildanReach(c: number) {
+  const w = smoothstep(BT2.open[0] - 0.4, BT2.open[0], c);
+  return w > 0 ? { at: rightEdge(rightLeaf(c)), weight: w } : null;
+}
+/** Poses Wildan on his stride (his head turned like theirs while they walk side by side; his hand on a leaf). */
+export function poseWildanOut(m: CastMember, s: Stride, look: number, reach: ReturnType<typeof wildanReach> = null) {
+  walkPose(m, s, {
+    head: [0.05, look * 0.6],
+    reachL: reach ? { at: reach.at, weight: reach.weight, pole: new THREE.Vector3(0.6, 0.9, -0.4) } : undefined,
+  });
 }
 
 /** Poses both on their state (Heru's arms reaching when they are set). */
