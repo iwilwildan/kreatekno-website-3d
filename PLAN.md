@@ -190,8 +190,8 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 5 | Beat 3–4 | Layanan (leaflet A4 datar di konter) dan Use case (binder terbuka), tampak atas dengan tangan Heru dan Bu Dewi | 4 | ✅ 7 Nov (disetujui user; belum dites di HP Android sungguhan) |
 | 6 | Beat 5a–5b | Anggukan Bu Dewi (K4.1), kamera mundur lewat pintu (K4.2), keluar bersama (K5a.1), truck right menyusuri 8 ruko dengan panel customer journey (K5a.2–K5a.5), tiba di pintu Kreatekno (K5a.6) | 5 | ✅ selesai, disetujui 7 Nov |
 | 7   | Beat 6–9a                     | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi                                                                                                 | 6                                          | ✅ 13 Nov (disetujui user; tes HP fisik lancar; temuan laju jalan ruko tetap di issue #9) |
-| 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | 🟡 plan gabungan 8–10 menunggu persetujuan (13 Nov) |
-| 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | ⬜ |
+| 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | 🟡 langkah 1–3 selesai (13 Nov); cek akhir bersama tahap 10 |
+| 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review |
 | 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke langit, CTA di billboard menyala, footer di jalan gelap (revisi 13 Nov dari video) | 9 | ⬜ |
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
 | 12 | Solusi v1 dan detail | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail | 11 | ⬜ etalase disetujui 4 Nov; perluasan detail draf 7 Nov |
@@ -2076,3 +2076,21 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - scroll waktu simulasi K11 → K13 (2 dtk/layar, PC maju dan HP mundur): laju terlihat ≤ 2,37 m/s. Lompatan yang terdeteksi: Wildan dipindah ke kelas (x 29,6–29,7) di balik pintu belakang yang masih tertutup (uji frustum tidak memperhitungkan dinding; frame diperiksa, ia tidak terlihat), dan satu pada frame pertama setelah halaman dimuat langsung di `?k=K11` (sebelum modul lobi termuat, selama still memudar ke canvas);
   - `tsc --noEmit`, ESLint, Prettier untuk file yang diubah.
 - **Belum / langkah 3:** copy praktik di layar TV, `#praktik`, still K12/K13, fallback dan versi tumpuk. Catatan: pose staf masih pose kerja K2 (Sinta memegang HP tanpa HP-nya, Fajar dan Nadia pose menggaruk/menopang dagu), belum pose mendengarkan; ruang depan sore kurang jingga dibanding video; patch cahaya pagi di lantai ruang depan masih tampil saat senja.
+
+### 2026-11-14 (tahap 9 langkah 3: copy dan halaman)
+
+- Atas permintaan user ("Lanjutkan langkah berikutnya" setelah langkah 2).
+- **Copy di layar TV** (`components/home/props/Practice.tsx`, `practice.css`): `home.practice` (label "Praktik naik kelas" + satu kalimat) sebagai slide: garis ungu kecil, label navy, kalimat. HTML lewat anchor `practice` di layar putih TV (`beat12.ts` `practiceAnchor` per layout step, diukur di tengah jeda K12, `practiceCopyFade`: masuk saat kamera tiba di kelas, keluar saat mundur). Muncul hanya selama kelas tampil. PC 299 × 158 px (judul 22 px, kalimat 13,4 px), HP 375 px 313 × 167 px, HP 360 px EN 301 × 160 px; tidak ada yang meluap.
+- **Set dan kamera disesuaikan supaya copy terbaca dan frame mendekati video 30 dtk:** TV diperbesar ke 1,9 × 1,07 m (86") dan dinaikkan sedikit; Wildan bergeser 20 cm ke kiri; titik tunjuknya di tepi kiri layar (tidak menutup copy); baris meja maju 25–35 cm; kamera K12 PC turun dari 2,15 ke 1,85 m, di tengah kelas, fov 50 (TV ±23% lebar frame seperti di video, Fajar terlihat di kanan).
+- **Perbaikan:**
+  - halaman yang dibuka langsung di K12 (atau lompat ke sana) membuat Wildan tertinggal duduk di ruang rapat lobi: pose mengajar diulang setelah kursi lobi dipasang (`teachKey` di-reset bersama `seatK8`);
+  - garis tipis putus-putus di tengah layar TV: sisi tiang stand TV yang hampir sejajar arah pandang kamera menang uji kedalaman di SwiftShader walau berada 8 cm di belakang layar (dibuktikan dengan raycast dan toggle `colorWrite`/`depthTest`). Tiang sekarang berhenti di strip bawah bingkai.
+- **Halaman:** penanda lompat `#praktik` (tengah jeda K12); still K12 dan K13 PC/HP (`tools/render` KEYS + `LOBBY_COPY` K12, `stills.json`), copy di still K12 pada fallback tanpa WebGL (`classStills.ts`: K12 masuk di 93% gerak masuk, K13 di tengah gerak keluar); versi tumpuk: penanda, still K12, copy praktik setelah copy plakat (order 29–31); alt still K12 dan K13 (`home.stage.k12`, `k13`, ID dan EN).
+- Panjang take di tool review diperbarui: PC 32,2, HP 33,35 layar (`issue4.mjs`, `issue4-loading.mjs`, `lobby.mjs`).
+- **Dicek** (render hanya di chat):
+  - K12 PC 1280×720 dan HP 375×812 dengan copy, fade masuk (70% di 0,45 layar sebelum tengah jeda) dan keluar;
+  - fallback tanpa WebGL `#praktik` di 1280×720, 375×812, 360×640: mendarat di still K12 dengan copy terlihat, tanpa luapan;
+  - versi tumpuk (reduced motion dan tanpa JS) 375 px: urutan still K9b → fakta plakat → still K12 → copy praktik; still K13 tidak tampil;
+  - anggaran K11 → K13 (sapuan 0,1 layar): PC 110 draw call / 136 rb segitiga, HP 109 / 139 rb, sama dengan langkah 2;
+  - `tsc --noEmit`, ESLint, Prettier.
+- **Belum:** pose mendengarkan untuk staf di kelas; ruang depan sore kurang jingga; patch cahaya pagi di lantai saat senja; tahap 10 (K13 → K16).

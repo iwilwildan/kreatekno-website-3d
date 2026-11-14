@@ -170,8 +170,8 @@ try {
       await page.evaluate(() => {
         const el = document.getElementById("beranda"),
           p = window.__world.keyP("K4");
-        // tahap 7: the take is 27.3 screens of scroll on landscape and 28.45 on portrait; K4 is before the lobby,
-        // where both run screen for screen with the world's 28.45-screen timeline
+        // tahap 7 (lengths as of tahap 9): the take is 32.2 screens of scroll on landscape and 33.35 on portrait; K4 is before the lobby,
+        // where both run screen for screen with the world's 33.35-screen timeline
         const portrait = matchMedia("(max-aspect-ratio: 1/1)").matches,
           total = Number(
             el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
@@ -179,7 +179,7 @@ try {
         scrollTo(
           0,
           el.offsetTop +
-            ((p * 28.45) / total) *
+            ((p * 33.35) / total) *
               (el.offsetHeight - el.querySelector("[data-stage]").clientHeight),
         );
         window.__world.world.jump(p);

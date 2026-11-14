@@ -9,7 +9,8 @@
 // The room is the front room of beats 1–5 (its layout step per format: sets/companyFront), the classroom behind it
 // (sets/classLayout); camera points are read from the video by eye.
 import * as THREE from "three";
-import { segmentStart } from "../../core/segments";
+import { rectAnchor, type Anchor } from "../../core/anchors";
+import { segmentStart, smoothstep } from "../../core/segments";
 import type { CamPose } from "../../core/take";
 import { classFrame } from "../../sets/classLayout";
 import { counterFrame, LAYOUT_STEPS } from "../../sets/companyFront";
@@ -48,12 +49,12 @@ const look = (pos: THREE.Vector3, at: THREE.Vector3, fov: number): View => ({
 /** K12 for layout step `step` and format blend t: 16:9 the whole class from its back, 9:16 the TV and Wildan. */
 export function k12View(step: number, t: number): View {
   const C = classFrame(step);
-  // (video 30 s: from high at the back, the near desks' backs at the bottom, the window on the left wall, the binder
-  // shelf on the right, Wildan left of the TV)
+  // (video 30 s: from the back a little above the staff's heads, the near desks' backs at the bottom, the window
+  // on the left wall, the binder shelf on the right, Wildan left of the TV, the TV ±a quarter of the width)
   const pc = look(
-    new THREE.Vector3(C.doorX + 0.15, 2.15, C.back - 0.45),
-    new THREE.Vector3(C.tv.x - 0.5, 0.95, C.front + 0.6),
-    52,
+    new THREE.Vector3(C.tv.x - 0.1, 1.85, C.back - 0.45),
+    new THREE.Vector3(C.tv.x - 0.3, 1.0, C.front + 0.6),
+    50,
   );
   // 9:16: the screen at 88% of the width at 50° (its copy), the near desks under it
   const hpPos = new THREE.Vector3(C.tv.x, 1.5, C.tv.z + C.tv.w / 0.88 / 2 / (Math.tan(D2R(25)) * (9 / 16)));
@@ -134,3 +135,19 @@ export function beat12Camera(x: number, t: number, aspect: number): CamPose {
   else view = k13View(step, t);
   return { pos: view.pos, quat: rig(view.yaw, view.pitch), fov: fitFov(view.fov, t, aspect) };
 }
+
+// ---------- the copy on the TV (langkah 3): "Praktik naik kelas" ----------
+/**
+ * The TV's copy box for layout step `step` (anchor "practice"): on its white screen, a few mm in front of it, a
+ * little in from the bezel. One box, read at the K12 hold (16:9 the whole class, 9:16 the TV filling the width).
+ */
+export function practiceAnchor(step: number): Anchor {
+  const tv = classFrame(step).tv,
+    edge = 0.06;
+  return rectAnchor("practice", tv.x, tv.y, tv.z + 0.044, tv.w / 2 - edge, tv.h / 2 - edge);
+}
+/** Screens where the copy on the TV is measured: the middle of the K12 hold. */
+export const practiceAt = () => B12.k12.s + B12.k12.len / 2;
+/** Opacity of the TV's copy at screens x: in as the camera settles in the classroom, out as it backs away. */
+export const practiceCopyFade = (x: number) =>
+  smoothstep(B12.k12.s - 0.12, B12.k12.s - 0.01, x) * (1 - smoothstep(B12.out.s + 0.01, B12.out.s + 0.08, x));

@@ -18,7 +18,7 @@ export function classFrame(step: number) {
   // (video 30 s: a small room, narrower than the front room: 3 m left of the door, 3.3 m right of it)
   const ixL = Math.max(R.ixL, doorX - 3.0),
     ixR = Math.min(R.ixR, doorX + 3.3);
-  const desk = (dx: number, row: 0 | 1) => ({ x: tvX + dx, z: front + (row === 0 ? 2.2 : 3.6) });
+  const desk = (dx: number, row: 0 | 1) => ({ x: tvX + dx, z: front + (row === 0 ? 1.95 : 3.25) });
   return {
     room: R,
     doorX,
@@ -27,10 +27,11 @@ export function classFrame(step: number) {
     ixR,
     back,
     front,
-    /** The TV's screen (centre, size) on its stand near the front wall. */
-    tv: { x: tvX, y: 1.4, z: front + 0.5, w: 1.6, h: 0.9 },
+    /** The TV's screen (centre, size) on its stand near the front wall: a large one (86"), ±a quarter of the
+     * frame's width at K12 as in the video, its copy (langkah 3) large enough to read there. */
+    tv: { x: tvX, y: 1.45, z: front + 0.5, w: 1.9, h: 1.07 },
     /** Wildan teaching left of the TV, facing the class. */
-    wildan: { x: tvX - 1.25, z: front + 0.95 },
+    wildan: { x: tvX - 1.45, z: front + 0.95 },
     /** Desks (centre of the top) and who sits at each, as seen from the door: far row then near row. */
     desks: [
       { ...desk(-1.15, 0), who: "sinta" },

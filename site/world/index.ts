@@ -47,7 +47,7 @@ import {
 } from "./takes/home/lobby";
 import { LOBBY, lx } from "./sets/lobbyLayout";
 import { B9, PLAQUE_GATE, plaqueAnchors, plaqueCopyFade, plaqueStopAt } from "./takes/home/beat9";
-import { B12, INTO } from "./takes/home/beat12";
+import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
 import type { Holograms } from "./sets/holograms";
 import { classFrame, classSeat } from "./sets/classLayout";
@@ -872,6 +872,13 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const lobbyCopy = lobbyAnchors();
   // and on Kreatekno's plaque (tahap 8): "Tentang Kreatekno" in two columns
   const plaqueCopy = plaqueAnchors();
+  // and on the classroom's TV (tahap 9): "Praktik naik kelas", placed per layout step of the room
+  let practice = { step: -1, anchor: practiceAnchor(0) };
+  const practiceCopy = () => {
+    const s = room?.step ?? 0;
+    if (practice.step !== s) practice = { step: s, anchor: practiceAnchor(s) };
+    return practice.anchor;
+  };
   const measureCopy = () => {
     sizesKey = `${width} ${height} ${room?.step}`;
     copySizes = {};
@@ -900,6 +907,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
             (typeof views)["page"],
           ],
       ),
+      // the TV's: where the camera rests in the classroom (K12)
+      [practiceCopy(), cameraAt(practiceAt() / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
+        Anchor,
+        (typeof views)["page"],
+      ],
     ];
     for (const [a, v] of holds) {
       holdCam.position.copy(v.pos);
@@ -1246,8 +1258,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
           lobbyMod.seatK8(m, m.name as LobbyCastName, fmt);
           m.springs?.reset(1);
         }
-        // (Wildan out with the others, tahap 8: posed on their walk again next frame, not left in his seat)
-        lastOutKey = "";
+        // (Wildan out with the others, tahap 8: posed on their walk again next frame, not left in his seat; tahap 9:
+        // or teaching in the classroom)
+        lastOutKey = teachKey = "";
         needsRender = true;
         shadowDue = true;
       }
@@ -1259,6 +1272,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         lobby.roomDoor.rotation.y = 0;
         lobby.roomDoor.updateMatrixWorld();
         for (const m of pair) lobbyMod.seatK8(m, m.name as LobbyCastName, fmt);
+        teachKey = "";
         shadowDue = true;
       }
       // Wildan and Andi sit in the meeting room, drawn once the camera is at Kreatekno's door (K5a.6, still: from
@@ -1318,7 +1332,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
           walkPose(wild, turnStride(new THREE.Vector3(C.wildan.x, 0, C.wildan.z), 0, 0, 1), {
             head: [0.02, -0.25],
             reachL: {
-              at: new THREE.Vector3(tv.x - tv.w / 2 + 0.25, tv.y + 0.2, tv.z + 0.08),
+              // (at the screen's left edge, clear of the copy on it)
+              at: new THREE.Vector3(tv.x - tv.w / 2 + 0.02, tv.y + 0.18, tv.z + 0.08),
               weight: 0.95,
               pole: new THREE.Vector3(0.6, 0.6, -0.5),
             },
@@ -1503,6 +1518,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...journey.map((j) => j.anchor),
       ...lobbyCopy.map((l) => l.anchor),
       ...plaqueCopy.map((l) => l.anchor),
+      practiceCopy(),
     ]) {
       const q = pastDoor && anchors.includes(a) ? null : projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
@@ -1528,6 +1544,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       const q = quads[l.anchor.name];
       fade[l.anchor.name] = row ? pf * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1) : 0;
     }
+    // the TV's (tahap 9): at the K12 hold, while the classroom is shown
+    fade.practice = classroom?.group.visible ? practiceCopyFade(xs) : 0;
     opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
     // Reveal only after the complete counter scene has been prepared and actually drawn.
     if (!readyFired && assetsReady && !disposed) {

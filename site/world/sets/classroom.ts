@@ -74,7 +74,10 @@ export function buildClassroom(kit: Kit, step: number) {
   }
   // ---------- the TV on its wheeled stand ----------
   const tv = C.tv;
-  T.add(G.box(0.1, tv.y - 0.1, 0.08), "#3a3c45", mtx([tv.x, (tv.y - 0.1) / 2 + 0.08, tv.z - 0.08]));
+  // (the pole ends in the bezel's bottom strip: its side faces, almost edge-on to the camera behind the screen, won
+  // the depth test in a thin line through the screen on SwiftShader)
+  const poleTop = tv.y - tv.h / 2 - 0.015;
+  T.add(G.box(0.1, poleTop - 0.08, 0.08), "#3a3c45", mtx([tv.x, (poleTop + 0.08) / 2, tv.z - 0.08]));
   T.add(G.box(0.95, 0.05, 0.5), "#3a3c45", mtx([tv.x, 0.09, tv.z - 0.08]));
   for (const sx of [-0.42, 0.42])
     for (const sz of [-0.2, 0.2])
@@ -83,7 +86,7 @@ export function buildClassroom(kit: Kit, step: number) {
   U.add(
     new THREE.PlaneGeometry(tv.w, tv.h),
     new THREE.MeshBasicMaterial({ color: "#fbfbfd", toneMapped: false }),
-    mtx([tv.x, tv.y, tv.z + 0.037]),
+    mtx([tv.x, tv.y, tv.z + 0.04]),
     { occ: false, shadow: false },
   );
   // ---------- desks and chairs (the staff face the TV, −z) ----------

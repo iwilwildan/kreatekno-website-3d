@@ -7,6 +7,7 @@ import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type 
 import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
 import { LOBBY_STILLS, lobbyMarks, lobbyStillFades } from "./lobbyStills";
 import { PLAQUE_STILLS, plaqueMark, plaqueStillFades } from "./plaqueStills";
+import { CLASS_STILLS, classMark, classStillFades } from "./classStills";
 import stillsData from "./stills.json";
 
 const STILLS = stillsData as unknown as StillsData;
@@ -42,6 +43,8 @@ const STILL_FADES: Record<string, [number, number]> = {
   ...lobbyStillFades(),
   // beats 9b–11 (tahap 8): the plaque as the dolly reaches it (9:16 its right column after), COMPANY's door
   ...plaqueStillFades(),
+  // beats 12–13 (tahap 9): the class at the TV as the camera comes through the back door, the front room at dusk
+  ...classStillFades(),
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -80,6 +83,13 @@ const MARKS: { id: string; key: KeyName; at: number; atHp?: number }[] = [
   // the plaque's (tahap 8), the same way
   ...[plaqueMark()].map((m) => ({
     id: "tentang",
+    key: m.key,
+    at: scrollAtScreens(SEG, m.pc, false),
+    atHp: scrollAtScreens(SEG, m.hp, true),
+  })),
+  // and the classroom's TV (tahap 9)
+  ...[classMark()].map((m) => ({
+    id: "praktik",
     key: m.key,
     at: scrollAtScreens(SEG, m.pc, false),
     atHp: scrollAtScreens(SEG, m.hp, true),
@@ -213,7 +223,7 @@ export function HomeTake({
       // the journey's copy shows with its still, until the next still of the row comes in; the lobby's the same way
       // with the lobby's stills (tahap 7)
       const journeyFade: Record<string, number> = {};
-      for (const list of [row, LOBBY_STILLS[fmt], PLAQUE_STILLS[fmt]])
+      for (const list of [row, LOBBY_STILLS[fmt], PLAQUE_STILLS[fmt], CLASS_STILLS[fmt]])
         list.forEach((k, i) => {
           const here = stillQuads(k),
             next = STILL_FADES[list[i + 1]],

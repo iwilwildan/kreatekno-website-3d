@@ -1,0 +1,54 @@
+/*
+ * Beat 13 · Praktik naik kelas (tahap 9): the slide on the classroom's TV, the label and one sentence. Loaded after
+ * plaque.css. Base rules are the stacked version (reduced motion, no JavaScript): after the plaque's copy, the
+ * beat's jump mark, its still, then the copy as one section. The film's rules are in the media query below: the
+ * world places the box on the TV's screen.
+ */
+.take-mark[data-at="K12"] {
+  order: 29;
+}
+.take-still[data-still="K12"] {
+  order: 30;
+}
+.practice-copy {
+  order: 31;
+}
+.practice-copy p {
+  margin-top: 12px;
+  max-width: 52ch;
+  font-size: 1.125rem;
+  text-wrap: pretty;
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* the TV's white screen (1.9 × 1.07 m): the box ±1.78 × 0.95 m, at ±300 × 160 px on 16:9 at 1280 px (the whole
+     class in frame), ±300 × 160 px on 9:16. Laid out as a slide: a purple bar at the top left, the label, the
+     sentence; vertically centred. (Sizes in cqw/cqh on the children: the box is their container) */
+  .practice-copy.prop-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .practice-copy::before {
+    content: "";
+    display: block;
+    width: 12cqw;
+    height: max(2px, 2.4cqh);
+    margin: 0 6cqw 5cqh;
+    border-radius: 999px;
+    background: var(--color-purple);
+  }
+  .practice-copy h2 {
+    margin: 0 6cqw;
+    font-size: max(13px, min(7.4cqw, 15cqh));
+    line-height: 1.05;
+    color: var(--color-navy);
+  }
+  .practice-copy p {
+    max-width: none;
+    margin: 4.5cqh 6cqw 0;
+    font-size: max(11px, min(4.5cqw, 9.2cqh));
+    line-height: 1.32;
+    color: var(--color-ink);
+  }
+}
