@@ -1,7 +1,6 @@
 // Beats 9b–11 (tahap 8, the team's continuation video VID_20261113_185210, 0–21 s; greybox, langkah 1). From K9.1
-// the camera goes on toward the facade behind Heru, Bu Dewi and Wildan, out through the facade's solid wall (left of
-// the glass front, seen from the street) and round in an arc to face the facade as the three come out of the door
-// and walk left past it (video 3–7 s), then dollies in to the wooden plaque left of the door (K9b: the plaque fills
+// the camera follows Heru, Bu Dewi and Wildan through the open right leaf, turns right toward COMPANY, then faces
+// the facade and dollies in to the wooden plaque left of the door (K9b: the plaque fills
 // the frame; 9:16 stops on its two columns). Then back and up over Kreatekno and the row (video 9–12.5 s), into the
 // golden sky (K10, passed: sky only, 13–15 s), left along the row up there, and down at COMPANY past its billboard,
 // roof and sign (15–18.5 s) to the facade as the three reach its door (K11, 19–21 s).
@@ -117,15 +116,20 @@ export function track(keys: { at: number; view: View }[]) {
 
 /** Kreatekno's door, the way out for the camera's three. */
 const DOOR = KREATEKNO.door;
-/** x of the camera's way out through the facade's solid wall (inside, the lobby's left wall is at x0 + 3.1). */
-const WALL_X = KREATEKNO.x0 + 3.6;
+/** Only the right leaf opens: its clear centre, away from the fixed left leaf and the open leaf's hinge. */
+const EXIT_X = DOOR.cx + DOOR.w / 4;
+/** End of the forward approach (on the pavement, z EXIT_Z); the remaining track turns toward the plaque. */
+const EXIT_AT = 0.66,
+  EXIT_Z = 1.7;
+/** Camera height following the three: over their heads (Wildan's hair at 1.77 m), well under the lintel (2.5 m). */
+const FOLLOW_Y = 1.95;
 
 /**
- * Share of the move out by which the three are past the plaque, where the camera starts its dolly in to it (the world
- * holds it there until they are, outsideCast BT.passed).
+ * Share of the move out by which the three are past the plaque: the camera looks along the pavement after them
+ * there, and the world holds it there until they are (outsideCast BT.passed), before it turns on to the plaque.
  */
-export const PASS_AT = 0.84;
-/** Screens where the camera leaves its watch on the facade for the dolly in to the plaque (a gate, see PASS_AT). */
+export const PASS_AT = 0.74;
+/** Screens where the camera leaves its view along the pavement for the plaque (a gate, see PASS_AT). */
 export const PLAQUE_GATE = B9.out.s + PASS_AT * B9.out.len;
 
 const tracks = new Map<string, ReturnType<typeof track>>();
@@ -139,35 +143,53 @@ function cached(id: string, make: () => ReturnType<typeof track>) {
 }
 
 /**
- * K9.1 → K9b: on toward the facade left of the three's way to the door, out through its solid wall left of the glass
- * (behind the plaque's side), turning right as it comes out to look along the facade at the door (video 2.5–3 s),
- * frontal on it between the plaque and the door as the three come out and walk left (3.5–6.5 s), and in to the
- * plaque once they are past it (7–8.5 s). The video goes out through a pillar right of the door and turns back
- * left along the facade; turned that way the frame held the whole row, the lobby and the meeting room behind the
- * glass at once (155 draw calls, 207 rb triangles), so the camera goes out on the plaque's side and turns right.
+ * K9.1 → K9b (issue #22): follow the trio through the door below its lintel. Keep x straight through the whole
+ * leaf's swing, then turn right (decreasing YXZ yaw) along the pavement toward COMPANY, and on to the plaque.
  */
 const outTrack = (t: number, first: View) =>
   cached(`out ${t.toFixed(3)}`, () => {
     const end = t < 0.5 ? K9B_PC : mix(K9B_PC, K9B_HP[0], t);
     // frontal on the facade between the plaque and the door, both in frame (video 3.6–5.5 s)
     const watch = new THREE.Vector3((P.cx + DOOR.cx) / 2, 1.6, 5.2);
-    const T = 2 * Math.PI;
+    // (on the pavement the three walk left at z ±0.5–1.3; 9:16's narrow frame needs the camera nearer their line)
+    const lane = 1.85 - 0.35 * t;
     return track([
       { at: 0, view: first },
-      // (over the heads, down the middle of the lobby's left half: Wildan sets off below and to the right, from the
-      // meeting room to the door, his hair at 1.77 m; well clear of the meeting room's glass and its corner post)
-      { at: 0.12, view: v(WALL_X + 1.3, 1.92, -9.4, Math.PI, -0.04, first.fov) },
-      { at: 0.22, view: v(WALL_X + 0.95, 1.9, -3.6, Math.PI, -0.02, 40) },
-      // across to the facade's solid part and through it (0.3 m thick, z −0.28 … 0.02), turning right to the door
-      { at: 0.27, view: v(WALL_X + 0.1, 1.78, -0.9, Math.PI + 0.12, 0, 40) },
-      { at: 0.3, view: v(WALL_X - 0.05, 1.68, 0.5, Math.PI + 0.55, 0, 40) },
-      { at: 0.36, view: v(WALL_X - 0.3, 1.68, 2.6, (3 * Math.PI) / 2 + 0.45, -0.02, 38) },
-      { at: 0.45, view: v(watch.x, watch.y, watch.z, T + 0.04, -0.03, 36) },
-      // still watching them come out and walk left, a little on toward the plaque
-      { at: PASS_AT, view: v(watch.x - 0.6, watch.y, watch.z - 1.3, T + 0.02, -0.02, 36) },
-      { at: 1, view: { ...end, yaw: end.yaw + T } },
+      // over their heads behind them, down the lobby to the open right leaf
+      { at: 0.18, view: v(EXIT_X, FOLLOW_Y, -9.4, Math.PI, -0.1, first.fov) },
+      { at: 0.36, view: v(EXIT_X, FOLLOW_Y, -5.0, Math.PI, -0.09, 48) },
+      { at: 0.49, view: v(EXIT_X, FOLLOW_Y, -1.5, Math.PI, -0.08, 52) },
+      { at: 0.55, view: v(EXIT_X, FOLLOW_Y, -0.35, Math.PI, -0.08, 52) },
+      // out on the pavement, turning right after them toward COMPANY
+      { at: 0.6, view: v(EXIT_X - 0.2, 1.9, 0.9, Math.PI - 0.35, -0.08, 52) },
+      { at: EXIT_AT, view: v(DOOR.cx - 0.3, 1.85, EXIT_Z, Math.PI / 2 - 0.08, -0.08, 50) },
+      // watching them walk away along the facade (held here until they are past the plaque, PASS_AT), then on round
+      // to the facade and in to the plaque
+      { at: PASS_AT, view: v(DOOR.cx - 1.4, 1.8, lane, Math.PI / 2 - 0.12, -0.07, 48) },
+      { at: 0.84, view: v(DOOR.cx - 2.3, 1.78, lane + 0.1, Math.PI / 2 - 0.2, -0.06, 46) },
+      { at: 0.92, view: v(watch.x - 0.6, watch.y, watch.z - 1.3, 0, -0.02, 36) },
+      { at: 1, view: end },
     ]);
   });
+
+/** Cap scroll by the last walker's safe forward distance; invert only the monotonic approach to the pavement. */
+export function exitCameraLimit(maxZ: number, t: number) {
+  if (maxZ >= EXIT_Z) return Infinity;
+  const path = outTrack(t, k91View(t));
+  let lo = 0,
+    hi = EXIT_AT;
+  for (let i = 0; i < 16; i++) {
+    const mid = (lo + hi) / 2;
+    if (path(mid).pos.z <= maxZ) lo = mid;
+    else hi = mid;
+  }
+  return B9.out.s + lo * B9.out.len;
+}
+
+/** Open before the camera reaches the inward-swinging leaf; close only once it is safely on the pavement. */
+export const exitCameraOpen = (x: number) =>
+  smoothstep(B9.out.s + 0.4 * B9.out.len, B9.out.s + 0.46 * B9.out.len, x) *
+  (1 - smoothstep(B9.out.s + EXIT_AT * B9.out.len, PLAQUE_GATE, x));
 
 /** K9b → K10: back and up over Kreatekno and the row to the sky (K10: sky only, looking up over the roofs). */
 const K10 = v(32, 15.5, 7.5, 0, D2R(24), 40);

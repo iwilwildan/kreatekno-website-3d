@@ -338,6 +338,13 @@ export const BT = (() => {
     end,
   };
 })();
+/** Issue #22: stay 1.2 m behind Wildan up to the door. After he turns, use distance walked to release the camera
+ * smoothly onto the pavement (his z no longer increases there). Use his actual clock, which can lag the pair. */
+export function exitFollowZ(wildanClock: number) {
+  const c = Math.max(BT.w2, wildanClock);
+  if (c < BT.wildanOut) return W2.stride(c - BT.w2).body.z - 1.2;
+  return W2.stride(BT.wildanOut - BT.w2).body.z - 1.2 + (W2.at(c - BT.w2) - W2.at(BT.wildanOut - BT.w2));
+}
 /** Clock when Heru is near the last shop before Kreatekno (the camera's high view, video 10.5 s). */
 const BT_HIGH = BT.h6 + H6.timeAt((p) => p.z > 0 && p.x <= KREATEKNO.x0 - 3.5);
 
@@ -363,7 +370,7 @@ export function scrollClock(x: number) {
     outDone = h1.s + h1.len,
     walkFrom = T.h2 + 0.6;
   if (x <= OUT_START) return 0;
-  // beats 9b–11 (tahap 8): out of the door as the camera, out through the pillar, watches the facade; past the plaque
+  // beats 9b–11 (tahap 8): out of the door ahead of the camera; past the plaque
   // by the time it dollies in; along the row as it rises; at COMPANY's door as it comes down (K11)
   if (x > B9.out.s) {
     const c0 = Math.min(LT.end, LT.k91 + 1.2),
@@ -597,13 +604,15 @@ export function outsideState(c: number): OutsideState | null {
  * just before the camera reaches the door until it is past the leaf). Fully open while either holds (issue #10's
  * rule: never a closed or closing leaf as the camera comes through).
  */
-export const kreLeafFor = (c: number, camOpen: number) => {
-  const st = c > 0 ? kreAt(c) : 0;
+export const kreLeafFor = (c: number, camOpen: number, wildanClock = c) => {
+  const st = c > 0 ? kreAt(c, wildanClock) : 0;
   return Math.min(st, KRE.open * camOpen * ph(c, T.kreOpen));
 };
 /** Kreatekno's leaf at clock c: in for Bu Dewi (tahap 7), and again as the three walk out (tahap 8). */
-function kreAt(c: number) {
-  return KRE.open * (ph(c, T.kreOpen) - ph(c, LT.kreShut) + ph(c, BT.kreOpen) - ph(c, BT.kreShut));
+function kreAt(c: number, wildanClock = c) {
+  return (
+    KRE.open * (ph(c, T.kreOpen) - ph(c, LT.kreShut) + ph(c, BT.kreOpen) - ph(Math.min(c, wildanClock), BT.kreShut))
+  );
 }
 
 /**

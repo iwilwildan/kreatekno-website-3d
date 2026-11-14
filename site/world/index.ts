@@ -46,7 +46,15 @@ import {
   lobbyCopyFade,
 } from "./takes/home/lobby";
 import { LOBBY, lx } from "./sets/lobbyLayout";
-import { B9, PLAQUE_GATE, plaqueAnchors, plaqueCopyFade, plaqueStopAt } from "./takes/home/beat9";
+import {
+  B9,
+  exitCameraLimit,
+  exitCameraOpen,
+  PLAQUE_GATE,
+  plaqueAnchors,
+  plaqueCopyFade,
+  plaqueStopAt,
+} from "./takes/home/beat9";
 import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
 import { B15, ctaAnchors, ctaFade, epilogueFade, nightAt } from "./takes/home/beat15";
@@ -60,6 +68,7 @@ import { SEG } from "./takes/home/timing";
 import {
   BT,
   BT2,
+  exitFollowZ,
   kreLeafFor,
   LT,
   OUT_BACK_GATE,
@@ -965,8 +974,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       // of its way (and the leaf open)
       for (const g of DOOR_GATES)
         if (gated * TAKE_SCREENS > g.x && outClk.x < LT.inside - g.lead) gated = Math.min(gated, g.x / TAKE_SCREENS);
-      // to the plaque (tahap 8): the camera watches the facade until the three are out and past the plaque
-      if (gated * TAKE_SCREENS > PLAQUE_GATE && outClk.x < BT.passed)
+      // Issue #22: follow the last walker through the open leaf, using Wildan's actual (possibly delayed) clock.
+      const lastOut = Math.min(outClk.x, wOut.on ? wOut.c : BT.w2);
+      if (gated * TAKE_SCREENS > B9.out.s && view.x * TAKE_SCREENS < PLAQUE_GATE)
+        gated = Math.min(gated, exitCameraLimit(exitFollowZ(lastOut), fmtT) / TAKE_SCREENS);
+      // to the plaque: wait until all three, including a delayed Wildan, are past it
+      if (gated * TAKE_SCREENS > PLAQUE_GATE && lastOut < BT.passed)
         gated = Math.min(gated, PLAQUE_GATE / TAKE_SCREENS);
       // into COMPANY (tahap 9): the camera waits short of its door until the leaves are open and Bu Dewi is in
       const companyGate = B12.into.s + (INTO.door - 0.1) * B12.into.len;
@@ -1164,10 +1177,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     street.hinge.rotation.y = door;
     // Kreatekno's leaf: Heru's holding and its closer, and wide open while the camera comes through (tahap 7)
     if (row) {
-      const camOpen =
+      const camOpen = Math.max(
           smoothstep(DOOR_OPEN.from - 0.1, DOOR_OPEN.from, xs) *
-          (1 - smoothstep(DOOR_OPEN.to, DOOR_OPEN.to + 0.12, xs)),
-        kre = kreLeafFor(outClk.x, camOpen);
+            (1 - smoothstep(DOOR_OPEN.to, DOOR_OPEN.to + 0.12, xs)),
+          exitCameraOpen(xs),
+        ),
+        kre = kreLeafFor(outClk.x, camOpen, wOut.on ? wOut.c : Math.min(outClk.x, BT.w2));
       if (row.doorHinge.rotation.y !== kre) {
         row.doorHinge.rotation.y = kre;
         shadowDue = true;

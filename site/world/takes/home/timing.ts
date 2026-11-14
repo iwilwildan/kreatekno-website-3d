@@ -91,7 +91,7 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K8", screens: 0.75, pc: 0.8 },
   { type: "move", from: "K8", to: "K9.1", screens: 0.9 },
   { type: "hold", from: "K9.1", screens: 0.3 },
-  // Beats 9b–11 (tahap 8, the team's continuation video, greybox): out through the facade's solid wall with Heru, Bu
+  // Beats 9b–11 (tahap 8, issue #22): out through the open door after Heru, Bu
   // Dewi and Wildan, round to the plaque left of the door (K9b; 9:16 stops on its two columns), back and up over the
   // roofs into the sky (K10, passed), left along the row up there and down at COMPANY as the three reach its door (K11)
   { type: "move", from: "K9.1", to: "K9b", screens: 3.0 },

@@ -2368,3 +2368,20 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - still dirender ulang: K5a.4 dan K5a.6 PC/HP (anchor `journey-launch` di `stills.json` ikut diperbarui). K9b, K9b-2 dan K16 juga dirender: K16 identik byte per byte, K9b hanya beda derau (rata-rata 0,1/255), jadi dikembalikan ke versi lama;
   - `typecheck`, `lint` (1 peringatan lama di `opengraph-image.tsx`), `format:check`, `next build` lulus.
 - **Belum:** `issue4*.mjs` di laptop dengan GPU; tes HP fisik; review user. Di-commit ke branch `ccr-fa769dc0-el34x2` dengan PR ke `main` (permintaan user).
+
+### 2026-11-15 (issue GitHub #22: kamera keluar Kreatekno lewat pintu, belok kanan)
+
+- Diambil alih dari pekerjaan Codex yang belum di-commit (atas permintaan user), di branch `codex/issue-22-kamera-keluar-kreatekno` (dari `03494e6`). Branch sempat berada di `codex/issue-25-malam-billboard` dengan perubahan #22 di working tree; dipindah ke branch #22 tanpa mengubah isi.
+- Dari Codex (direview, dipertahankan):
+  - `beat9.ts` `outTrack`: jalur lewat dinding (`WALL_X`) diganti lewat bukaan daun kanan (`EXIT_X = door.cx + w/4`), yaw hanya turun (belok kanan); `exitCameraLimit` membalik bagian jalur yang z-nya naik supaya kamera tetap ±1,2 m di belakang Wildan; `exitCameraOpen` menahan daun terbuka sampai kamera di trotoar;
+  - `outsideCast.ts`: `exitFollowZ` (jarak aman di belakang Wildan dari jam Wildan sendiri), `kreLeafFor`/`kreAt` menutup daun dari jam Wildan, bukan jam pasangan;
+  - `world/index.ts`: gerbang kamera dari Wildan yang terakhir keluar, gerbang plakat memakai jam yang sama;
+  - `tools/render/issue22.mjs`: scroll sungguhan maju dan mundur di 0,6, 2 dan 4 s per layar, PC, tablet, HP.
+- Ditambah di sesi ini, dari frame: kamera membuntuti di 1,95 m (sebelumnya 1,6 m, kepala Wildan menutupi tengah frame); setelah pintu kamera menghadap sepanjang trotoar ke arah COMPANY (yaw ±80°, di HP lebih dekat ke garis jalan tokoh) dan gerbang plakat dipindah ke view itu (`PASS_AT` 0,84 → 0,74, tambah titik 0,84), baru lalu frontal ke fasad dan dolly ke plakat.
+- Dicek (build produksi, port 3300):
+  - `issue22.mjs` 18/18 lulus: kamera melewati pintu di x 46,99 (daun kanan, terbuka −1,45 rad) setelah Heru, Bu Dewi dan Wildan di semua kecepatan maju; yaw hanya turun (maju) atau naik (mundur); tanpa error halaman;
+  - ketiganya terlihat di frame setelah kamera keluar: 2,6–3,1 s pada 4 s per layar, ±0,45 s pada 2 s per layar (kamera masih mengejar scroll setelah menunggu Wildan);
+  - anggaran: draw call maks 105 (PC), 95 (tablet), 93 (HP); segitiga maks 151,0 rb di PC di beberapa frame saat belok (deret ruko ±43 rb, Wildan ±14,5 rb, lobi di balik kaca ±7–9 rb), tablet dan HP ≤ 144,2 rb;
+  - frame PC dan HP pada 2 dan 4 s per layar (hanya di chat);
+  - `issue4.mjs` 73/73, `issue4-loading.mjs` 25/25; typecheck, ESLint, Prettier (file situs), `next build` lulus.
+- Dites user di HP fisik (build produksi port 3300) dan dikonfirmasi; di-commit ke `main` dengan entri log ini saja, di-push, issue ditutup. Still K9.1/K9b tidak berubah (kamera jeda sama). `.tmp-issue25-baseline.mjs` dan konfigurasi `site-copy-v3` di `.claude/launch.json` milik Codex, tidak disentuh.
