@@ -77,6 +77,53 @@ export const K2_POSES: Record<string, Pose> = {
 };
 
 /**
+ * Poses of the staff in COMPANY's classroom (tahap 9, the team's continuation video 29–31 s): seated upright at the
+ * small desks facing the TV, heads level toward it, hands resting on the desk by the notebook; Bayu writing in his,
+ * Nadia's hands folded. Attentive, a small smile (seen from behind and from the class's back: the posture reads,
+ * not the face). Same seat as K2 (the classroom's desks are the front room's height, sets/classLayout).
+ */
+export const CLASS_POSES: Record<string, Pose> = {
+  sinta: {
+    seat: SEAT,
+    spine: [0.05, 0, 0],
+    head: [-0.04, 0, 0.04],
+    L: { at: [0.16, 0.79, 0.4], fingers: [-0.2, -0.4, 1] },
+    R: { at: [-0.12, 0.79, 0.4], fingers: [0.2, -0.4, 1] },
+    face: { browTilt: -0.05, smile: 0.25 },
+    lids: 0,
+  },
+  bayu: {
+    seat: SEAT,
+    spine: [0.1, 0, 0],
+    head: [0.1, 0.05, 0],
+    // the right hand writing on the notebook (left of him on the desk), the left holding its corner
+    R: { at: [0.06, 0.79, 0.46], fingers: [0.1, -0.6, 1] },
+    L: { at: [0.27, 0.79, 0.4], fingers: [-0.1, -0.5, 1] },
+    face: { browTilt: -0.05, smile: 0.15 },
+    lids: 0.1,
+  },
+  nadia: {
+    seat: SEAT,
+    spine: [0.06, 0, 0],
+    head: [-0.03, 0, -0.05],
+    // hands folded on the desk's front edge
+    L: { at: [0.05, 0.8, 0.36], fingers: [-1, -0.2, 0.4] },
+    R: { at: [-0.05, 0.8, 0.38], fingers: [1, -0.2, 0.4] },
+    face: { browTilt: -0.05, smile: 0.3 },
+    lids: 0,
+  },
+  fajar: {
+    seat: SEAT,
+    spine: [0.04, 0, 0],
+    head: [-0.05, 0, 0],
+    L: { at: [0.18, 0.79, 0.38], fingers: [0, -0.4, 1] },
+    R: { at: [-0.16, 0.79, 0.36], fingers: [0, -0.4, 1] },
+    face: { browTilt: -0.05, smile: 0.25 },
+    lids: 0,
+  },
+};
+
+/**
  * Applies a pose to a member standing in its spot (mesh position and rotation already set). The face is painted
  * only when asked (it redraws the atlas, too slow for every frame of an action).
  */

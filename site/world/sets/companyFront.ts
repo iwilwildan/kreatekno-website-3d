@@ -3,6 +3,7 @@
 // solves; the blend is quantised to LAYOUT_STEPS so each step can ship its own baked AO.
 // Ported from prototype/k0-k2/src/scene.js ("INTERIOR").
 import * as THREE from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { aoPlane, type AoTarget } from "../core/ao";
 import { Batch, C, G, lerp, mtx, rectPath, rng, type Kit, type Vec3 } from "../core/kit";
 import { DATA } from "../takes/home/data";
@@ -521,7 +522,8 @@ export function createCompanyFront(kit: Kit) {
       }
     }
     // pendant lamps (glow + a warm point light each)
-    const lampLights: THREE.PointLight[] = [];
+    const lampLights: THREE.PointLight[] = [],
+      poolAt: [number, number][] = [];
     for (const i of [1, 2, 3]) {
       const x = P["lx" + i],
         y = P["ly" + i],
@@ -542,6 +544,7 @@ export function createCompanyFront(kit: Kit) {
         mtx([x, y + 0.01, z], [Math.PI / 2, 0, 0]),
         { occ: false, shadow: false },
       );
+      poolAt.push([x, z]);
       const pl = new THREE.PointLight("#ffd7a3", 2.0, 6, 1.8);
       pl.position.set(x, y - 0.15, z);
       grp.add(pl);
@@ -573,6 +576,46 @@ export function createCompanyFront(kit: Kit) {
       [P.izB + 4.2, 0.8],
     ])
       patch(w, 2.2, mtx([P.ixL + 0.004, 1.35, z], [0, Math.PI / 2, 0]));
+    // at the end of the day (tahap 9, video 24–33 s) a warm pool of light on the floor under each lamp, stronger as
+    // dusk falls; additive quads (no bloom), off by day (setEvening)
+    const poolTex = canvasTex(128, 128, (g, w) => {
+      const r = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2);
+      r.addColorStop(0, "rgba(255,168,84,1)");
+      r.addColorStop(0.35, "rgba(255,140,64,.55)");
+      r.addColorStop(1, "rgba(255,120,50,0)");
+      g.fillStyle = r;
+      g.fillRect(0, 0, w, w);
+    });
+    const poolMat = new THREE.MeshBasicMaterial({
+      map: poolTex,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: true,
+    });
+    const pools = new THREE.Mesh(
+      mergeGeometries(
+        poolAt.map(([x, z]) => new THREE.PlaneGeometry(2.6, 2.6).rotateX(-Math.PI / 2).translate(x, 0.006, z)),
+      ),
+      poolMat,
+    );
+    pools.renderOrder = 1;
+    pools.visible = false;
+    grp.add(pools);
+    /**
+     * End of the day at COMPANY (tahap 9): the window's patches of light turn to low orange sun (video 25 s), `sun` 0 …
+     * 1, gone at dusk; the lamps' pools on, `pool` 0 … 1. Not evening: the morning's patches as before.
+     */
+    const dayPatch = patchMat.color.clone(),
+      evePatch = new THREE.Color("#ffab5e");
+    const setEvening = (evening: boolean, pool: number, sun: number) => {
+      patchMat.color.copy(evening ? evePatch : dayPatch);
+      patchMat.opacity = evening ? 0.32 * sun : 0.15;
+      patchMat.visible = !evening || sun > 0.01;
+      poolMat.opacity = pool;
+      pools.visible = evening && pool > 0.01;
+    };
     // yellow mat just inside the door
     B.add(
       G.rbox(1.5, 0.012, 0.85, 0.006),
@@ -613,7 +656,7 @@ export function createCompanyFront(kit: Kit) {
       ).add(grp.position),
       rotY: 0,
     };
-    return { group: grp, batch: B, lampLights, step, spots, backDoor };
+    return { group: grp, batch: B, lampLights, step, spots, backDoor, setEvening };
   };
 }
 export type CompanyFront = ReturnType<ReturnType<typeof createCompanyFront>>;

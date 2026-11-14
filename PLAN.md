@@ -2149,3 +2149,15 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - `issue4.mjs` (server produksi port 3300): panjang take 36,3 / 37,45, copy K3/K4 dan tab binder lulus; berhenti di cek "2 dtk/layar mengikuti scroll" (lag 0,40, harus menetap < 1 dtk) karena render SwiftShader ±5 dtk per frame. `issue4-loading.mjs`: 12 cek lulus (fallback, kanvas dilepas, tanpa error), berhenti di batas 30 dtk menunggu world termuat (SwiftShader). Keduanya perlu dijalankan di laptop dengan GPU.
 - **Belum:** tes HP fisik (Android murah, FPS); `issue4*.mjs` di laptop; ruang depan K13 masih hangat (tahap 9); pose mendengarkan staf (tahap 9); review user untuk tahap 8–10.
 
+### 2026-11-14 (sisa tahap 9: pose kelas dan K13 senja)
+
+- Atas permintaan user ("Rapikan dulu dua sisa tahap 9").
+- **Pose mendengarkan** (`cast/poses.ts` `CLASS_POSES`, dipakai `world/index.ts` saat staf pindah ke kelas): duduk tegak menghadap TV, kepala rata ke arah layar, tangan di meja dekat buku catatan; Bayu menulis di bukunya, tangan Nadia terlipat; senyum kecil. Sebelumnya pose kerja K2 (Sinta memegang HP tanpa HP, Fajar menggaruk kepala, Nadia bertopang dagu). Kembali ke pose K2 saat scroll naik keluar COMPANY (seperti sebelumnya).
+- **K13 senja** (video 33 dtk):
+  - pintu kayu belakang menutup lagi setelah kamera mundur keluar kelas dan melewati konter (42–58% gerak K12 → K13); kelas digambar sampai 60%, setelah pintu tertutup. Sebelumnya pintu tetap terbuka dan menampilkan langit sore lewat kelas yang sudah tidak digambar;
+  - genangan cahaya oranye di lantai di bawah tiap lampu gantung (quad additive, `companyFront` `setEvening`), 40% sore, penuh saat senja, padam bersama lampu saat kamera keluar (tahap 10);
+  - bercak cahaya jendela di lantai dan dinding: tetap putih pagi di beat 1–5; di COMPANY sore jadi jingga matahari rendah dan memudar menjelang senja (sebelumnya bercak pagi tetap tampil saat senja).
+- Still K12, K13 PC/HP dirender ulang.
+- **Dicek** (render hanya di chat): K12, K13 dan gerak keluar PC/HP berdampingan dengan video 25, 30, 33 dtk; K2.2 siang tidak berubah; anggaran K11 → K15 (render langsung tiap 0,05 layar): PC terberat 110 / 136 rb, HP 108 / 139 rb (jeda K11, sama dengan tahap 9); `tsc --noEmit`, ESLint, Prettier.
+- **Belum:** ruang depan sore (video 25 dtk) masih kurang jingga dan berkas matahari di lantai tidak masuk frame kamera masuk; dinding K13 sedikit lebih ungu dari video.
+

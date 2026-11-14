@@ -1242,6 +1242,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // reach, does not drop at once when the room is let go)
     const lampsOut = atCompany ? smoothstep(B15.exit.s + 0.36 * B15.exit.len, B15.exit.s + 0.53 * B15.exit.len, xs) : 0;
     lamps.forEach((l) => (l.intensity = roomHidden || !room ? 0 : 2.0 * (1 - close) * (1 - lampsOut)));
+    // tahap 9: at COMPANY at the end of the day the window's patches are low orange sun until dusk, and the lamps
+    // cast warm pools, stronger at dusk (video 24–33 s), going out with the lamps on the way out
+    room?.setEvening(atCompany, atCompany ? (0.4 + 0.6 * dusk) * (1 - lampsOut) : 0, 1 - dusk);
     // in the lobby the first lamp light is the late sun through the meeting room's window (K8, video: the room warm
     // and golden from its left); the room is let go out here, so its lights are free (setRoom sets them again)
     if (xs >= LOBBY_START && !room) {
@@ -1427,14 +1430,18 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       crewInClass = false;
       shadowDue = true;
     }
+    // (drawn until the wooden door has shut behind the camera on its way out, below)
     const classShown =
-      atCompany && xs > B12.into.s + (INTO.backDoor - 0.12) * B12.into.len && xs < B12.out.s + 0.45 * B12.out.len;
+      atCompany && xs > B12.into.s + (INTO.backDoor - 0.12) * B12.into.len && xs < B12.out.s + 0.6 * B12.out.len;
     if (classroom) classroom.group.visible = classroom.group.matrixWorldAutoUpdate = classShown;
     if (holos) holos.group.visible = atCompany && !hide;
-    // the wooden back door swings open into the room as the camera nears it, and stays open (video 28–33 s)
+    // the wooden back door swings open into the room as the camera nears it, and shuts again once the camera has
+    // backed out of the classroom and over the counter (video 33 s: K13 with the door shut)
     if (room) {
       const open = atCompany
-        ? -1.3 * smoothstep(B12.into.s + 0.72 * B12.into.len, B12.into.s + 0.84 * B12.into.len, xs)
+        ? -1.3 *
+          smoothstep(B12.into.s + 0.72 * B12.into.len, B12.into.s + 0.84 * B12.into.len, xs) *
+          (1 - smoothstep(B12.out.s + 0.42 * B12.out.len, B12.out.s + 0.58 * B12.out.len, xs))
         : 0;
       if (room.backDoor.rotation.y !== open) {
         room.backDoor.rotation.y = open;
@@ -1442,7 +1449,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         shadowDue = true;
       }
     }
-    // the staff sit in the classroom, at the desks facing the TV, in their seated K2 poses; back at their own desks
+    // the staff sit in the classroom, at the desks facing the TV, listening; back at their own desks
     // when the visitor scrolls back up
     if (castMod && room) {
       if (atCompany && !crewInClass) {
@@ -1453,7 +1460,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
           m.mesh.position.set(seat.x, 0, seat.z);
           m.mesh.rotation.set(0, seat.rotY, 0);
           m.mesh.updateMatrixWorld(true);
-          castMod.applyPose(m, castMod.K2_POSES[m.name] as Pose);
+          // (listening: upright, hands on the desk, heads to the TV; video 29–31 s)
+          castMod.applyPose(m, castMod.CLASS_POSES[m.name] as Pose);
           m.springs?.reset(1);
         }
         crewInClass = true;
