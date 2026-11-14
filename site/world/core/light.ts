@@ -61,12 +61,12 @@ const DUSK = {
  * gone; the lit windows, door and billboard carry the frame.
  */
 const NIGHT = {
-  sky: new THREE.Color("#5560b0"),
-  ground: new THREE.Color("#2b2d66"),
-  i: 1.05,
-  env: 0.05,
-  sun: new THREE.Color("#7280d6"),
-  sunI: 0.3,
+  sky: new THREE.Color("#a9acd6"),
+  ground: new THREE.Color("#4e5080"),
+  i: 1.65,
+  env: 0.08,
+  sun: new THREE.Color("#8f9be8"),
+  sunI: 0.15,
 };
 const SUNSET = {
   sky: new THREE.Color("#eeaab4"),

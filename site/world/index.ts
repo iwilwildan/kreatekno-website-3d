@@ -50,7 +50,7 @@ import { B9, PLAQUE_GATE, plaqueAnchors, plaqueCopyFade, plaqueStopAt } from "./
 import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
 import { B15, nightAt } from "./takes/home/beat15";
-import { buildNightGrey } from "./sets/nightGrey";
+import { buildNight } from "./sets/night";
 import type { Holograms } from "./sets/holograms";
 import { classFrame, classSeat } from "./sets/classLayout";
 import { turnStride, walkPose } from "./cast/walk";
@@ -228,9 +228,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   scene.add(street.group);
   const sky = buildSky(kit);
   scene.add(sky.group);
-  // the night street's stand-ins (tahap 10 langkah 1, greybox)
-  const nightGrey = buildNightGrey();
-  scene.add(nightGrey.group);
+  // what only shows at night (tahap 10): stars, roof lamps, light on the pavement, rolling doors
+  const night = buildNight(kit);
+  scene.add(night.group);
   // the row of shophouses (beats 5a–5b): the fruit shop and the laundry are seen from K0 on and built with the
   // street; the rest of the row is its own chunk, built as the camera nears K4.1 (loadRow)
   const rowMats = rowMaterials(),
@@ -417,12 +417,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
    */
   let outside = false,
     lastOutKey = "";
+  /** 0 … 1 as COMPANY's leaves swing shut after the camera on its way out (tahap 10). */
+  let leafShut = 0;
   const placeOutside = (c: number) => {
     const dewi = crew.find((m) => m.name === "dewi");
     const st = outsideState(c);
     if (!heru || !dewi || !st) return false;
     // (Wildan and Andi are built after the lobby: pose again once they are there)
-    const key = `${c.toFixed(4)} ${wOut.on ? wOut.off.toFixed(4) : "-"} ${pair.length} ${wildanTeach}`;
+    const key = `${c.toFixed(4)} ${wOut.on ? wOut.off.toFixed(4) : "-"} ${pair.length} ${wildanTeach} ${leafShut}`;
     if (key === lastOutKey) return false;
     lastOutKey = key;
     poseOutside(heru, dewi, st);
@@ -430,7 +432,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const ws = wOut.on && !wildanTeach ? wildanStride(c - wOut.off) : null,
       wildan = ws ? pair.find((m) => m.name === "wildan") : undefined;
     if (wildan && ws) poseWildanOut(wildan, ws, st.look, wildanReach(c - wOut.off));
-    street.leafL.rotation.y = st.leftLeaf;
+    street.leafL.rotation.y = st.leftLeaf * (1 - leafShut);
     // she keeps the smile of her nod (K4.1) out on the street and in Kreatekno's lobby (tahap 7: at the corkboard)
     if (dewiFace !== OUT_FACE) {
       dewiFace = OUT_FACE;
@@ -1142,10 +1144,15 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       // back inside: everyone to their spots and poses again
       if (!outside) placeCrew();
     }
+    // tahap 10: COMPANY's leaves swing shut by themselves in front of the camera backing out (video 35–36 s; a little
+    // earlier here, so the room can be let go behind them before the row comes into view)
+    leafShut = smoothstep(B15.exit.s + 0.42 * B15.exit.len, B15.exit.s + 0.52 * B15.exit.len, xs);
     const moved = outside ? placeOutside(outClk.x) : beat3 ? placeHeru3(shown, breath) : placeHeru(h, whip, breath);
     // the right leaf, open since beat 1, swings shut once the camera has backed out past it (video k4.2 - k4.1), and
     // opens outward with the left one when they come out, so Bu Dewi walks out through it (issue #8)
-    const door = h.door * (1 - smoothstep(B5.back + 0.3, B5.back + 0.5, xs)) + (outside ? rightLeaf(outClk.x) : 0);
+    const door =
+      (h.door * (1 - smoothstep(B5.back + 0.3, B5.back + 0.5, xs)) + (outside ? rightLeaf(outClk.x) : 0)) *
+      (1 - leafShut);
     if (moved || street.hinge.rotation.y !== door) shadowDue = true;
     street.hinge.rotation.y = door;
     // Kreatekno's leaf: Heru's holding and its closer, and wide open while the camera comes through (tahap 7)
@@ -1210,20 +1217,24 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // tahap 9: the time-lapse to dusk as the camera backs out of the classroom
     const dusk = smoothstep(B12.out.s + 0.1 * B12.out.len, B12.out.s + 0.85 * B12.out.len, xs);
     // tahap 10: night falls as the camera comes out through COMPANY's door (greybox)
-    const night = nightAt(xs);
-    if (light.setInside(c.pos.z, close, noon, inLobby, golden, sunset, dusk, night)) shadowDue = true;
+    const nightK = nightAt(xs);
+    if (light.setInside(c.pos.z, close, noon, inLobby, golden, sunset, dusk, nightK)) shadowDue = true;
     sky.setGolden(golden);
     sky.setSunset(sunset);
-    sky.setNight(night);
-    nightGrey.setNight(night);
-    sky.setHigh(xs > B9.up.s + 0.2 * B9.up.len && night < 0.5, clamp01((xs - B9.up.s) / (B9.k11.s - B9.up.s)));
+    sky.setNight(nightK);
+    street.setNight(nightK);
+    night.setNight(nightK, renderer.getPixelRatio());
+    sky.setHigh(xs > B9.up.s + 0.2 * B9.up.len && nightK < 0.5, clamp01((xs - B9.up.s) / (B9.k11.s - B9.up.s)));
     sky.setBirds(xs < LOBBY_START);
     row?.setLamp(golden);
     lobby?.setBeams(golden, golden * facing);
     // the sun's shadow box follows the camera along the row (snapped, so the shadows do not swim)
     if (light.follow(c.pos.x)) shadowDue = true;
     // (the lamps stay lit in the dark only while the room is drawn)
-    lamps.forEach((l) => (l.intensity = roomHidden || !room ? 0 : 2.0 * (1 - close)));
+    // (tahap 10: dimmed as COMPANY's leaves shut on the way out, so their light on the awning and the facade, 6 m
+    // reach, does not drop at once when the room is let go)
+    const lampsOut = atCompany ? smoothstep(B15.exit.s + 0.36 * B15.exit.len, B15.exit.s + 0.53 * B15.exit.len, xs) : 0;
+    lamps.forEach((l) => (l.intensity = roomHidden || !room ? 0 : 2.0 * (1 - close) * (1 - lampsOut)));
     // in the lobby the first lamp light is the late sun through the meeting room's window (K8, video: the room warm
     // and golden from its left); the room is let go out here, so its lights are free (setRoom sets them again)
     if (xs >= LOBBY_START && !room) {
@@ -1294,8 +1305,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
             !!lobby &&
             xs >= LOBBY_START - 0.2 &&
             !(m.name === "andi" && atCompany) &&
-            // (Wildan teaches in the classroom once the camera is through COMPANY's door: see below)
-            true,
+            // (Wildan teaches in the classroom once the camera is through COMPANY's door: see below; tahap 10: not
+            // drawn once the camera has left the classroom, which is not drawn either then)
+            !(m.name === "wildan" && atCompany && xs > B12.out.s + 0.45 * B12.out.len),
         )
         .join();
       if (pv !== pairShown) {
@@ -1364,17 +1376,18 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     // door shows a backdrop of it instead. Heru and Bu Dewi show again once they come out.
     // (tahap 9: at COMPANY again, the room shows from the moment the leaves start to open; the staff are in the
     // classroom)
-    // (tahap 10: and let go of again once the camera is ±5 m out on the street (K15 costs 129 draw calls with it):
-    // the open door shows the backdrop from there; langkah 2 shuts the leaves, as in the video)
+    // (tahap 10: and let go of again once COMPANY's leaves have swung shut in front of the camera backing out, ±2.5 m
+    // from the door: with it, the frame cost up to 129 draw calls as more of the row came into view)
     const hide = atCompany
-      ? xs < B12.into.s - 0.05 || xs > B15.exit.s + 0.75 * B15.exit.len
+      ? xs < B12.into.s - 0.05 || xs > B15.exit.s + 0.53 * B15.exit.len
       : xs > B5.back + 0.1 && (c.pos.z > 0.6 || xs >= LOBBY_START);
     if (hide !== roomHidden || atCompany !== roomAtCompany) {
       roomHidden = hide;
       roomAtCompany = atCompany;
       if (room) room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
       props.group.visible = props.group.matrixWorldAutoUpdate = !hide;
-      street.backdrop.visible = hide;
+      // (not on the way out at night: the shut leaves' gap would show its warm day room)
+      street.backdrop.visible = hide && !(atCompany && xs > B15.exit.s);
       if (thoughts) thoughts.group.visible = !hide && !atCompany;
       if (phone) phone.group.visible = !hide && !atCompany;
       shadowDue = true;
@@ -1690,7 +1703,6 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       timer.dispose();
-      nightGrey.dispose();
       disposeTree(scene);
       kit.dispose();
       light.dispose();

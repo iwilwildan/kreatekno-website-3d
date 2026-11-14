@@ -49,11 +49,11 @@ const K15_PC = v(-0.6, 2.2, 11.5, 0, D2R(4), 38),
 export const k15View = (t: number) => mix(K15_PC, K15_HP, t);
 /** K15.1: the billboard, as the hero's K0 (16:9 the face ±43% of the width on the left; 9:16 the face across it). */
 export const k151View = (t: number) => mix(solved("K0", "pc"), solved("K0", "hp"), t);
-// K16 (video 38.7 s): from high across the road looking a little down, COMPANY ±31% of the width at the left (its
-// base at ±63% of the height), three shops on its right, the road across the lower third, the stars above the
-// roofs (their tops at ±25%). 9:16: COMPANY and its billboard, the road under them
-const K16_PC = v(9.4, 9, 30, 0, D2R(-12), 38.6),
-  K16_HP = v(-1.0, 7, 19, 0, D2R(-14), 60);
+// K16 (video 38.7 s): from high across the road looking a little down, COMPANY ±35% of the width at the left (its
+// base at ±64% of the height), three shops on its right, the road across the lower third (the far pavement, z 12.1,
+// just below the frame), the stars above the roofs (their tops at ±21%). 9:16: COMPANY and its billboard, the road under them
+const K16_PC = v(7.0, 8.4, 25.5, 0, D2R(-12.5), 38.6),
+  K16_HP = v(-1.0, 6.8, 17.5, 0, D2R(-14), 60);
 export const k16View = (t: number) => mix(K16_PC, K16_HP, t);
 
 const tracks = new Map<string, ReturnType<typeof track>>();

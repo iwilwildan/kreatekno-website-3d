@@ -180,11 +180,12 @@ export function buildSky(kit: Kit) {
   // horizon; a fourth dome over the sunset's (the stars come in langkah 2)
   const nightTex = kit.canvasTex(8, 1024, (g, w, h) => {
     const gr = g.createLinearGradient(0, 0, 0, h);
-    gr.addColorStop(0, "#080c22");
-    gr.addColorStop(0.3, "#0f1638");
-    gr.addColorStop(0.44, "#1c2350");
-    gr.addColorStop(0.5, "#33376e");
-    gr.addColorStop(1, "#2a2c58");
+    gr.addColorStop(0, "#060818");
+    gr.addColorStop(0.3, "#0a0f2a");
+    gr.addColorStop(0.44, "#121838");
+    gr.addColorStop(0.49, "#1c2248");
+    gr.addColorStop(0.5, "#252a56");
+    gr.addColorStop(1, "#1f2148");
     g.fillStyle = gr;
     g.fillRect(0, 0, w, h);
   });

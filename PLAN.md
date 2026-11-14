@@ -192,7 +192,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 7   | Beat 6–9a                     | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi                                                                                                 | 6                                          | ✅ 13 Nov (disetujui user; tes HP fisik lancar; temuan laju jalan ruko tetap di issue #9) |
 | 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | 🟡 langkah 1–3 selesai (13 Nov); cek akhir bersama tahap 10 |
 | 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review |
-| 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1 (greybox) selesai (14 Nov), menunggu review |
+| 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1–2 selesai (14 Nov), menunggu review |
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
 | 12 | Solusi v1 dan detail | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail | 11 | ⬜ etalase disetujui 4 Nov; perluasan detail draf 7 Nov |
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
@@ -2111,4 +2111,26 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - **Tes muat CTA** (copy `home.cta` dan tombol "Konsultasi gratis", "Ketemu langsung" di kotak hero, karena K15.1 = kamera K0): 1280×720, 1920×1080, 375×812, 360×640, ID dan EN, tanpa luapan. Epilog di permukaan jalan akan ±11 px dan miring di K16 PC; diusulkan sebagai teks lurus di pita jalan gelap.
 - **Dicek** (render hanya di chat): 8 titik PC 1280×720 berdampingan dengan video 33,5–38,6 dtk dan HP 375×812; ujung halaman (footer naik setelah jeda K16, PC); anggaran (sapuan tiap 0,05 layar K13 → akhir take): PC terberat 118 draw call / 138 rb segitiga, HP 118 / 138 rb (keduanya sesaat sebelum ruang depan dilepas); K15.1 PC 20, K16 PC 72 / 118 rb, HP 43; `tsc --noEmit`, ESLint, Prettier.
 - **Belum / langkah 2:** malam masih gelap rata (video: fasad abu terang, jendela dan ambang pintu bercahaya ungu-putih, genangan cahaya di trotoar, papan COMPANY menyala jingga), bintang, lampu kecil di atap, billboard menyala sungguhan, rolling door ruko, daun pintu COMPANY menutup setelah kamera keluar (video 36 dtk), garis jalan, `street.backdrop` versi malam (sekarang gambar siang lewat pintu di K15), pita terang di tepi bawah frame K16 (kemungkinan batas shadow map), sambungan jalan → footer (tepi keras). Langkah 3: CTA di billboard, epilog, footer, `#kontak`, still, cek akhir seluruh take.
+
+### 2026-11-14 (tahap 10 langkah 2: set, gerak, cahaya malam)
+
+- Atas permintaan user ("Lanjutkan" setelah greybox). Usulan epilog sebagai teks lurus di pita jalan tidak dikoreksi user; dipakai di langkah 3.
+- **Set malam** (`sets/night.ts`, baru, menggantikan `sets/nightGrey.ts`; satu grup yang hanya digambar saat malam):
+  - bintang: 1.700 `Points` di kubah, kebanyakan rendah (0,5–25°) di sisi yang dilihat kamera K15.1/K16; titik digambar di shader, bukan tekstur (sprite 64 px di titik 2–3 px mengambil mip terkecil dan hampir transparan: render pertama tanpa bintang), ukuran ikut `pixelRatio`;
+  - lampu kecil hangat di atas parapet COMPANY dan enam ruko (`PointsMaterial`, tekstur tanpa mipmap);
+  - genangan cahaya lilac di trotoar depan jendela dan pintu, halo putih lembut di belakang billboard (quad additive, tanpa bloom);
+  - rolling door berbilah di bukaan enam ruko dengan kotak gulungan dan rel bawah (satu material); garis putus-putus jalan di z 7,2 (frame K16);
+  - aspal lebih gelap saat malam (material jalan kit, dipakai bersama `street` dan `row`).
+- **Jalan COMPANY** (`sets/street.ts` `setNight`): jendela toko dan kaca pintu memakai peta cahaya lilac sendiri saat malam (peta hangat yang diwarnai tetap pink); muka billboard lebih terang; papan COMPANY menyala lewat salinan datar tanpa cahaya (bingkai jingga, huruf amber) di depan papan, hanya digambar saat malam. Material papan siang tetap di batch kanopi, jadi K1 tetap 122 draw call (pemisahan material sempat membuatnya 124; salinan dari huruf ekstrusi sempat +24 rb segitiga).
+- **Gerak:** daun pintu COMPANY menutup sendiri di depan kamera yang mundur (42–52% gerak K13 → K15; video 35–36 dtk, sedikit lebih awal); lampu gantung ruang depan meredup bersamaan (36–53%; jangkauannya 6 m sampai ke kanopi); ruang depan, hologram dan props konter dilepas di 53% setelah daun tertutup; backdrop pintu tidak tampil saat itu (celah daun akan menampilkan ruang siang). Wildan tidak digambar lagi setelah kamera meninggalkan kelas (sebelumnya ikut digambar di balik dinding, ±22 rb segitiga).
+- **Cahaya:** `NIGHT` disetel ke video (fasad abu-lilac terang; matahari 0,15 supaya bayangan diagonal pagi tidak tampak); kubah malam lebih gelap di dekat cakrawala.
+- **Kamera:** K16 PC lebih dekat (z 25,5, y 8,4, −12,5°) supaya trotoar seberang (z 12,1) di bawah frame; K16 HP z 17,5.
+- **Dicek** (render hanya di chat):
+  - 8 titik PC 1280×720 berdampingan dengan video 33,5–38,6 dtk, HP 375×812;
+  - anggaran K13 → akhir take (render langsung per titik tiap 0,025–0,05 layar; `stats()` di `?shot` kadang tidak diperbarui saat frame bayangan): PC terberat 116 draw call / 128 rb segitiga, HP 112 / 122 rb (sesaat sebelum ruang depan dilepas); K15.1 PC 23, K16 PC 66 / 101 rb, HP 45;
+  - tidak ada lompatan saat ruang depan dilepas: kamera sama, ruang tampil vs tidak, beda rata-rata 0,23 per kanal (hanya celah daun);
+  - diam di K16 halaman live: 1 render dalam 20 dtk (sama dengan K9b), tidak ada shadow map yang digambar terus;
+  - K0, K1, K5a.2 siang dibanding still: tidak berubah (beda K5a.2 karena tokoh di jalan, bukan set malam);
+  - `tsc --noEmit`, ESLint, Prettier.
+- **Belum / langkah 3:** CTA di billboard (kotak hero, K15.1), epilog di pita jalan K16, sambungan jalan → footer, `#kontak`, still K15.1 dan K16, fallback tanpa WebGL, versi tumpuk, alt teks, cek akhir seluruh take (`issue4*.mjs`, `build`, tes HP fisik). Catatan: ruang depan K13 masih hangat (video: biru senja), dari tahap 9.
 
