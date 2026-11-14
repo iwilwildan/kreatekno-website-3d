@@ -49,7 +49,7 @@ import { LOBBY, lx } from "./sets/lobbyLayout";
 import { B9, PLAQUE_GATE, plaqueAnchors, plaqueCopyFade, plaqueStopAt } from "./takes/home/beat9";
 import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
-import { B15, nightAt } from "./takes/home/beat15";
+import { B15, ctaAnchors, ctaFade, epilogueFade, nightAt } from "./takes/home/beat15";
 import { buildNight } from "./sets/night";
 import type { Holograms } from "./sets/holograms";
 import { classFrame, classSeat } from "./sets/classLayout";
@@ -263,6 +263,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   let phone: ReturnType<typeof import("./cast/roster").createPhone> | null = null;
   let sweat: ReturnType<typeof import("./cast/roster").createSweat> | null = null;
   let thoughts: ReturnType<typeof import("./cast/roster").createThought> | null = null;
+  /** Set once the cast's props (Sinta's phone, the thought bubbles) exist: the room's show/hide applies to them again. */
+  let castPropsFresh = false;
   let placeCrew = () => {};
   const castReady = import("./cast/roster").then(async (mod) => {
     if (disposed) return;
@@ -294,6 +296,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     scene.add(phone.group);
     sweat = mod.createSweat(crew);
     thoughts = mod.createThought(crew);
+    // (built after the room's show/hide has run: on a load straight at the night street, tahap 10, they stood in
+    // COMPANY's doorway)
+    castPropsFresh = true;
     await pause();
     if (disposed) return;
     const hands = await mod.buildCloseHands({ saver }, pause);
@@ -879,6 +884,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   const lobbyCopy = lobbyAnchors();
   // and on Kreatekno's plaque (tahap 8): "Tentang Kreatekno" in two columns
   const plaqueCopy = plaqueAnchors();
+  // and on the lit billboard at night (tahap 10): the CTA, in the hero's boxes (fixed size, no measuring)
+  const ctaCopy = ctaAnchors();
   // and on the classroom's TV (tahap 9): "Praktik naik kelas", placed per layout step of the room
   let practice = { step: -1, anchor: practiceAnchor(0) };
   const practiceCopy = () => {
@@ -1381,7 +1388,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const hide = atCompany
       ? xs < B12.into.s - 0.05 || xs > B15.exit.s + 0.53 * B15.exit.len
       : xs > B5.back + 0.1 && (c.pos.z > 0.6 || xs >= LOBBY_START);
-    if (hide !== roomHidden || atCompany !== roomAtCompany) {
+    if (hide !== roomHidden || atCompany !== roomAtCompany || castPropsFresh) {
+      castPropsFresh = false;
       roomHidden = hide;
       roomAtCompany = atCompany;
       if (room) room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
@@ -1545,6 +1553,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...lobbyCopy.map((l) => l.anchor),
       ...plaqueCopy.map((l) => l.anchor),
       practiceCopy(),
+      ...ctaCopy,
     ]) {
       const q = pastDoor && anchors.includes(a) ? null : projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
@@ -1572,6 +1581,10 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     // the TV's (tahap 9): at the K12 hold, while the classroom is shown
     fade.practice = classroom?.group.visible ? practiceCopyFade(xs) : 0;
+    // the CTA's (tahap 10): at the K15.1 hold; the epilogue over the road at K16 (screen-space, no anchor)
+    const cf = ctaFade(xs);
+    for (const a of ctaCopy) fade[a.name] = cf;
+    fade.epilogue = epilogueFade(xs);
     opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
     // Reveal only after the complete counter scene has been prepared and actually drawn.
     if (!readyFired && assetsReady && !disposed) {
@@ -1739,7 +1752,8 @@ function billboardAnchors() {
 /** Width / height of each anchor, so the page can size the HTML boxes without distorting the text. */
 export function anchorAspects() {
   const out: Record<string, number> = {};
-  for (const a of billboardAnchors())
+  // (and the CTA's at night, tahap 10: the same shapes on the same face)
+  for (const a of [...billboardAnchors(), ...ctaAnchors()])
     out[a.name] = a.corners[0].distanceTo(a.corners[1]) / a.corners[0].distanceTo(a.corners[2]);
   return out;
 }

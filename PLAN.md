@@ -190,9 +190,9 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 5 | Beat 3–4 | Layanan (leaflet A4 datar di konter) dan Use case (binder terbuka), tampak atas dengan tangan Heru dan Bu Dewi | 4 | ✅ 7 Nov (disetujui user; belum dites di HP Android sungguhan) |
 | 6 | Beat 5a–5b | Anggukan Bu Dewi (K4.1), kamera mundur lewat pintu (K4.2), keluar bersama (K5a.1), truck right menyusuri 8 ruko dengan panel customer journey (K5a.2–K5a.5), tiba di pintu Kreatekno (K5a.6) | 5 | ✅ selesai, disetujui 7 Nov |
 | 7   | Beat 6–9a                     | Lobi Kreatekno: dinding gabus, rak majalah, ruang rapat dan sticky note FAQ; Wildan dan Andi                                                                                                 | 6                                          | ✅ 13 Nov (disetujui user; tes HP fisik lancar; temuan laju jalan ruko tetap di issue #9) |
-| 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | 🟡 langkah 1–3 selesai (13 Nov); cek akhir bersama tahap 10 |
-| 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review |
-| 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1–2 selesai (14 Nov), menunggu review |
+| 8 | Beat 9b–11 | Plakat golden hour, naik ke langit, hyperlapse, turun ke pintu COMPANY | 7 | 🟡 langkah 1–3 selesai (13 Nov), cek akhir bersama tahap 10 (14 Nov); menunggu review dan tes HP fisik |
+| 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review dan tes HP fisik |
+| 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review; `issue4*.mjs` dan tes HP fisik di laptop |
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
 | 12 | Solusi v1 dan detail | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail | 11 | ⬜ etalase disetujui 4 Nov; perluasan detail draf 7 Nov |
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
@@ -2133,4 +2133,19 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - K0, K1, K5a.2 siang dibanding still: tidak berubah (beda K5a.2 karena tokoh di jalan, bukan set malam);
   - `tsc --noEmit`, ESLint, Prettier.
 - **Belum / langkah 3:** CTA di billboard (kotak hero, K15.1), epilog di pita jalan K16, sambungan jalan → footer, `#kontak`, still K15.1 dan K16, fallback tanpa WebGL, versi tumpuk, alt teks, cek akhir seluruh take (`issue4*.mjs`, `build`, tes HP fisik). Catatan: ruang depan K13 masih hangat (video: biru senja), dari tahap 9.
+
+### 2026-11-14 (tahap 10 langkah 3: CTA, epilog, halaman; cek akhir)
+
+- Atas permintaan user ("Lanjutkan" setelah langkah 2).
+- **CTA di billboard** (`components/home/props/NightCta.tsx`, `cta.css`, `home.cta` + tombol "Konsultasi gratis" dan "Ketemu langsung", ID/EN): K15.1 memakai kamera K0, jadi CTA mengambil kotak hero di muka billboard dengan bentuk yang sama (`beat15.ts` `ctaAnchors`: `cta-top`, `cta-bottom`, `cta-face`). Kotak berukuran tetap seperti hero (560 / 280 px, diskalakan `matrix3d`) dengan ukuran huruf hero yang sudah dites muat di langkah 1, tetapi memudar seperti copy props (`data-fade` + `data-fixed`, `placeAnchors`). 16:9: judul di atas, kalimat dan dua tombol di bawah; 9:16: judul di seluruh muka, kalimat dan tombol jadi kartu di pita bawah layar yang memudar bersama judul (`data-fade-by`). Muncul di ujung crane up, hilang saat kamera mundur (`ctaFade`), tidak bisa di-Tab di luar jeda.
+- **Epilog** (`home.footer.epilogue`): teks lurus di pita jalan K16 di atas gradien yang menggelap ke warna footer (`--color-navy-3`), sehingga panggung yang lepas dari sticky langsung bersambung ke footer tanpa tepi. Muncul saat kamera tiba di K16 (`epilogueFade`). Footer situs tetap `Footer` setelah panggung (komentar `page.tsx` dan `Footer.tsx` diperbarui).
+- **Halaman:** penanda lompat `#kontak` (tengah jeda K15.1, `components/home/nightStills.ts`); still K15.1 dan K16 PC/HP; fallback tanpa WebGL dengan CTA di still K15.1 (`stills.json`) dan epilog di still K16; versi tumpuk: penanda, still K15.1, CTA, still K16, epilog, lalu footer (order 32–37); alt `home.stage.k15_1`, `k16` (ID/EN); `tools/render/lib.mjs` KEYS dan copy K15.1.
+- **Perbaikan:** HP Sinta dan gelembung pikiran dibuat setelah aturan tampil/sembunyi ruang depan dijalankan, sehingga pada halaman yang dibuka langsung di malam hari (`#kontak`, `?k=K15.1`) keduanya melayang di ambang pintu COMPANY. Ini juga penyebab gelembung pikiran di tepi still K13 tahap 9. Aturannya sekarang dijalankan lagi saat keduanya dibuat (`castPropsFresh`). Still K11, K12, K13 PC/HP dirender ulang.
+- **Dicek** (screenshot hanya di chat):
+  - CTA live: PC 1280×720 judul 34 px, kalimat 14,5 px, tombol 13 px dalam kotak 560 × 140 / 110, tanpa luapan; HP 375×812 judul 21 px, kartu 345 × 220 px; HP 360×640 EN tanpa luapan;
+  - fallback tanpa WebGL `#kontak` di 1280×720, 375×812, 360×640: mendarat di still K15.1 dengan CTA; ujung take: still K16 dengan epilog, lalu footer bersambung;
+  - versi tumpuk (reduced motion dan tanpa JS) 375 px: copy praktik → still K15.1 → judul CTA → kalimat dan tombol → still K16 → epilog → footer;
+  - `next build`, `typecheck`, `lint` (1 peringatan lama di `opengraph-image.tsx`), `format:check` seluruh situs lulus;
+  - `issue4.mjs` (server produksi port 3300): panjang take 36,3 / 37,45, copy K3/K4 dan tab binder lulus; berhenti di cek "2 dtk/layar mengikuti scroll" (lag 0,40, harus menetap < 1 dtk) karena render SwiftShader ±5 dtk per frame. `issue4-loading.mjs`: 12 cek lulus (fallback, kanvas dilepas, tanpa error), berhenti di batas 30 dtk menunggu world termuat (SwiftShader). Keduanya perlu dijalankan di laptop dengan GPU.
+- **Belum:** tes HP fisik (Android murah, FPS); `issue4*.mjs` di laptop; ruang depan K13 masih hangat (tahap 9); pose mendengarkan staf (tahap 9); review user untuk tahap 8–10.
 

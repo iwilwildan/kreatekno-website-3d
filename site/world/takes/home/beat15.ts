@@ -7,9 +7,11 @@
 // shut, the billboard lit, the stars; the epilogue on the road, the site's footer after the stage).
 // Frames of the video were read by eye; K15.1 is the solved K0 camera (takes/home/data.json).
 import * as THREE from "three";
+import { rectAnchor, type Anchor } from "../../core/anchors";
 import { segmentStart, smoothstep } from "../../core/segments";
 import type { CamPose } from "../../core/take";
 import { LAYOUT_STEPS } from "../../sets/companyFront";
+import { billboardFace } from "../../sets/street";
 import { DATA } from "./data";
 import { fitFov } from "./outside";
 import { mix, rig, track, v, type View } from "./beat9";
@@ -119,11 +121,25 @@ export function beat15Camera(x: number, t: number, aspect: number): CamPose {
 /** 0 at dusk (K13) … 1 at night, as the camera comes out through the door (video 34–36 s). */
 export const nightAt = (x: number) => smoothstep(B15.exit.s + 0.1 * B15.exit.len, B15.exit.s + 0.75 * B15.exit.len, x);
 
-// ---------- copy (greybox): the CTA on the billboard's face, the epilogue over the dark road ----------
-// K15.1 is the K0 camera, so the CTA takes the hero's boxes on the face (world/index billboardAnchors: 16:9 its title
-// above, its paragraph and two buttons below; 9:16 the title on the face, the rest in the card at the bottom), fitted
-// in langkah 1 at 1280 × 720, 1920 × 1080, 375 × 812 and 360 × 640 (ID and EN). The epilogue is a line set straight
-// on the screen in the road's band at K16 (flat on the road it would be ±11 px and sheared), the footer after it.
+// ---------- copy (langkah 3): the CTA on the billboard's face, the epilogue over the dark road ----------
+// K15.1 is the K0 camera, so the CTA takes the hero's boxes on the face, the same shapes (fixed CSS boxes scaled by
+// matrix3d, sized as the hero's: fitted at 1280 × 720, 1920 × 1080, 375 × 812 and 360 × 640, ID and EN): 16:9 the
+// title above, the paragraph and the two buttons below; 9:16 the title on the whole face, the rest in a card at the
+// bottom of the screen. The epilogue is a line set straight on the screen over the road's band at K16 (flat on the
+// road it would be ±11 px and sheared), fading into the footer's colour under it.
+/** Share of the face's height for the title on 16:9 (the hero's FACE_SPLIT, world/index). */
+const CTA_SPLIT = 0.56;
+/** The CTA's boxes on the billboard's face (anchors cta-top, cta-bottom on 16:9; cta-face on 9:16). */
+export function ctaAnchors(): Anchor[] {
+  const f = billboardFace(),
+    topH = f.hh * CTA_SPLIT,
+    botH = f.hh - topH;
+  return [
+    rectAnchor("cta-face", f.cx, f.cy, f.z, f.hw, f.hh),
+    rectAnchor("cta-top", f.cx, f.cy + f.hh - topH, f.z, f.hw, topH),
+    rectAnchor("cta-bottom", f.cx, f.cy - f.hh + botH, f.z, f.hw, botH),
+  ];
+}
 /** Screens where the CTA's copy is read (the middle of the K15.1 hold). */
 export const ctaAt = () => B15.k151.s + B15.k151.len / 2;
 /** Opacity of the CTA's copy at screens x: in at the end of the crane up, out as the camera pulls back. */

@@ -1,0 +1,152 @@
+/*
+ * Beats 14–16 (tahap 10): the CTA on the lit billboard at night (K15.1) and the epilogue over the dark road (K16).
+ * Loaded after practice.css. Base rules are the stacked version (reduced motion, no JavaScript): after the TV's copy,
+ * the jump mark #kontak, the K15.1 still, the CTA as one section, then the K16 still and the epilogue, before the
+ * site's footer. The film's rules are in the media query below.
+ */
+.take-mark[data-at="K15.1"] {
+  order: 32;
+}
+.take-still[data-still="K15.1"] {
+  order: 33;
+}
+.cta-head {
+  order: 34;
+}
+.cta-body {
+  order: 35;
+}
+.take-still[data-still="K16"] {
+  order: 36;
+}
+.take-epilogue {
+  order: 37;
+}
+.cta-head.prop-copy {
+  margin-bottom: 0;
+}
+.cta-body.prop-copy {
+  margin-top: 12px;
+}
+.cta-body p {
+  max-width: 52ch;
+  font-size: 1.125rem;
+  text-wrap: pretty;
+}
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.take-epilogue {
+  width: min(100% - 32px, 64rem);
+  margin: 32px auto 48px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-navy);
+  text-wrap: balance;
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* the CTA in the hero's boxes on the billboard's face (BOX_W 560 px, scaled by matrix3d): the hero's sizes, fitted
+     with the CTA's text at 1280 × 720 and 1920 × 1080 (ID and EN) */
+  .cta-copy.prop-copy {
+    container-type: normal;
+  }
+  .cta-head {
+    display: flex;
+    align-items: center;
+    padding: 18px 26px 6px;
+  }
+  .cta-head h2 {
+    font-size: 34px;
+    line-height: 1.04;
+    color: var(--color-navy);
+  }
+  .cta-body {
+    padding: 2px 26px 16px;
+  }
+  .cta-body p {
+    max-width: none;
+    font-size: 14.5px;
+    line-height: 1.42;
+    color: var(--color-ink);
+  }
+  .cta-actions {
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .cta-actions .btn {
+    --t-btn: 0.8125rem;
+    min-height: 38px;
+    padding-block: 4px;
+  }
+  .cta-actions .knob {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* the epilogue: a band over the road at the bottom of the stage, darkening into the footer's colour, the line set
+     straight in it (the stage then scrolls away and the footer, the same colour, follows) */
+  .take-epilogue {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: auto;
+    height: 30%;
+    margin: 0;
+    padding: 0 24px calc(7% + 100lvh - 100svh);
+    background: linear-gradient(to bottom, rgb(11 15 58 / 0), rgb(11 15 58 / 0.7) 55%, var(--color-navy-3));
+    font-size: clamp(1.125rem, 1.9vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    color: #e9e6ff;
+    text-shadow: 0 2px 18px rgb(11 15 58 / 0.8);
+    visibility: hidden;
+  }
+
+  @media (max-aspect-ratio: 1/1) {
+    .cta-head {
+      padding: 10px 16px 8px;
+    }
+    .cta-head h2 {
+      font-size: 21px;
+    }
+    /* phones: the paragraph and the buttons are a card in the bottom band, above the browser's toolbar (the hero's) */
+    .cta-body.prop-copy {
+      inset: auto 4% calc(3% + 100lvh - 100svh);
+      width: auto;
+      height: auto;
+      transform: none;
+      padding: 18px;
+      border-radius: var(--radius-card);
+      background: rgb(255 255 255 / 0.9);
+      box-shadow: 0 18px 40px -28px rgb(19 25 81 / 0.6);
+      backdrop-filter: blur(12px);
+    }
+    .cta-body p {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .cta-actions {
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .cta-actions .btn {
+      --t-btn: 0.9375rem;
+      min-height: 44px;
+    }
+    .cta-actions .knob {
+      width: 34px;
+      height: 34px;
+    }
+    .take-epilogue {
+      height: 34%;
+      padding-bottom: calc(10% + 100lvh - 100svh);
+    }
+  }
+}

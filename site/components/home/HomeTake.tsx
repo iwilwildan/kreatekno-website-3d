@@ -8,6 +8,7 @@ import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
 import { LOBBY_STILLS, lobbyMarks, lobbyStillFades } from "./lobbyStills";
 import { PLAQUE_STILLS, plaqueMark, plaqueStillFades } from "./plaqueStills";
 import { CLASS_STILLS, classMark, classStillFades } from "./classStills";
+import { NIGHT_STILLS, epilogueStill, nightMark, nightStillFades } from "./nightStills";
 import stillsData from "./stills.json";
 
 const STILLS = stillsData as unknown as StillsData;
@@ -45,6 +46,8 @@ const STILL_FADES: Record<string, [number, number]> = {
   ...plaqueStillFades(),
   // beats 12–13 (tahap 9): the class at the TV as the camera comes through the back door, the front room at dusk
   ...classStillFades(),
+  // beats 14–16 (tahap 10): the lit billboard at the end of the crane up, the night street
+  ...nightStillFades(),
 };
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
@@ -90,6 +93,13 @@ const MARKS: { id: string; key: KeyName; at: number; atHp?: number }[] = [
   // and the classroom's TV (tahap 9)
   ...[classMark()].map((m) => ({
     id: "praktik",
+    key: m.key,
+    at: scrollAtScreens(SEG, m.pc, false),
+    atHp: scrollAtScreens(SEG, m.hp, true),
+  })),
+  // and the CTA on the lit billboard (tahap 10)
+  ...[nightMark()].map((m) => ({
+    id: "kontak",
     key: m.key,
     at: scrollAtScreens(SEG, m.pc, false),
     atHp: scrollAtScreens(SEG, m.hp, true),
@@ -223,7 +233,7 @@ export function HomeTake({
       // the journey's copy shows with its still, until the next still of the row comes in; the lobby's the same way
       // with the lobby's stills (tahap 7)
       const journeyFade: Record<string, number> = {};
-      for (const list of [row, LOBBY_STILLS[fmt], PLAQUE_STILLS[fmt], CLASS_STILLS[fmt]])
+      for (const list of [row, LOBBY_STILLS[fmt], PLAQUE_STILLS[fmt], CLASS_STILLS[fmt], NIGHT_STILLS[fmt]])
         list.forEach((k, i) => {
           const here = stillQuads(k),
             next = STILL_FADES[list[i + 1]],
@@ -248,6 +258,8 @@ export function HomeTake({
           smoothstep(STILL_COPY.page[0], STILL_COPY.page[1], s) *
           (1 - smoothstep(STILL_FADES["K4.1"][0], STILL_FADES["K4.1"][1], s)),
         ...journeyFade,
+        // (tahap 10: the CTA's card on 9:16 fades with its title, by its anchor's name; the epilogue with K16)
+        epilogue: smoothstep(epilogueStill()[0], epilogueStill()[1], s),
       };
       placeAnchors(el, quads, STILLS.aspect, quadMatrix3d, { fade, sizes });
     };

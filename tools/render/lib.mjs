@@ -57,7 +57,7 @@ export function toWebp(png, webp, quality = 80) {
 }
 
 export const FORMATS = { pc: { width: 1600, height: 900 }, hp: { width: 720, height: 1280 } };
-export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6", "K6", "K7", "K8", "K9.1", "K9b", "K11", "K12", "K13"];
+export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6", "K6", "K7", "K8", "K9.1", "K9b", "K11", "K12", "K13", "K15.1", "K16"];
 /**
  * Stills of beats 5a–5b on 9:16 taken where the camera stops on a panel (screens into the take), not at the
  * hold's middle (between two panels there); "b" keys are the second panel of a hold (9:16 only).
@@ -95,6 +95,8 @@ export const LOBBY_COPY = {
     K9b: ["about-0", "about-1"],
     // tahap 9: the slide on the classroom's TV
     K12: ["practice"],
+    // tahap 10: the CTA on the lit billboard (its title above, its paragraph and buttons below)
+    "K15.1": ["cta-top", "cta-bottom"],
   },
   hp: {
     K6: ["board-strip"],
@@ -105,5 +107,7 @@ export const LOBBY_COPY = {
     K9b: ["about-0"],
     "K9b-2": ["about-1"],
     K12: ["practice"],
+    // (9:16: the title on the face; the paragraph and the buttons are a card the page places)
+    "K15.1": ["cta-face"],
   },
 };

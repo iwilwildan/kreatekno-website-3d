@@ -18,7 +18,7 @@ export default async function HomePage() {
       <main id="main">
         <HomeStage />
       </main>
-      {/* Replaced by the footer on the night road (beat 16). */}
+      {/* After the night road of beat 16 (tahap 10): the take ends on the epilogue fading into this colour. */}
       <Footer />
     </>
   );

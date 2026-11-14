@@ -15,12 +15,15 @@ import { Plaque } from "./props/Plaque";
 import { PLAQUE_KEYS } from "./plaqueStills";
 import { Practice } from "./props/Practice";
 import { CLASS_KEYS } from "./classStills";
+import { NightCta } from "./props/NightCta";
+import { NIGHT_KEYS } from "./nightStills";
 import { LOBBY_KEYS } from "./lobbyStills";
 import stillsData from "./stills.json";
 import "./stage.css";
 import "./lobby.css";
 import "./plaque.css";
 import "./practice.css";
+import "./cta.css";
 
 const KEYS = [
   "K0",
@@ -47,6 +50,8 @@ const KEYS = [
   ...PLAQUE_KEYS,
   // beats 12–13 (tahap 9): the class at the TV, the front room at dusk
   ...CLASS_KEYS,
+  // beats 14–16 (tahap 10): the lit billboard at night (the CTA), the night street
+  ...NIGHT_KEYS,
 ] as const;
 type Key = (typeof KEYS)[number];
 /** Stills that only exist on 9:16 (a later stop of a hold); on 16:9 they repeat the hold's still. */
@@ -59,9 +64,26 @@ const HP_ONLY: Partial<Record<Key, string>> = {
 };
 /**
  * The stacked version (reduced motion, no JavaScript) shows the beat 5b copy with the K5a.2 still only, the lobby's
- * with the K6, K7 and K8 stills, the plaque's (tahap 8) with the K9b still, the TV's (tahap 9) with the K12 still.
+ * with the K6, K7 and K8 stills, the plaque's (tahap 8) with the K9b still, the TV's (tahap 9) with the K12 still,
+ * the CTA (tahap 10) with the K15.1 still and the epilogue with the K16 still.
  */
-const STACKED = new Set(["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K5a.2", "K6", "K7", "K8", "K9b", "K12"]);
+const STACKED = new Set([
+  "K0",
+  "K1",
+  "K2",
+  "K2.1",
+  "K2.2",
+  "K3",
+  "K4",
+  "K5a.2",
+  "K6",
+  "K7",
+  "K8",
+  "K9b",
+  "K12",
+  "K15.1",
+  "K16",
+]);
 
 /**
  * The Home stage (STORY-STAGE.md, beats 1–4 for now: the hero on the billboard, Layanan on the leaflet and Use
@@ -122,6 +144,7 @@ export async function HomeStage() {
             <StickyNotes title={tFaq("title")} help={tFaq("help")} closeLabel={tFaq("close")} items={faq} />
             <Plaque />
             <Practice />
+            <NightCta />
           </>
         }
         headline={
