@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { getPathname, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
@@ -14,6 +15,21 @@ export function LangSwitch({ tone = "light", className = "" }: { tone?: "light" 
   const locale = useLocale();
   const pathname = usePathname();
   const params = useParams();
+  const [solutionSuffix, setSolutionSuffix] = useState("");
+
+  useEffect(() => {
+    const sync = () => {
+      const isSolutions = pathname === "/solusi" || pathname === "/solusi/hasil";
+      setSolutionSuffix(isSolutions ? window.location.search + window.location.hash : "");
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    window.addEventListener("popstate", sync);
+    return () => {
+      window.removeEventListener("hashchange", sync);
+      window.removeEventListener("popstate", sync);
+    };
+  }, [pathname]);
 
   const track = tone === "dark" ? "bg-white/10" : "bg-navy/7";
   const idle = tone === "dark" ? "text-on-night-muted hover:text-on-night" : "text-muted hover:text-navy";
@@ -25,7 +41,7 @@ export function LangSwitch({ tone = "light", className = "" }: { tone?: "light" 
         <a
           key={l}
           // Dynamic pages (e.g. /artikel/[slug]) need their params to build the other-language URL.
-          href={getPathname({ locale: l, href: { pathname, params } as never })}
+          href={`${getPathname({ locale: l, href: { pathname, params } as never })}${solutionSuffix}`}
           hrefLang={l}
           lang={l}
           aria-label={l === "id" ? t("idName") : t("enName")}

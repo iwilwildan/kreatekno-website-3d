@@ -8,6 +8,7 @@ import { CAST } from "./roster";
 import { K8_POSES, LOBBY_CAST } from "./lobbyCast";
 import { buildMember } from "./member";
 import { applyPose } from "./poses";
+import { KASIR_POSES, type KasirPoseName } from "./kasirPose";
 import { Walk, walkPose } from "./walk";
 
 export function mountLab(params: URLSearchParams) {
@@ -47,7 +48,15 @@ export function mountLab(params: URLSearchParams) {
   const spec = CAST[name as keyof typeof CAST] ?? LOBBY_CAST[name as keyof typeof LOBBY_CAST] ?? CAST.heru,
     build = (o: { saver: boolean }) => buildMember(spec, o);
   const walking = params.has("walk");
-  const views = walking ? [0] : view === "sheet" ? [0, -0.5, -Math.PI / 2, Math.PI] : [Number(params.get("rot") ?? 0)];
+  const poseParam = params.get("pose");
+  const poseNames = poseParam === "all" ? (Object.keys(KASIR_POSES) as KasirPoseName[]) : null;
+  const views = walking
+    ? [0]
+    : poseNames
+      ? poseNames.map(() => 0)
+      : view === "sheet"
+        ? [0, -0.5, -Math.PI / 2, Math.PI]
+        : [Number(params.get("rot") ?? 0)];
   const gap = 0.75;
   let triangles = 0;
   let buildMs = 0,
@@ -60,8 +69,10 @@ export function mountLab(params: URLSearchParams) {
     m.mesh.position.x = (i - (views.length - 1) / 2) * gap;
     m.mesh.rotation.y = r;
     scene.add(m.mesh);
+    const poseName = (poseNames?.[i] ?? poseParam) as KasirPoseName | null;
+    if (name === "heruKasir" && poseName && KASIR_POSES[poseName]) applyPose(m, KASIR_POSES[poseName]);
     // &pose=k8: Wildan and Andi seated at their laptops (tahap 7)
-    if (params.get("pose") === "k8" && name in K8_POSES) applyPose(m, K8_POSES[name as keyof typeof K8_POSES]);
+    if (poseParam === "k8" && name in K8_POSES) applyPose(m, K8_POSES[name as keyof typeof K8_POSES]);
     triangles = m.triangles;
     return m;
   });
