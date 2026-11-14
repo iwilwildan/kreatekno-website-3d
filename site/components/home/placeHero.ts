@@ -13,7 +13,7 @@ type StillAnchors = {
 } & {
   /**
    * Copy on other stills (stills fallback): the leaflet on K3, the binder's page on K4, the journey's panels on
-   * K5a.2–K5a.4 (on 9:16 also K5a.2b, K5a.3b, K5a.4b).
+   * K5a.2–K5a.4 (on 9:16 also K5a.2b, K5a.3b).
    */
   [still: string]: Record<string, Quad> | number;
 };

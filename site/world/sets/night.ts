@@ -94,7 +94,7 @@ export function buildNight(kit: Kit) {
     group.add(stars);
   }
 
-  // ---------- lamps along the parapets: COMPANY and the six shops (video 37–38.7 s: a warm dot every ±1.2 m) ----------
+  // ---------- lamps along the parapets: COMPANY and the five shops (video 37–38.7 s: a warm dot every ±1.2 m) ----------
   {
     const pts: number[] = [];
     const line = (x0: number, x1: number, y: number, z: number) => {
@@ -179,7 +179,7 @@ export function buildNight(kit: Kit) {
         g.fillRect(0, y + 2, w, 1);
       }
     });
-    // (the box and the rail in the slats' material too: one draw call for all six)
+    // (the box and the rail in the slats' material too: one draw call for all five)
     const door = new THREE.MeshStandardMaterial({ map: slats, roughness: 0.55, metalness: 0.25 }),
       dark = door,
       ow = ROW.opening.w + 0.08,

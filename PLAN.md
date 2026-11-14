@@ -2349,3 +2349,22 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - Typecheck, ESLint dan Prettier untuk file baru, `next build` lulus.
 - Belum: tes di HP fisik (FPS, panas, waktu siap), still fallback (sekarang kotak kosong yang memudar masuk), komentar `Footer.tsx` dan `page.tsx` soal footer jalan malam beat 16 belum disesuaikan. Pertanyaan terbuka: footer jalan malam beat 16 tetap lalu disusul footer ini, dihapus, atau digabung.
 
+
+### 2026-11-14 (ruko elektronik dihapus)
+
+- **Masukan user** (screenshot HP di jalan ruko, panel "Konsultasi gratis"): "Hilangkan ruko ini". Jawaban user atas dua pertanyaan: tombol "Konsultasi gratis" di panel ikut dihapus (CTA tetap ada di header, tombol mengambang dan billboard malam K15.1), dan deret dirapatkan seperti 7 Nov.
+- **Perubahan:**
+  - deret ruko tinggal 5: buah, laundry, sepatu, warteg, kosmetik, lalu Kreatekno (`sets/rowLayout.ts`, barang elektronik dihapus dari `sets/shop.ts`). Pintu Kreatekno kini ±42 m dari pintu COMPANY (sebelumnya ±49 m); lampu parapet dan rolling door malam (`sets/night.ts`) ikut 5 ruko;
+  - copy panel: blok `journey-cta` (tombol + panah) dihapus dari `props/Journey.tsx` dan `stage.css`, termasuk di versi tumpuk. Langkah 4 (kosmetik) jadi panel terakhir;
+  - `timing.ts`: K5a.3 → K5a.4 0,5 → 0,15 layar, jeda K5a.4 0,6 → 0,3, K5a.4 → K5a.6 0,5 → 0,65 (total −0,5: satu ruko 7,05 m pada laju jalan ±14,6 m per layar). Tengah jeda K5a.4 (13,70) jatuh di panel kosmetik yang di HP tepat di tengah layar pada 13,68 (percobaan pertama 0,3 / 0,3 / 0,5 menaruhnya di 13,85, panel sudah setengah keluar layar HP). Take 9:16 37,45 → 36,95, PC 36,3 → 35,8 layar scroll. Di HP jeda K5a.4 tinggal satu panel (`HP_PANELS`);
+  - `beat9.ts`: pandangan tinggi K9b → K10 memakai ruko terakhir (`shopX(SHOPS.length - 1)`, sebelumnya `shopX(5)` yang kini jatuh di fasad Kreatekno), jadi sudutnya ke Kreatekno sama seperti sebelumnya;
+  - still `K5a.4b` (HP, panel elektronik) dihapus; `STILL_FADES` K5a.4 dan K5a.6 disesuaikan; alt `k5a_4` ID/EN tidak lagi menyebut toko elektronik; `stills.json` tanpa `journey-cta`;
+  - AO deret ruko di-bake ulang (hanya `row-*`: 17 peta; elektronik dan `row-pave-7` hilang, kosmetik dinding dan `row-pave-3..6` berubah, sisanya identik byte per byte);
+  - tool: `HP_AT` diukur ulang (11,78 / 12,25 / 12,73 / 13,21 / 13,69), `JOURNEY` tanpa `cta`, panjang take di `issue4*.mjs` dan `lobby.mjs`.
+- **Dicek** (Playwright, SwiftShader, dev; screenshot hanya di chat):
+  - posisi kamera per 0,06 layar K5a.1 → K5a.6, sebelum dan sesudah, HP 375×812 dan PC 1280×720: perhentian panel di HP tetap di 11,78 / 12,25 / 12,73 / 13,21 / 13,68 layar; kamera tiba di pintu Kreatekno ±0,5 layar lebih awal (sebelumnya ±14,9, sekarang ±14,4); tidak ada anchor `journey-cta`;
+  - render HP dan PC di K5a.4, antara K5a.4 dan K5a.6, K5a.6, pandangan tinggi K9b → K10, K16: kosmetik langsung bersebelahan dengan Kreatekno, tanpa error console;
+  - halaman live HP 375×812 `?k=K5a.3`, `K5a.4`, `K5a.6`: copy langkah 3 dan 4 tampil, tanpa blok `journey-cta`. Tablet dan PC live tidak sempat siap dalam 2 menit di SwiftShader, jadi dicek lewat render `?shot` saja;
+  - still dirender ulang: K5a.4 dan K5a.6 PC/HP (anchor `journey-launch` di `stills.json` ikut diperbarui). K9b, K9b-2 dan K16 juga dirender: K16 identik byte per byte, K9b hanya beda derau (rata-rata 0,1/255), jadi dikembalikan ke versi lama;
+  - `typecheck`, `lint` (1 peringatan lama di `opengraph-image.tsx`), `format:check`, `next build` lulus.
+- **Belum:** `issue4*.mjs` di laptop dengan GPU; tes HP fisik; review user. Di-commit ke branch `ccr-fa769dc0-el34x2` dengan PR ke `main` (permintaan user).

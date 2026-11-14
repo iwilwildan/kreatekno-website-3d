@@ -1,5 +1,5 @@
 // Set A continued (beats 5a–5b), its own chunk, built as the camera nears K4.1: the shophouses from the shoe shop
-// to the electronics shop (the fruit shop and the laundry, seen from K1 on, are built with the street), Kreatekno's
+// to the cosmetics shop (the fruit shop and the laundry, seen from K1 on, are built with the street), Kreatekno's
 // office and the end house, with the pavement, kerb and road running on past them. Master 7 and the team's videos
 // K5a.1–K5a.6. The lobby inside Kreatekno is its own chunk (sets/lobby, tahap 7); until it is built a lit backdrop
 // shows through the glass. The facade's glass is one-sided: dark seen from the street, nearly clear from the lobby.
@@ -365,7 +365,7 @@ function buildLampGlow(kit: Kit, x: number, y: number, z: number, plaqueTop: num
 const shutters = new WeakMap<Kit, THREE.Texture>();
 
 /**
- * The shops from the shoe shop to the electronics shop and the end house, in a group of their own: unseen from the
+ * The shops from the shoe shop to the cosmetics shop and the end house, in a group of their own: unseen from the
  * lobby, so the world lets them go there and builds them again (with their AO maps) on the way back out.
  */
 export function buildFar(kit: Kit, M: RowMaterials, ao: AoTarget[], occ: THREE.BufferGeometry[]) {

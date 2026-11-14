@@ -37,9 +37,9 @@ const STILL_FADES: Record<string, [number, number]> = {
   "K5a.2b": [11.9, 12.08],
   "K5a.3": [12.4, 12.8],
   "K5a.3b": [13, 13.18],
-  "K5a.4": [13.5, 13.9],
-  "K5a.4b": [14.1, 14.28],
-  "K5a.6": [14.6, 15],
+  // (14 Nov: the electronics shop is gone, K5a.4 is the cosmetics shop's panel alone and the row 0.5 screen shorter)
+  "K5a.4": [13.4, 13.68],
+  "K5a.6": [14.1, 14.5],
   // beats 6–9a (tahap 7): each hold's still as the camera settles, on 9:16 one per stop, K9.1 at the turn
   ...lobbyStillFades(),
   // beats 9b–11 (tahap 8): the plaque as the dolly reaches it (9:16 its right column after), COMPANY's door
@@ -52,7 +52,7 @@ const STILL_FADES: Record<string, [number, number]> = {
 /** Stills of the row in order, per format: the journey's copy on one still fades out as the next comes in. */
 const ROW_STILLS = {
   pc: ["K5a.2", "K5a.3", "K5a.4", "K5a.6"],
-  hp: ["K5a.2", "K5a.2b", "K5a.3", "K5a.3b", "K5a.4", "K5a.4b", "K5a.6"],
+  hp: ["K5a.2", "K5a.2b", "K5a.3", "K5a.3b", "K5a.4", "K5a.6"],
 };
 /** Stills fallback: the leaflet's copy comes in on the K3 still and goes as the K4 still comes; the page's after. */
 // Both copies are fully visible at their keyframe, including when reached by a section link.

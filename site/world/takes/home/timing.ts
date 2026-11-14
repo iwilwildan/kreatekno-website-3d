@@ -8,9 +8,12 @@
 // read; the camera never waits on the copy (issue #4: no dwell).
 // Beats 5a–5b (the team's videos K4 → K5a.6): rise and turn to look over Heru's shoulder at Bu Dewi nodding (K4.1,
 // short hold), dolly straight back through the door out to the facade (K4.2, passed slowly, no hold), dolly out as
-// Heru and Bu Dewi come out (K5a.1, short hold), then truck right along the row: K5a.2–K5a.4 frame two panels each
-// and the camera stands still there, and K5a.6 settles at Kreatekno's door. The videos' K5a.5 (the stall and the
-// electronics shop) is gone with the blank shops (user, 7 Nov): K5a.4 frames the cosmetics and electronics shops.
+// Heru and Bu Dewi come out (K5a.1, short hold), then truck right along the row: K5a.2 and K5a.3 frame two panels
+// each, K5a.4 the cosmetics shop's (step 4) with Kreatekno coming in on the right, and K5a.6 settles at Kreatekno's
+// door. The videos' K5a.5 (the stall and the electronics shop) is gone with the blank shops (user, 7 Nov), and the
+// electronics shop with its "Konsultasi gratis" panel too (user, 14 Nov): the row is 0.5 screen shorter (one shop,
+// 7.05 m, at the pair's walk of ±14.6 m per screen), so the walk keeps its pace; the K5a.4 hold is centred on the
+// cosmetics shop's panel (9:16 has it in the middle of the screen at 13.7 screens).
 // Plain numbers only: the page imports this for the stage height and the stills fallback.
 import { holdP, scrollTotal, segmentsTotal, type Segment } from "../../core/segments";
 
@@ -68,9 +71,9 @@ export const SEG: Segment<KeyName>[] = [
   { type: "hold", from: "K5a.2", screens: 0.6 },
   { type: "move", from: "K5a.2", to: "K5a.3", screens: 0.5 },
   { type: "hold", from: "K5a.3", screens: 0.6 },
-  { type: "move", from: "K5a.3", to: "K5a.4", screens: 0.5 },
-  { type: "hold", from: "K5a.4", screens: 0.6 },
-  { type: "move", from: "K5a.4", to: "K5a.6", screens: 0.5 },
+  { type: "move", from: "K5a.3", to: "K5a.4", screens: 0.15 },
+  { type: "hold", from: "K5a.4", screens: 0.3 },
+  { type: "move", from: "K5a.4", to: "K5a.6", screens: 0.65 },
   { type: "hold", from: "K5a.6", screens: 0.3 },
   // Beats 6–9a (tahap 7, the team's videos K5a.6 → K9.1): through Kreatekno's door to the corkboard (K6), truck
   // left to the rack (K7), on left and round to the meeting room's glass (K8), turn to the facade (K9.1). Separate

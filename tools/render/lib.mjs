@@ -60,13 +60,14 @@ export const FORMATS = { pc: { width: 1600, height: 900 }, hp: { width: 720, hei
 export const KEYS = ["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K4.1", "K5a.1", "K5a.2", "K5a.3", "K5a.4", "K5a.6", "K6", "K7", "K8", "K9.1", "K9b", "K11", "K12", "K13", "K15.1", "K16"];
 /**
  * Stills of beats 5a–5b on 9:16 taken where the camera stops on a panel (screens into the take), not at the
- * hold's middle (between two panels there); "b" keys are the second panel of a hold (9:16 only).
+ * hold's middle (between two panels there); "b" keys are the second panel of a hold (9:16 only). Measured 14 Nov
+ * (the electronics shop taken out): the panel in the middle of a 375 × 812 screen.
  */
-export const HP_AT = { "K5a.2": 11.75, "K5a.2b": 12.13, "K5a.3": 12.85, "K5a.3b": 13.23, "K5a.4": 13.95, "K5a.4b": 14.33 };
+export const HP_AT = { "K5a.2": 11.78, "K5a.2b": 12.25, "K5a.3": 12.73, "K5a.3b": 13.21, "K5a.4": 13.69 };
 /** The journey copy recorded on each still (stills fallback), per format. */
 export const JOURNEY = {
-  pc: { "K5a.2": ["intro", "talk"], "K5a.3": ["map", "build"], "K5a.4": ["launch", "cta"] },
-  hp: { "K5a.2": ["intro"], "K5a.2b": ["talk"], "K5a.3": ["map"], "K5a.3b": ["build"], "K5a.4": ["launch"], "K5a.4b": ["cta"] },
+  pc: { "K5a.2": ["intro", "talk"], "K5a.3": ["map", "build"], "K5a.4": ["launch"] },
+  hp: { "K5a.2": ["intro"], "K5a.2b": ["talk"], "K5a.3": ["map"], "K5a.3b": ["build"], "K5a.4": ["launch"] },
 };
 /**
  * The lobby (tahap 7): on 9:16 a still per stop of a hold (site/world/takes/home/timing.ts STOP, LOBBY_STOPS): K6 the
