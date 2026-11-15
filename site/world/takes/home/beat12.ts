@@ -1,19 +1,20 @@
 // Beats 12–13 (tahap 9, the team's continuation video VID_20261113_185210, 21–34 s; greybox, langkah 1). From K11
 // the camera moves in on COMPANY's door as Heru and Wildan pull its leaves open, follows Bu Dewi through it (video
 // 22–24 s), takes in the front room at the end of the day from just inside (24–26 s: the staff's desks empty, a
-// hologram over each), goes on over her head through the gap between the middle desks, round the right end of the
-// counter and behind it to the wooden back door, and through it into the classroom (26.5–29 s). K12: from the
-// classroom's back, Wildan at the TV and the staff at their desks (29–31 s; 9:16 frames the TV, its copy). Then
-// straight back out through the door and over the counter into the front room as dusk falls (31–33.5 s, K13: the
-// counter frontal from the middle of the room).
+// hologram over each; issue #23: a stop on K2's own view, K11.1), goes on over her head through the gap between the
+// middle desks, round the right end of the counter and behind it to the wooden back door, and through it into the
+// classroom (26.5–29 s). K12: from the classroom's back, Wildan at the TV and the staff at their desks (29–31 s; 9:16
+// frames the TV, its copy). Then straight back out through the door and over the counter into the front room as
+// dusk falls (31–33.5 s), to a stop on K2's view again (K13, issue #23).
 // The room is the front room of beats 1–5 (its layout step per format: sets/companyFront), the classroom behind it
 // (sets/classLayout); camera points are read from the video by eye.
 import * as THREE from "three";
 import { rectAnchor, type Anchor } from "../../core/anchors";
 import { segmentStart, smoothstep } from "../../core/segments";
-import type { CamPose } from "../../core/take";
+import { blendCam, type CamPose } from "../../core/take";
 import { classFrame } from "../../sets/classLayout";
 import { counterFrame, LAYOUT_STEPS } from "../../sets/companyFront";
+import { DATA } from "./data";
 import { fitFov } from "./outside";
 import { k11View, mix, rig, track, v, type View } from "./beat9";
 import { SEG } from "./timing";
@@ -24,17 +25,33 @@ const seg = (from: string, type: "move" | "hold") => {
   const i = idx(from, type);
   return { s: segmentStart(SEG, i), len: SEG[i].screens };
 };
-/** The segments of beats 12–13 (screens on the take's own timeline). */
+const k111 = seg("K11.1", "hold"),
+  k12 = seg("K12", "hold"),
+  in0 = seg("K11", "move").s;
+/**
+ * The segments of beats 12–13 (screens on the take's own timeline). `into` is the whole way in, K11 → K11.1 → K12
+ * with the stop on K11.1 (issue #23), so the shares of it below (and in the world) are those of the single move it
+ * replaced.
+ */
 export const B12 = {
   k11: seg("K11", "hold"),
-  into: seg("K11", "move"),
-  k12: seg("K12", "hold"),
+  into: { s: in0, len: k12.s - in0 },
+  k111,
+  k12,
   out: seg("K12", "move"),
+  k13: seg("K13", "hold"),
 };
 /** Screens where beats 12–13 start: the move off K11. */
 export const B12_START = B12.into.s;
-/** Shares of the move in at which the camera is through COMPANY's door and through the back door. */
-export const INTO = { door: 0.36, backDoor: 0.92 };
+/**
+ * Shares of the way in at which the camera is through COMPANY's door and through the back door, and over which it
+ * stands on K11.1.
+ */
+export const INTO = {
+  door: 0.36,
+  backDoor: 0.92,
+  hold: [(k111.s - in0) / B12.into.len, (k111.s + k111.len - in0) / B12.into.len] as const,
+};
 
 const yawTo = (a: THREE.Vector3, b: THREE.Vector3) => Math.atan2(-(b.x - a.x), -(b.z - a.z));
 const pitchTo = (a: THREE.Vector3, b: THREE.Vector3) => Math.atan2(b.y - a.y, Math.hypot(b.x - a.x, b.z - a.z));
@@ -44,6 +61,36 @@ const look = (pos: THREE.Vector3, at: THREE.Vector3, fov: number): View => ({
   pitch: pitchTo(pos, at),
   fov,
 });
+
+/** The solved K2 camera for format blend t (as the K2 hold shows it: takes/home/index kf). */
+const k2Cam = (t: number) => blendCam(DATA.cams.pc.K2, DATA.cams.hp.K2, t);
+/**
+ * Issue #23: K2's own view of the four desks (K11.1 on the way in, K13 on the way out), as a View whose fov comes out
+ * as K2's after fitFov on this screen (the K2 hold uses the solved fov as it is, on every aspect). Its slight roll
+ * (≤ 0.6°) is put back at the stops (k2Roll).
+ */
+export function k2View(t: number, aspect: number): View {
+  const c = k2Cam(t),
+    e = new THREE.Euler().setFromQuaternion(c.quat, "YXZ"),
+    // (fitFov's inverse: it widens the fov on screens narrower than the format's own aspect)
+    akey = Math.exp(THREE.MathUtils.lerp(Math.log(16 / 9), Math.log(9 / 16), t)),
+    fov = aspect >= akey ? c.fov : THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(D2R(c.fov) / 2) * (aspect / akey)));
+  return { pos: c.pos, yaw: e.y, pitch: e.x, fov };
+}
+/**
+ * K2's roll as the camera comes to a stop on its view (over the last 0.3 screen before K11.1 and K13) and leaves it
+ * (0.3 screen after; out of K13 in takes/home/beat15), for screens x.
+ */
+export function k2Roll(x: number, t: number) {
+  const roll = new THREE.Euler().setFromQuaternion(k2Cam(t).quat, "YXZ").z,
+    e = B12.k111.s + B12.k111.len,
+    out = B12.k13.s + B12.k13.len;
+  const w = Math.max(
+    smoothstep(B12.k111.s - 0.3, B12.k111.s, x) * (1 - smoothstep(e, e + 0.3, x)),
+    smoothstep(B12.k13.s - 0.3, B12.k13.s, x) * (1 - smoothstep(out, out + 0.3, x)),
+  );
+  return new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll * w);
+}
 
 /** K12 for layout step `step` and format blend t: 16:9 the whole class from its back, 9:16 the TV and Wildan. */
 export function k12View(step: number, t: number): View {
@@ -60,12 +107,8 @@ export function k12View(step: number, t: number): View {
   const hp = look(hpPos, new THREE.Vector3(C.tv.x, C.tv.y - 0.05, C.tv.z), 50);
   return mix(pc, hp, t);
 }
-/** K13 (passed) for layout step `step`: the counter frontal from the middle of the room, as dusk falls. */
-export function k13View(step: number, t: number): View {
-  const F = counterFrame(step);
-  const pos = new THREE.Vector3(F.cx + 0.2, 1.8, F.zFront + 5.6 - 1.2 * t);
-  return look(pos, new THREE.Vector3(F.cx, 1.05, F.backZ), 46 + 8 * t);
-}
+/** K13: K2's view of the four desks at dusk (issue #23; was the counter frontal from the middle of the room). */
+export const k13View = (t: number, aspect: number): View => k2View(t, aspect);
 
 const tracks = new Map<string, ReturnType<typeof track>>();
 function cached(id: string, make: () => ReturnType<typeof track>) {
@@ -77,43 +120,69 @@ function cached(id: string, make: () => ReturnType<typeof track>) {
   return f;
 }
 
-/** K11 → K12: in through COMPANY's door after Bu Dewi, across the room and through the back door. */
-const intoTrack = (step: number, t: number) =>
-  cached(`into ${step} ${t.toFixed(3)}`, () => {
+/** The way in (shares of B12.into): the stop on K11.1 is in the middle, a track on either side of it. */
+const inTrack = (keys: { at: number; view: View }[], from: number, to: number) => {
+  const f = track(keys.map((k) => ({ at: (k.at - from) / (to - from), view: k.view })));
+  return (u: number) => f((u - from) / (to - from));
+};
+/** K11 → K11.1: in through COMPANY's door after Bu Dewi, rising to K2's camera once under the lintel. */
+const doorTrack = (t: number, aspect: number) =>
+  cached(`door ${t.toFixed(3)} ${aspect.toFixed(3)}`, () => {
+    const a = k11View(t),
+      k2 = k2View(t, aspect),
+      [h0] = INTO.hold;
+    return inTrack(
+      [
+        { at: 0, view: a },
+        { at: 0.18, view: v(-0.25, 1.7, 4.6, 0, D2R(1), 40) },
+        // the leaves stand open now: through behind Bu Dewi (door 2.2 m high), then up to K2's camera (2.25 m, 0.9 m
+        // inside) as K1 → K2 does after Heru
+        { at: INTO.door - 0.07, view: v(0, 1.74, 1.4, 0, -0.03, 44) },
+        { at: INTO.door - 0.02, view: v(0, 1.8, 0.35, k2.yaw * 0.3, -0.06, (44 + k2.fov) / 2) },
+        { at: h0, view: k2 },
+      ],
+      0,
+      h0,
+    );
+  });
+/** K11.1 → K12: from K2's view across the room and through the back door into the classroom. */
+const intoTrack = (step: number, t: number, aspect: number) =>
+  cached(`into ${step} ${t.toFixed(3)} ${aspect.toFixed(3)}`, () => {
     const F = counterFrame(step),
       C = classFrame(step),
-      a = k11View(t),
       end = k12View(step, t),
+      k2 = k2View(t, aspect),
+      [, h1] = INTO.hold,
       T = 2 * Math.PI;
     // (yaws kept continuous: from facing the facade (0) round to the left (+) behind the counter, back to 2π at the
     // back door)
-    return track([
-      { at: 0, view: a },
-      { at: 0.18, view: v(-0.25, 1.7, 4.6, 0, D2R(1), 40) },
-      // the leaves stand open now: through behind Bu Dewi (door 2.2 m high)
-      { at: INTO.door - 0.07, view: v(0, 1.72, 1.4, 0, -0.02, 44) },
-      { at: INTO.door, view: v(0, 1.72, -0.35, 0, -0.04, 46) },
-      // just inside, the whole room (video 24–26 s), drifting in slowly
-      { at: 0.5, view: v(0.05, 1.72, -1.8, 0.02, -0.08, 48) },
-      { at: 0.66, view: v(F.gapX * 0.5, 1.8, -3.0, 0.02, -0.06, 48) },
-      // over Bu Dewi's head, through the gap between the middle desks, round the counter's right end
-      { at: 0.75, view: v(F.gapX, 1.85, F.gapZ, 0.05, -0.05, 48) },
-      { at: 0.83, view: v(F.x1 + 0.55, 1.8, F.zMid - 0.4, 0.45, -0.04, 46) },
-      { at: 0.88, view: v(F.x1 - 0.1, 1.75, F.zMid - 0.55, 0.8, -0.04, 46) },
-      // turned to the back door, and through it (the leaf open into the classroom)
-      { at: INTO.backDoor, view: v(C.doorX + 0.15, 1.7, F.backZ + 0.75, 0.15, -0.04, 46) },
-      { at: 0.96, view: v(C.doorX, 1.72, F.backZ - 0.35, 0.02, -0.06, 48) },
-      { at: 1, view: { ...end, yaw: end.yaw < -Math.PI / 2 ? end.yaw + T : end.yaw } },
-    ]);
+    return inTrack(
+      [
+        { at: h1, view: k2 },
+        // (issue #23: over Bu Dewi's head, where Heru stood at K2: her hijab's top at 1.88 m)
+        { at: 0.58, view: v(F.gapX * 0.3, 2.12, -2.35, 0.03, -0.12, (k2.fov + 48) / 2) },
+        { at: 0.66, view: v(F.gapX * 0.5, 1.9, -3.0, 0.02, -0.07, 48) },
+        // over Bu Dewi's head, through the gap between the middle desks, round the counter's right end
+        { at: 0.75, view: v(F.gapX, 1.85, F.gapZ, 0.05, -0.05, 48) },
+        { at: 0.83, view: v(F.x1 + 0.55, 1.8, F.zMid - 0.4, 0.45, -0.04, 46) },
+        { at: 0.88, view: v(F.x1 - 0.1, 1.75, F.zMid - 0.55, 0.8, -0.04, 46) },
+        // turned to the back door, and through it (the leaf open into the classroom)
+        { at: INTO.backDoor, view: v(C.doorX + 0.15, 1.7, F.backZ + 0.75, 0.15, -0.04, 46) },
+        { at: 0.96, view: v(C.doorX, 1.72, F.backZ - 0.35, 0.02, -0.06, 48) },
+        { at: 1, view: { ...end, yaw: end.yaw < -Math.PI / 2 ? end.yaw + T : end.yaw } },
+      ],
+      h1,
+      1,
+    );
   });
 
-/** K12 → K13: straight back out through the back door, over the counter, into the room. */
-const outTrack = (step: number, t: number) =>
-  cached(`out ${step} ${t.toFixed(3)}`, () => {
+/** K12 → K13: straight back out through the back door, over the counter, back across the room to K2's view. */
+const outTrack = (step: number, t: number, aspect: number) =>
+  cached(`out ${step} ${t.toFixed(3)} ${aspect.toFixed(3)}`, () => {
     const F = counterFrame(step),
       C = classFrame(step),
       a = k12View(step, t),
-      end = k13View(step, t);
+      end = k13View(t, aspect);
     return track([
       { at: 0, view: a },
       { at: 0.11, view: v(C.doorX, 1.75, F.backZ - 0.4, 0, -0.05, 48) },
@@ -126,13 +195,17 @@ const outTrack = (step: number, t: number) =>
 
 /** Camera of beats 12–13 for screens x (≥ B12_START), format blend t, screen aspect. */
 export function beat12Camera(x: number, t: number, aspect: number): CamPose {
-  const step = Math.round(t * LAYOUT_STEPS);
+  const step = Math.round(t * LAYOUT_STEPS),
+    u = (x - B12.into.s) / B12.into.len,
+    [h0, h1] = INTO.hold;
   let view: View;
-  if (x < B12.k12.s) view = intoTrack(step, t)((x - B12.into.s) / B12.into.len);
+  if (u < h0) view = doorTrack(t, aspect)(u);
+  else if (u <= h1) view = k2View(t, aspect);
+  else if (x < B12.k12.s) view = intoTrack(step, t, aspect)(u);
   else if (x < B12.out.s) view = k12View(step, t);
-  else if (x < B12.out.s + B12.out.len) view = outTrack(step, t)((x - B12.out.s) / B12.out.len);
-  else view = k13View(step, t);
-  return { pos: view.pos, quat: rig(view.yaw, view.pitch), fov: fitFov(view.fov, t, aspect) };
+  else if (x < B12.k13.s) view = outTrack(step, t, aspect)((x - B12.out.s) / B12.out.len);
+  else view = k13View(t, aspect);
+  return { pos: view.pos, quat: rig(view.yaw, view.pitch).multiply(k2Roll(x, t)), fov: fitFov(view.fov, t, aspect) };
 }
 
 // ---------- the copy on the TV (langkah 3): "Praktik naik kelas" ----------

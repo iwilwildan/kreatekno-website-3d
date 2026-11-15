@@ -40,6 +40,7 @@ export type KeyName =
   | "K9b"
   | "K10"
   | "K11"
+  | "K11.1"
   | "K12"
   | "K13"
   | "K15"
@@ -101,10 +102,16 @@ export const SEG: Segment<KeyName>[] = [
   // Beats 12–13 (tahap 9, the continuation video 21–34 s, greybox): Heru and Wildan pull COMPANY's leaves open, the
   // camera follows Bu Dewi in, past the empty desks (holograms) and the counter, through the wooden back door into the
   // classroom (K12: Wildan teaching the staff at the TV, the practice copy on its screen), then back out of the
-  // classroom and through the front room at dusk (K13, the counter frontal, passed)
-  { type: "move", from: "K11", to: "K12", screens: 2.8 },
+  // classroom and through the front room at dusk (K13). Issue #23: just inside the door the camera stops on K2's
+  // own view of the four desks (K11.1, Bu Dewi where Heru stood), and backing out it stops on it again at dusk
+  // (K13), so the room before (K2) and after can be compared. K11 → K11.1 → K12 keeps the 2.8 screens of the move it
+  // replaces (the door at 1.0 screen, the rest from the old "just inside" point at 1.4 on as it was).
+  { type: "move", from: "K11", to: "K11.1", screens: 1.1 },
+  { type: "hold", from: "K11.1", screens: 0.3 },
+  { type: "move", from: "K11.1", to: "K12", screens: 1.4 },
   { type: "hold", from: "K12", screens: 0.8 },
   { type: "move", from: "K12", to: "K13", screens: 1.1 },
+  { type: "hold", from: "K13", screens: 0.3 },
   // Beats 14–16 (tahap 10, the continuation video 33.5–38.7 s, greybox): back out through COMPANY's open door to its
   // facade as night falls (K15, passed), then crane up and back in one continuous move to the night street (K16: the
   // billboard stays small in the wide frame with the K0 hero copy printed on it; the epilogue is on the road)
@@ -139,6 +146,7 @@ export const KEYS: KeyName[] = [
   "K9b",
   "K10",
   "K11",
+  "K11.1",
   "K12",
   "K13",
   "K15",

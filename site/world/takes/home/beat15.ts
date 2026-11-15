@@ -1,15 +1,14 @@
 // Beats 14–16 (tahap 10, the team's continuation video VID_20261113_185210, 33.5–38.7 s; greybox, langkah 1). From
-// K13 (the counter frontal at dusk, passed) the camera dollies straight back through the front room and out through
-// COMPANY's open door (video 33.5–35 s) to the facade frontal at night (K15, passed: 36 s), then cranes up and back
+// K13 (K2's view of the four desks at dusk, issue #23) the camera dollies straight back and out through COMPANY's open
+// door (video 33.5–35 s) to the facade frontal at night (K15, passed: 36 s), then cranes up and back
 // continuously to the night street (K16, 38.7 s: the road across the lower third, COMPANY on the left, the row with
 // its rolling doors shut, the lit billboard carrying the K0 hero copy, the stars; the epilogue on the road).
 import * as THREE from "three";
 import { segmentStart, smoothstep } from "../../core/segments";
 import type { CamPose } from "../../core/take";
-import { LAYOUT_STEPS } from "../../sets/companyFront";
 import { fitFov } from "./outside";
 import { mix, rig, track, v, type View } from "./beat9";
-import { k13View } from "./beat12";
+import { k13View, k2Roll } from "./beat12";
 import { SEG } from "./timing";
 
 const D2R = THREE.MathUtils.degToRad;
@@ -51,14 +50,17 @@ function cached(id: string, make: () => ReturnType<typeof track>) {
   return f;
 }
 
-/** K13 → K15: straight back across the room and out through the open door (2.2 m high, ±1 m wide), on to the facade. */
-const exitTrack = (step: number, t: number) =>
-  cached(`exit ${step} ${t.toFixed(3)}`, () => {
-    const a = k13View(step, t),
+/**
+ * K13 → K15: from K2's view (0.9 m inside, 2.25 m high) straight back and down under the lintel (2.2 m) out through
+ * the open door (±1 m wide), on to the facade.
+ */
+const exitTrack = (t: number, aspect: number) =>
+  cached(`exit ${t.toFixed(3)} ${aspect.toFixed(3)}`, () => {
+    const a = k13View(t, aspect),
       end = k15View(t);
     return track([
       { at: 0, view: a },
-      { at: EXIT_DOOR - 0.12, view: v(0, 1.75, -1.0, 0, -0.04, a.fov) },
+      { at: EXIT_DOOR - 0.12, view: v(0, 1.92, -0.15, a.yaw * 0.3, -0.06, (a.fov + 46) / 2) },
       { at: EXIT_DOOR, view: v(0, 1.78, 0.4, 0, -0.02, 46) },
       { at: 0.7, view: v(-0.2, 1.95, 5.5, 0, D2R(2), 42) },
       { at: 1, view: end },
@@ -79,12 +81,12 @@ const wideTrack = (t: number) =>
 
 /** Camera of beats 14–16 for screens x (≥ B15_START), format blend t, screen aspect. */
 export function beat15Camera(x: number, t: number, aspect: number): CamPose {
-  const step = Math.round(t * LAYOUT_STEPS);
   let view: View;
-  if (x < B15.wide.s) view = exitTrack(step, t)((x - B15.exit.s) / B15.exit.len);
+  if (x < B15.wide.s) view = exitTrack(t, aspect)((x - B15.exit.s) / B15.exit.len);
   else if (x < B15.k16.s) view = wideTrack(t)((x - B15.wide.s) / B15.wide.len);
   else view = k16View(t);
-  return { pos: view.pos, quat: rig(view.yaw, view.pitch), fov: fitFov(view.fov, t, aspect) };
+  // (K2's roll fading out as the camera leaves K13)
+  return { pos: view.pos, quat: rig(view.yaw, view.pitch).multiply(k2Roll(x, t)), fov: fitFov(view.fov, t, aspect) };
 }
 
 /** 0 at dusk (K13) … 1 at night, as the camera comes out through the door (video 34–36 s). */
