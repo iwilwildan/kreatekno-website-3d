@@ -2395,3 +2395,21 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Still K16 PC/HP dirender ulang dan K15.1 dihapus. Tool render serta regresi diperbarui untuk keyframe dan durasi baru. Tes slow-load kini menerima dua hasil resmi batas boot 15 detik: world live lengkap atau still fallback lengkap; kedua jalur tetap memeriksa copy/font dan tanpa error.
 - Dicek pada build produksi: billboard ID/EN tampil di PC 1280×720 dan HP 375×812; tidak ada `.cta-copy`; `#kontak` adalah `FOOTER`; lint, typecheck lewat `next build`, `issue4.mjs` (PC/tablet/HP, scroll maju/mundur, no-WebGL, reduced-motion, no-JS), dan `issue4-loading.mjs` seluruhnya lulus. Warning 404 saat tool still hanya `/_vercel/insights/script.js` yang memang tidak tersedia di server lokal.
 - Review user disetujui; commit dan push ke `main` diminta. Issue #25 belum ditutup.
+
+### 2026-11-14/15 (copy Home v3 dari tim, branch `copy/home-v1-v3`)
+
+- Permintaan user: pasang copy Home v3 (`HOME-V1-COPY-v3.md` dari tim) di branch baru dari `origin/main`, perbarui docs terkait, dan pastikan ukuran huruf muat di tiap elemen.
+- Keputusan user (14 Nov): sapaan ikut file ("kamu"); plakat meja staf baru kuncinya saja; EN diterjemahkan; ejaan dirapikan ("di balik", "adminnya"), kutipan testimoni persis. 15 Nov: kutipan testimoni yang panjang dipotong di polaroid dan dibuka penuh lewat "Baca cerita".
+- Kerja di worktree `D:\Danslab\kreatekno-website-3d-copy-v3` (branch `copy/home-v1-v3`), karena checkout utama sempat dipakai sesi lain untuk issue #25. Branch di-fast-forward ke `origin/main` 08dbab8 (#22, #25) sebelum dilanjutkan; `home.cta` tidak dipasang karena billboard CTA sudah dihapus di #25.
+- **Perubahan:**
+  - `messages/{id,en}.json`: hero, layanan, use case (tab jenis usaha → bagian usaha: `home.useCase.teams.{promo,service,money,monitor}`), cara kerja, testimoni nyata (3), artikel, FAQ, tentang, papan kapur, `wa.chat`, `footer.tagline`, `footer.copyright` (tanpa "Automate You."), alt `home.stage.k4`; kunci baru `home.desks.before/after.*` (belum dirender), `home.testimonials.more/close`; `home.testimonials.stamp` dihapus.
+  - `Binder.tsx`, `HomeStage.tsx`: `industries` → `teams` (tipe `Team`).
+  - Testimoni: `Corkboard.tsx` tanpa cap CONTOH, polaroid jadi tombol `[data-story]` dengan label "Baca cerita" di tepi bawah foto; `TestimonialStory.tsx` baru: `<dialog>` modal di luar anchor (Escape, tombol Tutup, klik di luar kartu, scroll menutup; fokus kembali ke polaroid). `lobby.css`: kutipan 2 baris (3 di 9:16) dengan `line-clamp`, gaya dialog; versi tumpuk tetap kutipan penuh tanpa tombol.
+  - Ukuran huruf (`stage.css`, `plaque.css`): hero PC, panel Cara kerja, plakat Tentang, leaflet HP (termasuk aturan kontainer ≤ 440 px), nama tab binder di HP (dua kolom rapat).
+  - Docs: `docs/HOME-V1-COPY.md` baru (sumber copy Home, dengan catatan pemasangan), `SITE-BRIEF.md` 2 (sapaan "kamu", positioning baru), `COPY.md` (bagian Home jadi riwayat), `STORY-STAGE.md` (testimoni nyata), `CLAUDE.md` aturan 7 dan peta folder.
+- **Dicek** (build produksi worktree port 3500, Playwright dengan GPU, `?hud`; screenshot hanya di chat):
+  - sapuan seluruh take per 0,1 layar, luapan tiap anchor copy saat kotaknya terbesar (jeda), di PC 1280×720, tablet 768×1024, HP 375×812 dan 360×740, ID dan EN: semua muat. Sebelum perbaikan meluap: hero PC (130/110 px), panel langkah 1–3 (152–173/148), polaroid (452–489/283 PC, 625–676/391 HP), plakat (449/396), leaflet HP (502/442). Sisa yang tercatat hanya lebar `page` binder = area sentuh tab yang memang menjorok ke luar halaman;
+  - binder: keempat tab muat di semua viewport (ID/EN); nama tab di dalam tabnya (dua kolom di tab ke-2 HP, lebih 1 px dari lebar tab);
+  - dialog testimoni: terbuka di tengah, fokus ke Tutup, Escape menutup dan fokus kembali ke polaroid; reduced motion: kutipan penuh, tombol tersembunyi;
+  - `typecheck`, ESLint (`components/home`), Prettier (`--end-of-line auto`), `next build` lulus.
+- **Belum:** plakat meja (K2.1, K2.2, K13) belum dirender; gelembung pikiran K13 belum dicocokkan dengan plakat "sesudah"; CTA bagian 12 tanpa tempat; meta SEO dan halaman lain masih "Anda"; still fallback tidak dirender ulang (hanya HTML yang berubah); tes HP fisik; review user. Belum di-commit.

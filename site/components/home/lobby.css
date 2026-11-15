@@ -63,7 +63,7 @@
   color: var(--color-navy);
 }
 
-/* polaroids: photo on top, quote and name under it; the CONTOH stamp over the photo's corner */
+/* polaroids: photo on top, quote and name under it */
 .polaroid figure {
   position: relative;
   display: flex;
@@ -106,21 +106,6 @@
 .polaroid[data-tone="3"] {
   --tone: #d6458f;
 }
-.polaroid-stamp {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  padding: 2px 8px;
-  border: 2px solid currentColor;
-  border-radius: 6px;
-  rotate: -7deg;
-  background: rgb(255 255 255 / 0.75);
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--color-purple-deep);
-}
 .polaroid blockquote p {
   font-size: 1rem;
   line-height: 1.4;
@@ -138,6 +123,122 @@
 .polaroid-biz {
   font-size: 0.875rem;
   color: var(--color-muted);
+}
+/* the stacked version shows the whole quote, so the "Baca cerita" button is only on the board (below) */
+.polaroid-more {
+  display: none;
+}
+
+/* the whole testimonial of a polaroid (TestimonialStory): a modal card over the board */
+.story-dialog {
+  width: min(36rem, 100% - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--color-white);
+  color: var(--color-ink);
+  box-shadow: 0 30px 60px -24px rgb(19 25 81 / 0.55);
+}
+.story-dialog[open] {
+  animation: story-in 0.22s var(--ease-out);
+}
+.story-dialog::backdrop {
+  background: rgb(19 25 81 / 0.45);
+  backdrop-filter: blur(3px);
+}
+@keyframes story-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-dialog[open] {
+    animation: none;
+  }
+}
+.story-dialog[data-tone="0"] {
+  --tone: var(--color-purple);
+}
+.story-dialog[data-tone="1"] {
+  --tone: #0891a5;
+}
+.story-dialog[data-tone="2"] {
+  --tone: var(--color-violet);
+}
+.story-card {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  padding: 24px 24px 28px;
+}
+.story-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgb(19 25 81 / 0.07);
+  color: var(--color-navy);
+  cursor: pointer;
+}
+.story-close svg {
+  width: 20px;
+  height: 20px;
+}
+.story-close:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
+}
+.story-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: 48px;
+}
+.story-photo {
+  display: grid;
+  flex: none;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--tone) 16%, white),
+    color-mix(in srgb, var(--tone) 34%, white)
+  );
+  color: color-mix(in srgb, var(--tone) 70%, var(--color-navy));
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+.story-photo svg {
+  width: 24px;
+  height: 24px;
+}
+.story-who {
+  display: flex;
+  flex-direction: column;
+}
+.story-name {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.story-biz {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+.story-card blockquote p {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: pretty;
 }
 
 /* the books: category and title on the left page, an icon and "Baca artikel" on the right */
@@ -366,14 +467,6 @@
     width: 18cqw;
     height: 18cqw;
   }
-  .polaroid-stamp {
-    top: 47cqh;
-    right: 4cqw;
-    padding: 0.2cqh 2.6cqw;
-    border-width: max(1.5px, 0.8cqw);
-    border-radius: 2cqw;
-    font-size: max(9px, 5cqw);
-  }
   .polaroid blockquote p {
     font-size: max(11px, 6.2cqw);
     line-height: 1.3;
@@ -385,6 +478,50 @@
   .polaroid-biz {
     font-size: max(10px, 5cqw);
     line-height: 1.25;
+  }
+  /* the quote's first lines on the paper (the whole story opens in TestimonialStory) */
+  .polaroid blockquote p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  /* 9:16: the polaroid is alone on screen and its paper has room for a third line */
+  @media (max-aspect-ratio: 1/1) {
+    .polaroid blockquote p {
+      -webkit-line-clamp: 3;
+    }
+  }
+  /* the whole polaroid is the button; its label is a tag where the photo meets the paper (bottom right) */
+  .polaroid-more {
+    position: absolute;
+    inset: 0;
+    display: block;
+    cursor: pointer;
+  }
+  .polaroid-more span {
+    position: absolute;
+    top: 55.5cqh;
+    right: 5cqw;
+    display: inline-flex;
+    align-items: center;
+    min-height: max(24px, 9cqh);
+    padding: 0 3.6cqw;
+    border-radius: 999px;
+    background: var(--color-white);
+    box-shadow: 0 4px 10px -4px rgb(19 25 81 / 0.4);
+    font-size: max(11px, 5cqw);
+    font-weight: 700;
+    color: var(--color-purple-deep);
+  }
+  @media (hover: hover) {
+    .polaroid-more:hover span {
+      background: color-mix(in srgb, var(--tone) 10%, white);
+    }
+  }
+  .polaroid-more:focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: -2px;
   }
 
   /* the wooden sign: the title as if burnt into it */

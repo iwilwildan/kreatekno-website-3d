@@ -196,7 +196,7 @@ Open Home with `?zones=1` in the URL. A switch appears at the bottom right. It s
    - their 9:16 keyframes keep faces in the top third;
    - or the copy shown on phones gets shorter.
 5. **Surface lines and light:** decide whether the keyframes follow section 2, or the props get moved to the real frames. Retune the light values once the first footage exists.
-6. **Testimonial cards** stay "CONTOH" placeholders until real client quotes with permission come in.
+6. **Testimonial cards** carry three real client quotes since Home copy v3 (14 Nov 2026, `HOME-V1-COPY.md` 6); the CONTOH stamp is gone. The photo stays a placeholder until the client's photo or logo comes in.
 7. **Beat 1 footage** (received 27 Oct, now in the stage):
    - The 9:16 billboard is too small for the whole hero (72 × 19% of the frame). The web puts the headline on it and the rest in a card. If the hero should stay whole on the billboard, the 9:16 billboard needs a face of about 85% of the width and 45% of the height.
    - In the 16:9 first frame the birds fly under the header bar at the top right. Keep them below 12% of the height from the top.

@@ -2,7 +2,9 @@
 
 _Last updated: 2026-10-14. Extracted from the home prototype (`prototype/home.src.html`). This file is the place to review and edit copy; changes here get applied to the prototype and, later, to the Next.js message files._
 
-Rules (from `SITE-BRIEF.md`, section 2): address the reader as **Anda**; no ambiguous sentences; verb form **otomatiskan**; no time promises in headlines; no em dashes; the hero does not name a city. **Bold** inside a headline = accent colour.
+> **Home copy replaced on 2026-11-14.** The team's Home copy v3 is in `HOME-V1-COPY.md` and is what `site/messages` holds. Sections 3 to 8 below (the footage-era Home) are history only. The reader is now addressed as **kamu** (see `SITE-BRIEF.md` 2).
+
+Rules (from `SITE-BRIEF.md`, section 2, before 2026-11-14): address the reader as **Anda**; no ambiguous sentences; verb form **otomatiskan**; no time promises in headlines; no em dashes; the hero does not name a city. **Bold** inside a headline = accent colour.
 
 ---
 
