@@ -2413,3 +2413,18 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - dialog testimoni: terbuka di tengah, fokus ke Tutup, Escape menutup dan fokus kembali ke polaroid; reduced motion: kutipan penuh, tombol tersembunyi;
   - `typecheck`, ESLint (`components/home`), Prettier (`--end-of-line auto`), `next build` lulus.
 - **Belum:** plakat meja (K2.1, K2.2, K13) belum dirender; gelembung pikiran K13 belum dicocokkan dengan plakat "sesudah"; CTA bagian 12 tanpa tempat; meta SEO dan halaman lain masih "Anda"; still fallback tidak dirender ulang (hanya HTML yang berubah); tes HP fisik; review user. Belum di-commit.
+
+### 2026-11-15 (issue GitHub #23: view K2 saat Bu Dewi masuk dan saat keluar kelas)
+
+- Atas permintaan user ("Kerjakan issue #23"), dengan tambahan: di HP saat Bu Dewi masuk dan saat kamera keluar dari kelas hanya tiga meja yang terlihat; keduanya harus memakai view K2 (empat meja) seperti saat Heru masuk. Dikerjakan di sesi cloud (branch `ccr-d2e651e1-q5jrhx`), build produksi port 3300, Playwright dengan SwiftShader.
+- **Reproduksi** (HP 375×812, `?hud`, kamera per titik scroll): K2 di (0; 2,32; −0,89) m, yaw 3,7°, menunduk 14,3°, FOV 64,4°. Masuk (K11 → K12) kamera tidak pernah berhenti di view itu: tinggi 1,72 m, menunduk 2–5°, FOV 55–57°, meja Sinta keluar frame. Keluar kelas, K13 lama (konter frontal dari z −4,2 m, FOV 63,7°) dan jalur ke pintu memperlihatkan paling banyak dua sampai tiga meja.
+- **Perubahan:**
+  - `timing.ts`: keyframe `K11.1` (jeda 0,3 layar = jeda K2). K11 → K11.1 1,1 + jeda 0,3 + K11.1 → K12 1,4 = 2,8 layar, sama dengan gerak lama, jadi pintu, gerbang kamera, jam Bu Dewi, pintu kayu dan kelas tetap di posisi scroll yang sama. Jeda `K13` 0,3 layar baru; take 35,65 → 35,95 layar (PC 34,5 → 34,8);
+  - `beat12.ts`: `k2View` = kamera K2 hasil solver (`data.json`, di-blend pc/hp seperti hold K2), FOV dibalik dari `fitFov` supaya hasilnya sama dengan FOV K2 di semua aspect, roll K2 (≤ 0,6°) lewat `k2Roll`. `B12.into` mencakup K11 → K11.1 → K12 (porsi `INTO` tidak berubah). Masuk: lewat pintu kaca di 1,74–1,8 m lalu naik ke kamera K2 setelah kusen (seperti K1 → K2). Setelah K11.1 kamera melewati kepala Bu Dewi di 2,12 m, lalu jalur lama (celah meja tengah, konter, pintu kayu). K13 = view K2 saat senja;
+  - `beat15.ts`: K13 → K15 mulai dari view K2, turun di bawah kusen (1,92 m di z −0,15) keluar pintu;
+  - `outsideCast.ts`: Bu Dewi berhenti di tempat Heru di K2 (`heruK2`, rata-rata pc/hp), bukan (0,12; −2,6);
+  - still `K11.1` (alt `home.stage.k11_1` ID/EN), alt `k13` diperbarui, `classStills.ts` (fade K11.1), `tools/render/lib.mjs` `KEYS`, panjang take di `issue4*.mjs`.
+- **Dicek:**
+  - posisi, arah dan FOV kamera K11.1 dan K13 sama persis dengan K2 di HP 375×812 (0; 2,315; −0,89; FOV 64,44), 360×640, tablet 768×1024 (FOV 59,81) dan PC 1280×720 (0; 2,254; −0,89; FOV 45,91); frame K2/K11.1/K13 berdampingan di keempat viewport (hanya di chat): keempat meja di tempat yang sama di layar;
+  - typecheck, ESLint, Prettier, `next build`.
+- **Belum:** tes scroll real-time (2 s per layar) tidak bisa di container ini (SwiftShader ±1 frame/detik), jadi laju dan gerbang kamera dicek dari posisi scroll yang tidak berubah, bukan diukur; `issue4.mjs` belum dijalankan; tes HP fisik; review user. Issue #24 (pintu kayu ke dalam kelas, jalur lurus) belum dikerjakan; jalur K11.1 → K12 setelah kepala Bu Dewi masih jalur lama. Catatan copy v3: plakat meja "sesudah" dibaca di K13, yang sekarang view lebar K2.
