@@ -26,14 +26,16 @@ This is the source of truth for **what the site says and how it behaves**. `COPY
 These came out of the review rounds. Follow them in every new page and every copy change.
 
 ### Copy and voice
-- Address the reader as **"Anda"**, not "kamu" (fits SME owners in their 30s to 50s in Riau). Keep it warm: short sentences, "Yuk", everyday examples.
+- **Home copy v3 (14 Nov 2026) is in `HOME-V1-COPY.md`** and wins over the older lines in this section and in `COPY.md`.
+- Address the reader as **"kamu"** ("-mu"), not "Anda" (user decision 14 Nov 2026, with Home copy v3). Keep it warm: short sentences, "Yuk", everyday examples. Pages not rewritten yet (Solusi, Tentang, Artikel, meta) still say "Anda" until their copy is redone.
+- The positioning moved from "otomasi" to **AI assistants that do the admin work while the existing staff are trained in new skills** (sales, negotiation, strategy). Say "staf" rather than "tim" for the client's people.
 - **No ambiguous sentences.** Every sentence needs a clear subject and object. Watch for: "-nya" with an unclear owner, "langsung" that can attach to two verbs, "24 jam" that can read as "within 24 hours" (write "aktif 24 jam"), "jalan" (write "sistem berjalan"), "membesarkan".
 - Use the standard verb **"otomatiskan"** ("diotomatiskan"), not "otomatisasi" as a verb.
 - **No time promises in headlines.** "About one week" only appears in the FAQ, with its conditions (simple workflow, data and access ready).
 - **No em dashes** in visible copy.
 - **The hero is not limited to Pekanbaru.** It speaks to SMEs anywhere in Indonesia. Pekanbaru appears in story beat 4, the FAQ, the final CTA, the footer, the About page and the meta description ("Berbasis di Pekanbaru, melayani seluruh Indonesia").
 - The claim "tim otomasi AI pertama di Pekanbaru" is **not on the page** (its section was removed). Only use it again once it's confirmed.
-- **Approved key lines:**
+- **Approved key lines (before copy v3, no longer on Home):**
   - "Tim terbaik Anda terjebak di pekerjaan berulang."
   - "Kenalkan asisten AI yang bekerja 24 jam untuk bisnis Anda."
   - "Tim Anda fokus ke pelanggan, strategi, dan ide baru."

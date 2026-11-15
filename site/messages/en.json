@@ -53,14 +53,14 @@
     "about": "About us"
   },
   "wa": {
-    "chat": "Hi Kreatekno, I'd like a consultation about automating my business.",
+    "chat": "Hi Kreatekno, I'd like to ask about AI assistants and staff training for my business.",
     "meet": "Hi Kreatekno, I'd like to schedule an in-person meeting in Pekanbaru."
   },
   "home": {
     "hero": {
-      "kicker": "AI assistants and automation for SMEs",
-      "headline": "AI handles the repetitive work. Your team levels up.",
-      "body": "Kreatekno builds AI assistants and automation systems for your business, then trains your team until they're confident using them."
+      "kicker": "AI assistants for SMEs",
+      "headline": "AI assistants do the work, your staff's skills keep growing, your business gets ready to expand.",
+      "body": "We build an AI assistant that follows the way your business works, then set it up in the apps you already use. After that, we train the staff you already have, so their skills grow, sales go up and your business is ready to expand."
     },
     "stage": {
       "k0": "Morning on a row of shophouses. A billboard stands on the roof of the COMPANY shop.",
@@ -69,7 +69,7 @@
       "k2_1": "The camera moves in on Sinta, staring at her phone, and Bayu at his monitor next to a stack of order slips.",
       "k2_2": "Nadia rests her chin on her hand in front of her laptop; Fajar scratches his head next to the price list tray.",
       "k3": "From above the till counter: Heru lays the services leaflet in front of Bu Dewi, their hands on two of its corners.",
-      "k4": "Heru opens a purple binder of AI examples by type of business in front of Bu Dewi.",
+      "k4": "Heru opens a purple binder of AI examples by part of the business in front of Bu Dewi.",
       "k4_1": "Bu Dewi smiles and nods behind the till counter, seen over Heru's shoulder",
       "k5a_1": "Heru holds the COMPANY door while Bu Dewi steps out onto the pavement",
       "k5a_2": "Heru and Bu Dewi walk past the fruit shop and the laundry, white panels on the first floor",
@@ -87,113 +87,127 @@
       "k16": "The night road in front of the row of shophouses: COMPANY with its window and door lit, the other shops with their rolling doors shut, small lamps on the roofs, the lit billboard and a starry sky",
       "loading": "Loading"
     },
+    "desks": {
+      "before": {
+        "sinta": "Unanswered chats keep piling up.",
+        "bayu": "Receipts are piling up, and the recap still isn't done.",
+        "nadia": "Making content every day, and out of ideas.",
+        "fajar": "Back and forth through the catalogue, the stock is nowhere to be found."
+      },
+      "after": {
+        "sinta": "No chats are waiting.",
+        "bayu": "Today's recap is done.",
+        "nadia": "This week's content is ready to post.",
+        "fajar": "Every item's stock is clearly recorded."
+      }
+    },
     "services": {
       "title": "Four ways we help your business",
       "assistants": {
-        "title": "AI assistants & automation",
-        "body": "Assistants that serve your customers, prepare recaps and invoices, and answer your team's questions from your SOPs."
+        "title": "AI assistants",
+        "body": "AI that works behind the computer to help with management, operations and marketing, without hiring more staff."
       },
       "strategy": {
-        "title": "AI strategy consulting",
-        "body": "We map the work most worth automating, then build a plan that fits your budget."
+        "title": "AI training for business",
+        "body": "Invite us to teach you and your staff to use AI for your business, such as writing promotions, preparing quotes and summarising reports. At your place or online."
       },
       "content": {
-        "title": "Content & design",
-        "body": "Graphic design, social media content, paid ads, plus video and animation for your brand."
+        "title": "Photos & videos with AI",
+        "body": "We make product photos, ad videos, creator-style review videos and even brand character animations, all with AI, for your content and promotions."
       },
       "training": {
-        "title": "AI & digital training",
-        "body": "AI, social media and marketing training for your team, at your place or in public classes.",
-        "tag": "E-courses coming soon"
+        "title": "Skills classes for the AI era",
+        "body": "Learn to raise the quality of your work with AI and sharpen the skills AI can't replace, such as communication and strategy. For students through to working professionals.",
+        "tag": "Online classes coming soon"
       }
     },
     "useCase": {
-      "title": "What AI can do for your business",
-      "intro": "Pick your type of business to see examples.",
-      "note": "Tell us which work you'd like to automate.",
-      "tabs": "Type of business",
-      "industries": {
-        "retail": {
-          "name": "Retail & F&B",
+      "title": "Which parts of your business can AI help with?",
+      "intro": "Work that usually needs extra staff, or that takes up your staff's time today. Pick a part of the business.",
+      "note": "Don't see your work here? Tell us about it.",
+      "tabs": "Part of the business",
+      "teams": {
+        "promo": {
+          "name": "Promotion",
           "uses": [
             {
-              "label": "Customers",
-              "text": "Questions about the menu, stock and orders are answered automatically, day and night."
+              "label": "Post ideas",
+              "text": "Every week you get a list of post ideas from what's trending in your field."
             },
             {
-              "label": "Admin & finance",
-              "text": "Orders log themselves, and the owner gets a daily recap at 9 pm."
+              "label": "Post drafts",
+              "text": "Send one topic, and a draft post is prepared in your business's style, ready for your approval."
             },
             {
-              "label": "Content",
-              "text": "Promo ideas, caption drafts and a weekly posting schedule, prepared for your team."
+              "label": "Prospects",
+              "text": "Prospects who have asked before are noted down, and you're reminded when to get back to them."
             },
             {
-              "label": "Team knowledge",
-              "text": "A new hire asks about recipe measurements, and the assistant answers from the kitchen SOP."
+              "label": "Past customers",
+              "text": "Promo news goes out to past customers, so they remember to shop again."
             }
           ]
         },
-        "clinic": {
-          "name": "Clinics",
+        "service": {
+          "name": "Serve customers",
           "uses": [
             {
-              "label": "Patients",
-              "text": "Questions about doctor schedules and bookings are answered automatically, even outside clinic hours."
+              "label": "Customer questions",
+              "text": "Questions about prices, stock and services are answered automatically, including at night."
             },
             {
-              "label": "Admin & finance",
-              "text": "Check-up reminders go to patients the day before, with a confirmation link."
+              "label": "Orders",
+              "text": "Orders that come in by chat are recorded on their own, with no retyping."
             },
             {
-              "label": "Content",
-              "text": "Health tips and the weekly doctor schedule, prepared for your team."
+              "label": "Bookings",
+              "text": "Customers pick a free slot right in the chat and it's recorded automatically, without waiting for you to reply and check the schedule."
             },
             {
-              "label": "Team knowledge",
-              "text": "New staff ask what BPJS patients need to register, and the assistant answers from the registration SOP."
+              "label": "Stock",
+              "text": "You're reminded before items run out, so there's still time to restock."
             }
           ]
         },
-        "property": {
-          "name": "Property",
+        "money": {
+          "name": "Handle money",
           "uses": [
             {
-              "label": "Buyers",
-              "text": "Questions about units, prices and site visits are answered any time."
+              "label": "Invoices",
+              "text": "Customers who haven't paid get a polite reminder, so you don't have to feel awkward chasing them yourself."
             },
             {
-              "label": "Admin & finance",
-              "text": "Buyer leads land in a spreadsheet, and the sales team is notified right away."
+              "label": "Payment proof",
+              "text": "Transfer receipts from customers are checked, then the order is marked as paid."
             },
             {
-              "label": "Content",
-              "text": "New listings, mortgage tips and a posting schedule, prepared every week."
+              "label": "Expenses",
+              "text": "Just send a message like “bought gas, 25k” and the expense is recorded right away."
             },
             {
-              "label": "Team knowledge",
-              "text": "A new salesperson asks about the minimum down payment, and the assistant answers from the latest price list."
+              "label": "Receipts & files",
+              "text": "Photos of receipts and documents sent by chat are filed neatly per customer."
             }
           ]
         },
-        "logistics": {
-          "name": "Logistics",
+        "monitor": {
+          "name": "Track the business",
           "uses": [
             {
-              "label": "Customers",
-              "text": "Shipment status questions are answered automatically from tracking data."
+              "label": "Daily recap",
+              "text": "Today's total sales and best sellers reach your phone every evening."
             },
             {
-              "label": "Admin & finance",
-              "text": "Delivery status and invoices are summarised automatically every afternoon."
+              "label": "Complaints",
+              "text": "Customer complaints from different chats are gathered in one place, so you know what people complain about most."
             },
             {
-              "label": "Content",
-              "text": "Route updates, shipping deals and packing tips, prepared for your team."
+              "label": "New staff",
+              "text": "New staff ask how the shop works, and the assistant answers from the rules you wrote."
             },
             {
-              "label": "Team knowledge",
-              "text": "A new courier asks how to pack fragile items, and the assistant answers from the warehouse SOP."
+              "label": "Weekly summary",
+              "text": "Every week you get a summary of the busiest days and the items that rarely sell."
             }
           ]
         }
@@ -201,43 +215,44 @@
     },
     "journey": {
       "kicker": "How it works",
-      "title": "From the first chat to a confident team",
+      "title": "From the first chat to new skills for your staff",
       "talk": {
         "title": "Talk",
-        "body": "Free, in person in Pekanbaru or online. Tell us which work takes the most time."
+        "body": "Free, in person in Pekanbaru or by video call. Tell us which work takes up your time and who does it now."
       },
       "map": {
-        "title": "Map and plan",
-        "body": "We pick the work most worth automating, then you get a clear quote."
+        "title": "Study and design",
+        "body": "We study how your business works, pick the work where the benefit is felt most, then you get a clear quote."
       },
       "build": {
-        "title": "Build and test",
-        "body": "The system is tested on your own business data before you use it."
+        "title": "Set up and teach",
+        "body": "The AI assistant is first tested with your orders and your customers' questions, set up in the apps you already use, then we teach you to use it for free."
       },
       "launch": {
-        "title": "Launch, train, support",
-        "body": "Your team is trained until they're comfortable, and we keep monitoring the system."
+        "title": "Train and support",
+        "body": "Staff whose admin tasks are taken over by AI are trained in new skills that bring in sales, and we keep monitoring the assistant."
       }
     },
     "testimonials": {
-      "title": "What our clients say",
-      "stamp": "SAMPLE",
+      "title": "Stories from business owners we've helped",
       "photo": "[Photo]",
+      "more": "Read the story",
+      "close": "Close",
       "items": [
         {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
+          "quote": "We used to be overwhelmed replying to chats one by one, to the point that many customers complained about slow responses. Since we got the AI agent, our workload has gone down and customer questions get answered quickly. The replies feel like a real person, not a robotic chatbot, and we've already ordered a second one for our financial reports.",
+          "name": "Abdul Aziz Azhari, Owner & Director",
+          "business": "CV Riau Home Cleaning, Pekanbaru"
         },
         {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
+          "quote": "Producing carousel content is now far more efficient thanks to the AI system Kreatekno built. The workflow is tailored to our branding and taste, so once it's made the result is tidy and ready to post. One of the posts even made the FYP with 153.7 thousand views and more than 2,700 likes. We now post far more often without sacrificing visual quality or substance.",
+          "name": "Wisnu, Creative Director",
+          "business": "Nextive Gaming, Jakarta"
         },
         {
-          "quote": "[Real client quote, 1 to 3 sentences]",
-          "name": "[Name], [role]",
-          "business": "[Business], [city]"
+          "quote": "Before Kreatekno, the most exhausting part of our agency was preparing supporting documents for dozens of clients every day. One small mistake in a title or name format meant redoing it from scratch. Now we just send the data by chat, and every document is generated automatically in the right format. Our team's capacity has gone up sharply without hiring more admin staff.",
+          "name": "Lily Sofrina, Director",
+          "business": "PT Jafa Indo Corpora, Medan"
         }
       ]
     },
@@ -247,50 +262,50 @@
       "read": "Read article",
       "all": "See all articles",
       "admin": {
-        "category": "Automation",
-        "title": "5 SME admin tasks you can automate"
+        "category": "Admin",
+        "title": "5 admin tasks AI can do"
       },
       "service": {
-        "category": "AI",
-        "title": "AI assistants for customer service: when you need one, and when you don't"
+        "category": "Serving customers",
+        "title": "AI assistants for replying to customer chats: when you need one, and when you don't"
       },
       "team": {
-        "category": "Team",
-        "title": "How to prepare your team to work with AI"
+        "category": "Staff",
+        "title": "How to train your staff to work with AI"
       }
     },
     "faq": {
-      "title": "Frequently asked questions",
+      "title": "What business owners often ask",
       "help": "Still have questions? Ask us directly.",
       "close": "Close",
       "items": [
         {
-          "q": "Will AI replace my staff?",
-          "a": "No. AI takes the repetitive work. Your staff keep the decisions and handle everything that needs a human touch."
+          "q": "If I use AI, do I have to let my staff go?",
+          "a": "No need. AI takes over the admin tasks, then we train your staff to sell, negotiate and plan strategy. The decision stays in your hands."
         },
         {
-          "q": "How reliable is the AI?",
-          "a": "The assistant only answers from data you approve. When it isn't sure, the work goes to your team. Before launch, the system is tested on your business data."
+          "q": "What if the AI gives a wrong answer?",
+          "a": "The assistant only answers from information you approve, such as your price list and opening hours. When it's unsure, the chat is passed on to you or your staff. Before it goes live, the assistant is tested with your customers' questions."
         },
         {
-          "q": "Do I need to understand technology?",
-          "a": "No. You just explain the work. We build it, test it and train your team."
+          "q": "I'm not good with technology. Can I still use it?",
+          "a": "Yes. You just tell us about the work. We set it up, test it and teach you to use the assistant until you're comfortable, for free."
         },
         {
-          "q": "Will my team be trained?",
-          "a": "Yes. Your team is trained until they're comfortable with the system. Further training in AI, social media and marketing is also available."
+          "q": "I don't have any staff yet. Can I start with AI right away?",
+          "a": "Yes. The AI assistant does the admin tasks that are usually the reason to hire, so you can grow without taking on a fixed salary straight away."
         },
         {
-          "q": "Can we keep the numbers and apps we already use?",
-          "a": "Yes. We connect the assistant to the numbers and apps your team already uses, and we handle the verification."
+          "q": "Do I have to change my number or app?",
+          "a": "No. The assistant connects to the number your customers already know, and we take care of the verification."
         },
         {
           "q": "How much does it cost?",
-          "a": "Flexible and based on your needs. You get a clear quote after the free consultation."
+          "a": "It depends on the work you want help with, because every business is different. After the free consultation you get a clear quote, and you can compare it with the cost of hiring one person for the same work."
         },
         {
           "q": "Is my business data safe?",
-          "a": "Your data is only used to run your system. Access is restricted, and you remain the owner of your data."
+          "a": "Data is only used to run your assistant. Access is restricted, and the data stays yours."
         },
         {
           "q": "Can we meet in person?",
@@ -300,16 +315,16 @@
     },
     "about": {
       "title": "About Kreatekno",
-      "body": "Kreatekno is a technology team from Pekanbaru that helps SMEs work smarter with AI. We believe technology should help teams level up, not replace them. That's why we build, train and support, like a colleague sitting next to you.",
+      "body": "Kreatekno is an AI agency from Pekanbaru that sets up AI assistants, makes photos and videos with AI, and trains business owners and workers. We believe AI should help businesses grow without sacrificing people: a business without staff can grow without hiring right away, and the staff you already have gain new skills.",
       "registered": "PT Kreatekno Kreatif Teknologi, a registered company",
       "based": "Based in Pekanbaru, serving all of Indonesia",
-      "free": "Free consultation and mapping",
+      "free": "Free consultation",
       "payment": "Flexible payment",
       "link": "Get to know us"
     },
     "practice": {
-      "label": "Team levelling up",
-      "body": "The repetitive work changes hands. Your team moves on to work that matters more."
+      "label": "New skills class",
+      "body": "Admin tasks move to AI. Staff move to sales, negotiation and strategy."
     },
     "footer": {
       "epilogue": "The shop is closed. Its assistant is still tidying up tomorrow's work."
@@ -427,7 +442,7 @@
     "body": "This address doesn't exist or has moved."
   },
   "footer": {
-    "tagline": "AI assistants, automation and training for SMEs.",
+    "tagline": "AI assistants, AI content and training for businesses and workers.",
     "pages": "Pages",
     "home": "Home",
     "privacy": "Privacy Policy",
@@ -435,6 +450,6 @@
     "city": "Pekanbaru, Riau, Indonesia",
     "address": "Full address coming soon",
     "follow": "Follow us",
-    "copyright": "© 2026 PT Kreatekno Kreatif Teknologi. Automate You."
+    "copyright": "© 2026 PT Kreatekno Kreatif Teknologi."
   }
 }

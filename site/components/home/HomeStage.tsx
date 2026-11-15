@@ -4,7 +4,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { BOOT_LIMIT_MS, bootLock } from "./bootLock";
 import { HomeTake } from "./HomeTake";
-import { Binder, type Industry } from "./props/Binder";
+import { Binder, type Team } from "./props/Binder";
 import { Journey } from "./props/Journey";
 import { Leaflet } from "./props/Leaflet";
 import { placeHero } from "./placeHero";
@@ -65,22 +65,7 @@ const HP_ONLY: Partial<Record<Key, string>> = {
  * with the K6, K7 and K8 stills, the plaque's (tahap 8) with the K9b still, the TV's (tahap 9) with the K12 still,
  * and the epilogue with the K16 still.
  */
-const STACKED = new Set([
-  "K0",
-  "K1",
-  "K2",
-  "K2.1",
-  "K2.2",
-  "K3",
-  "K4",
-  "K5a.2",
-  "K6",
-  "K7",
-  "K8",
-  "K9b",
-  "K12",
-  "K16",
-]);
+const STACKED = new Set(["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K5a.2", "K6", "K7", "K8", "K9b", "K12", "K16"]);
 
 /**
  * The Home stage (STORY-STAGE.md, beats 1–4 for now: the hero on the billboard, Layanan on the leaflet and Use
@@ -93,15 +78,15 @@ export async function HomeStage() {
   const tStage = await getTranslations("home.stage");
   const tUse = await getTranslations("home.useCase");
   const tFaq = await getTranslations("home.faq");
-  // the industries are a nested list in the messages (four tabs, four examples each), the FAQ a list of 8
+  // the parts of the business are a nested list in the messages (four tabs, four examples each), the FAQ a list of 8
   const messages = (await getMessages()) as {
     home: {
-      useCase: { industries: Record<string, Omit<Industry, "key">> };
+      useCase: { teams: Record<string, Omit<Team, "key">> };
       faq: { items: { q: string; a: string }[] };
     };
   };
   const faq = messages.home.faq.items;
-  const industries: Industry[] = Object.entries(messages.home.useCase.industries).map(([key, v]) => ({ key, ...v }));
+  const teams: Team[] = Object.entries(messages.home.useCase.teams).map(([key, v]) => ({ key, ...v }));
 
   const stills = KEYS.map((k, i) => (
     <picture key={k} className="take-still" data-still={k} data-stack={STACKED.has(k) ? undefined : "no"}>
@@ -132,7 +117,7 @@ export async function HomeStage() {
               intro={tUse("intro")}
               note={tUse("note")}
               tabsLabel={tUse("tabs")}
-              industries={industries}
+              teams={teams}
               cta={<WhatsAppButton section="usecase" />}
             />
             <Journey />

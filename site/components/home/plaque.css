@@ -75,8 +75,8 @@
   }
   .plaque-main p {
     margin: 3.2cqh 4cqw 0;
-    font-size: max(12px, min(5.6cqw, 6.2cqh));
-    line-height: 1.4;
+    font-size: max(12px, min(4.9cqw, 5.45cqh));
+    line-height: 1.38;
     color: inherit;
   }
   .plaque-facts.prop-copy {

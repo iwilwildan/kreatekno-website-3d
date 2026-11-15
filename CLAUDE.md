@@ -12,7 +12,7 @@ Rebuild kreatekno.com dengan Three.js: story Home 18 beat dan Solusi Tonton diba
 4. Google Drive: jangan pakai file Drive lain tanpa izin. Yang sudah disetujui ada di `prototype/k0-k2/HANDOFF.md`. Media tambahan diupload user di chat.
 5. Semua dari kode, tanpa model 3D eksternal. Karakter vinyl toy dibuat semirip mungkin dengan turnaround. Fisika gerak tanpa engine.
 6. Prioritas referensi kalau bertentangan: keyframe > video > Master Lokasi > dokumen tim. Beat tanpa keyframe dirancang dari dokumen tim dan Master Lokasi, lalu direview tim.
-7. Copy: ikuti `docs/SITE-BRIEF.md` bagian 2 ("Anda", tanpa kalimat ambigu, tanpa em dash, teks yang terlihat tidak menyebut nama platform, CTA "Konsultasi gratis"). Copy Home ada di dokumen tim dan `reference/site-nextjs/messages/`.
+7. Copy: ikuti `docs/SITE-BRIEF.md` bagian 2 ("kamu" sejak copy Home v3 14 Nov 2026, tanpa kalimat ambigu, tanpa em dash, teks yang terlihat tidak menyebut nama platform, CTA "Konsultasi gratis"). Copy Home ada di `docs/HOME-V1-COPY.md` (versi 3 dari tim); halaman lain masih "Anda" sampai copy-nya ditulis ulang.
 8. Library yang sudah disetujui: three 0.186.1, three-mesh-bvh 0.9.16, @pixiv/three-vrm-springbone 3.5.5, esbuild 0.28.2; untuk tool lokal: opentype.js 2.0.0, OpenCV, SciPy, Playwright 1.64.1. Situs (tahap 1): versi di `site/package.json`. Tidak dipakai: detect-gpu, skill three.js komunitas. Library baru harus disetujui user dulu.
 9. `refs/` tidak pernah di-commit. Commit dan push hanya kalau user minta.
 10. Tiap sesi kerja menambah entri bertanggal di log `PLAN.md` (apa yang berubah, apa yang dicek, apa yang belum).
@@ -45,7 +45,7 @@ Konfirmasi user di langkah 6 berlaku sebagai izin commit dan push (aturan 9) unt
 | Path | Isi |
 |---|---|
 | `PLAN.md` | Plan, keputusan, tahapan, risiko, pertanyaan terbuka, log |
-| `docs/` | Dokumen yang dibawa dari repo lama: `SITE-BRIEF.md`, `STORY-STAGE.md`, `COPY.md`, `THREEJS.md`, `SOLUSI.md`, `STACK.md`. `docs/legacy/` berisi `PLAN-v1.md` (plan dan log repo lama) dan `PORTFOLIO.md` (digantikan Solusi) |
+| `docs/` | `HOME-V1-COPY.md` (copy Home v3 dari tim, yang berlaku). Dokumen yang dibawa dari repo lama: `SITE-BRIEF.md`, `STORY-STAGE.md`, `COPY.md` (bagian Home sudah diganti), `THREEJS.md`, `SOLUSI.md`, `STACK.md`. `docs/legacy/` berisi `PLAN-v1.md` (plan dan log repo lama) dan `PORTFOLIO.md` (digantikan Solusi) |
 | `prototype/k0-k2/` | Take Three.js K0 → K2, tahap 1–2 selesai. `HANDOFF.md` berisi keputusan, ciri tokoh, ID Drive, hasil solver. Hasil build `prototype/k0-k2-3d.html` |
 | `prototype/solusi/` | Halaman Solusi (Baca) + Tonton greybox `order-grup`. Hasil build `prototype/kreatekno-solusi.html` + `kreatekno-solusi-3d.js` |
 | `prototype/beat2-3d.html` | PoC beat 2 (29 Okt), karakter tingkat 2 |
