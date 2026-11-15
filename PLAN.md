@@ -2492,3 +2492,12 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - Typecheck, ESLint, Prettier, `next build` lulus. Console produksi bersih kecuali 404 `/_vercel/insights/script.js` (hanya di lokal).
 - Belum: tes HP fisik.
 - Atas perintah user ("Oke, commit dan push"): di-commit ke `main` sebagai dua commit, #35 (band dan entri log ini) lalu #36 (`toko.css`, `SolusiPage.tsx`); file lain yang belum di-commit tidak ikut. Di-push ke `origin main` (memicu deploy Vercel), lalu #35 dan #36 ditutup.
+
+### 2026-11-16 (Solusi: hero 3D gepeng saat di-scroll, tanpa issue GitHub)
+
+- Laporan user (screenshot ±895 px): hero etalase terlihat gepeng saat scroll mendekati etalase.
+- Penyebab (`world/solusi/index.ts`, `draw`): kamera memakai rasio hero penuh (`rect.width / rect.height`), tapi `setViewport` diberi tinggi bagian hero yang masih di layar, jadi seluruh gambar dimampatkan ke bagian itu. Terukur di build produksi 895×613 (hero 600 px): tinggi gambar 100% di scroll 0, 75% di 150, 50% di 300. Ada sejak `a2f0c72`, tidak terkait #35/#36.
+- Perbaikan: viewport tetap seukuran hero penuh (boleh keluar di atas layar), pemotongan hanya lewat scissor (sudah aktif). Pemetaan lain (hover kasir, arah kepala, label kotak, ringkasan) sudah memakai ukuran hero penuh, jadi sekarang cocok.
+- Dicek (dev server): penanda di titik dada kasir hasil proyeksi tetap di celemek saat di-scroll; dada bergeser sama dengan scroll (895×613: 391 → 243 → 140 px di scroll 0/150/250; 390×844: 400 px → 399; 1440×900: 350 px → 349); hover kasir kena di dada dan tidak kena di sampingnya di semua posisi scroll; mode Cari (fokus) tidak berubah, nomor kotak tetap di atas kotak. Typecheck, ESLint, Prettier, `next build` lulus.
+- Belum: tes HP fisik.
+- Atas perintah user ("Oke, commit dan push"): di-commit ke `main` (hanya `world/solusi/index.ts` dan entri log ini) lalu di-push ke `origin main`.

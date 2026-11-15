@@ -369,12 +369,19 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
       boxesMoving = searchBoxes.update(now, camera, rect);
       flyingCard.update(now, phone);
 
+      // The viewport keeps the stage's whole size, even where it has scrolled off screen, so the picture keeps the
+      // camera's aspect; the scissor alone trims it to the part on screen (it used to squash into that part).
       const x = Math.round(Math.max(0, rect.left));
       const y = Math.round(Math.max(0, innerHeight - rect.bottom));
       const width = Math.round(Math.min(innerWidth, rect.right)) - x;
       const height = Math.round(Math.min(innerHeight, rect.bottom)) - Math.round(Math.max(0, rect.top));
       renderer.setScissor(x, y, width, height);
-      renderer.setViewport(x, y, width, height);
+      renderer.setViewport(
+        Math.round(rect.left),
+        Math.round(innerHeight - rect.bottom),
+        Math.round(rect.width),
+        Math.round(rect.height),
+      );
       renderer.render(scene, camera);
       restoreCharacter();
     } else {
