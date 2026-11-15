@@ -1287,12 +1287,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     {
       const inside = xs >= LOBBY_START && !atCompany && c.pos.z < -0.6,
         facade = xs >= LOBBY_MARKS.turn,
-        v = `${!!lobby} ${!!row} ${inside} ${facade}`;
+        // the park across the road once the camera turns to the facade: inside, and out through the door (beat 9b,
+        // the camera looks along the pavement and across the road), until it is back at COMPANY
+        park = facade && !atCompany,
+        v = `${!!lobby} ${!!row} ${inside} ${facade} ${park}`;
       if (v !== lobbyView) {
         lobbyView = v;
-        // (the meeting room and its garden always, so nothing in them pops in as the camera comes through the door;
-        // the park across the road once the camera turns to the facade, with the camera inside)
-        lobby?.setView(true, inside && facade);
+        // (the meeting room and its garden always, so nothing in them pops in as the camera comes through the door)
+        lobby?.setView(true, park);
         setOutside(!inside, !inside || facade);
         shadowDue = true;
       }

@@ -68,12 +68,12 @@ const shadowed = <T extends THREE.Object3D>(o: T, receive = true) => {
 
 /**
  * Where the logo is printed on the leaflet, as shares of the sheet (x from the left, or the right edge when
- * negative; y of its middle from the top; h its height). Landscape: at the foot, below the service cards and clear
- * of Bu Dewi's fingers (bottom right), with a thin rule after it up to `rule`. Matches the copy's layout in
- * stage.css (`.leaflet-copy`).
+ * negative; y of its middle from the top; h its height). Landscape: at the foot, below the service cards (they end
+ * at 0.845 of the sheet, stage.css `.leaflet-copy .services`; the logo starts a line of their copy below that) and
+ * clear of Bu Dewi's fingers (bottom right), with a thin rule after it up to `rule`.
  */
 const LEAF_FOOT = {
-  land: { x: 0.05, y: 0.815, h: 0.052, rule: 0.75 },
+  land: { x: 0.05, y: 0.91, h: 0.052, rule: 0.75 },
   // the portrait column is full down to the foot: the logo goes top right instead, on the kicker's line
   port: { x: -0.94, y: 0.069, h: 0.022, rule: 0 },
 };

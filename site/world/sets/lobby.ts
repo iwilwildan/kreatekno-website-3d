@@ -9,7 +9,8 @@
 // (K9.1, seen through the facade) and the garden behind the meeting room's window. The copy (testimonials,
 // articles, FAQ) is HTML on these props (langkah 5); the people are stand-ins until langkah 3–4.
 // Draw calls: most parts are vertex-coloured (one mesh per area, culled per area); the big flat surfaces carry baked
-// AO maps (lobby-*). The meeting room, the garden and the park show only while the camera is inside (setView).
+// AO maps (lobby-*). The meeting room and the garden show only with the lobby in view, the park from the turn to
+// the facade on, inside and out through the door (setView).
 import * as THREE from "three";
 import { aoPlane, type AoTarget } from "../core/ao";
 import { Batch, clean, G, mtx, rng, roundRect, type Kit, type Vec3 } from "../core/kit";
@@ -841,17 +842,27 @@ export function buildLobby(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   group.add(garden);
 
   // ---------- the park across the road (video K9.1, Master 10b): plaza, hedges, low-poly trees ----------
+  // On along the road toward COMPANY too, for the view out through the door along the pavement (beat 9b). The
+  // ground is one mesh, the trees are meshes of 30 m along the road: the ones out of frame are culled (the views
+  // inside look straight across the road; out on the pavement the camera sees only those toward COMPANY).
   const park = new THREE.Group();
   park.name = "lobby-park";
   {
     const TP = new Tint(),
+      trees = new Map<number, Tint>(),
       zp = 15.1;
-    tbox(TP, COL.grass, [lx(-40), -0.08, zp], [lx(52), 0.0, 75]);
+    const treeAt = (x: number, z: number, h: number, seed: number) => {
+      const key = Math.floor(x / 30);
+      let T = trees.get(key);
+      if (!T) trees.set(key, (T = new Tint()));
+      tree(T, lx(x), 0, z, h, seed);
+    };
+    tbox(TP, COL.grass, [lx(-100), -0.08, zp], [lx(52), 0.0, 75]);
     tbox(TP, COL.plaza, [lx(-4), -0.04, zp], [lx(16), 0.03, zp + 3.6]);
     tbox(TP, "#c9c2d6", [lx(-4), 0.0, zp + 3.6], [lx(16), 0.08, zp + 3.75]);
     // hedges along the plaza and the park's edge, a gap in front of the plaza
     for (const [a, b, z] of [
-      [-40, -4.6, zp + 0.6],
+      [-100, -4.6, zp + 0.6],
       [16.6, 52, zp + 0.6],
       [-4, 16, zp + 4.3],
     ])
@@ -859,11 +870,16 @@ export function buildLobby(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     const r = rng(61);
     let k = 0;
     for (let x = -26; x < 40; x += 5.5 + r() * 2.5)
-      tree(TP, lx(x), 0, zp + 6.5 + r() * 3.5 + (Math.abs(x - 6) < 8 ? 0 : 1), 4.6 + r() * 1.6, 70 + k++);
-    for (let x = -30; x < 46; x += 6 + r() * 3) tree(TP, lx(x), 0, zp + 18 + r() * 8, 5.5 + r() * 2, 70 + k++);
-    const m = TP.mesh(M.tint);
-    m.castShadow = false;
-    park.add(m);
+      treeAt(x, zp + 6.5 + r() * 3.5 + (Math.abs(x - 6) < 8 ? 0 : 1), 4.6 + r() * 1.6, 70 + k++);
+    for (let x = -30; x < 46; x += 6 + r() * 3) treeAt(x, zp + 18 + r() * 8, 5.5 + r() * 2, 70 + k++);
+    // toward COMPANY one row, sparser (only seen far off, from the pavement)
+    const rf = rng(62);
+    for (let x = -96; x < -26; x += 7 + rf() * 3) treeAt(x, zp + 7.5 + rf() * 3.5, 4.6 + rf() * 1.6, 120 + k++);
+    for (const T of [TP, ...trees.values()]) {
+      const m = T.mesh(M.tint);
+      m.castShadow = false;
+      park.add(m);
+    }
   }
   group.add(park);
 
@@ -903,7 +919,7 @@ export function buildLobby(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   };
   /**
    * What is drawn: the meeting room and the garden behind its window (`room`), the park across the road (`park`:
-   * only once the camera, inside, turns to the facade, K8 → K9.1).
+   * once the camera turns to the facade, K8 → K9.1, and on out through the door, beat 9b).
    */
   const setView = (roomOn: boolean, parkOn: boolean) => {
     for (const [o, on] of [

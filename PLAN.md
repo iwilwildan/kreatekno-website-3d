@@ -2456,3 +2456,27 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - anggaran saat pintu terbuka di K11 (HUD): 111 draw call / 144,5 rb segitiga (HP), di bawah 120 / 150 rb;
   - typecheck, ESLint dan Prettier untuk file yang diubah, `next build`.
 - **Belum:** tes HP fisik; `issue4.mjs` (butuh GPU). Belum di-commit (menunggu konfirmasi user).
+
+### 2026-11-15 (perbaikan: logo leaflet tertutup di desktop, seberang jalan kosong saat keluar Kreatekno)
+
+- Masukan user (tangkapan layar Vercel, hanya di chat): (1) logo Kreatekno di leaflet tertutup kartu layanan di desktop (HP sudah benar, tidak dicek); (2) saat kamera keluar dari Kreatekno, seberang jalan kosong, padahal dari dalam kantor terlihat jejeran pohon. Bukan issue GitHub bernomor.
+- `main` lokal tertinggal 11 commit; ditarik fast-forward ke `origin/main` `ddcf4fb` (perubahan lokal `PLAN.md` dan `.claude/launch.json` disimpan lewat stash dan dikembalikan tanpa konflik).
+- Direproduksi di build produksi (port 3300, skrip Playwright scratchpad, `?hud`):
+  1. K3 landscape (1280×720, 1440×900, 1920×1080; ID dan EN): kotak kartu `.leaflet-copy .services` dirancang 0,26–0,705 tinggi lembar, tapi copy v3 (#26) membuat kartu meluap sampai 0,835 (ID) / 0,83 (EN). Logo tercetak di tekstur lembar pada 0,789–0,841 (`LEAF_FOOT.land`), jadi tertutup kartu 01 dan garisnya tertutup kartu 02–04.
+  2. K9.1 → K9b: `lobby-park` (rumput, pagar tanaman, dua baris pohon) hanya tampil selama kamera di dalam lobi (`inside && facade`); begitu kamera melewati pintu (yaw 0° → −95°, menyusuri trotoar ke arah COMPANY) taman disembunyikan. Selain itu taman dan pohonnya berhenti di x ±0 / ±14 m, jadi dari trotoar (yang melihat ke arah COMPANY) seberang jalan tetap kosong sampai cakrawala.
+- Diubah:
+  - `components/home/stage.css`: kotak kartu landscape sampai 0,845 tinggi lembar (`bottom` 29,5 → 15,5cqh), sesuai isi terpanjang;
+  - `world/sets/counterProps.ts`: logo landscape turun ke 0,884–0,936 (`LEAF_FOOT.land.y` 0,815 → 0,91), garis tetap sampai 0,75 lebar (bebas dari jari Bu Dewi);
+  - `world/index.ts`: taman tampil sejak kamera menghadap fasad (K8 → K9.1) sampai kembali di COMPANY, di dalam maupun di luar;
+  - `world/sets/lobby.ts`: taman diperpanjang ke arah COMPANY (rumput dan pagar sampai x ±−60 m, satu baris pohon yang lebih jarang); setelah keputusan user "kurangi pohon" (lihat di bawah) tanah taman jadi satu mesh dan pohonnya mesh per 30 m sepanjang jalan, supaya pohon di luar frame di-cull;
+  - still `pc/k3.webp` dirender ulang (logo di posisi baru). `hp/k3.webp` hasil render sama persis; `stills.json` isinya sama, dikembalikan.
+- Dicek (build produksi):
+  - leaflet: kartu berakhir 0,845 di ketiga ukuran desktop, ID dan EN; logo dan garis utuh di bawahnya; portrait (HP) tidak berubah karena punya `bottom` sendiri;
+  - keluar Kreatekno: taman tampil di semua frame dari K9.1 sampai K9b dan saat kamera naik ke langit, mati di COMPANY; frame PC menyusuri trotoar memperlihatkan pagar dan jejeran pohon di seberang jalan; di HP seberang jalan hampir di luar frame potret;
+  - anggaran versi pertama (taman satu mesh, perpanjangan dua baris pohon): menyusuri trotoar 152,3 rb segitiga (PC) / 150,0 rb (HP), puncak 157,8 rb (PC) sesaat kamera berbelok ke fasad. Keputusan user: kurangi pohon;
+  - anggaran versi akhir (HUD): menyusuri trotoar 149,0 rb segitiga / 105 draw call (PC), 144,8 rb / 93 (HP), sebelumnya 145,4 rb (PC). Puncak 152,5 rb (PC) di satu frame belokan ke fasad; di frame itu taman hanya ±1,7 rb (tanah dan satu potongan pohon), sisanya ±150,8 rb deret ruko dan tokoh yang sudah ada sejak #22 (±151 rb);
+  - still K9.1 dan K9b PC/HP dirender ulang untuk dicek: beda hanya noise render (rata-rata < 0,5, piksel berbeda > 40 maks 0,024%), dikembalikan ke HEAD;
+  - `issue22.mjs` 18/18 (maju dan mundur 0,6/2/4 s per layar; maks 109 draw call, 153,2 rb segitiga) dan `issue4.mjs` 73/73 lulus;
+  - ESLint, Prettier (file yang diubah; peringatan Prettier hanya akhir baris CRLF dari checkout) dan `next build` lulus.
+- Belum: tes HP fisik.
+- Atas perintah user ("Commit dan push"): di-commit ke `main` (hanya `stage.css`, `counterProps.ts`, `world/index.ts`, `lobby.ts`, still `pc/k3.webp` dan entri log ini; `.claude/launch.json` dan file lain yang belum di-commit tidak ikut) lalu di-push ke `origin main` (memicu deploy Vercel).

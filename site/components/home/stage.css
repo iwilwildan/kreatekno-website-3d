@@ -497,7 +497,8 @@
   }
 
   /* the leaflet: purple strip near the top edge (printed), kicker and title right of Heru's fingers; landscape on
-     16:9: four cards in a row that end above Bu Dewi's fingers, the printed logo below them (counterProps);
+     16:9: four cards in a row left of Bu Dewi's fingers, down to 0.845 of the sheet (the longest card's copy ends
+     at ±0.835), the printed logo below them at 0.884–0.936 (counterProps LEAF_FOOT);
      portrait on 9:16: the services stacked as rows, icon beside the title, no card fill (the column is too short
      for padding, and a fill would lie over Bu Dewi's fingers) */
   .leaflet-copy .kicker {
@@ -518,7 +519,7 @@
     top: 26cqh;
     left: 5cqw;
     right: 5cqw;
-    bottom: 29.5cqh;
+    bottom: 15.5cqh;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.6cqw;
     margin: 0;
