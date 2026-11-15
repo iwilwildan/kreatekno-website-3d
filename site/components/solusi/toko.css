@@ -674,9 +674,8 @@
   min-height: 360px;
   padding: 70px max(32px, calc((100vw - 1240px) / 2));
   color: white;
-  background:
-    radial-gradient(circle at 90% 0, rgba(53, 234, 254, 0.24), transparent 28%),
-    linear-gradient(135deg, #101449, #42116d);
+  /* the footer's own navy (issue #35): the band and the footer below it read as one block */
+  background: var(--color-navy-3);
 }
 .solusi-band > div:first-child {
   max-width: 720px;

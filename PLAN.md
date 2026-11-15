@@ -2480,3 +2480,15 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - ESLint, Prettier (file yang diubah; peringatan Prettier hanya akhir baris CRLF dari checkout) dan `next build` lulus.
 - Belum: tes HP fisik.
 - Atas perintah user ("Commit dan push"): di-commit ke `main` (hanya `stage.css`, `counterProps.ts`, `world/index.ts`, `lobby.ts`, still `pc/k3.webp` dan entri log ini; `.claude/launch.json` dan file lain yang belum di-commit tidak ikut) lalu di-push ke `origin main` (memicu deploy Vercel).
+
+### 2026-11-16 (issue GitHub #35 dan #36: band Solusi warna footer, mode Cari/Kartu tanpa lapisan)
+
+- #35. Penyebab: `.solusi-band` memakai gradien `#101449 → #42116d` dengan cahaya cyan, footer `#0b0f3a`; band menempel ke footer (jarak 0 px). Detail dan `/solusi/hasil` berakhir dengan section terang, tidak terkena. Perbaikan: latar band `var(--color-navy-3)` polos (`components/solusi/toko.css`).
+- #36. Penyebab: `.focus-panel` berlatar gradien terang 0,86–0,9 (hasil 0,3–0,4) setinggi layar di atas kanvas dunia, jadi kasir pudar; v1 tanpa lapisan. Tanpa lapisan, judul, pengantar dan label ronde Kartu jatuh di atas kepala kasir dan dinding gelap. Keputusan user: judul masuk kertas seperti v1.
+- Perbaikan #36 (`toko.css`, `components/solusi/SolusiPage.tsx`): latar `.focus-panel` dihapus di semua keadaan; panel Kartu disusun ke bawah layar (`justify-content: flex-end`, bawah 6svh); judul Kartu dirender di dalam kertas bidang usaha dan hanya untuk pembaca layar saat kartu dibagikan (`aria-labelledby` tetap); kertas dirapatkan (padding, jarak grid), grid bidang usaha 3 kolom di HP ≤ 640 px seperti v1; tinggi tumpukan kartu `clamp(250px, 40svh, 320px)` seperti v1; label ronde dan petunjuk diberi chip putih. Copy, tombol X dan urutan langkah tidak berubah (tetap #19).
+- Dicek (dev server, lalu build produksi 3300):
+  - #35: band dan footer `rgb(11, 15, 58)` di 1280×720 dan 375×812; kontras kicker 12,6:1, judul 18,4:1, isi 9,7:1.
+  - #36: atas kertas bidang usaha vs dada kasir (`__solusi.cashierScreen.y`): 1280×720 283/276, 1440×900 452/347, 768×1024 576/396, 390×844 409/367 (produksi), 360×740 287/322 (kepala dan bahu terlihat; sebelum grid 3 kolom 195, kasir tertutup). Tumpukan kartu mulai di bawah kepala kasir di semua ukuran. 48 kalimat kartu (ID dan EN) muat tanpa menabrak label dan stempel (maks 3 baris desktop, 4 baris HP). Tidak ada teks terlihat tanpa latar sendiri di atas dunia, kecuali nomor halaman "1 / 2" yang duduk di konter terang (navy di atas lavender). Fallback tanpa kanvas: kertas di atas latar krem halaman, terbaca.
+  - Typecheck, ESLint, Prettier, `next build` lulus. Console produksi bersih kecuali 404 `/_vercel/insights/script.js` (hanya di lokal).
+- Belum: tes HP fisik.
+- Atas perintah user ("Oke, commit dan push"): di-commit ke `main` sebagai dua commit, #35 (band dan entri log ini) lalu #36 (`toko.css`, `SolusiPage.tsx`); file lain yang belum di-commit tidak ikut. Di-push ke `origin main` (memicu deploy Vercel), lalu #35 dan #36 ditutup.
