@@ -564,20 +564,27 @@ function CardPanel({
     pointer.current.id = -1;
   };
 
+  const heading = (
+    <div className="focus-heading">
+      <p className="solusi-kicker">{t("cards.eyebrow")}</p>
+      <h2 id="cards-h">{t("cards.title")}</h2>
+      <p>{t("cards.intro")}</p>
+    </div>
+  );
+
   return (
     <section className="focus-panel card-panel" aria-labelledby="cards-h">
       <button type="button" className="panel-close" onClick={onClose} aria-label={t("cards.close")}>
         <X aria-hidden />
       </button>
-      <div className="focus-heading">
-        <p className="solusi-kicker">{t("cards.eyebrow")}</p>
-        <h2 id="cards-h">{t("cards.title")}</h2>
-        <p>{t("cards.intro")}</p>
-      </div>
+      {/* Issue #36 (as v1): with no veil over the shop the heading sits on the industry paper; while cards are
+          dealt and answered it stays for screen readers only. */}
+      {(deck.length > 0 || dealing) && heading}
       {!deck.length && dealing ? (
         <div className="deal-placeholder" aria-hidden="true" />
       ) : !deck.length ? (
         <div className="industry-sheet">
+          {heading}
           <span>{t("cards.industry")}</span>
           <div className="industry-grid">
             {INDUSTRI.map((item) => (

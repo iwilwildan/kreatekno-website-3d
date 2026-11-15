@@ -698,15 +698,7 @@
   z-index: 2;
   min-height: 100svh;
   padding: calc(var(--nav-top) + var(--nav-h) + 58px) max(24px, calc((100vw - 1120px) / 2)) 100px;
-  background: linear-gradient(
-    135deg,
-    rgba(238, 241, 255, 0.9),
-    rgba(248, 245, 238, 0.86) 58%,
-    rgba(239, 225, 251, 0.9)
-  );
-}
-.solusi-page.served .focus-panel {
-  background: linear-gradient(135deg, rgba(238, 241, 255, 0.4), rgba(248, 245, 238, 0.3) 58%, rgba(239, 225, 251, 0.4));
+  /* no veil over the shop (issue #36, as v1): the world stays bright and every panel part carries its own surface */
 }
 .panel-close {
   position: fixed;
@@ -1308,6 +1300,76 @@
   text-align: center;
   color: #6c6f89;
   font-size: 0.8rem;
+}
+/* Issue #36 (as v1): no veil, so the card panel sits low on the counter with the cashier in view above it; the
+   heading rides on the industry paper, the round label and the hint get their own chips */
+.card-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 6svh;
+}
+.card-panel :where(.industry-sheet, .deck-area, .deal-placeholder) {
+  margin: 0 auto;
+}
+.card-panel > .focus-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.card-panel .industry-sheet {
+  padding: 24px 28px;
+}
+.card-panel .industry-grid {
+  margin: 16px 0 20px;
+}
+.industry-sheet .focus-heading {
+  max-width: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.industry-sheet .focus-heading h2 {
+  font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.industry-sheet .focus-heading > p:last-child {
+  margin-top: 8px;
+  font-size: 0.875rem;
+}
+.card-panel .deck-stack {
+  height: clamp(250px, 40svh, 320px);
+}
+.deck-meta > *,
+.deck-hint {
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--night);
+  box-shadow: 0 10px 20px -12px rgba(11, 15, 58, 0.7);
+}
+.deck-hint {
+  width: fit-content;
+  margin: 14px auto 0;
+}
+@media (max-width: 640px) {
+  /* three columns as v1, so the paper stays short enough for the cashier to show above it on small phones */
+  .card-panel .industry-sheet {
+    padding: 20px 14px;
+  }
+  .card-panel .industry-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .card-panel .industry-grid button {
+    min-height: 48px;
+    padding: 6px 4px;
+    font-size: 0.8125rem;
+  }
 }
 
 .contact-dialog {
