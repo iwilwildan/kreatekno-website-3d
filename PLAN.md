@@ -2438,3 +2438,21 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - still K11.1 dan K13 PC/HP dirender ulang (`tools/render/stills.mjs`, 35–60 KB); `stills.json` tidak berubah isinya (hanya format, dikembalikan);
   - typecheck, ESLint, Prettier, `next build`.
 - **Belum:** tes scroll real-time (2 s per layar) tidak bisa di container ini (SwiftShader ±1 frame/detik), jadi laju dan gerbang kamera dicek dari posisi scroll yang tidak berubah, bukan diukur; `issue4.mjs` belum dijalankan; komentar di issue #23 belum ditulis; tes HP fisik; review user. Issue #24 (pintu kayu ke dalam kelas, jalur lurus) belum dikerjakan; jalur K11.1 → K12 setelah kepala Bu Dewi masih jalur lama. Catatan copy v3: plakat meja "sesudah" dibaca di K13, yang sekarang view lebar K2.
+
+### 2026-11-15 (adegan pintu COMPANY tidak terlihat di HP, tanpa issue GitHub)
+
+- Laporan user: adegan Heru dan Wildan membukakan pintu COMPANY untuk Bu Dewi tidak terlihat di HP. Tanpa issue GitHub (keputusan user). `main` ditarik ke `origin/main` d577bac.
+- **Reproduksi** (build produksi port 3300, Playwright SwiftShader dengan jam palsu `page.clock`, `setTarget` + scroll halaman tiap 1/30 dtk, 2 dtk per layar dari K10 ke K11.1): jam ketiga tokoh tertinggal dari scroll (laju jalan maks 1,5×), jadi mereka baru tiba di pintu setelah jeda K11 lewat. Daun pintu dibuka (jam 93,3–94,5) saat kamera sudah ditahan gerbang pintu (`companyGate`, z ±2,25 m). Kepala Heru / Wildan di ndc x: HP 375×812 −4,5 / +5,3, tablet 768×1024 −3,5 / +4,0, PC 1280×720 −1,5 / +1,6. Semuanya di luar frame, hanya Bu Dewi yang terlihat. Di mode `?shot` (jam selalu sinkron) pembukaan terlihat hanya ±0,18 layar di view K11.
+- **Keputusan user:** perbaikan dipakai di PC dan HP; jeda kamera ±2 dtk, langkah Bu Dewi masuk dipercepat; kamera K11 HP digeser ke tengah; tidak perlu issue GitHub.
+- **Perubahan:**
+  - `world/index.ts`: gerbang baru menahan kamera di ujung jeda K11 sampai kedua daun terbuka penuh (`BT2.open[1]`), hanya selama kamera belum meninggalkan K11 (tidak menarik kamera mundur, tidak berlaku saat scroll mundur);
+  - `takes/home/outsideCast.ts`: Heru, Bu Dewi dan Wildan mulai 3 m lebih dekat ke pintu (x 5,6 / 6,6 / 7,6, sebelumnya 8,6 / 9,6 / 10,6; tetap di luar frame K11 kanan), jadi jeda kamera ±2 dtk; langkah Bu Dewi masuk 1,3× (`DI`);
+  - `takes/home/beat9.ts`: `K11_HP` x −0,2 → 0 (Heru dan Wildan seimbang, bahu Wildan tidak terpotong);
+  - still K11 PC/HP dirender ulang (`stills.json` isinya sama, dikembalikan).
+- **Dicek** (jam palsu, 30 fps simulasi; screenshot hanya di chat):
+  - maju 2 dtk/layar: kamera diam di K11 2,1 dtk (HP, tablet, PC sama); kedua daun dibuka seluruhnya selama kamera di K11; Heru / Wildan HP −0,70 / +0,73, tablet −0,40 / +0,70, PC 0,01 / 0,55; Bu Dewi di tempatnya 0,3 dtk setelah kamera tiba di K11.1 (sebelumnya ±1,2 dtk);
+  - maju 0,6 dtk/layar (HP): diam 1,0 dtk, pembukaan tetap di view K11; maju 4 dtk/layar (HP): diam 1,2 dtk, Bu Dewi sudah di tempatnya sebelum kamera tiba;
+  - mundur 2 dtk/layar (HP, PC): kamera mundur mulus K11.1 → K11 → langit, tidak pernah maju, maks 9,0 / 7,8 m/s;
+  - anggaran saat pintu terbuka di K11 (HUD): 111 draw call / 144,5 rb segitiga (HP), di bawah 120 / 150 rb;
+  - typecheck, ESLint dan Prettier untuk file yang diubah, `next build`.
+- **Belum:** tes HP fisik; `issue4.mjs` (butuh GPU). Belum di-commit (menunggu konfirmasi user).

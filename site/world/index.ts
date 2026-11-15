@@ -983,6 +983,10 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       const companyGate = B12.into.s + (INTO.door - 0.1) * B12.into.len;
       if (gated * TAKE_SCREENS > companyGate && outClk.x < BT2.inside)
         gated = Math.min(gated, companyGate / TAKE_SCREENS);
+      // (it first holds on K11 until Heru and Wildan have pulled the leaves open: they walk in behind the scroll, and
+      // pushing in before that took them out of the frame, most of all on a phone; only while it is still there)
+      if (gated * TAKE_SCREENS > B12.into.s && view.x * TAKE_SCREENS <= B12.into.s + 1e-3 && outClk.x < BT2.open[1])
+        gated = Math.min(gated, B12.into.s / TAKE_SCREENS);
       // scrolled back past K4.2 while Heru and Bu Dewi are still in view in COMPANY's doorway: the camera waits out
       // there until they have walked back in and the leaves have shut (they vanished in one frame before, tahap 7)
       if (gated * TAKE_SCREENS < K42_PASS && outClk.x > OUT_BACK_GATE && seenAt(outClk.x))

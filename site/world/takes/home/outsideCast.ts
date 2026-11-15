@@ -286,9 +286,11 @@ const W2 = new TimedWalk(
 /** COMPANY: along its pavement from the right to the door (DATA: the door's middle at x 0), the three in a line. */
 // (Heru and Wildan just outside the leaves' swing, at their free edges once open: video 22–23 s)
 const C_SPOT = { heru: V(-1.15, 1.15), dewi: V(0.05, 1.45), wildan: V(1.2, 1.15) };
-const HC = new TimedWalk([V(8.6, LANE9.heru), V(1.6, LANE9.heru), C_SPOT.heru], () => OUT_SPEED, 0.42, "R");
-const DC = new TimedWalk([V(9.6, 1.3), V(2.1, 1.3), C_SPOT.dewi], () => OUT_SPEED, 0.36, "L");
-const WC = new TimedWalk([V(10.6, 0.95), V(2.7, 0.95), C_SPOT.wildan], () => OUT_SPEED, 0.4, "R");
+// (they start 3 m nearer than they did, still out of the K11 frame on the right: on a steady scroll they walk in
+// behind it, and the camera waits on K11 for the leaves to open, about 2 s at 2 s per screen)
+const HC = new TimedWalk([V(5.6, LANE9.heru), V(1.6, LANE9.heru), C_SPOT.heru], () => OUT_SPEED, 0.42, "R");
+const DC = new TimedWalk([V(6.6, 1.3), V(2.1, 1.3), C_SPOT.dewi], () => OUT_SPEED, 0.36, "L");
+const WC = new TimedWalk([V(7.6, 0.95), V(2.7, 0.95), C_SPOT.wildan], () => OUT_SPEED, 0.4, "R");
 /** Facing COMPANY's door (−z). */
 const FACE_DOOR = Math.PI;
 /** The plaque's left edge less half a metre: past it, the three are out of the K9b frame. */
@@ -353,7 +355,8 @@ const BT_HIGH = BT.h6 + H6.timeAt((p) => p.z > 0 && p.x <= KREATEKNO.x0 - 3.5);
 // walks in between them into the front room and stops a few steps in, where the camera passes over her head.
 // (issue #23: she stops where Heru stands at K2, so K11.1, K2's own view, has her where it had him)
 const DEWI_K111 = V((DATA.heruK2.pc[0] + DATA.heruK2.hp[0]) / 2, (DATA.heruK2.pc[2] + DATA.heruK2.hp[2]) / 2);
-const DI = new TimedWalk([C_SPOT.dewi, V(0.02, 0.4), V(0.0, -0.8), DEWI_K111], () => OUT_SPEED, 0.36, "R");
+// (a brisker step in, so she is at her spot as the camera comes to K11.1)
+const DI = new TimedWalk([C_SPOT.dewi, V(0.02, 0.4), V(0.0, -0.8), DEWI_K111], () => OUT_SPEED * 1.3, 0.4, "R");
 /** Their timeline at COMPANY's door (clock seconds, after BT.end). */
 export const BT2 = (() => {
   const open: [number, number] = [BT.end + 0.2, BT.end + 1.4],

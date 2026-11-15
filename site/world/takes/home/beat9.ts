@@ -76,7 +76,7 @@ const K9B_HP = PLAQUE_COLS.map((c) => v(c.cx, P.y, PZ + c.w / 0.88 / 2 / HP_HTAN
 // 16:9: frontal, the facade (−6.9 … 4.7 m) across the width, the sign near the top, the door a little right of the
 // middle (video 20 s). 9:16: the door and the three in the middle, the sign's middle above
 const K11_PC = v(-1.2, 1.7, 8.7, 0, D2R(2), 36),
-  K11_HP = v(-0.2, 1.75, 7.2, 0, D2R(6), 52);
+  K11_HP = v(0, 1.75, 7.2, 0, D2R(6), 52);
 /** The K11 view for format blend t (where beats 12–13 start, takes/home/beat12). */
 export const k11View = (t: number) => mix(K11_PC, K11_HP, t);
 
