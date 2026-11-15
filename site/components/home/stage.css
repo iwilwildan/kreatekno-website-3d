@@ -755,13 +755,14 @@
     .hero-title {
       font-size: 21px;
     }
-    /* phones: body and buttons stay a card in the bottom band, above the browser's toolbar */
+    /* phones: body and buttons stay a card in the bottom band, above the browser's toolbar. It is kept short (15px
+       text, the two buttons on one row) so it stays under the billboard's four-line headline (copy v3). */
     .hero-body {
-      inset: auto 4% calc(3% + 100lvh - 100svh);
+      inset: auto 12px calc(3% + 100lvh - 100svh);
       width: auto !important;
       height: auto !important;
       transform: none !important;
-      padding: 18px;
+      padding: 16px;
       border-radius: var(--radius-card);
       background: rgb(255 255 255 / 0.88);
       box-shadow: 0 18px 40px -28px rgb(19 25 81 / 0.6);
@@ -770,20 +771,58 @@
       visibility: visible !important;
     }
     .hero-text {
-      font-size: 1rem;
-      line-height: 1.5;
+      font-size: 15px;
+      line-height: 1.45;
     }
     .hero-ctas {
-      gap: 10px;
-      margin-top: 14px;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin-top: 12px;
     }
     .hero-ctas .btn {
-      --t-btn: 0.9375rem;
+      --t-btn: 0.875rem;
       min-height: 44px;
+      padding-inline: 16px;
+    }
+    .hero-ctas .btn:has(.knob) {
+      padding-right: 6px;
     }
     .hero-ctas .knob {
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
+    }
+  }
+  /* 360 px phones are the short ones (±680 px under the toolbar): one size down so the card clears the headline */
+  @media (max-aspect-ratio: 1/1) and (max-width: 370px) {
+    .hero-body {
+      padding: 14px;
+    }
+    .hero-text {
+      font-size: 14px;
+      line-height: 1.42;
+    }
+  }
+  /* under 390 px the two buttons need to be a little smaller to share a row (the card is sized to its content, so a
+     row too wide would widen it past the screen) */
+  @media (max-aspect-ratio: 1/1) and (max-width: 389px) {
+    .hero-ctas {
+      gap: 6px;
+    }
+    .hero-ctas .btn {
+      --t-btn: 0.8125rem;
+      padding-inline: 12px;
+    }
+    .hero-ctas .btn:has(.knob) {
+      padding-right: 5px;
+    }
+    .hero-ctas .knob {
+      width: 28px;
+      height: 28px;
+    }
+  }
+  @media (max-aspect-ratio: 1/1) and (max-width: 339px) {
+    .hero-ctas {
+      flex-wrap: wrap;
     }
   }
 }

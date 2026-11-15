@@ -2412,4 +2412,12 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - binder: keempat tab muat di semua viewport (ID/EN); nama tab di dalam tabnya (dua kolom di tab ke-2 HP, lebih 1 px dari lebar tab);
   - dialog testimoni: terbuka di tengah, fokus ke Tutup, Escape menutup dan fokus kembali ke polaroid; reduced motion: kutipan penuh, tombol tersembunyi;
   - `typecheck`, ESLint (`components/home`), Prettier (`--end-of-line auto`), `next build` lulus.
-- **Belum:** plakat meja (K2.1, K2.2, K13) belum dirender; gelembung pikiran K13 belum dicocokkan dengan plakat "sesudah"; CTA bagian 12 tanpa tempat; meta SEO dan halaman lain masih "Anda"; still fallback tidak dirender ulang (hanya HTML yang berubah); tes HP fisik; review user. Belum di-commit.
+- **Belum:** plakat meja (K2.1, K2.2, K13) belum dirender; gelembung pikiran K13 belum dicocokkan dengan plakat "sesudah"; CTA bagian 12 tanpa tempat; meta SEO dan halaman lain masih "Anda"; still fallback tidak dirender ulang (hanya HTML yang berubah); tes HP fisik; review user. Di-commit bee1a02, PR #26.
+
+### 2026-11-15 (hero HP: kartu menutupi judul billboard, PR #26)
+
+- Laporan user (screenshot HP Android, deploy Vercel): kartu body hero menutupi baris ke-3–4 judul billboard. Copy v3 membuat judul 4 baris di HP, dan kartu setinggi ±290–316 px (teks 16 px, dua tombol bertumpuk).
+- **Diukur** (Playwright GPU, K0, toolbar browser ditiru dengan kartu dinaikkan 56 px karena stage 100lvh): judul tertutup 12–77 px di 360×678 sampai 412×820.
+- **Perbaikan** (`stage.css`, hanya `max-aspect-ratio: 1/1`): kartu tepi 12 px dan padding 16 px, teks 15/1.45, dua tombol satu baris (`nowrap`, 0.875rem, knob 30 px); ≤ 389 px tombol 0.8125rem; ≤ 370 px teks 14/1.42 dan padding 14 px; ≤ 339 px tombol boleh turun baris. Kartu jadi 183–219 px.
+- **Dicek:** jarak kartu ke bawah judul 14–90 px di 360×740, 375×812, 384×830, 390×844, 400×810, 412×900, 430×930 dan tablet 768×1024 (ID), EN 19–79 px; kartu tidak keluar layar (tepi kanan 12 px) dan tombol di dalam kartu; typecheck, ESLint, Prettier, build lulus. PC tidak berubah.
+- **Belum:** 360×700 (lvh, HP 18:9 lama) mepet 1 px dan 320×640 masih tertutup; tes di HP fisik.
