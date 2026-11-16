@@ -17,6 +17,7 @@ import { B12_START, beat12Camera } from "./beat12";
 import { B15_START, beat15Camera } from "./beat15";
 import { pairX, scrollClock } from "./outsideCast";
 import { LAYOUT_STEPS } from "../../sets/companyFront";
+import { BILLBOARD_SCALE, billboardFace } from "../../sets/street";
 import { SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
 
 export { SEG, TAKE_SCREENS, KEYS, keyP, WHIP_AT } from "./timing";
@@ -53,6 +54,20 @@ const kf = (k: SolvedKey, t: number, narrow = 0) => {
   if (TILT[k]) c.quat.multiply(pitchQ(-TILT[k] * (1 - t)));
   return c;
 };
+
+/**
+ * Issue #32: K0 with the billboard 25% larger. 16:9 keeps the solved camera (the billboard fills more of the frame);
+ * 9:16, where it already spanned the screen's width, steps back as much as the billboard grew, so it is framed as
+ * in the keyframe.
+ */
+const BOARD = billboardFace();
+function k0(t: number): CamPose {
+  const c = kf("K0", t),
+    d = c.pos.distanceTo(new THREE.Vector3(BOARD.cx, BOARD.cy, BOARD.z)),
+    fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(c.quat);
+  c.pos.addScaledVector(fwd, -d * (BILLBOARD_SCALE - 1) * t);
+  return c;
+}
 
 /** Ease with zero speed at the start and speed `m` (in units of the whole move) at the end. */
 const easeTo = (u: number, m: number) => (m - 2) * u ** 3 + (3 - m) * u ** 2;
@@ -151,6 +166,7 @@ export function cameraAt(
     const key = s < SEG_K22 * 0.6 ? "K2.2" : s < SEG_K22 + seg.screens * 0.5 ? "K2.4" : "K3";
     return { ...beat34Camera(t, aspect, kf("K2.2", t, narrow), s), key };
   }
+  if (seg.type === "hold" && seg.from === "K0") return { ...k0(t), key: seg.from };
   if (seg.type === "hold") return { ...kf(seg.from as SolvedKey, t, narrow), key: seg.from };
   if (seg.from === "K2") {
     const { A, B, curve, atB } = panPath(t, heru, narrow),
@@ -175,7 +191,7 @@ export function cameraAt(
       key: whip < 0.5 ? "K2.1" : "K2.2",
     };
   }
-  const A = kf(seg.from as SolvedKey, t),
+  const A = seg.from === "K0" ? k0(t) : kf(seg.from as SolvedKey, t),
     B = kf(seg.to as SolvedKey, t),
     e = ease(u);
   let pos: THREE.Vector3;

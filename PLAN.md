@@ -2521,3 +2521,12 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Dicek (dev server, Playwright): K2.2 berantakan, K11.1 dan K13 rapi di 1280×720 dan 375×812; lompat dari K13 ke K2.2 berantakan lagi; draw call K11.1 96 → 98. Typecheck, ESLint, Prettier lulus.
 - Belum: review tim untuk desain meja rapi (tanpa keyframe, aturan kerja 6); tes HP fisik.
 - `next build` lulus. Atas perintah user ("Oke, commit"): di-commit ke `main` (hanya file #31 dan entri log ini) lalu di-push ke `origin main`; komentar #30 dan #31 dikirim lewat Chrome setelah user login GitHub.
+
+### 2026-11-16 (issue GitHub #32: billboard 3D lebih besar)
+
+- Atas permintaan user ("tutup keduanya dan lanjutkan issue berikutnya"). Jawaban user: lebar dan tinggi +25% (kamera K0 tetap, papan tampak lebih besar).
+- Perubahan: `sets/street.ts` `BILLBOARD_SCALE = 1.25`. Papan membesar ke atas dan ke kedua sisi dari tengahnya, tepi bawah di posisi solver. Bingkai, wajah, ledge, wajah malam dan `billboardFace()` ikut membesar; kaki dan rangka tetap di posisi solver (`E.xbL + f · w0`), jadi AO atap tidak berubah. `takes/home/index.ts` `k0()`: di 9:16 (sudah selebar layar di keyframe) kamera K0 mundur sebanding pembesaran (jarak ke papan × 1,25 pada t = 1), 16:9 tetap. `takes/home/beat15.ts`: K16 PC pitch −12,5° → −8,8°, K16 HP x −1,0 → −1,7 m dan pitch −14° → −13°, supaya papan utuh di bawah header dan di dalam tepi kiri. Still K0 dan K16 (pc, hp) dan anchor K0 di `stills.json` dirender ulang.
+- Dicek (dev server, Playwright): K0 di 1280×720, 768×1024, 375×812, 360×740 copy hero utuh di wajah papan (PC atas bingkai ±24 px di bawah header; HP papan selebar layar seperti sebelumnya); K16 di 1280×720, 1440×900, 375×812 papan utuh; K1 dan K11 tanpa papan. Typecheck, ESLint, Prettier lulus.
+- Lalu atas permintaan user ("untuk desktop pendekkan sedikit tiangnya, agar billboard agak kebawah dan masih ada space langit untuk burung"): tiang 0,45 m lebih pendek (`BILLBOARD_DROP`, tepi bawah papan 0,45 m di bawah solver). Satu papan untuk semua format, jadi HP ikut turun; di K0 PC atas bingkai ±170 px dari atas (1280×720), burung terbang di langit di atasnya; HP dan K16 tetap utuh. Still K0 dan K16 dirender ulang lagi.
+- `next build` lulus. Komentar penyebab dan rencana dikirim di issue #32. Belum: tes HP fisik.
+- Atas perintah user ("Oke, commit"): di-commit ke `main` (hanya file #32 dan entri log ini) lalu di-push ke `origin main`; issue #32 ditutup.

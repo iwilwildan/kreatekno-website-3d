@@ -36,8 +36,10 @@ export const k15View = (t: number) => mix(K15_PC, K15_HP, t);
 // K16 (video 38.7 s): from high across the road looking a little down, COMPANY ±35% of the width at the left (its
 // base at ±64% of the height), three shops on its right, the road across the lower third (the far pavement, z 12.1,
 // just below the frame), the stars above the roofs (their tops at ±21%). 9:16: COMPANY and its billboard, the road under them
-const K16_PC = v(7.0, 8.4, 25.5, 0, D2R(-12.5), 38.6),
-  K16_HP = v(-1.0, 6.8, 17.5, 0, D2R(-14), 60);
+// (issue #32: the billboard 25% larger: 16:9 looks 3.7° less down and 9:16 stands 0.7 m further left, so it stays whole
+// below the page's header and inside the left edge)
+const K16_PC = v(7.0, 8.4, 25.5, 0, D2R(-8.8), 38.6),
+  K16_HP = v(-1.7, 6.8, 17.5, 0, D2R(-13), 60);
 export const k16View = (t: number) => mix(K16_PC, K16_HP, t);
 
 const tracks = new Map<string, ReturnType<typeof track>>();

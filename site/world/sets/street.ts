@@ -10,14 +10,29 @@ const E = DATA.ext;
 export const DOOR_H = 2.2;
 export const WALL_T = 0.3;
 
+/**
+ * Issue #32: the billboard is 25% wider and taller than the K0 solve (E.xbL … E.ybT), grown up and out to both sides
+ * from its middle, on legs BILLBOARD_DROP shorter (its bottom edge that much below the solve's): on 16:9 it sits lower
+ * in K0, with sky above it for the pigeons. The legs stand where the solve has them on the roof.
+ */
+export const BILLBOARD_SCALE = 1.25,
+  BILLBOARD_DROP = 0.45;
+const BB = (() => {
+  const w0 = E.xbR - E.xbL,
+    cx = (E.xbL + E.xbR) / 2,
+    w = w0 * BILLBOARD_SCALE;
+  const yB = E.ybB - BILLBOARD_DROP;
+  return { xL: cx - w / 2, xR: cx + w / 2, yB, yT: yB + (E.ybT - E.ybB) * BILLBOARD_SCALE, w0 };
+})();
+
 /** The billboard face (inside the frame), in world units: where the hero copy sits. */
 export function billboardFace() {
-  const w = E.xbR - E.xbL,
-    h = E.ybT - E.ybB,
-    cx = (E.xbL + E.xbR) / 2,
+  const w = BB.xR - BB.xL,
+    h = BB.yT - BB.yB,
+    cx = (BB.xL + BB.xR) / 2,
     ledge = 0.17,
     panelH = h - ledge,
-    cy = E.ybB + ledge + panelH / 2,
+    cy = BB.yB + ledge + panelH / 2,
     z = E.zb - 0.05 + 0.016;
   const hw = (w - 0.2) / 2,
     hh = (panelH - 0.2) / 2;
@@ -388,9 +403,9 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
       mat(C.trim),
       mtx([(E.xrL + E.xrR) / 2, E.yrT - 0.02, E.zr - E.drb / 2]),
     );
-    const w = E.xbR - E.xbL,
-      h = E.ybT - E.ybB,
-      cx = (E.xbL + E.xbR) / 2,
+    const w = BB.xR - BB.xL,
+      h = BB.yT - BB.yB,
+      cx = (BB.xL + BB.xR) / 2,
       zb = E.zb,
       fr = mat(C.frame, { roughness: 0.48, metalness: 0.35 });
     const ledge = 0.17,
@@ -407,17 +422,17 @@ export function buildStreet(kit: Kit, ao: AoTarget[]) {
         curveSegments: 10,
       }),
       fr,
-      mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.06]),
+      mtx([cx, BB.yB + ledge + panelH / 2, zb - 0.06]),
     );
-    X.add(G.box(w - 0.18, panelH - 0.18, 0.03), faceMat, mtx([cx, E.ybB + ledge + panelH / 2, zb - 0.05]));
+    X.add(G.box(w - 0.18, panelH - 0.18, 0.03), faceMat, mtx([cx, BB.yB + ledge + panelH / 2, zb - 0.05]));
     nightBillboard = new THREE.Mesh(new THREE.PlaneGeometry(w - 0.2, panelH - 0.2), nightFaceMat);
     nightBillboard.name = "night-billboard-copy";
-    nightBillboard.position.set(cx, E.ybB + ledge + panelH / 2, zb - 0.05 + 0.016);
+    nightBillboard.position.set(cx, BB.yB + ledge + panelH / 2, zb - 0.05 + 0.016);
     nightBillboard.visible = false;
     ext.add(nightBillboard);
-    X.add(G.rbox(w + 0.12, ledge, 0.36, 0.06), fr, mtx([cx, E.ybB + ledge / 2, zb]));
-    const legs = [0.106, 0.503, 0.887].map((f) => E.xbL + f * w),
-      legTop = E.ybB,
+    X.add(G.rbox(w + 0.12, ledge, 0.36, 0.06), fr, mtx([cx, BB.yB + ledge / 2, zb]));
+    const legs = [0.106, 0.503, 0.887].map((f) => E.xbL + f * BB.w0),
+      legTop = BB.yB,
       legBot = roofY;
     for (const x of legs) {
       X.add(G.cyl(0.05, 0.06, legTop - legBot, 12), fr, mtx([x, (legTop + legBot) / 2, zb]));
