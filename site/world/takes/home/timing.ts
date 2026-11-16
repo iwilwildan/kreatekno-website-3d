@@ -169,7 +169,7 @@ export function stopSpan(len: number, n: number, i: number) {
 }
 /** Number of 9:16 stops of each lobby hold (the strip and 3 polaroids; the sign, 3 books and the button; 2 × 4 notes). */
 export const LOBBY_STOPS = { K6: 4, K7: 5, K8: 2 } as const;
-/** 9:16 stops on the plaque (K9b, tahap 8): its left column (title, paragraph), then its right (facts, link). */
-export const PLAQUE_STOPS = 2;
+/** 9:16 stops at K9b: About copy, facts/link, then the logo area in the same plaque (issue #34). */
+export const PLAQUE_STOPS = 3;
 /** Where the whip pan to K2.2 fires, as a fraction of the K2.1 → K2.2 move (time-based from there, ±0.45 s). */
 export const WHIP_AT = 0.3;

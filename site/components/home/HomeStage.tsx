@@ -61,6 +61,7 @@ const HP_ONLY: Partial<Record<Key, string>> = {
   "K5a.3b": "K5a.3",
   ...Object.fromEntries(LOBBY_KEYS.filter((k) => !/\d$/.test(k)).map((k) => [k, k.replace(/[b-h]$/, "")])),
   "K9b-2": "K9b",
+  "K9b-3": "K9b",
 };
 /**
  * The stacked version (reduced motion, no JavaScript) shows the beat 5b copy with the K5a.2 still only, the lobby's

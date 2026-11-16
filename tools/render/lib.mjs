@@ -78,8 +78,8 @@ export const LOBBY_HP = {
   K6: { len: 1.1, keys: ["K6", "K6b", "K6c", "K6d"] },
   K7: { len: 1.4, keys: ["K7", "K7b", "K7c", "K7d", "K7e"] },
   K8: { len: 0.75, keys: ["K8", "K8b"] },
-  // tahap 8: the plaque, its left then its right column (timing.ts PLAQUE_STOPS)
-  K9b: { len: 0.6, keys: ["K9b", "K9b-2"] },
+  // issue #34: About copy, facts/link, then the logo area in the same plaque (timing.ts PLAQUE_STOPS)
+  K9b: { len: 0.6, keys: ["K9b", "K9b-2", "K9b-3"] },
 };
 /** Screens from the hold's start to the middle of the camera's rest on stop i of n (stopSpan in timing.ts). */
 export function stopMid(len, n, i) {
@@ -93,7 +93,7 @@ export const LOBBY_COPY = {
     K6: ["board-strip", "testi-0", "testi-1", "testi-2"],
     K7: ["rack-sign", "article-0", "article-1", "article-2", "rack-all"],
     K8: ["faq-title", "faq-help", ...notes(0, 1, 2, 3, 4, 5, 6, 7)],
-    K9b: ["about-0", "about-1"],
+    K9b: ["about-0", "about-1", "about-2"],
     // tahap 9: the slide on the classroom's TV
     K12: ["practice"],
   },
@@ -105,6 +105,7 @@ export const LOBBY_COPY = {
     K8b: ["faq-help", ...notes(2, 3, 6, 7)],
     K9b: ["about-0"],
     "K9b-2": ["about-1"],
+    "K9b-3": ["about-2"],
     K12: ["practice"],
   },
 };

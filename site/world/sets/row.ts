@@ -145,8 +145,8 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     ])
       pane(KB, b - a, K.band[0], (a + b) / 2, K.band[0] / 2, -0.05);
     pane(KB, D.w, K.band[0] - top, D.cx, (top + K.band[0]) / 2, -0.05);
-    // the plaque (its face carries the beat 9b copy, tahap 8): dark wood frame with a lighter bevel, a cream face;
-    // and the brass gooseneck lamp above it: wall plate, arm curving out and down, bell shade (video 7–8 s)
+    // The single plaque carries About, the checklist and the client logos (issue #34): dark wood frame, a lighter
+    // bevel and one continuous cream face. The brass gooseneck lamp remains above it.
     const pq = K.plaque,
       pTop = pq.y + pq.h / 2;
     KT.add(G.rbox(pq.w + 0.15, pq.h + 0.15, 0.06, 0.025), "#5e3620", mtx([pq.cx, pq.y, 0.055]));

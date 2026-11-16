@@ -1,7 +1,7 @@
 // Beats 9b–11 (tahap 8, the team's continuation video VID_20261113_185210, 0–21 s; greybox, langkah 1). From K9.1
 // the camera follows Heru, Bu Dewi and Wildan through the open right leaf, turns right toward COMPANY, then faces
 // the facade and dollies in to the wooden plaque left of the door (K9b: the plaque fills
-// the frame; 9:16 stops on its two columns). Then back and up over Kreatekno and the row (video 9–12.5 s), into the
+// the frame; 9:16 stops on its two upper columns and the client-logo area below). Then back and up over Kreatekno and the
 // golden sky (K10, passed: sky only, 13–15 s), left along the row up there, and down at COMPANY past its billboard,
 // roof and sign (15–18.5 s) to the facade as the three reach its door (K11, 19–21 s).
 // Frames of the video were read by eye (852 × 480, no labels): the plaque ±80% of the width at K9b, COMPANY's facade
@@ -57,20 +57,25 @@ export const B9_START = B9.out.s;
 const P = KREATEKNO.plaque,
   /** The plaque's face (z): its wooden frame 0.07 deep at z 0.06, the face 0.04 deep at 0.09. */
   PZ = 0.11;
-/** The plaque's two copy columns (centre x, width): the title and the paragraph left, the facts and the link right. */
+const TOP_H = P.h * 0.36,
+  TOP_CY = P.y + P.h * 0.29,
+  TRUSTED = { cx: P.cx, cy: P.y - P.h * 0.18, w: P.w, h: P.h * 0.64 };
+/** The plaque's upper copy columns: the title and paragraph left, the facts and link right. */
 export const PLAQUE_COLS = [
-  { cx: P.cx - P.w / 4, w: P.w / 2 },
-  { cx: P.cx + P.w / 4, w: P.w / 2 },
+  { cx: P.cx - P.w / 4, cy: TOP_CY, w: P.w / 2, h: TOP_H },
+  { cx: P.cx + P.w / 4, cy: TOP_CY, w: P.w / 2, h: TOP_H },
 ];
-// 16:9: the plaque with its frame (w + 0.12) fills 75% of the width at 36° (vertical), a little below the middle
-// with the lamp above it in frame (video 8 s: ±80%, the lamp just in)
+// 16:9: the one taller plaque remains wholly in frame (issue #34).
 const PC_FOV = 36,
-  PC_HTAN = Math.tan(D2R(PC_FOV / 2)) * (16 / 9);
-const K9B_PC = v(P.cx, P.y + 0.17, PZ + (P.w + 0.12) / 0.75 / 2 / PC_HTAN, 0, 0, PC_FOV);
+  PC_DIST = P.h / 0.78 / 2 / Math.tan(D2R(PC_FOV / 2));
+const K9B_PC = v(P.cx, P.y, PZ + PC_DIST, 0, 0, PC_FOV);
 // 9:16: each column at 88% of the width at 50°
 const HP_FOV = 50,
   HP_HTAN = Math.tan(D2R(HP_FOV / 2)) * (9 / 16);
-const K9B_HP = PLAQUE_COLS.map((c) => v(c.cx, P.y, PZ + c.w / 0.88 / 2 / HP_HTAN, 0, 0, HP_FOV));
+const K9B_HP = [
+  ...PLAQUE_COLS.map((c) => v(c.cx, c.cy, PZ + c.w / 0.88 / 2 / HP_HTAN, 0, 0, HP_FOV)),
+  v(TRUSTED.cx, TRUSTED.cy, PZ + TRUSTED.w / 0.88 / 2 / HP_HTAN, 0, 0, HP_FOV),
+];
 
 // ---------- K11: COMPANY's facade, the three at its door ----------
 // 16:9: frontal, the facade (−6.9 … 4.7 m) across the width, the sign near the top, the door a little right of the
@@ -195,7 +200,7 @@ export const exitCameraOpen = (x: number) =>
 const K10 = v(32, 15.5, 7.5, 0, D2R(24), 40);
 const upTrack = (t: number) =>
   cached(`up ${t.toFixed(3)}`, () => {
-    const a = t < 0.5 ? K9B_PC : mix(K9B_PC, K9B_HP[1], t);
+    const a = t < 0.5 ? K9B_PC : mix(K9B_PC, K9B_HP[K9B_HP.length - 1], t);
     // (the last shop left of Kreatekno: the electronics shop until it was taken out, user 14 Nov)
     const e5 = shopX(SHOPS.length - 1);
     return track([
@@ -224,11 +229,19 @@ const downTrack = (t: number) =>
     ]);
   });
 
-/** On 9:16, where in the K9b hold the camera is: on column 0, moving (k), or on column 1. */
-function plaqueStop(s: number, len: number) {
+/** On 9:16, move between the three K9b stops without moving during each reading dwell. */
+function plaqueStopView(s: number, len: number) {
   const unit = len / (PLAQUE_STOPS * STOP.dwell + (PLAQUE_STOPS - 1) * STOP.move);
-  const k = clamp01((s - STOP.dwell * unit) / (STOP.move * unit));
-  return k * k * (3 - 2 * k);
+  for (let i = 0; i < PLAQUE_STOPS - 1; i++) {
+    const moveFrom = (i * (STOP.dwell + STOP.move) + STOP.dwell) * unit,
+      moveTo = moveFrom + STOP.move * unit;
+    if (s <= moveFrom) return K9B_HP[i];
+    if (s < moveTo) {
+      const k = clamp01((s - moveFrom) / (moveTo - moveFrom));
+      return mix(K9B_HP[i], K9B_HP[i + 1], k * k * (3 - 2 * k));
+    }
+  }
+  return K9B_HP[K9B_HP.length - 1];
 }
 
 /** Camera of beats 9b–11 for screens x (≥ B9_START), format blend t, screen aspect. */
@@ -236,7 +249,7 @@ export function beat9Camera(x: number, t: number, aspect: number): CamPose {
   let view: View;
   if (x < B9.k9b.s) view = outTrack(t, k91View(t))((x - B9.out.s) / B9.out.len);
   else if (x < B9.up.s) {
-    const hp = t < 0.5 ? K9B_PC : mix(K9B_HP[0], K9B_HP[1], plaqueStop(x - B9.k9b.s, B9.k9b.len));
+    const hp = t < 0.5 ? K9B_PC : plaqueStopView(x - B9.k9b.s, B9.k9b.len);
     view = mix(K9B_PC, hp, t);
   } else if (x < B9.down.s) view = upTrack(t)((x - B9.up.s) / B9.up.len);
   else if (x < B9.k11.s) view = downTrack(t)((x - B9.down.s) / B9.down.len);
@@ -254,19 +267,23 @@ export function plaqueStopAt(i: number, t: number) {
 // ---------- the copy on the plaque (langkah 3): "Tentang Kreatekno" in two columns ----------
 /**
  * The plaque's two copy boxes on its face, a few mm in front of it, a little in from its edges and the middle: the
- * title and the paragraph left (`about-0`), the four facts and the link right (`about-1`). On 9:16 each is read at
- * its own stop (stop i = column i).
+ * title and the paragraph left (`about-0`), the four facts and the link right (`about-1`), then all client logos in
+ * the lower area of that same plaque (`about-2`, issue #34). On 9:16 each is read at its own stop.
  */
 export function plaqueAnchors(): { anchor: Anchor; stop: number }[] {
   const edge = 0.05,
     seam = 0.03,
-    hh = P.h / 2 - edge,
     z = PZ + 0.004;
-  return PLAQUE_COLS.map((c, i) => {
+  const columns = PLAQUE_COLS.map((c, i) => {
     const x0 = i === 0 ? P.cx - P.w / 2 + edge : P.cx + seam,
       x1 = i === 0 ? P.cx - seam : P.cx + P.w / 2 - edge;
-    return { anchor: rectAnchor(`about-${i}`, (x0 + x1) / 2, P.y, z, (x1 - x0) / 2, hh), stop: i };
+    return { anchor: rectAnchor(`about-${i}`, (x0 + x1) / 2, c.cy, z, (x1 - x0) / 2, c.h / 2), stop: i };
   });
+  columns.push({
+    anchor: rectAnchor("about-2", TRUSTED.cx, TRUSTED.cy, z, TRUSTED.w / 2 - edge, TRUSTED.h / 2),
+    stop: 2,
+  });
+  return columns;
 }
 /** Opacity of the plaque's copy at screens x: in as the dolly settles on the plaque, out as the camera pulls back. */
 export const plaqueCopyFade = (x: number) =>

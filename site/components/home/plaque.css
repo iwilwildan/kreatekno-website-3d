@@ -1,8 +1,7 @@
 /*
  * Beat 9b · Tentang kami (tahap 8): the copy on the wooden plaque left of Kreatekno's door, two columns (the heading
- * and the paragraph, the facts and the link). Loaded after lobby.css. Base rules are the stacked version (reduced
- * motion, no JavaScript): after the lobby's copy, the beat's jump mark, its still, then both columns as one section.
- * The film's rules are in the media query below: the world places each column on the plaque's face.
+ * and the paragraph, the facts and the link) plus the client logos in the lower half of that same plaque (issue #34).
+ * Loaded after lobby.css. Base rules are the stacked version; the film places all three areas on one 3D plaque.
  */
 .take-mark[data-at="K9b"] {
   order: 25;
@@ -15,6 +14,9 @@
 }
 .plaque-facts {
   order: 28;
+}
+.plaque-trusted {
+  order: 29;
 }
 .plaque-copy h2 {
   color: var(--color-navy);
@@ -59,12 +61,59 @@
   width: 1.1em;
   height: 1.1em;
 }
+.plaque-trusted-label {
+  margin: 0 0 12px;
+  font-weight: 800;
+  color: var(--color-navy);
+  text-align: left;
+}
+.plaque-trusted ul {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.plaque-trusted li {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 4px;
+  min-width: 0;
+  min-height: 52px;
+  align-items: stretch;
+  justify-items: center;
+  padding: 3px;
+}
+.plaque-trusted li:nth-last-child(3):nth-child(5n + 1) {
+  grid-column: 2;
+}
+.plaque-trusted img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+}
+.plaque-trusted li > span {
+  min-width: 0;
+  max-width: 100%;
+  color: var(--color-ink);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: center;
+  text-wrap: balance;
+}
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   /* the plaque's face (1.7 × 0.85 m, cream, lit warm from the lamp above): each column a box ±0.79 × 0.75 m, at
      ±416 × 395 px on 16:9 at 1280 px, ±300 px square on 9:16. The text as if printed on it: dark wood for the
      heading, a warm ink for the rest (the face is not white) */
   .plaque-copy.prop-copy {
+    --plaque-paragraph-top: calc(7.2cqh + max(16.2px, min(9.288cqw, 10.26cqh)));
+
     color: #4a3324;
   }
   .plaque-main h2 {
@@ -75,23 +124,21 @@
   }
   .plaque-main p {
     margin: 3.2cqh 4cqw 0;
-    font-size: max(12px, min(4.9cqw, 5.45cqh));
-    line-height: 1.38;
+    font-size: max(13px, min(5.3cqw, 7cqh));
+    line-height: 1.42;
     color: inherit;
   }
   .plaque-facts.prop-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: block;
   }
   .plaque-facts ul {
-    gap: 2.6cqh;
-    margin: 0 4cqw;
+    gap: 1.15cqh;
+    margin: var(--plaque-paragraph-top) 4cqw 0;
   }
   .plaque-facts li {
-    gap: 2.6cqw;
-    font-size: max(12px, min(5.8cqw, 6.4cqh));
-    line-height: 1.3;
+    gap: 1.8cqw;
+    font-size: clamp(9px, min(3.7cqw, 4.2cqh), 13px);
+    line-height: 1.22;
     color: inherit;
   }
   .plaque-check {
@@ -103,7 +150,43 @@
     align-self: flex-start;
     gap: 2cqw;
     min-height: 44px;
-    margin: 3.6cqh 4cqw 0;
-    font-size: max(13px, min(6cqw, 6.6cqh));
+    margin: 2.4cqh 4cqw 0;
+    font-size: max(11px, min(4.8cqw, 5.2cqh));
+  }
+  .plaque-trusted.prop-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    padding: 1.5cqh 2cqw 1.8cqh;
+  }
+  .plaque-trusted-label {
+    align-self: stretch;
+    margin: 0 0 1.2cqh;
+    font-size: max(9px, min(3cqw, 3.6cqh));
+    line-height: 1;
+    color: var(--color-wood-dark);
+    letter-spacing: 0.02em;
+    text-align: left;
+  }
+  .plaque-trusted ul {
+    flex: 1;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 1.1cqh 1.25cqw;
+    min-height: 0;
+  }
+  .plaque-trusted li {
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 0.55cqh;
+    min-height: 0;
+    padding: 0;
+  }
+  .plaque-trusted li > span {
+    overflow: hidden;
+    font-size: max(7px, min(2cqw, 2.4cqh));
+    line-height: 1.02;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 }
