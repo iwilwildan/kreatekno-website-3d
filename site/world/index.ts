@@ -600,6 +600,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
 
   // ---------- interior, rebuilt when the layout step changes ----------
   let room: CompanyFront | null = null;
+  // issue #31: the desks are tidied once the camera is back at COMPANY at the end of the day
+  let desksTidy = false;
   let roomAO: Promise<void> = Promise.resolve();
   const lamps = [0, 1, 2].map(() => {
     const l = new THREE.PointLight();
@@ -618,6 +620,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     const targets: AoTarget[] = [];
     room = buildRoom(step, targets);
+    room.setTidy(desksTidy);
     props.place(step);
     // the pendant lamps' lights live in the world, not in the room: letting the room go (beat 5) or building it again
     // must not change the number of lights, which would recompile every material's shader (a stall on the scroll)
@@ -1506,7 +1509,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       castPropsFresh = false;
       roomHidden = hide;
       roomAtCompany = atCompany;
-      if (room) room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
+      // issue #31: tidied at the end of the day (switched while the room is hidden: the camera is up in the sky)
+      desksTidy = atCompany;
+      if (room) {
+        room.group.visible = room.group.matrixWorldAutoUpdate = !hide;
+        room.setTidy(desksTidy);
+      }
       props.group.visible = props.group.matrixWorldAutoUpdate = !hide;
       // (not on the way out at night: the shut leaves' gap would show its warm day room)
       street.backdrop.visible = hide && !(atCompany && xs > B15.exit.s);

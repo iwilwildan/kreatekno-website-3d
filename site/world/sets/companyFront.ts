@@ -363,6 +363,20 @@ export function createCompanyFront(kit: Kit) {
       );
       B.add(G.rbox(0.4, 0.12, 0.45, 0.02), wood, mtx([P.cxR + 0.25, 0.06, z - 0.3 - CASHIER_FLOOR.d / 2]));
     }
+    // issue #31: what is strewn over the desks in beat 2 (the manual work) and the same desks tidied at the end of
+    // the day (K11.1, K13, the holograms over them): two batches of their own, one shown at a time (setTidy). The
+    // bottom sheet of each pile stays in the room's batch, so the AO occluders (and the baked AO) are those of
+    // before; the tidy piles sit on the same footprints and cast no AO of their own.
+    const messG = new THREE.Group(),
+      tidyG = new THREE.Group();
+    tidyG.visible = false;
+    grp.add(messG, tidyG);
+    const MB = new Batch(messG),
+      TB = new Batch(tidyG);
+    const mess = (geo: THREE.BufferGeometry, material: THREE.Material, m: THREE.Matrix4) =>
+      MB.add(geo, material, m, { occ: false });
+    const tidy = (geo: THREE.BufferGeometry, material: THREE.Material, m: THREE.Matrix4) =>
+      TB.add(geo, material, m, { occ: false });
     // desks, chairs and what sits on them
     const desk = (k: string, items: string) => {
       const g = new THREE.Group();
@@ -415,30 +429,31 @@ export function createCompanyFront(kit: Kit) {
       // pile in front and loose slips on the desk
       if (items.includes("stack")) {
         for (let i = 0; i < 17; i++) {
-          const mess = 0.4 + (i / 16) * 1.6;
-          B.add(
+          const k = 0.4 + (i / 16) * 1.6;
+          (i === 0 ? B.add.bind(B) : mess)(
             G.box(0.27, 0.022, 0.21),
             mat(i % 3 ? C.paper : "#f2eef0"),
             L(
-              [0.36 + Math.sin(i * 2.3) * 0.012 * mess, h + 0.012 + i * 0.023, 0.04 + Math.cos(i * 1.3) * 0.01 * mess],
-              [0, Math.sin(i * 1.7) * 0.1 * mess, 0],
+              [0.36 + Math.sin(i * 2.3) * 0.012 * k, h + 0.012 + i * 0.023, 0.04 + Math.cos(i * 1.3) * 0.01 * k],
+              [0, Math.sin(i * 1.7) * 0.1 * k, 0],
             ),
-            { occ: i === 0 },
           );
         }
         for (let i = 0; i < 6; i++)
-          B.add(
+          (i === 0 ? B.add.bind(B) : mess)(
             G.box(0.25, 0.022, 0.19),
             mat(i % 2 ? C.paper : "#f2eef0"),
             L([0.12 + Math.sin(i * 3.1) * 0.02, h + 0.012 + i * 0.023, 0.2], [0, 0.35 + Math.sin(i * 2.2) * 0.2, 0]),
-            { occ: i === 0 },
           );
         for (const [x, z, r] of [
           [0.06, 0.06, -0.5],
           [0.24, -0.16, 0.9],
           [0.5, 0.2, 0.3],
         ])
-          B.add(G.box(0.2, 0.003, 0.14), mat(C.paper), L([x, h + 0.003, z], [0, r, 0]), { occ: false });
+          mess(G.box(0.2, 0.003, 0.14), mat(C.paper), L([x, h + 0.003, z], [0, r, 0]));
+        // tidied: the day's slips squared up in one short pile on the first one (the recap is done)
+        for (let i = 1; i < 8; i++)
+          tidy(G.box(0.27, 0.022, 0.21), mat(i % 3 ? C.paper : "#f2eef0"), L([0.36, h + 0.012 + i * 0.023, 0.044]));
       }
       // crumpled sheets: ideas that did not work
       if (items.includes("crumpled"))
@@ -448,13 +463,10 @@ export function createCompanyFront(kit: Kit) {
           [0.31, -0.03, 0.9],
           [-0.33, 0.14, 0.8],
         ])
-          B.add(
+          mess(
             crumple(x * 31 + z * 17),
             mat(C.paper, { roughness: 0.75 }),
             L([x, h + 0.03 * sc, z], [x, z * 5, 0], sc),
-            {
-              occ: false,
-            },
           );
       if (items.includes("laptop")) {
         const al = mat("#9b9ba6", { roughness: 0.35, metalness: 0.4 });
@@ -470,21 +482,32 @@ export function createCompanyFront(kit: Kit) {
         B.add(G.box(0.36, 0.01, 0.26), mat(C.paper), L([-0.12, h + 0.09, -0.02], [0.1, 0, 0]), { occ: false });
         // the tray overflowing with price lists, and folders waiting beside it
         for (let i = 0; i < 4; i++)
-          B.add(
+          mess(
             G.box(0.3, 0.004, 0.22),
             mat(i % 2 ? C.paper : "#f2eef0"),
             L(
               [-0.12 + Math.sin(i * 2.7) * 0.03, h + 0.1 + i * 0.012, -0.02 + Math.cos(i * 1.9) * 0.025],
               [0.1, Math.sin(i * 1.4) * 0.25, 0],
             ),
-            { occ: false },
           );
         for (let i = 0; i < 4; i++)
-          B.add(
+          (i === 0 ? B.add.bind(B) : mess)(
             G.rbox(0.24, 0.02, 0.31, 0.006),
             mat(i % 2 ? "#7c4fd0" : C.chair, { roughness: 0.55 }),
             L([0.1 + Math.sin(i * 2.1) * 0.015, h + 0.011 + i * 0.021, -0.18], [0, -0.3 + Math.sin(i * 1.3) * 0.18, 0]),
-            { occ: i === 0 },
+          );
+        // tidied: the price lists filed flat in the tray, the folders closed and squared on the first one
+        for (let i = 0; i < 2; i++)
+          tidy(
+            G.box(0.3, 0.004, 0.22),
+            mat(i % 2 ? C.paper : "#f2eef0"),
+            L([-0.12, h + 0.1 + i * 0.006, -0.02], [0.1, 0, 0]),
+          );
+        for (let i = 1; i < 4; i++)
+          tidy(
+            G.rbox(0.24, 0.02, 0.31, 0.006),
+            mat(i % 2 ? "#7c4fd0" : C.chair, { roughness: 0.55 }),
+            L([0.1, h + 0.011 + i * 0.021, -0.18], [0, -0.3, 0]),
           );
         B.add(G.rbox(0.3, 0.018, 0.21, 0.01), mat(C.black, { roughness: 0.3 }), L([0.36, h + 0.01, 0.08], [0, 0.2, 0]));
         B.add(G.box(0.26, 0.004, 0.17), mat("#e9edf4", { roughness: 0.2 }), L([0.36, h + 0.021, 0.08], [0, 0.2, 0]), {
@@ -655,6 +678,13 @@ export function createCompanyFront(kit: Kit) {
       },
     );
     B.build();
+    MB.build();
+    TB.build();
+    /** Issue #31: the desks as left in beat 2 (false) or tidied at the end of the day (true). */
+    const setTidy = (on: boolean) => {
+      messG.visible = !on;
+      tidyG.visible = on;
+    };
     // where the cast stands or sits in this layout (world space; the cast itself lives outside the room):
     // the staff sit toward the front of their chairs facing their desks, Bu Dewi stands on the cashier floor
     const spots: Record<"sinta" | "bayu" | "nadia" | "fajar" | "dewi", { pos: THREE.Vector3; rotY: number }> =
@@ -685,7 +715,7 @@ export function createCompanyFront(kit: Kit) {
       ).add(grp.position),
       rotY: 0,
     };
-    return { group: grp, batch: B, lampLights, step, spots, backDoor, setEvening };
+    return { group: grp, batch: B, lampLights, step, spots, backDoor, setEvening, setTidy };
   };
 }
 export type CompanyFront = ReturnType<ReturnType<typeof createCompanyFront>>;
