@@ -86,6 +86,35 @@ export function roomFrame(step: number) {
 }
 export type RoomFrame = ReturnType<typeof roomFrame>;
 
+/** Who works at which desk (the staff's seats below; their plaques on the desks' front panels, issue #30). */
+export const DESK_OF = { sinta: "D1", bayu: "D2", nadia: "D3", fajar: "D4" } as const;
+export type DeskMember = keyof typeof DESK_OF;
+/**
+ * Issue #30: the copy box on the front panel of `who`'s desk in layout step `step`, in world space (corners TL, TR,
+ * BL, BR as read from the front), a few mm in front of the panel and a little in from its edges.
+ */
+export function deskPanelCorners(step: number, who: DeskMember) {
+  const { P, off } = layoutParams(step),
+    k = DESK_OF[who];
+  const m = new THREE.Matrix4()
+    .makeTranslation(P[k + "x"] + off[0], off[1], P[k + "z"] + off[2])
+    .multiply(new THREE.Matrix4().makeRotationY(P[k + "r"]));
+  // the panel is (dW - 0.1) × 0.28 m, its middle at dHt - 0.19 and its front face at dD / 2 - 0.05 + 0.0125 (desk())
+  const hw = (P.dW - 0.1) / 2 - PANEL_INSET.x,
+    hh = 0.14 - PANEL_INSET.y,
+    cy = P.dHt - 0.19,
+    z = P.dD / 2 - 0.05 + 0.0125 + 0.004;
+  const at = (x: number, y: number) => new THREE.Vector3(x, y, z).applyMatrix4(m);
+  return [at(-hw, cy + hh), at(hw, cy + hh), at(-hw, cy - hh), at(hw, cy - hh)] as [
+    THREE.Vector3,
+    THREE.Vector3,
+    THREE.Vector3,
+    THREE.Vector3,
+  ];
+}
+/** How far the plaque's copy keeps in from the panel's edges (metres). */
+const PANEL_INSET = { x: 0.05, y: 0.025 };
+
 export function createCompanyFront(kit: Kit) {
   const { mat, canvasTex } = kit;
   const E = DATA.ext;

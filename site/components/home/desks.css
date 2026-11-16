@@ -1,0 +1,78 @@
+/*
+ * Beat 2 and K13 · the plaques on the front panels of the staff desks (issue #30). Base rules are the stacked
+ * version (reduced motion, no JavaScript): the four before plaques after the K2.2 still (order 0, after the stills
+ * of beat 2 and before the K3 mark), the four after plaques after the K13 still (after the TV's copy, before the
+ * K16 still: epilogue.css). The film's rules are in the media query below: the world places each on its panel.
+ */
+.take-still[data-still="K13"],
+.desk-after {
+  order: 32;
+}
+.desk-copy.prop-copy {
+  margin-block: 8px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.desk-copy.prop-copy::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-right: 0.6em;
+  border-radius: 2px;
+  background: var(--color-wood-dark);
+  vertical-align: 0.1em;
+}
+/* each set as one short block: Sinta's first, Fajar's last */
+.desk-copy[data-landscape$="-sinta"] {
+  margin-top: 32px;
+}
+.desk-copy[data-landscape$="-fajar"] {
+  margin-bottom: 32px;
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* the panel's face (±1.03 × 0.23 m inside its edges): a white label stuck on it, the sentence centred on the
+     label as large as two lines allow (three for the longest English ones, data-long). The before labels keep their text at 12 px or more where the panel is smaller than that (phones, about
+     120 × 30 px at K2.1 and K2.2): the label then grows past the panel's top and bottom edges, centred on it. The
+     after labels at K13 stay the panel's size (K2's wide view) */
+  .desk-copy.prop-copy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    text-align: center;
+    font-weight: 700;
+    color: var(--color-navy);
+  }
+  .desk-copy.prop-copy::before {
+    content: none;
+  }
+  .desk-copy span {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100%;
+    padding: 0.18em 0.45em;
+    border-radius: 0.3em;
+    background: rgb(255 255 255 / 0.95);
+    box-shadow:
+      0 0 0 1px rgb(59 43 31 / 0.12),
+      0 2px 6px -2px rgb(59 43 31 / 0.35);
+    font-size: min(7.6cqw, 36cqh);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .desk-copy[data-long] span {
+    font-size: min(5.8cqw, 26cqh);
+  }
+  .desk-before span {
+    font-size: max(12px, min(7.6cqw, 36cqh));
+  }
+  .desk-before[data-long] span {
+    font-size: max(12px, min(5.8cqw, 26cqh));
+  }
+}

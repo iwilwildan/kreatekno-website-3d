@@ -3,7 +3,7 @@
 // where each anchor (copy surface) is on screen. Loaded with import() after the page is visible.
 import * as THREE from "three";
 import { applyAO, encodeMap, loadAO, type AoTarget } from "./core/ao";
-import { projectAnchor, quadVisible, rectAnchor, type Anchor, type Quad } from "./core/anchors";
+import { projectAnchor, quadVisible, rectAnchor, screenToBox, type Anchor, type Quad } from "./core/anchors";
 import { createKit, disposeTree, type Kit } from "./core/kit";
 import { createLight } from "./core/light";
 import { clamp01, ease, formatT, segmentStart, smoothstep } from "./core/segments";
@@ -63,6 +63,7 @@ import type { Holograms } from "./sets/holograms";
 import { classFrame, classSeat } from "./sets/classLayout";
 import { turnStride, walkPose } from "./cast/walk";
 import { roomFrame } from "./sets/companyFront";
+import { deskAnchors, deskCopyFade, deskReadAt, deskReadWhip, fitDeskToView, type DeskCopy } from "./takes/home/desks";
 import type { Lobby } from "./sets/lobby";
 import { SEG } from "./takes/home/timing";
 import {
@@ -151,6 +152,8 @@ export type FrameInfo = {
    */
   fade: Record<string, number>;
   sizes: Record<string, { w: number; h: number }>;
+  /** CSS clip-path per copy box that a cast member stands in front of (issue #30: Heru over the desks' plaques). */
+  clips?: Record<string, string>;
 };
 
 export type WorldStats = {
@@ -651,6 +654,76 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     height = 1,
     // the page's floating header's bottom (px from the stage's top)
     safeTop = 0;
+  // issue #30: where a cast member is on screen, for copy that must not be drawn over them: the head as a circle,
+  // the body (shoulders to feet) as a box, in px, and how far the head is from the camera
+  const _p = new THREE.Vector3(),
+    _r = new THREE.Vector3(),
+    _u = new THREE.Vector3();
+  const toPx = (v: THREE.Vector3): [number, number] => {
+    _p.copy(v).project(camera);
+    return [(_p.x * 0.5 + 0.5) * width, (-_p.y * 0.5 + 0.5) * height];
+  };
+  /**
+   * Heru's outline on screen (px) as a convex polygon: his head (with the hair, about 0.2 m round its middle, which
+   * is 0.17 m above the head bone at the chin) and his body from the shoulders to the feet; with the head's distance
+   * from the camera. Null when he is behind the camera.
+   */
+  const heruOnScreen = (m: CastMember) => {
+    _r.setFromMatrixColumn(camera.matrixWorld, 0);
+    _u.setFromMatrixColumn(camera.matrixWorld, 1);
+    const head = m.rig.bone("head").getWorldPosition(new THREE.Vector3()).addScaledVector(_u, 0.17);
+    if (camera.getWorldDirection(new THREE.Vector3()).dot(head.clone().sub(camera.position)) < 0.1) return null;
+    const pts: [number, number][] = [];
+    for (let i = 0; i < 20; i++) {
+      const a = (i / 20) * Math.PI * 2;
+      pts.push(
+        toPx(
+          head
+            .clone()
+            .addScaledVector(_r, 0.21 * Math.cos(a))
+            .addScaledVector(_u, 0.21 * Math.sin(a)),
+        ),
+      );
+    }
+    for (const n of ["upperArmL", "upperArmR", "handL", "handR", "footL", "footR", "hips"]) {
+      const b = m.rig.bone(n).getWorldPosition(new THREE.Vector3());
+      for (const k of [-1, 1]) pts.push(toPx(b.clone().addScaledVector(_r, 0.12 * k)));
+    }
+    return { hull: convexHull(pts), dist: head.distanceTo(camera.position) };
+  };
+  /**
+   * The clip-path that cuts a copy box (its quad on screen, its w x h box) around a cast member standing in front of
+   * it, or "" when they are behind it or do not overlap it.
+   */
+  const cutAround = (
+    q: Quad,
+    a: Anchor,
+    size: { w: number; h: number },
+    who: NonNullable<ReturnType<typeof heruOnScreen>>,
+  ) => {
+    const mid = a.corners[0].clone().add(a.corners[3]).multiplyScalar(0.5);
+    if (mid.distanceTo(camera.position) < who.dist) return "";
+    const xs = q.map((p) => p[0]),
+      ys = q.map((p) => p[1]);
+    if (
+      who.hull.every((p) => p[0] < Math.min(...xs)) ||
+      who.hull.every((p) => p[0] > Math.max(...xs)) ||
+      who.hull.every((p) => p[1] < Math.min(...ys)) ||
+      who.hull.every((p) => p[1] > Math.max(...ys))
+    )
+      return "";
+    const toBox = screenToBox(q, size.w, size.h);
+    const hole = who.hull
+      .map(([x, y]) =>
+        toBox(x, y)
+          .map((v) => v.toFixed(1))
+          .join(" "),
+      )
+      .join("L");
+    // (the outer edge 10 px out from the box, so its anti-aliased seam never falls on the label: drawn on Heru's hair
+    // as a faint dashed line where it crossed him)
+    return `path(evenodd,"M-10 -10H${(size.w + 10).toFixed(1)}V${(size.h + 10).toFixed(1)}H-10Z M${hole}Z")`;
+  };
   /** Share of a quad's bounding box inside the screen below the header. */
   const inView = (q: Quad, top: number) => {
     const xs = q.map((c) => c[0]),
@@ -900,6 +973,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     if (practice.step !== s) practice = { step: s, anchor: practiceAnchor(s) };
     return practice.anchor;
   };
+  // and on the front panels of the staff's desks (issue #30): before in beat 2, after at K11.1 and K13, per layout
+  // step
+  let desks: { step: number; list: DeskCopy[] } = { step: -1, list: [] };
+  const deskCopy = () => {
+    const s = room?.step ?? layoutStep(fmtT);
+    if (desks.step !== s) desks = { step: s, list: deskAnchors(s) };
+    return desks.list;
+  };
   const measureCopy = () => {
     sizesKey = `${width} ${height} ${room?.step}`;
     copySizes = {};
@@ -928,6 +1009,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
             (typeof views)["page"],
           ],
       ),
+      // the desks' (issue #30): Sinta's and Bayu's at K2.1, Nadia's and Fajar's at K2.2, all four after at K13
+      ...deskCopy().map(
+        (d) =>
+          [d.anchor, cameraAt(deskReadAt(d) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, deskReadWhip(d), width / height)] as [
+            Anchor,
+            (typeof views)["page"],
+          ],
+      ),
       // the TV's: where the camera rests in the classroom (K12)
       [practiceCopy(), cameraAt(practiceAt() / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
         Anchor,
@@ -941,6 +1030,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       holdCam.aspect = width / height;
       holdCam.updateProjectionMatrix();
       holdCam.updateMatrixWorld();
+      // (the after copy on K2's wide view: on the part of its panel in view, issue #30)
+      const desk = deskCopy().find((d) => d.anchor === a);
+      if (desk) fitDeskToView(desk, holdCam, width);
       const q = projectAnchor(a, holdCam, width, height);
       if (q)
         copySizes[a.name] = {
@@ -1580,6 +1672,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...lobbyCopy.map((l) => l.anchor),
       ...plaqueCopy.map((l) => l.anchor),
       practiceCopy(),
+      ...deskCopy().map((d) => d.anchor),
     ]) {
       const q = pastDoor && anchors.includes(a) ? null : projectAnchor(a, camera, width, height);
       quads[a.name] = q && quadVisible(q, width, height) ? q : null;
@@ -1605,11 +1698,23 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       const q = quads[l.anchor.name];
       fade[l.anchor.name] = row ? pf * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1) : 0;
     }
+    // the desks' (issue #30): before in beat 2 from the moment Heru walks in, after at K11.1 and K13; printed on the
+    // desks, cut by the screen's sides with them (the user, 16 Nov), and cut around Heru where he stands in front of
+    // one (HTML can't be hidden behind him)
+    const heruAhead = heru?.mesh.visible && room?.group.visible ? heruOnScreen(heru) : null;
+    const clips: Record<string, string> = {};
+    for (const d of deskCopy()) {
+      const q = quads[d.anchor.name],
+        size = copySizes[d.anchor.name];
+      fade[d.anchor.name] = room?.group.visible && q ? deskCopyFade(d, xs, whip, fmtT >= 0.5) : 0;
+      if (q && size && heruAhead && d.phase === "before" && fade[d.anchor.name] > 0.01)
+        clips[d.anchor.name] = cutAround(q, d.anchor, size, heruAhead);
+    }
     // the TV's (tahap 9): at the K12 hold, while the classroom is shown
     fade.practice = classroom?.group.visible ? practiceCopyFade(xs) : 0;
     // the epilogue over the road at K16 (screen-space, no anchor)
     fade.epilogue = epilogueFade(xs);
-    opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes });
+    opts.onFrame?.({ p: shown, key: c.key, anchors: quads, fade, sizes: copySizes, clips });
     // Reveal only after the complete counter scene has been prepared and actually drawn.
     if (!readyFired && assetsReady && !disposed) {
       readyFired = true;
@@ -1780,4 +1885,22 @@ export function anchorAspects() {
   for (const a of billboardAnchors())
     out[a.name] = a.corners[0].distanceTo(a.corners[1]) / a.corners[0].distanceTo(a.corners[2]);
   return out;
+}
+
+/** Convex hull of points (Andrew's monotone chain). */
+function convexHull(pts: [number, number][]) {
+  const p = [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o: number[], a: number[], b: number[]) =>
+    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lower: [number, number][] = [],
+    upper: [number, number][] = [];
+  for (const q of p) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], q) <= 0) lower.pop();
+    lower.push(q);
+  }
+  for (const q of p.reverse()) {
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], q) <= 0) upper.pop();
+    upper.push(q);
+  }
+  return lower.slice(0, -1).concat(upper.slice(0, -1));
 }

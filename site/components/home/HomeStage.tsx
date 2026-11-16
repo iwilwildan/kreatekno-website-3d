@@ -12,6 +12,7 @@ import { Corkboard } from "./props/Corkboard";
 import { MagazineRack } from "./props/MagazineRack";
 import { StickyNotes } from "./props/StickyNotes";
 import { Plaque } from "./props/Plaque";
+import { DeskPlaques } from "./props/DeskPlaques";
 import { PLAQUE_KEYS } from "./plaqueStills";
 import { Practice } from "./props/Practice";
 import { CLASS_KEYS } from "./classStills";
@@ -24,6 +25,7 @@ import "./lobby.css";
 import "./plaque.css";
 import "./practice.css";
 import "./epilogue.css";
+import "./desks.css";
 
 const KEYS = [
   "K0",
@@ -63,9 +65,25 @@ const HP_ONLY: Partial<Record<Key, string>> = {
 /**
  * The stacked version (reduced motion, no JavaScript) shows the beat 5b copy with the K5a.2 still only, the lobby's
  * with the K6, K7 and K8 stills, the plaque's (tahap 8) with the K9b still, the TV's (tahap 9) with the K12 still,
- * and the epilogue with the K16 still.
+ * the desks' after copy (issue #30) with the K13 still, and the epilogue with the K16 still.
  */
-const STACKED = new Set(["K0", "K1", "K2", "K2.1", "K2.2", "K3", "K4", "K5a.2", "K6", "K7", "K8", "K9b", "K12", "K16"]);
+const STACKED = new Set([
+  "K0",
+  "K1",
+  "K2",
+  "K2.1",
+  "K2.2",
+  "K3",
+  "K4",
+  "K5a.2",
+  "K6",
+  "K7",
+  "K8",
+  "K9b",
+  "K12",
+  "K13",
+  "K16",
+]);
 
 /**
  * The Home stage (STORY-STAGE.md, beats 1–4 for now: the hero on the billboard, Layanan on the leaflet and Use
@@ -112,6 +130,7 @@ export async function HomeStage() {
         copy={
           <>
             <Leaflet />
+            <DeskPlaques />
             <Binder
               title={tUse("title")}
               intro={tUse("intro")}

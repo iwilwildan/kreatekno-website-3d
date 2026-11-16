@@ -1,9 +1,9 @@
 /* Beat 16: closing line over the night road, fading into the footer below. */
 .take-still[data-still="K16"] {
-  order: 32;
+  order: 33;
 }
 .take-epilogue {
-  order: 33;
+  order: 34;
   width: min(100% - 32px, 64rem);
   margin: 32px auto 48px;
   font-family: var(--font-display);

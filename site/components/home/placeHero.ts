@@ -94,7 +94,11 @@ export function placeAnchors(
   quads: Record<string, Quad | null>,
   aspect: Record<string, number>,
   toMatrix: (q: Quad, w: number, h: number) => string,
-  props?: { fade: Record<string, number>; sizes: Record<string, { w: number; h: number }> },
+  props?: {
+    fade: Record<string, number>;
+    sizes: Record<string, { w: number; h: number }>;
+    clips?: Record<string, string>;
+  },
 ) {
   const portrait = (portraitMQ ??= matchMedia(PORTRAIT_QUERY)).matches;
   root.querySelectorAll<HTMLElement>("[data-anchor]").forEach((el) => {
@@ -118,7 +122,9 @@ export function placeAnchors(
         return;
       }
       el.dataset.shape = size.w < size.h ? "portrait" : "landscape";
-      el.style.cssText = `width:${size.w.toFixed(1)}px;height:${size.h.toFixed(1)}px;visibility:visible;opacity:${o.toFixed(3)};transform:${toMatrix(q, size.w, size.h)}`;
+      // (cut around a cast member standing in front of it, issue #30)
+      const clip = props?.clips?.[name];
+      el.style.cssText = `width:${size.w.toFixed(1)}px;height:${size.h.toFixed(1)}px;visibility:visible;opacity:${o.toFixed(3)};transform:${toMatrix(q, size.w, size.h)}${clip ? `;clip-path:${clip}` : ""}`;
       return;
     }
     const w = portrait ? BOX_W.portrait : BOX_W.landscape,

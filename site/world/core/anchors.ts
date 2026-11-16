@@ -87,3 +87,40 @@ export function quadToMatrix3d(q: Quad, w: number, h: number) {
 export function mixQuad(a: Quad, b: Quad, t: number): Quad {
   return a.map((p, i) => [p[0] + (b[i][0] - p[0]) * t, p[1] + (b[i][1] - p[1]) * t]) as Quad;
 }
+
+/**
+ * The inverse of quadToMatrix3d's mapping: a point on screen (px) back to the w x h box placed on the quad, in the
+ * box's own px (for a clip-path drawn in the box's coordinates).
+ */
+export function screenToBox(q: Quad, w: number, h: number) {
+  const [[x0, y0], [x1, y1], [x3, y3], [x2, y2]] = q;
+  const dx1 = x1 - x2,
+    dx2 = x3 - x2,
+    dy1 = y1 - y2,
+    dy2 = y3 - y2,
+    sx = x0 - x1 + x2 - x3,
+    sy = y0 - y1 + y2 - y3,
+    den = dx1 * dy2 - dx2 * dy1 || 1e-9,
+    g = (sx * dy2 - dx2 * sy) / den,
+    k = (dx1 * sy - sx * dy1) / den;
+  // unit square -> screen: [a b c; d e f; g k 1], inverted (adjugate: the scale cancels in the divide)
+  const a = x1 - x0 + g * x1,
+    b = x3 - x0 + k * x3,
+    c = x0,
+    d = y1 - y0 + g * y1,
+    e = y3 - y0 + k * y3,
+    f = y0;
+  const A = e - f * k,
+    B = c * k - b,
+    C = b * f - c * e,
+    D = f * g - d,
+    E = a - c * g,
+    F = c * d - a * f,
+    G = d * k - e * g,
+    H = b * g - a * k,
+    I = a * e - b * d;
+  return (x: number, y: number): [number, number] => {
+    const z = G * x + H * y + I;
+    return [((A * x + B * y + C) / z) * w, ((D * x + E * y + F) / z) * h];
+  };
+}
