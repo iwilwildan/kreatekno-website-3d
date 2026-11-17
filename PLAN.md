@@ -2632,3 +2632,13 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - K9b PC 1280×720: lampu terlihat di bawah header, copy atas sama seperti sebelumnya (judul 17,9 px, paragraf 13,2 px), logo 87 px, tidak meluap, tautan bisa diketuk penuh;
   - typecheck, ESLint (hanya peringatan lama di `opengraph-image.tsx`), Prettier seluruh `site/`, `next build` lulus.
 - Belum: tes HP fisik, transisi K6 → K7 dan K9.1 → K9b di HP hanya dicek lewat posisi kamera (tidak per frame), AO dinding fasad tidak dibake ulang (sama seperti saat plakat diperbesar di #34). Belum di-commit, menunggu konfirmasi user.
+
+### 2026-11-17 (rencana: tombol Next/Previous yang menggerakkan scroll ke stop berikutnya, tanpa issue GitHub)
+
+- Permintaan user: di HP ada tombol Next dan Previous yang menggerakkan scroll otomatis dan berhenti di tiap copy dan adegan penting, dengan kecepatan scroll wajar. Belum ada perubahan kode.
+- Riset: scroll digerakkan per frame dengan `requestAnimationFrame` dan dibatalkan oleh `wheel`/`touchstart` (listener passive); `scrollTo({behavior:'smooth'})` tidak dipakai karena durasinya ditentukan browser; tombol di batas awal/akhir dinonaktifkan. Sumber: codepen.io/nolanlawson/pen/yZKLLO, css-tricks.com/?p=333276, frontendmasters.com/blog/?p=8661, ryanmulligan.dev/blog/scrolly-rail/. Belum ada sumber resmi tentang address bar Chrome Android saat scroll dari kode; panggung memakai `100lvh`, tetap dicek di HP fisik.
+- Dasar di kode: `scrollAtScreens`/`TAKE_SCROLL` (`HomeTake.tsx`, juga dipakai tautan menu), `holdP`, `panelArrivals` (dua panel ruko per jeda di 9:16), `stopSpan`/`LOBBY_STOPS` (stop lobi), plakat meja dibaca di titik K2.1 (`desks.ts`).
+- Jawaban user: stop seperti contoh, yang tidak perlu dilewati (K4.1 Bu Dewi mengangguk dan K5a.1 keluar pintu COMPANY disebut dilewati); kecepatan 2 dtk per layar; tombol di tepi kanan tengah; tampil di semua perangkat.
+- Usulan stop (menunggu persetujuan): portrait 28 (K0, K1, K2.1, K2.2, K3, K4, ruko 1–5, K5a.6, testimoni 4, rak 4, FAQ 2, K9b, K11, K11.1, K12, K13, K16); landscape 19 (timeline PC, ruko per jeda, lobi per keyframe). Dilewati: K2, K4.1, K5a.1, K9.1, K10. K5a.6 dan K11 dipertahankan sebagai adegan (K11: pembukaan pintu COMPANY yang diminta terlihat di HP, 15 Nov).
+- Rencana: `components/home/takeStops.ts` (stop per format dari `SEG`), tombol bulat 44 px semi-transparan di tepi kanan tengah, label `home.stage.prev/next` ID/EN, animasi rAF 2 dtk per layar dengan percepatan dan perlambatan, Next saat bergerak menuju stop sesudahnya, dibatalkan oleh sentuhan/roda/tombol keyboard, tersembunyi selama loading, di versi tumpuk dan setelah take; tetap jalan di mode stills.
+- Belum: persetujuan plan, implementasi, pengukuran, tes HP fisik.
