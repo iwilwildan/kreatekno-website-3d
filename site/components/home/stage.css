@@ -58,7 +58,8 @@
   object-fit: cover;
 }
 .take-canvas,
-.take-loader {
+.take-loader,
+.take-nav {
   display: none;
 }
 
@@ -861,5 +862,58 @@
     font-size: max(13px, 4.2cqw);
     line-height: 1.22;
     text-wrap: pretty;
+  }
+}
+
+/* Next/Previous (user 17 Nov, takeNav.ts): two round buttons stacked on the stage's right edge, half see-through so
+   the scene and the copy under them still read; only in the film, once the world (or the stills) took over */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .take-nav {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    right: max(12px, calc(env(safe-area-inset-right) + 8px));
+    z-index: 6;
+    flex-direction: column;
+    gap: 10px;
+    translate: 0 -50%;
+  }
+  .take[data-mode="boot"] .take-nav {
+    display: none;
+  }
+  .take-nav button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.62);
+    box-shadow:
+      0 0 0 1px rgb(19 25 81 / 0.1),
+      0 10px 24px -14px rgb(19 25 81 / 0.45);
+    backdrop-filter: blur(10px);
+    color: var(--color-ink);
+    font-size: 20px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color 160ms var(--ease-out),
+      opacity 160ms var(--ease-out),
+      scale 120ms var(--ease-out);
+  }
+  .take-nav button:active:not(:disabled) {
+    scale: 0.94;
+  }
+  .take-nav button:focus-visible {
+    outline: 2px solid var(--color-purple);
+    outline-offset: 2px;
+  }
+  .take-nav button:disabled {
+    opacity: 0.35;
+  }
+  @media (hover: hover) {
+    .take-nav button:hover:not(:disabled) {
+      background: rgb(255 255 255 / 0.9);
+    }
   }
 }

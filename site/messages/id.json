@@ -86,7 +86,10 @@
       "k12": "Wildan mengajar di depan TV beroda di ruang kelas COMPANY; Bayu, Sinta, Nadia dan Fajar duduk di empat meja, jendela sore di kiri",
       "k13": "Ruang depan COMPANY saat senja, dilihat dari pintu: empat meja staf kosong dengan hologram ungu berputar di atas tiap meja, konter kasir di belakangnya",
       "k16": "Jalan malam di depan deret ruko: COMPANY dengan jendela dan pintu bercahaya, ruko lain dengan rolling door tertutup, lampu kecil di atap, billboard menyala dan langit berbintang",
-      "loading": "Memuat"
+      "loading": "Memuat",
+      "nav": "Navigasi cerita",
+      "prev": "Sebelumnya",
+      "next": "Berikutnya"
     },
     "desks": {
       "before": {
