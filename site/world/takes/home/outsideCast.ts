@@ -354,7 +354,7 @@ const BT_HIGH = BT.h6 + H6.timeAt((p) => p.z > 0 && p.x <= KREATEKNO.x0 - 3.5);
 // At COMPANY's door Heru and Wildan pull its two leaves open outward (they stand clear of their swing), and Bu Dewi
 // walks in between them into the front room and stops a few steps in, where the camera passes over her head.
 // (issue #23: she stops where Heru stands at K2, so K11.1, K2's own view, has her where it had him)
-const DEWI_K111 = V((DATA.heruK2.pc[0] + DATA.heruK2.hp[0]) / 2, (DATA.heruK2.pc[2] + DATA.heruK2.hp[2]) / 2);
+export const DEWI_K111 = V((DATA.heruK2.pc[0] + DATA.heruK2.hp[0]) / 2, (DATA.heruK2.pc[2] + DATA.heruK2.hp[2]) / 2);
 // (a brisker step in, so she is at her spot as the camera comes to K11.1)
 const DI = new TimedWalk([C_SPOT.dewi, V(0.02, 0.4), V(0.0, -0.8), DEWI_K111], () => OUT_SPEED * 1.3, 0.4, "R");
 /** Their timeline at COMPANY's door (clock seconds, after BT.end). */

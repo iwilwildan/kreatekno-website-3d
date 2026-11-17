@@ -170,8 +170,8 @@ try {
       await page.evaluate(() => {
         const el = document.getElementById("beranda"),
           p = window.__world.keyP("K4");
-        // Issue #25 removes the billboard stop, issue #23 adds the K13 hold (0.3), issue #33 lengthens the K7 hold on portrait (+0.6): the take is 34.8 screens of scroll on landscape and 36.55 on portrait; K4 is before the lobby,
-        // where both run screen for screen with the world's 36.55-screen timeline
+        // Issue #25 removes the billboard stop, issue #23 adds the K13 hold (0.3), issue #33 lengthens the K7 hold on portrait (+0.6), the desks read again after K11.1 on portrait (+2.1): the take is 34.8 screens of scroll on landscape and 38.65 on portrait; K4 is before the lobby,
+        // where both run screen for screen with the world's 38.65-screen timeline
         const portrait = matchMedia("(max-aspect-ratio: 1/1)").matches,
           total = Number(
             el.style.getPropertyValue(portrait ? "--take-hp" : "--take"),
@@ -179,7 +179,7 @@ try {
         scrollTo(
           0,
           el.offsetTop +
-            ((p * 36.55) / total) *
+            ((p * 38.65) / total) *
               (el.offsetHeight - el.querySelector("[data-stage]").clientHeight),
         );
         window.__world.world.jump(p);

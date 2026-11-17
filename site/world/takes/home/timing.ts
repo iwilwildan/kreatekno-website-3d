@@ -15,7 +15,7 @@
 // 7.05 m, at the pair's walk of ±14.6 m per screen), so the walk keeps its pace; the K5a.4 hold is centred on the
 // cosmetics shop's panel (9:16 has it in the middle of the screen at 13.7 screens).
 // Plain numbers only: the page imports this for the stage height and the stills fallback.
-import { holdP, scrollTotal, segmentsTotal, type Segment } from "../../core/segments";
+import { holdP, scrollTotal, segmentStart, segmentsTotal, type Segment } from "../../core/segments";
 
 export type KeyName =
   | "K0"
@@ -46,6 +46,9 @@ export type KeyName =
   | "K15"
   | "K16";
 
+/** Beat 2's reading of the desks (screens): the dolly in to Sinta and Bayu, the drift and whip pan, the hold on Nadia and Fajar. */
+const DESK_READ = { dolly: 0.8, whip: 0.7, hold: 0.6 };
+
 export const SEG: Segment<KeyName>[] = [
   // issue #5: K0 → K1 in 1.0 screen (was 0.9 + 1.0): a short hold, then the scroll moves the camera at once
   { type: "hold", from: "K0", screens: 0.3 },
@@ -54,9 +57,9 @@ export const SEG: Segment<KeyName>[] = [
   // issue #6: 1.2 screens (was 2.0), so the turn and the push on the door take ±0.5 screen of scroll
   { type: "move", from: "K1", to: "K2", screens: 1.2 },
   { type: "hold", from: "K2", screens: 0.3 },
-  { type: "move", from: "K2", to: "K2.1", screens: 0.8 },
-  { type: "move", from: "K2.1", to: "K2.2", screens: 0.7 },
-  { type: "hold", from: "K2.2", screens: 0.6 },
+  { type: "move", from: "K2", to: "K2.1", screens: DESK_READ.dolly },
+  { type: "move", from: "K2.1", to: "K2.2", screens: DESK_READ.whip },
+  { type: "hold", from: "K2.2", screens: DESK_READ.hold },
   { type: "move", from: "K2.2", to: "K2.4", screens: 1.15 },
   { type: "move", from: "K2.4", to: "K3", screens: 0.85 },
   { type: "hold", from: "K3", screens: 0.4 },
@@ -110,6 +113,10 @@ export const SEG: Segment<KeyName>[] = [
   // replaces (the door at 1.0 screen, the rest from the old "just inside" point at 1.4 on as it was).
   { type: "move", from: "K11", to: "K11.1", screens: 1.1 },
   { type: "hold", from: "K11.1", screens: 0.3 },
+  // User 17 Nov, 9:16 only: from K11.1's wide view the camera reads the desks again as K2 → K2.1 → K2.2 does after
+  // Heru (over Bu Dewi's head to Sinta's and Bayu's, whip pan to Nadia's and Fajar's, hold), then goes on to the
+  // classroom from there. 16:9 stays on K11.1 (no scroll: `pc` 0).
+  { type: "hold", from: "K11.1", screens: DESK_READ.dolly + DESK_READ.whip + DESK_READ.hold, pc: 0 },
   { type: "move", from: "K11.1", to: "K12", screens: 1.4 },
   { type: "hold", from: "K12", screens: 0.8 },
   { type: "move", from: "K12", to: "K13", screens: 1.1 },
@@ -155,6 +162,14 @@ export const KEYS: KeyName[] = [
   "K16",
 ];
 export const keyP = (k: KeyName) => holdP(SEG, k);
+/**
+ * 9:16's second reading of the desks after K11.1 (user 17 Nov): where it starts and its length (screens on the
+ * take's own timeline), and its parts, the same as beat 2's.
+ */
+export const K111_DESKS = (() => {
+  const i = SEG.findIndex((g) => g.from === "K11.1" && g.type === "hold") + 1;
+  return { s: segmentStart(SEG, i), len: SEG[i].screens, ...DESK_READ };
+})();
 
 /**
  * On 9:16 a hold of the lobby stops on each of its n items in turn (tahap 7): a dwell on each, a short move between

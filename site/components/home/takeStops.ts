@@ -1,14 +1,14 @@
 // The stops of the Next/Previous buttons (user 17 Nov): where the take is read, on the take's own (9:16) timeline in
-// screens, per format. Each is a keyframe's copy or an important scene; the rest is scrolled past (K2's four desks,
+// screens, per format (30 on 9:16, 19 on 16:9). Each is a keyframe's copy or an important scene; the rest is scrolled past (K2's four desks,
 // Bu Dewi's nod K4.1, out of COMPANY's door K5a.1, the turn to the facade K9.1, the sky K10). Plain numbers from the
 // take's timeline (no three.js), like the jump marks: the page turns them into scroll positions (HomeTake).
 import { segmentStart } from "@/world/core/segments";
-import { LOBBY_STOPS, SEG, stopSpan, type KeyName } from "@/world/takes/home/timing";
+import { K111_DESKS, LOBBY_STOPS, SEG, stopSpan, type KeyName } from "@/world/takes/home/timing";
 
 const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.from === from && s.type === type);
 const start = (from: KeyName, type: "move" | "hold") => segmentStart(SEG, idx(from, type));
 const len = (from: KeyName, type: "move" | "hold") => SEG[idx(from, type)].screens;
-/** The middle of keyframe k's hold. */
+/** The middle of keyframe k's (first) hold. */
 const holdMid = (k: KeyName) => start(k, "hold") + len(k, "hold") / 2;
 
 /**
@@ -58,9 +58,15 @@ export function takeStops(hp: boolean): TakeStop[] {
     { key: "K9b", at: holdMid("K9b") },
     { key: "K11", at: start("K11", "hold") + len("K11", "hold") + K11_PAST },
     { key: "K11.1", at: holdMid("K11.1") },
-    { key: "K12", at: holdMid("K12") },
-    { key: "K13", at: holdMid("K13") },
-    { key: "K16", at: holdMid("K16") },
   );
+  // 9:16 reads the desks again after K11.1 (K111_DESKS), where the "after" plaques are read as beat 2 reads the
+  // "before" ones (world/takes/home/desks.ts): Sinta's and Bayu's at the end of the dolly, Nadia's and Fajar's
+  // halfway through the hold after the whip pan. 16:9 stays on K11.1's wide view.
+  if (hp)
+    out.push(
+      { key: "K11.1-left", at: K111_DESKS.s + K111_DESKS.dolly },
+      { key: "K11.1-right", at: K111_DESKS.s + K111_DESKS.dolly + K111_DESKS.whip + K111_DESKS.hold / 2 },
+    );
+  out.push({ key: "K12", at: holdMid("K12") }, { key: "K13", at: holdMid("K13") }, { key: "K16", at: holdMid("K16") });
   return out;
 }
