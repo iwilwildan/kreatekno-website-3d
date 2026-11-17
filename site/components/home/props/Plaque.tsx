@@ -83,7 +83,8 @@ const CLIENTS = [
 /**
  * Beat 9b · Tentang kami (tahap 8): the wooden plaque left of Kreatekno's door (K9b) in two columns, the heading and
  * the paragraph left, the four facts and the link to /tentang right, and all client logos in the lower half of the
- * same plaque (issue #34). Real HTML rendered on the server; the world places the three areas at their phone stops.
+ * same plaque (issue #34). Real HTML rendered on the server; the world places the three areas on the plaque, on phones
+ * as three bands across it read at once (user 17 Nov).
  */
 export async function Plaque() {
   const t = await getTranslations("home.about");
@@ -92,7 +93,7 @@ export async function Plaque() {
       <div
         data-anchor
         data-landscape="about-0"
-        data-portrait="about-0"
+        data-portrait="about-hp-0"
         data-fade
         className="prop-copy plaque-copy plaque-main"
         suppressHydrationWarning
@@ -103,7 +104,7 @@ export async function Plaque() {
       <div
         data-anchor
         data-landscape="about-1"
-        data-portrait="about-1"
+        data-portrait="about-hp-1"
         data-fade
         className="prop-copy plaque-copy plaque-facts"
         suppressHydrationWarning
@@ -124,7 +125,7 @@ export async function Plaque() {
       <div
         data-anchor
         data-landscape="about-2"
-        data-portrait="about-2"
+        data-portrait="about-hp-2"
         data-fade
         className="prop-copy plaque-copy plaque-trusted"
         suppressHydrationWarning

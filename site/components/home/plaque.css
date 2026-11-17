@@ -128,7 +128,10 @@
     line-height: 1.42;
     color: inherit;
   }
+  /* (above the logo area, whose box starts just under the link since the plaque was shortened, user 17 Nov: the
+     link stays tappable over its whole height) */
   .plaque-facts.prop-copy {
+    z-index: 1;
     display: block;
   }
   .plaque-facts ul {
@@ -188,5 +191,57 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+}
+
+/* 9:16 (user 17 Nov): one stop on the whole plaque, as on 16:9, its copy in three bands across the face (±320 px
+   wide at 375 px): the title and the paragraph, the facts and the link, then the logos in two rows without their
+   names (each image's alt text names it) */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (max-aspect-ratio: 1/1) {
+  .plaque-main h2 {
+    margin: 0;
+    font-size: max(12px, 4.2cqw);
+  }
+  .plaque-main p {
+    margin: 1.2cqw 0 0;
+    font-size: max(9px, 3.05cqw);
+    line-height: 1.3;
+  }
+  .plaque-facts ul {
+    gap: 0.6cqw;
+    margin: 0;
+  }
+  .plaque-facts li {
+    gap: 1.5cqw;
+    font-size: max(9px, 2.9cqw);
+    line-height: 1.25;
+  }
+  .plaque-link {
+    min-height: 24px;
+    margin: 0.6cqw 0 0;
+    font-size: max(9px, 3cqw);
+  }
+  .plaque-trusted.prop-copy {
+    padding: 0;
+  }
+  .plaque-trusted-label {
+    margin: 0 0 1cqw;
+    font-size: max(9px, 3cqw);
+  }
+  .plaque-trusted ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-evenly;
+    justify-content: center;
+    gap: 0;
+  }
+  .plaque-trusted li {
+    flex: 0 0 calc(100% / 7);
+    grid-template-rows: minmax(0, 1fr);
+    height: 46%;
+    padding: 0.5cqw 1.2cqw;
+  }
+  .plaque-trusted li > span {
+    display: none;
   }
 }

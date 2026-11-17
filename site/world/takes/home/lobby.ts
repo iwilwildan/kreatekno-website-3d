@@ -5,7 +5,8 @@
 // on the lobby's left wall: langkah 1's plan); then, after a moment still, turns another ±90° to the facade backing
 // off a little and ends easing forward (K9.1) as Bu Dewi and Heru walk toward the door and Wildan comes out of the
 // meeting room. Every move starts and stops smoothly. 16:9 stands still on each keyframe; 9:16 stops on each item of
-// it in turn (text fit test 11 Nov: one polaroid, one book, four sticky notes per stop). The two have their own
+// it in turn (text fit test 11 Nov: one polaroid, four sticky notes per stop; the rack a column of two books per stop
+// after the whole rack, user 17 Nov). The two have their own
 // timelines (timing.ts `pc`, user 11 Nov): landscape (t < 0.5, as the page's PORTRAIT_QUERY) stands still on the
 // keyframe through its shorter hold, portrait walks its stops.
 // The 16:9 keyframes were measured on the videos' last frames with the set's sizes chosen from them (see
@@ -71,16 +72,21 @@ const P = BOARD_ITEMS.polaroids,
 /** The rack's books with an article (left to right, top tier first) and the one with "Lihat semua artikel". */
 const RACK_ARTICLES = [0, 1, 2, 3, 4],
   RACK_ALL = 5;
+/** 9:16 stop of each rack book (user 17 Nov): the whole rack with the sign first, then its columns left to right. */
+const rackColStop = (book: number) => 1 + (book % 3);
+/** The rack's columns: each the top tier's book over the bottom tier's (the right one "Lihat semua artikel"). */
+const RACK_COLS = [0, 1, 2].map((c) => [B[c], B[c + 3]] as const);
 const HP: Record<"K6" | "K7" | "K8", View[]> = {
   // the strip with the title over the polaroids, then the 3 polaroids left to right (issue #17: the row sits lower
   // than the old top row, so the first stop looks lower too, the whole board in frame under the header)
   K6: [boardStop(0, 0.18, BOARD_ITEMS.strip.w / 0.87), ...P.map((p) => boardStop(p.x, p.y, p.w / 0.8))],
-  // the sign with the title, the top tier's three articles left to right, the bottom tier's two, then the button on
-  // its right (issue #33: read like a page; was right to left, the button on the left)
+  // the whole rack with the sign (the title) over it, then its three columns left to right, each the top book over
+  // the bottom one, both read at once (user 17 Nov: was the sign, then each of the 5 books and the button on its own;
+  // issue #33 had made it read like a page). A column's books fill 86% of the width; its middle sits a little low, so
+  // the top book keeps clear of the page's floating header
   K7: [
-    rackStop(0, L.sign.cy - F - 0.12, L.sign.w / 0.85),
-    ...RACK_ARTICLES.map((i) => rackStop(B[i].x, B[i].y, B[i].w / 0.86)),
-    rackStop(RACK_ITEMS.button.x, RACK_ITEMS.button.y + 0.05, B[RACK_ALL].w / 0.86),
+    rackStop(0, (L.sign.cy + L.sign.h / 2 - F) / 2 + 0.08, L.rack.w / 0.9),
+    ...RACK_COLS.map(([top, bottom]) => rackStop(top.x, (top.y + bottom.y) / 2 + 0.03, top.w / 0.86)),
   ],
   // two columns of notes at a time with the band over them (title, then help line and button)
   K8: [
@@ -127,20 +133,20 @@ export function lobbyAnchors(): { anchor: Anchor; hold: "K6" | "K7" | "K8"; stop
   });
   // the books' pages stand open in a shallow V from the spine (sets/lobby): the plane through their outer edges
   const pz = BACK + 0.14 + 0.04;
-  // 9:16: the articles left to right after the sign, then the button (HP stops above)
+  // 9:16: each book at its column's stop after the whole rack (HP stops above)
   RACK_ARTICLES.forEach((bi, i) => {
     const b = B[bi];
     out.push({
       anchor: rectAnchor(`article-${i}`, RX + b.x, F + b.y, pz, b.w / 2 - 0.006, b.h / 2 - 0.004),
       hold: "K7",
-      stop: i + 1,
+      stop: rackColStop(bi),
     });
   });
   const all = B[RACK_ALL];
   out.push({
     anchor: rectAnchor("rack-all", RX + all.x, F + all.y, pz, all.w / 2 - 0.006, all.h / 2 - 0.004),
     hold: "K7",
-    stop: RACK_ARTICLES.length + 1,
+    stop: rackColStop(RACK_ALL),
   });
   // the glass faces the lobby (+x); seen from there, right is toward the back wall (−z)
   const gx = lx(L.room.glassX) + 0.013;
@@ -280,7 +286,7 @@ export function lobbyCamera(x: number, t: number, aspect: number, k56: CamPose):
     const a = last("K7", t),
       b = first("K8", t);
     // back off to the right, then round to the glass on the left (the plant passes by the lens). Issue #33: 9:16 now
-    // leaves from the bottom tier's right book, right of the waypoint; the waypoint keeps to its right so the camera
+    // leaves from the rack's right column, right of the waypoint; the waypoint keeps to its right so the camera
     // doesn't swing left first (16:9 leaves from the rack's middle: the waypoint as before)
     const wx = Math.max(lx(5.4), a.pos.x);
     view = along([a.pos, new THREE.Vector3(wx, lerp(a.pos.y, b.pos.y, 0.4), BACK + 2.4), b.pos], a, b, u);

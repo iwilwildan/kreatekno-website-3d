@@ -43,11 +43,11 @@ const KEYS = [
   "K5a.3b",
   "K5a.4",
   "K5a.6",
-  // the lobby (tahap 7): on 9:16 one still per stop of a hold (K6: the strip, then the 3 polaroids; K7: the sign, the
-  // 5 books, the button; K8: the left and the right two columns of notes)
+  // the lobby (tahap 7): on 9:16 one still per stop of a hold (K6: the strip, then the 3 polaroids; K7: the whole
+  // rack, then its 3 columns of books; K8: the left and the right two columns of notes)
   ...LOBBY_KEYS,
   "K9.1",
-  // beats 9b–11 (tahap 8): the plaque (on 9:16 a still per column) and COMPANY's door
+  // beats 9b–11 (tahap 8): the plaque and COMPANY's door
   ...PLAQUE_KEYS,
   // beats 12–13 (tahap 9): the class at the TV, the front room at dusk
   ...CLASS_KEYS,
@@ -60,8 +60,6 @@ const HP_ONLY: Partial<Record<Key, string>> = {
   "K5a.2b": "K5a.2",
   "K5a.3b": "K5a.3",
   ...Object.fromEntries(LOBBY_KEYS.filter((k) => !/\d$/.test(k)).map((k) => [k, k.replace(/[b-h]$/, "")])),
-  "K9b-2": "K9b",
-  "K9b-3": "K9b",
 };
 /**
  * The stacked version (reduced motion, no JavaScript) shows the beat 5b copy with the K5a.2 still only, the lobby's
