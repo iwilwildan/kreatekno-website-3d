@@ -2571,6 +2571,18 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - Typecheck, ESLint dan Prettier file terkait lulus; `next build` lulus.
 - Belum: tes di HP fisik (preview LAN tidak tersedia dari sesi cloud), gate pintu COMPANY sore hari (K11 → K12) hanya ikut profil kejaran yang lebih lembut, tokohnya tidak dipercepat. Belum di-commit ke `main`, menunggu konfirmasi user.
 
+### 2026-11-17 (issue GitHub #37: simbol logo pada fasad Kreatekno)
+
+- Keputusan user: fasad saja, simbol logo ditambah di kiri tulisan KREATEKNO yang sekarang; lobi tidak termasuk lingkup perubahan.
+- `world/sets/row.ts`: aset asli `/brand/kreatekno-mark.png` digambar di margin kiri tekstur papan nama yang sudah ada. Posisi, ukuran, font dan warna tulisan tetap. Simbol memakai satu tekstur dan plane yang sama, tanpa tambahan material, draw call atau segitiga.
+- `world/index.ts`: pemuatan deret ruko menunggu logo bersama AO dan menjadwalkan render ulang setelah siap. Abort saat world dilepas membuang callback; kegagalan gambar tetap menyelesaikan readiness dengan tulisan lama yang terbaca.
+- Dicek: render K5a.6, K9.1 dan K9b PC/HP sebelum-sesudah; review halaman K5a.1–K5a.6, K6, K9.1 dan K9b pada 1280×720, 768×1024, 375×812 dan 360×740. Simbol utuh di tekstur (x 96–212, y 14–113), berjarak sekitar 31 piksel tekstur dari awal tulisan. Tidak menutupi copy atau anchor HTML. Uji gambar logo gagal dimuat: world tetap siap.
+- Anggaran K5a.6 tetap 75 draw call / 90,2 ribu segitiga (PC), 62 / 81,4 ribu (HP). K9.1 dan K9b juga tetap. AO tidak dibake ulang karena plane, material penerima bayangan dan occluder tidak berubah.
+- Proyeksi semua keyframe di build produksi: simbol terlihat pada K5a.4 PC (sebagian di tepi kanan) dan K5a.6 PC/HP. Still terkait dirender ulang; kamera serta anchor fallback tetap. K9.1 melihat fasad dari dalam dan K9b close-up plakat, sehingga papan nama di luar pandangan kamera tersebut.
+- Typecheck, ESLint seluruh situs, Prettier file terkait dan build produksi lulus. Next.js menampilkan peringatan known security vulnerability yang sudah ada; build berhasil setelah mengulang perintah sesuai petunjuk CLI. Pembaruan dependensi di luar lingkup #37.
+- User menyetujui hasil dan meminta commit serta push ke main dengan tag issue #37. Commit hanya file perbaikan, tiga still terkait dan entri log ini; perubahan lain tidak ikut.
+- Belum: tes HP fisik, komentar GitHub dan penutupan issue. Screenshot review disimpan di scratchpad untuk chat saja.
+
 ### 2026-11-17 (issue GitHub #33: rak artikel K7, artikel di baris bawah, "Lihat semua" di kanan, HP kiri ke kanan)
 
 - Keputusan user (17 Nov): copy dua artikel baru memakai usulan Claude (direview tim kemudian); baris bawah dua artikel + "Lihat semua artikel" di kanan; hold K7 HP diperpanjang supaya waktu baca per buku sama; komentar issue diposting lewat koneksi GitHub sesi cloud.
@@ -2590,4 +2602,4 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - typecheck, ESLint, Prettier (`site/`), `next build` lulus.
 - Lanjutan (permintaan user: halaman buku yang kosong diganti gambar; usulan disetujui, digabung ke #33): `components/home/props/RackArt.tsx` (baru), ilustrasi SVG flat dari kode di palet lobi (garis navy, warna sampul tiap buku, halaman krem, bintang kuning = AI), tanpa teks, `aria-hidden`. Halaman kanan tiap buku artikel: Admin papan klip 5 tugas (3 dicentang), Melayani pembeli pertanyaan dan balasan yang sedang diketik, Staf staf di laptop dengan AI di layar, Promosi kalender mingguan dan HP berisi postingan, Keuangan struk, koin dan grafik naik; menggantikan ikon `BookOpenText`. Buku "Lihat semua": kipas lima kartu mini dari gambar artikel di atas tombol. `lobby.css`: `.book-art` mengisi halaman kanan di antara atas dan tautan (film), 7rem di versi tumpuk; `.rack-all` kolom (kipas 74% lebar, lalu tombol). Still tidak dirender ulang (gambar ikut HTML di atas still). Markup ±11 KB di HTML Home (sebelum gzip).
   - Dicek: usulan dulu disisipkan lewat Playwright tanpa mengubah repo, lalu hasil kode di K7 PC 1280×720, stop HP 375×812 ID/EN dan versi tumpuk reduced motion (screenshot hanya di chat); tombol "Lihat semua" utuh di dalam buku PC; typecheck, ESLint, Prettier, `next build` lulus.
-- Belum: tes HP fisik (preview LAN tidak tersedia dari sesi cloud), `issue4.mjs` belum dijalankan (butuh GPU), review copy dua artikel baru oleh tim. Belum di-commit, menunggu konfirmasi user.
+- Belum: tes HP fisik (preview LAN tidak tersedia dari sesi cloud), `issue4.mjs` belum dijalankan (butuh GPU), review copy dua artikel baru dan gambar oleh tim. Atas perintah user, di-commit ke branch sesi `ccr-b629568e-9j4hwe` dan diajukan sebagai PR #40 ke `main`; `main` (#37, logo fasad) digabung ke branch, konflik hanya di log ini. Issue ditutup setelah PR di-merge.

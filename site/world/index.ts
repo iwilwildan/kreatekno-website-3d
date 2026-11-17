@@ -544,11 +544,13 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       await document.fonts?.ready;
       if (disposed) return;
       const targets: AoTarget[] = [];
-      row = mod.buildRow(kit, rowMats, targets);
+      row = mod.buildRow(kit, rowMats, targets, abort.signal);
       scene.add(row.group);
       renderer.shadowMap.needsUpdate = true;
       needsRender = true;
-      await provideAO(targets);
+      await Promise.all([provideAO(targets), row.ready]);
+      if (disposed) return;
+      needsRender = true;
       if (readyFired) await waitForAO().then(() => warm());
     }));
 
