@@ -2632,3 +2632,20 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - K9b PC 1280×720: lampu terlihat di bawah header, copy atas sama seperti sebelumnya (judul 17,9 px, paragraf 13,2 px), logo 87 px, tidak meluap, tautan bisa diketuk penuh;
   - typecheck, ESLint (hanya peringatan lama di `opengraph-image.tsx`), Prettier seluruh `site/`, `next build` lulus.
 - Belum: tes HP fisik, transisi K6 → K7 dan K9.1 → K9b di HP hanya dicek lewat posisi kamera (tidak per frame), AO dinding fasad tidak dibake ulang (sama seperti saat plakat diperbesar di #34). Belum di-commit, menunggu konfirmasi user.
+
+### 2026-11-17 (K11.1 HP: perhentian meja kiri lalu meja kanan seperti saat Heru masuk; tanpa issue GitHub)
+
+- Permintaan user: saat Bu Dewi kembali masuk COMPANY (K11.1), tambah perhentian ke dua meja kiri lalu dua meja kanan, sama dengan saat Heru masuk di awal; hanya di HP.
+- Baseline (dev server, `?hud`, 375×812): K11.1 HP hanya view lebar K2 (0,3 layar); meja luar terpotong tepi layar, copy "sesudah" kecil.
+- Perubahan:
+  - `takes/home/timing.ts`: `DESK_READ` (dolly 0,8, whip 0,7, tahan 0,6 layar, angka beat 2) dipakai K2 → K2.1 → K2.2 dan segmen baru setelah hold K11.1: `{ hold K11.1, 2,1 layar, pc: 0 }`. Take HP 36,55 → 38,65 layar; PC tetap 34,8 (segmen dilewati tanpa scroll). `K111_DESKS` diekspor.
+  - `takes/home/index.ts`: cabang dolly dan whip beat 2 jadi fungsi `dollyIn`/`whipPan`; `desksAgain` memakainya di segmen baru (portrait saja) dengan Bu Dewi di tempat Heru berdiri, lewat 2,12 m di atas lantai (hijab 1,88 m; Heru tetap 2,02). Whip kedua punya target sendiri (`deskWhipTarget`, `inDesksAgain`).
+  - `takes/home/beat12.ts`: `B12.into.len` tetap 2,8 layar (segmen meja tidak dihitung), `intoX`/`intoU` melompati segmen; HP keluar dari view K2.2 langsung ke celah meja Bayu–Nadia (titik lewat di atas Bu Dewi hanya untuk PC); roll K2.2 dipudarkan 0,3 layar. `k2Roll` memakai akhir segmen meja (PC tetap di K11.1 sampai sana). `poseView` dari `k2View`.
+  - `takes/home/desks.ts`: copy "sesudah" di HP diukur di perhentian dekat (Sinta/Bayu akhir dolly, Nadia/Fajar tengah tahan), tampil sampai akhir segmen meja, hilang/muncul mengikuti whip kedua seperti copy "sebelum" di beat 2.
+  - `world/index.ts`: state `deskWhipT` (waktu 0,45 s seperti whip beat 2, ikut blur dan `atRest`); kelas, pintu belakang dan `inClass` memakai `intoX`. `outsideCast.ts`: `DEWI_K111` diekspor. `components/home/classStills.ts`: fade still K12 melompati segmen meja. `tools/render/issue4*.mjs`: take HP 38,65.
+- Dicek (dev server, SwiftShader, screenshot hanya di chat):
+  - kamera per 0,05 layar dari K11 sampai K13 dibanding sebelum perubahan: PC 1280×720 identik (151 sampel, selisih 0); 768×1024 dan 375×812 hanya berbeda di jalur keluar K11.1 → celah meja (sesuai rancangan), sebelum K11.1 dan dari celah meja sampai K13 identik;
+  - kamera di K2.1/K2.2 kedua sama persis dengan beat 2 (375×812: (1,00; 1,20; −4,30) dan (−0,67; 1,03; −4,15)); jalur keluar lewat celah meja (x −0,55 m), ±1,1 m dari hologram Nadia;
+  - scroll halaman 2 s/layar (waktu simulasi, dt ≤ 0,1 s) maju dan mundur 375×812: whip kedua berjalan ±0,45 s, copy Sinta/Bayu hilang saat whip mulai, Nadia/Fajar muncul setelahnya, tanpa error;
+  - perhentian utuh di 360×740, 390×844, 768×1024; typecheck, ESLint, Prettier (file terkait), `next build` (setelah ulang perintah karena peringatan keamanan Next.js yang sudah ada) lulus.
+- Belum: tes HP fisik, K13 (senja) tetap satu view lebar, still tidak dirender ulang (K11.1 HP tetap di view lebar, `keyP` tidak bergeser). Belum di-commit, menunggu konfirmasi user.
