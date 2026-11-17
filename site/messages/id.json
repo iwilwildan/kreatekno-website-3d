@@ -273,6 +273,14 @@
       "team": {
         "category": "Staf",
         "title": "Cara melatih staf bekerja bareng AI"
+      },
+      "promo": {
+        "category": "Promosi",
+        "title": "Ide konten promosi tiap minggu dengan bantuan AI"
+      },
+      "money": {
+        "category": "Keuangan",
+        "title": "Catat penjualan harian otomatis supaya untung rugi terlihat"
       }
     },
     "faq": {
