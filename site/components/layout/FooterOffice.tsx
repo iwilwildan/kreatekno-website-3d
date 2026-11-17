@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 type State = "idle" | "live" | "off";
 
 /**
- * The mini office under the footer's logo (world/footer/office.ts): Heru, Andi and Wildan at work, loaded only when
- * the footer comes near the screen. Decorative (aria-hidden); without WebGL the box collapses and the footer stays
+ * The mini office in the footer (world/footer/office.ts): Heru, Andi and Wildan at work, loaded only when the footer
+ * comes near the screen. Under the tagline on phones and tablets; on desktop a strip across the footer's container
+ * under the text (issue #38), where the office spreads its stations to the edges. Decorative (aria-hidden); without WebGL the box collapses and the footer stays
  * as it was. With reduced motion it shows one still frame.
  */
 export function FooterOffice() {
@@ -60,7 +61,7 @@ export function FooterOffice() {
     <div
       ref={box}
       aria-hidden
-      className={`footer-office -mx-2 aspect-[16/10] w-[calc(100%+1rem)] max-w-[30rem] transition-opacity duration-700 ${
+      className={`footer-office -mx-2 aspect-[16/10] w-[calc(100%+1rem)] max-w-[30rem] transition-opacity duration-700 lg:col-span-full lg:row-start-3 lg:mx-0 lg:aspect-auto lg:h-[340px] lg:w-full lg:max-w-none ${
         state === "live" ? "opacity-100" : "opacity-0"
       }`}
     />

@@ -3,6 +3,8 @@
 // people, so one is always free and only one person walks at a time). The cursor turns their heads; the one under
 // it waves. A click or tap on the floor sends the nearest person there; they look at the visitor, then go back.
 // Its own small renderer on a transparent canvas over the footer's navy; rendered only while on screen.
+// Two layouts (issue #38): compact for the box under the tagline on phones and tablets, and wide for the desktop
+// strip across the footer, where the four stations spread from edge to edge and the walks get longer.
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { blinkAt, setBlink } from "../cast/acts";
@@ -22,27 +24,57 @@ const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
 /** Eases x toward target with time constant tau (s), the same at any frame rate. */
 const follow = (x: number, target: number, tau: number, dt: number) => x + (target - x) * (1 - Math.exp(-dt / tau));
 
-/** The front lane everyone walks along (z), and where a click may send someone. */
+/** The front lane everyone walks along (z). */
 const LANE = 0.45;
-const ROAM = { x0: -1.6, x1: 1.7, z0: 0.2, z1: 0.95 };
 
 /**
- * Each spot: where the person stands and faces (yaw, 0 = toward the camera), and the way out to the lane.
- * Layout (metres, floor at y 0): whiteboard on the left facing right, the desk in the middle with the person
- * behind it facing the camera, the arcade on the right facing left, the dispenser at the back left (seen
- * between the whiteboard and the desk from the camera).
+ * Each spot in the compact layout: where the person stands and faces (yaw, 0 = toward the camera), and the way
+ * out to the lane. Layout (metres, floor at y 0): whiteboard on the left facing right, the desk in the middle with
+ * the person behind it facing the camera, the arcade on the right facing left, the dispenser at the back left
+ * (seen between the whiteboard and the desk from the camera).
  */
-const SPOTS: Record<SpotName, { at: THREE.Vector3; yaw: number; exit: THREE.Vector3[] }> = {
+const SPOTS0: Record<SpotName, { at: THREE.Vector3; yaw: number; exit: THREE.Vector3[] }> = {
   board: { at: V(-1.12, 0.02), yaw: -Math.PI / 2, exit: [V(-0.95, LANE)] },
   desk: { at: V(0, -1.2), yaw: 0, exit: [V(0.76, -1.12), V(0.8, -0.38), V(0.66, LANE)] },
   arcade: { at: V(1.22, 0.02), yaw: Math.PI / 2, exit: [V(1.02, LANE)] },
   water: { at: V(-0.75, -1.55), yaw: 0.3, exit: [V(-0.82, -1.08), V(-0.84, -0.4), V(-0.62, LANE)] },
 };
 
-/** Props (world positions shared by the set and the poses). */
+/** Props in the compact layout (world positions shared by the set and the poses). */
 const BOARD = { x: -1.66, y: 1.32, w: 1.0, h: 0.66 };
 const DESK = { z: -0.68, top: 0.98, w: 1.1, d: 0.56 };
 const ARCADE = { x: 1.86, panel: 1.0 };
+
+/**
+ * Where each station sits (x shift from the compact layout), where a click may send someone, the camera's
+ * target (x) and the box aspect the camera fits without stepping back, and the floor's size.
+ */
+type Layout = {
+  wide: boolean;
+  off: Record<SpotName | "plant", number>;
+  roam: { x0: number; x1: number; z0: number; z1: number };
+  cx: number;
+  fit: number;
+  floor: number;
+  spots: typeof SPOTS0;
+};
+const layoutOf = (wide: boolean): Layout => {
+  const off = wide
+    ? { board: -3.0, water: -1.45, desk: 0.65, arcade: 2.7, plant: 0.65 }
+    : { board: 0, water: 0, desk: 0, arcade: 0, plant: 0 };
+  const spots = Object.fromEntries(
+    (Object.keys(SPOTS0) as SpotName[]).map((k) => {
+      const s = SPOTS0[k],
+        sh = (v: THREE.Vector3) => v.clone().setX(v.x + off[k]);
+      return [k, { at: sh(s.at), yaw: s.yaw, exit: s.exit.map(sh) }];
+    }),
+  ) as typeof SPOTS0;
+  return wide
+    ? { wide, off, roam: { x0: -4.5, x1: 4.4, z0: 0.2, z1: 0.95 }, cx: 0.2, fit: 3.5, floor: 13, spots }
+    : { wide, off, roam: { x0: -1.6, x1: 1.7, z0: 0.2, z1: 0.95 }, cx: 0.15, fit: 1.6, floor: 6.4, spots };
+};
+/** Boxes wider than this (the desktop strip, about 3.4 : 1) get the wide layout; the 16 : 10 box keeps the compact. */
+const WIDE_ASPECT = 2.4;
 
 type Move = {
   walk: TimedWalk;
@@ -111,8 +143,16 @@ export async function mountOffice(
   const key = new THREE.DirectionalLight("#fff1e4", 2.4);
   key.position.set(-2.5, 5.5, 4.5);
   key.castShadow = true;
-  key.shadow.mapSize.setScalar(saver ? 512 : 1024);
-  Object.assign(key.shadow.camera, { left: -2.6, right: 2.6, top: 2.4, bottom: -1.6, near: 1, far: 14 });
+  const shadowFor = (l: Layout) => {
+    // the wide floor gets a wider shadow frustum and twice the map's width, so the shadows stay as sharp
+    const s = saver ? 512 : 1024;
+    key.shadow.mapSize.set(l.wide ? s * 2 : s, s);
+    key.shadow.map?.dispose();
+    key.shadow.map = null;
+    const half = l.wide ? 5.8 : 2.6;
+    Object.assign(key.shadow.camera, { left: -half, right: half, top: 2.4, bottom: -1.6, near: 1, far: 14 });
+    key.shadow.camera.updateProjectionMatrix();
+  };
   key.shadow.bias = -0.0005;
   key.shadow.normalBias = 0.02;
   const rim = new THREE.DirectionalLight("#6fe3ff", 1.4);
@@ -123,7 +163,10 @@ export async function mountOffice(
   const kit = createKit(renderer);
   const set = new THREE.Group();
   scene.add(set);
-  const screens = buildSet(set, kit);
+  const box0 = host.getBoundingClientRect();
+  let L = layoutOf(box0.height > 0 && box0.width / box0.height > WIDE_ASPECT);
+  shadowFor(L);
+  let screens = buildSet(set, kit, L);
 
   // ---------- cast ----------
   const pause = () => new Promise((r) => setTimeout(r, 0));
@@ -143,7 +186,7 @@ export async function mountOffice(
     m.mesh.frustumCulled = false;
     m.express({ smile: 0.3 });
     scene.add(m.mesh);
-    const s = SPOTS[spot];
+    const s = L.spots[spot];
     people.push({
       who,
       m,
@@ -218,7 +261,7 @@ export async function mountOffice(
     toRay(e);
     const p = new THREE.Vector3();
     if (!ray.ray.intersectPlane(floorPlane, p)) return;
-    p.set(THREE.MathUtils.clamp(p.x, ROAM.x0, ROAM.x1), 0, THREE.MathUtils.clamp(p.z, ROAM.z0, ROAM.z1));
+    p.set(THREE.MathUtils.clamp(p.x, L.roam.x0, L.roam.x1), 0, THREE.MathUtils.clamp(p.z, L.roam.z0, L.roam.z1));
     marker.position.set(p.x, 0.004, p.z);
     markerT = 0;
     queued = p;
@@ -232,8 +275,8 @@ export async function mountOffice(
   const walking = () => people.some((p) => p.move);
   const pathBetween = (p: Person, to: THREE.Vector3, toSpot: SpotName | null) => {
     const pts = [p.at.clone()];
-    if (p.away == null) pts.push(...SPOTS[p.spot].exit);
-    if (toSpot) pts.push(...[...SPOTS[toSpot].exit].reverse(), SPOTS[toSpot].at);
+    if (p.away == null) pts.push(...L.spots[p.spot].exit);
+    if (toSpot) pts.push(...[...L.spots[toSpot].exit].reverse(), L.spots[toSpot].at);
     else pts.push(to);
     // drop points too close to each other (Catmull-Rom loops on doubled points)
     return pts.filter((q, i) => i === 0 || q.distanceTo(pts[i - 1]) > 0.08);
@@ -266,7 +309,7 @@ export async function mountOffice(
   let nextTurn = 7,
     lastMover: Person | null = null;
   const freeSpot = () =>
-    (Object.keys(SPOTS) as SpotName[]).find((s) => !people.some((p) => p.spot === s && p.away == null)) ?? null;
+    (Object.keys(SPOTS0) as SpotName[]).find((s) => !people.some((p) => p.spot === s && p.away == null)) ?? null;
 
   // ---------- poses ----------
   const W = (m: CastMember, v: [number, number, number]) => m.mesh.localToWorld(new THREE.Vector3(...m.point(v)));
@@ -281,7 +324,7 @@ export async function mountOffice(
         // writing: the right hand traces small loops on the board, the head follows it
         const k = Math.sin(TAU * 0.11 * t + s) * 0.5 + 0.5,
           wr = new THREE.Vector3(
-            BOARD.x + 0.03,
+            BOARD.x + L.off.board + 0.03,
             BOARD.y - 0.12 + 0.05 * Math.sin(TAU * 1.3 * t) + 0.12 * k,
             -0.18 + 0.32 * (((t * 0.22 + s) % 1) * 1),
           );
@@ -295,23 +338,25 @@ export async function mountOffice(
         // typing on the laptop in bursts, a glance up now and then
         const burst = Math.max(0, Math.sin(TAU * 0.13 * t + s)),
           tap = (q: number) => Math.max(0, Math.sin(TAU * 4.6 * t + q)) * 0.012 * burst;
-        const z = DESK.z - 0.1;
+        const z = DESK.z - 0.1,
+          dx = L.off.desk;
         return {
           head: [0.32 - 0.25 * (1 - burst) * ph(Math.sin(TAU * 0.07 * t), 0.4, 0.8), 0],
           lean: 0.08,
-          reachL: { at: new THREE.Vector3(0.1, DESK.top + 0.05 + tap(0), z), weight: 1, pole: poleL },
-          reachR: { at: new THREE.Vector3(-0.1, DESK.top + 0.05 + tap(1.9), z), weight: 1, pole: poleR },
+          reachL: { at: new THREE.Vector3(dx + 0.1, DESK.top + 0.05 + tap(0), z), weight: 1, pole: poleL },
+          reachR: { at: new THREE.Vector3(dx - 0.1, DESK.top + 0.05 + tap(1.9), z), weight: 1, pole: poleR },
         };
       }
       case "arcade": {
         // joystick (left hand, world −z side) and buttons (right), leaning in at the exciting bits
-        const hype = ph(Math.sin(TAU * 0.09 * t + s), 0.2, 0.9);
+        const hype = ph(Math.sin(TAU * 0.09 * t + s), 0.2, 0.9),
+          ax = ARCADE.x + L.off.arcade;
         return {
           head: [0.22, 0],
           lean: 0.05 + 0.06 * hype,
           reachL: {
             at: new THREE.Vector3(
-              ARCADE.x - 0.34 + 0.03 * Math.sin(TAU * 1.7 * t),
+              ax - 0.34 + 0.03 * Math.sin(TAU * 1.7 * t),
               ARCADE.panel + 0.06,
               -0.11 + 0.03 * Math.sin(TAU * 2.3 * t + 1),
             ),
@@ -320,7 +365,7 @@ export async function mountOffice(
           },
           reachR: {
             at: new THREE.Vector3(
-              ARCADE.x - 0.33,
+              ax - 0.33,
               ARCADE.panel + 0.04 + Math.max(0, Math.sin(TAU * (3 + 2 * hype) * t)) * 0.025,
               0.12,
             ),
@@ -384,15 +429,43 @@ export async function mountOffice(
     if (r.width < 1 || r.height < 1) return;
     width = r.width;
     height = r.height;
+    // the wide strip has four times the pixels of the compact box: keep the canvas under about 1.6 million
+    renderer.setPixelRatio(Math.min(devicePixelRatio, saver ? 1.5 : 2, Math.sqrt(1.6e6 / (width * height))));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
+    const wide = camera.aspect > WIDE_ASPECT;
+    if (wide !== L.wide) relayout(wide);
     // a three-quarter view from the front right, a little from above; narrower boxes step back to fit the stage
-    const fit = Math.max(1, 1.6 / camera.aspect);
-    camera.position.set(0.15 + 1.6 * fit, 2.5 * fit, 8.3 * fit);
-    camera.lookAt(0.15, 0.66, -0.3);
+    const fit = Math.max(1, L.fit / camera.aspect);
+    camera.position.set(L.cx + 1.6 * fit, 2.5 * fit, 8.3 * fit);
+    camera.lookAt(L.cx, 0.66, -0.3);
     camera.updateProjectionMatrix();
     if (started) wake();
   };
+  /** Switches layout (a window resized across the desktop breakpoint): the set is rebuilt, everyone at a station. */
+  function relayout(wide: boolean) {
+    L = layoutOf(wide);
+    shadowFor(L);
+    screens.dispose();
+    set.traverse((o) => {
+      if (o instanceof THREE.Mesh) o.geometry.dispose();
+    });
+    set.clear();
+    screens = buildSet(set, kit, L);
+    queued = null;
+    markerT = 9;
+    for (const p of people) {
+      p.move = null;
+      p.away = null;
+      p.at.copy(L.spots[p.spot].at);
+      p.yaw = L.spots[p.spot].yaw;
+    }
+    nextTurn = t + 4;
+    if (started) {
+      step(0);
+      render();
+    }
+  }
   const ro = new ResizeObserver(resize);
   ro.observe(host);
   resize();
@@ -421,7 +494,7 @@ export async function mountOffice(
       const cand = people.filter((p) => p !== lastMover);
       const p = cand[Math.floor((Math.sin(t * 12.9898) * 0.5 + 0.5) * cand.length) % cand.length];
       if (free && p) {
-        startMove(p, free, SPOTS[free].at, SPOTS[free].yaw);
+        startMove(p, free, L.spots[free].at, L.spots[free].yaw);
         lastMover = p;
       }
       nextTurn = t + 9 + 4 * (Math.sin(t * 7.1) * 0.5 + 0.5);
@@ -446,7 +519,7 @@ export async function mountOffice(
         p.away -= dt;
         if (p.away <= 0) {
           // back to their station
-          startMove(p, p.spot, SPOTS[p.spot].at, SPOTS[p.spot].yaw);
+          startMove(p, p.spot, L.spots[p.spot].at, L.spots[p.spot].yaw);
           p.away = 0;
         }
       }
@@ -571,7 +644,7 @@ export async function mountOffice(
 }
 
 /** The office furniture, merged per material; returns the arcade screen's animation. */
-function buildSet(root: THREE.Group, kit: Kit) {
+function buildSet(root: THREE.Group, kit: Kit, L: Layout) {
   const b = new Batch(root);
   const white = kit.mat("#f4f2f8", { roughness: 0.5 }),
     frame = kit.mat("#8a8fa8", { roughness: 0.45, metalness: 0.3 }),
@@ -592,20 +665,20 @@ function buildSet(root: THREE.Group, kit: Kit) {
     g.fillRect(0, 0, w, h);
   });
   const pool = new THREE.Mesh(
-    new THREE.PlaneGeometry(6.4, 3.6),
+    new THREE.PlaneGeometry(L.floor, 3.6),
     new THREE.MeshBasicMaterial({ map: glow, transparent: true, depthWrite: false }),
   );
   pool.rotation.x = -Math.PI / 2;
   pool.position.set(0, 0, -0.2);
   pool.renderOrder = -1;
-  const shade = new THREE.Mesh(new THREE.PlaneGeometry(7, 4), new THREE.ShadowMaterial({ opacity: 0.38 }));
+  const shade = new THREE.Mesh(new THREE.PlaneGeometry(L.floor + 0.6, 4), new THREE.ShadowMaterial({ opacity: 0.38 }));
   shade.rotation.x = -Math.PI / 2;
   shade.position.set(0, 0.001, -0.2);
   shade.receiveShadow = true;
   root.add(pool, shade);
 
   // whiteboard on a stand, facing +x
-  const bx = BOARD.x;
+  const bx = BOARD.x + L.off.board;
   b.add(G.rbox(0.04, BOARD.h + 0.06, BOARD.w + 0.06, 0.012), frame, mtx([bx - 0.01, BOARD.y, 0]));
   for (const z of [-0.42, 0.42]) {
     b.add(G.cyl(0.018, 0.018, BOARD.y - BOARD.h / 2, 10), frame, mtx([bx - 0.03, (BOARD.y - BOARD.h / 2) / 2, z]));
@@ -658,20 +731,21 @@ function buildSet(root: THREE.Group, kit: Kit) {
   root.add(face);
 
   // standing desk with a laptop (its lid toward the person behind it; the camera sees the back with an orange dot)
-  const dz = DESK.z;
-  b.add(G.rbox(DESK.w, 0.04, DESK.d, 0.012), wood, mtx([0, DESK.top - 0.02, dz]));
-  for (const x of [-0.46, 0.46]) {
+  const dz = DESK.z,
+    dx = L.off.desk;
+  b.add(G.rbox(DESK.w, 0.04, DESK.d, 0.012), wood, mtx([dx, DESK.top - 0.02, dz]));
+  for (const x of [dx - 0.46, dx + 0.46]) {
     b.add(G.rbox(0.06, DESK.top - 0.04, 0.06, 0.01), dark, mtx([x, (DESK.top - 0.04) / 2, dz]));
     b.add(G.rbox(0.07, 0.03, DESK.d - 0.04, 0.01), dark, mtx([x, 0.015, dz]));
   }
-  b.add(G.rbox(0.36, 0.016, 0.24, 0.006), frame, mtx([0, DESK.top + 0.008, dz - 0.08]));
-  b.add(G.rbox(0.36, 0.24, 0.014, 0.006), frame, mtx([0, DESK.top + 0.13, dz + 0.04], [-0.22, 0, 0]));
-  b.add(G.cyl(0.03, 0.03, 0.004, 20), orange, mtx([0, DESK.top + 0.15, dz + 0.05], [Math.PI / 2 - 0.22, 0, 0]));
-  b.add(G.cyl(0.04, 0.035, 0.1, 16), mint, mtx([0.4, DESK.top + 0.05, dz + 0.06]));
-  b.add(G.rbox(0.22, 0.012, 0.16, 0.004), white, mtx([-0.36, DESK.top + 0.006, dz + 0.02], [0, 0.3, 0]));
+  b.add(G.rbox(0.36, 0.016, 0.24, 0.006), frame, mtx([dx, DESK.top + 0.008, dz - 0.08]));
+  b.add(G.rbox(0.36, 0.24, 0.014, 0.006), frame, mtx([dx, DESK.top + 0.13, dz + 0.04], [-0.22, 0, 0]));
+  b.add(G.cyl(0.03, 0.03, 0.004, 20), orange, mtx([dx, DESK.top + 0.15, dz + 0.05], [Math.PI / 2 - 0.22, 0, 0]));
+  b.add(G.cyl(0.04, 0.035, 0.1, 16), mint, mtx([dx + 0.4, DESK.top + 0.05, dz + 0.06]));
+  b.add(G.rbox(0.22, 0.012, 0.16, 0.004), white, mtx([dx - 0.36, DESK.top + 0.006, dz + 0.02], [0, 0.3, 0]));
 
   // arcade cabinet facing −x
-  const ax = ARCADE.x;
+  const ax = ARCADE.x + L.off.arcade;
   b.add(G.rbox(0.5, 1.72, 0.62, 0.03), purple, mtx([ax + 0.04, 0.86, 0]));
   b.add(G.rbox(0.3, 0.1, 0.6, 0.02), dark, mtx([ax - 0.3, ARCADE.panel - 0.02, 0], [0, 0, 0.2]));
   b.add(G.rbox(0.12, 0.85, 0.6, 0.02), purple, mtx([ax - 0.2, 0.47, 0]));
@@ -757,21 +831,29 @@ function buildSet(root: THREE.Group, kit: Kit) {
   };
 
   // water dispenser at the back left
-  const wx = -0.78,
+  const wx = -0.78 + L.off.water,
     wz = -1.98;
   b.add(G.rbox(0.3, 0.92, 0.3, 0.03), white, mtx([wx, 0.46, wz]));
   b.add(G.rbox(0.18, 0.08, 0.06, 0.02), dark, mtx([wx, 0.72, wz + 0.16]));
   b.add(G.cyl(0.13, 0.13, 0.36, 24), water, mtx([wx, 1.1, wz]), { shadow: false });
   b.add(G.cyl(0.05, 0.13, 0.08, 24), water, mtx([wx, 0.96, wz]), { shadow: false });
-  // a plant behind the desk
-  b.add(G.cyl(0.11, 0.09, 0.26, 18), orange, mtx([0.55, 0.13, -1.6]));
-  b.add(G.sph(0.2, 14, 10), mint, mtx([0.55, 0.42, -1.6], [0, 0, 0], [1, 1.25, 1]));
+  // a plant behind the desk, and on the wide floor two more between the stations
+  const plant = (x: number, z: number, s = 1) => {
+    b.add(G.cyl(0.11 * s, 0.09 * s, 0.26 * s, 18), orange, mtx([x, 0.13 * s, z]));
+    b.add(G.sph(0.2 * s, 14, 10), mint, mtx([x, 0.42 * s, z], [0, 0, 0], [1, 1.25, 1]));
+  };
+  plant(0.55 + L.off.plant, -1.6);
+  if (L.wide) {
+    plant(2.45, -1.8, 1.15);
+    plant(-3.6, -1.7, 0.9);
+  }
 
   b.build();
   drawScreen(0);
   return {
     update: drawScreen,
     dispose() {
+      for (const tex of [glow, doodle, art, screenTex]) tex.dispose();
       screen.geometry.dispose();
       (screen.material as THREE.Material).dispose();
       face.geometry.dispose();
