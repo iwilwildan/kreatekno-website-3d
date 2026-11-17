@@ -14,14 +14,14 @@ const SOCIAL = [
 ] as const;
 
 /**
- * The Odoo Official Partner badge as Odoo supplies it (not redrawn; at least 20 px tall). Null until the file from
- * the user is in `public/brand/partners/`; the footer then shows no badge and its rows keep their places.
+ * Kreatekno is an Odoo Official Partner. The logo is Odoo's own file in its own colours (not redrawn, at least
+ * 20 px tall), on a white chip because its purple "o" is too dark on the footer's navy.
  */
-const PARTNER: { src: string; alt: string; width: number; height: number } | null = null;
+const PARTNER = { src: "/brand/partners/odoo-logo.png", alt: "Odoo", width: 625, height: 200 };
 
 /**
- * Site footer. Phones and tablets: logo, tagline, partner badge and the mini office, then the link columns.
- * Desktop (issue #38): two rows of text, logo and tagline beside the pages in a row, the partner badge under the
+ * Site footer. Phones and tablets: logo, tagline, Odoo partner logo and the mini office, then the link columns.
+ * Desktop (issue #38): two rows of text, logo and tagline beside the pages in a row, the Odoo partner logo under the
  * logo beside the contact line, then the mini office across the footer's container and the copyright.
  *
  * On Home it follows the night road of beat 16 (tahap 10), whose epilogue fades into its colour.
@@ -48,15 +48,18 @@ export async function Footer() {
             />
             <p>{t("tagline")}</p>
           </div>
-          {PARTNER && (
-            <Image
-              src={PARTNER.src}
-              alt={PARTNER.alt}
-              width={PARTNER.width}
-              height={PARTNER.height}
-              className="mt-1 h-12 w-auto self-start lg:col-start-1 lg:row-start-2 lg:mt-0"
-            />
-          )}
+          <div className="mt-3 lg:col-start-1 lg:row-start-2 lg:mt-0">
+            <h2 className={heading}>{t("partner")}</h2>
+            <span className="inline-flex rounded-xl bg-white px-4 py-2.5">
+              <Image
+                src={PARTNER.src}
+                alt={PARTNER.alt}
+                width={PARTNER.width}
+                height={PARTNER.height}
+                className="h-6 w-auto"
+              />
+            </span>
+          </div>
           <FooterOffice />
         </div>
 
