@@ -419,7 +419,7 @@ export function scrollClock(x: number) {
  * moved straight to a point short of it that is also out of view, and walk the rest in sight: a long scroll never
  * makes them march backwards for half a minute, and the move is never seen.
  */
-export function stepOutClock(c: Damped, x: number, dt: number, seen: (clock: number) => boolean) {
+export function stepOutClock(c: Damped, x: number, dt: number, seen: (clock: number) => boolean, rushing = false) {
   // the camera is back at the door or inside: they are at the counter. Still in view in the doorway (scrolled back
   // while they were coming out), they first walk back in and the leaves shut behind them (the world holds the camera
   // at K4.2 meanwhile, OUT_BACK_GATE); then they are moved, unseen behind the frosted door (tahap 7: before, they
@@ -455,10 +455,17 @@ export function stepOutClock(c: Damped, x: number, dt: number, seen: (clock: num
       }
     }
   }
-  return followClock(c, target, dt, lobby ? LOBBY_PACE : undefined);
+  return followClock(c, target, dt, lobby ? (rushing ? rushPace(gap, LOBBY_PACE) : LOBBY_PACE) : undefined);
 }
 /** How much faster than their pace they may walk to catch up with the scroll in the lobby (2.3 m/s, no sliding). */
-const LOBBY_PACE = 1.8;
+export const LOBBY_PACE = 1.8;
+/**
+ * While a gate holds the camera for them on a fast scroll (Kreatekno's door both ways): their pace, from `base` up
+ * to RUSH_PACE as the scroll runs 1 to 4 s of their walk ahead, so the camera waits less. A steady scroll keeps them
+ * within a second of it and at their usual pace.
+ */
+export const rushPace = (gap: number, base: number) => base + (RUSH_PACE - base) * smoothstep(1, 4, Math.abs(gap));
+const RUSH_PACE = 3.2;
 const segOf = (from: KeyName, type: "move" | "hold") => {
   const i = SEG.findIndex((g) => g.from === from && g.type === type);
   return { s: segmentStart(SEG, i), len: SEG[i].screens };

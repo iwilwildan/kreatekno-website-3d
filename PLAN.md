@@ -2545,3 +2545,28 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Verifikasi final build produksi (ID/EN, 1280×720, 768×1024, 375×812, 360×740): 13/13 PNG transparan termuat, setiap image tetap di dalam sel (tidak terpotong), 13 label brand ada, tile tanpa background, `Trusted By` rata kiri, panel aktif utuh, checklist maksimum 13 px. Still PC K9b dan HP K9b/K9b-2/K9b-3 beserta anchor dirender ulang. Typecheck, ESLint, Prettier file terkait dan `next build` lulus. Next.js 16.4.3 menampilkan peringatan known security vulnerability dan menyarankan upgrade terpisah.
 - Revisi layout lanjutan dari screenshot user: paragraf Tentang dinaikkan dari 12 px menjadi ±14,17 px pada PC (`max(13px, min(5.3cqw, 7cqh))`, line-height 1,42). Checklist tidak lagi di-center vertikal; margin atasnya memakai perhitungan yang sama dengan posisi awal paragraf. Diukur pada 1280×720: paragraf dan item checklist pertama sama-sama mulai tepat di y = 131,11 px. Area `Trusted By` ditarik naik di dalam plakat yang sama (top 337,5 → 281,3 px), sehingga jarak kosong setelah paragraf berkurang; pada HP 375×812 area logo tetap utuh di dalam stage (29,25…345,75 × 315,73…496,23 px), 13/13 logo termuat. Still dan anchor K9b dirender ulang lagi; build produksi lulus.
 - Preview produksi untuk tes HP: port 3300. Belum: tes HP fisik dan komentar investigasi di issue (draf siap; pengiriman lewat browser memerlukan konfirmasi aksi representasional). Atas perintah user ("commit dan push ke main"), file issue #34 dan entri log ini di-stage sendiri; perubahan lain tidak ikut.
+
+### 2026-11-17 (investigasi: kamera tertahan lalu melompat saat scroll cepat di pintu Kreatekno, tanpa issue GitHub)
+
+- Pertanyaan user: apakah ada dwell saat Bu Dewi masuk Kreatekno dan saat ketiga tokoh keluar; di scroll cepat view tertahan lalu melompat. Belum ada perubahan kode.
+- Prod (`kreatekno-website-3d.vercel.app`) diblokir network sandbox, jadi diukur di build produksi lokal commit `main` 30d68f3 (port 3300, `?hud`, `world.debug()`), 390×844, waktu dihitung dalam detik simulasi (dt dibatasi 0,1 s).
+- Penyebab: bukan hold di `SEG`, tetapi gate kamera di `site/world/index.ts` (`DOOR_GATES` dari `takes/home/lobby.ts`; `exitCameraLimit` + `PLAQUE_GATE` dari `takes/home/beat9.ts`). Kamera dibatasi sampai jam tokoh (yang dibatasi pace 1,8× di lobby, Wildan mulai terlambat) menyusul, lalu mengejar scroll dengan kecepatan tetap `CATCH_UP` = 2 layar/s (4× scroll normal 2 s/layar).
+- Terukur: masuk dari K5a.4, scroll 3,6 layar dalam 0,5 s: kamera diam di 15,10 layar (gate 1) ±3,9 s, lalu mengejar ke 17,30 dalam ±2 s (total ±7 s). Masuk dari K5a.6: tanpa diam penuh, tetapi tertinggal sampai 2,9 layar dan tiba ±2,3 s. Keluar dari K9.1, 3,4 layar dalam 0,5 s: kamera diam di 23,13 ±2,5 s (jam Wildan belum mulai), merayap ±0,25 layar/s ±4 s, lalu melompat 23,9 → 25,6 dalam ±1 s (total ±8 s).
+- Belum: desktop tidak diukur terpisah (gate yang sama, segmen K9.1 → K9b tanpa `pc`), tes HP fisik, pilihan perbaikan menunggu keputusan user.
+
+### 2026-11-17 (perbaikan: kamera tertahan lalu melompat saat scroll cepat di pintu Kreatekno, tanpa issue GitHub)
+
+- Permintaan user: opsi 3 dari investigasi di atas (tokoh dipercepat saat kamera tertahan + gate lebih lembut), tanpa issue GitHub.
+- Perubahan:
+  - `takes/home/outsideCast.ts`: `rushPace(gap, base)` menaikkan pace dari `base` ke 3,2× saat scroll 1–4 s jalan di depan tokoh; `stepOutClock` memakainya di lobby hanya kalau dipanggil dengan `rushing`. `LOBBY_PACE` diekspor.
+  - `world/index.ts`: `rushing` = kamera sedang ditahan gate dan berada di pintu Kreatekno (masuk: `LOBBY_START − 1` sampai `DOOR_OPEN.to`; keluar: `B9.out.s − 0,5` sampai `PLAQUE_GATE`). Saat rushing, Heru/Bu Dewi memakai `rushPace`, jam Wildan mengikuti scroll (bukan kamera yang ditahan) dengan `rushPace` dan pegas lebih kaku (`RUSH_FOLLOW` 9, tanpa ekor lambat), dan Wildan menyusul rombongan lebih cepat (sisa jarak berkurang 1 s/s, maksimal pace mereka + 0,4).
+  - Kejaran kamera setelah gate: dari kecepatan tetap 2 layar/s menjadi profil percepatan dan perlambatan `CATCH_ACC` 3 layar/s² (maksimal tetap `CATCH_UP` 2 layar/s), mulai dari posisi dan kecepatan kamera saat itu, dan melambat sebelum gate. Berlaku untuk semua gate.
+  - `takes/home/heru.ts`: `PACE` diekspor (nilai tetap 1,5).
+- Dicek di build produksi lokal (detik simulasi, 390×844 kecuali disebut):
+  - masuk dari K5a.4 cepat: diam di gate 3,9 s → 1,5 s, tiba ±7,4 s → ±5,0 s; 1280×720 tiba ±5,2 s;
+  - keluar dari K9.1 cepat: diam 2,5 s → 1,0 s, lompatan 23,9 → 25,6 dalam 1 s diganti luncuran berpercepatan, tiba ±8,4 s → ±5,9 s; 1280×720 tiba ±6 s;
+  - scroll normal 2 s/layar: masuk sama dengan `main` (lag maks 0,43 vs 0,37 layar, tiba bersamaan); keluar lebih baik dari `main` (lag maks 1,6 → 0,76 layar, tiba ±1 s lebih cepat);
+  - K1 → K2 cepat (gate Heru): tiba ±3,4 s, sama dengan `main`;
+  - frame masuk dan keluar saat rushing dicek visual (screenshot hanya di chat): tokoh tidak hilang atau menembus, Wildan menyusul lewat pintu.
+  - Typecheck, ESLint dan Prettier file terkait lulus; `next build` lulus.
+- Belum: tes di HP fisik (preview LAN tidak tersedia dari sesi cloud), gate pintu COMPANY sore hari (K11 → K12) hanya ikut profil kejaran yang lebih lembut, tokohnya tidak dipercepat. Belum di-commit ke `main`, menunggu konfirmasi user.

@@ -34,8 +34,8 @@ const T = { turn: [0, 1.0], reach: [0.7, 1.2], door: [1.1, 2.1], letGo: [1.5, 1.
 const SPEED = 1.0,
   ACCEL = 0.6;
 /** How much faster than his natural pace he may go to catch up with the scroll, and how soon he follows it. */
-const PACE = 1.5,
-  FOLLOW = 3.5;
+export const PACE = 1.5;
+const FOLLOW = 3.5;
 /** The same through the door (issue #6): the short move asks ±2× his pace at 2 s per screen, and he keeps up. */
 const DOOR = { pace: 2, follow: 6 };
 /** Share of extra clock speed early in the move (the turn and the push) taken from the end (the walk in). */
