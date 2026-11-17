@@ -68,15 +68,19 @@ const glassStop = (x: number, y: number, w: number) =>
   v(lx(L.room.glassX) + fill(w), F + y, GZ - x, Math.PI / 2, 0, HP_FOV);
 const P = BOARD_ITEMS.polaroids,
   B = RACK_ITEMS.books;
+/** The rack's books with an article (left to right, top tier first) and the one with "Lihat semua artikel". */
+const RACK_ARTICLES = [0, 1, 2, 3, 4],
+  RACK_ALL = 5;
 const HP: Record<"K6" | "K7" | "K8", View[]> = {
   // the strip with the title over the polaroids, then the 3 polaroids left to right (issue #17: the row sits lower
   // than the old top row, so the first stop looks lower too, the whole board in frame under the header)
   K6: [boardStop(0, 0.18, BOARD_ITEMS.strip.w / 0.87), ...P.map((p) => boardStop(p.x, p.y, p.w / 0.8))],
-  // the sign with the title, the three articles right to left, then the button on the bottom tier's left
+  // the sign with the title, the top tier's three articles left to right, the bottom tier's two, then the button on
+  // its right (issue #33: read like a page; was right to left, the button on the left)
   K7: [
     rackStop(0, L.sign.cy - F - 0.12, L.sign.w / 0.85),
-    ...[2, 1, 0].map((i) => rackStop(B[i].x, B[i].y, B[i].w / 0.86)),
-    rackStop(RACK_ITEMS.button.x, RACK_ITEMS.button.y + 0.05, B[3].w / 0.86),
+    ...RACK_ARTICLES.map((i) => rackStop(B[i].x, B[i].y, B[i].w / 0.86)),
+    rackStop(RACK_ITEMS.button.x, RACK_ITEMS.button.y + 0.05, B[RACK_ALL].w / 0.86),
   ],
   // two columns of notes at a time with the band over them (title, then help line and button)
   K8: [
@@ -94,7 +98,7 @@ const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.fro
 const holdOf = (k: "K6" | "K7" | "K8") => segmentStart(SEG, idx(k, "hold"));
 /**
  * The copy's anchors, each a rectangle on its prop's face, a few mm in front of it: the strip and the 3 polaroids
- * (K6), the sign, the top tier's 3 open books and the bottom tier's left book ("Lihat semua artikel", K7), the 8
+ * (K6), the sign, the 5 open books with an article and the bottom tier's right book ("Lihat semua artikel", K7), the 8
  * sticky notes and the two bands over them on the meeting room's glass (K8, facing +x, so built here).
  */
 export function lobbyAnchors(): { anchor: Anchor; hold: "K6" | "K7" | "K8"; stop: number }[] {
@@ -123,18 +127,20 @@ export function lobbyAnchors(): { anchor: Anchor; hold: "K6" | "K7" | "K8"; stop
   });
   // the books' pages stand open in a shallow V from the spine (sets/lobby): the plane through their outer edges
   const pz = BACK + 0.14 + 0.04;
-  B.slice(0, 3).forEach((b, i) =>
+  // 9:16: the articles left to right after the sign, then the button (HP stops above)
+  RACK_ARTICLES.forEach((bi, i) => {
+    const b = B[bi];
     out.push({
       anchor: rectAnchor(`article-${i}`, RX + b.x, F + b.y, pz, b.w / 2 - 0.006, b.h / 2 - 0.004),
       hold: "K7",
-      stop: [2, 1, 0].indexOf(i) + 1,
-    }),
-  );
-  const all = B[3];
+      stop: i + 1,
+    });
+  });
+  const all = B[RACK_ALL];
   out.push({
     anchor: rectAnchor("rack-all", RX + all.x, F + all.y, pz, all.w / 2 - 0.006, all.h / 2 - 0.004),
     hold: "K7",
-    stop: 4,
+    stop: RACK_ARTICLES.length + 1,
   });
   // the glass faces the lobby (+x); seen from there, right is toward the back wall (−z)
   const gx = lx(L.room.glassX) + 0.013;
@@ -273,8 +279,11 @@ export function lobbyCamera(x: number, t: number, aspect: number, k56: CamPose):
   } else if (seg.from === "K7") {
     const a = last("K7", t),
       b = first("K8", t);
-    // on left, then round to the glass (the plant passes by the lens)
-    view = along([a.pos, new THREE.Vector3(lx(5.4), lerp(a.pos.y, b.pos.y, 0.4), BACK + 2.4), b.pos], a, b, u);
+    // back off to the right, then round to the glass on the left (the plant passes by the lens). Issue #33: 9:16 now
+    // leaves from the bottom tier's right book, right of the waypoint; the waypoint keeps to its right so the camera
+    // doesn't swing left first (16:9 leaves from the rack's middle: the waypoint as before)
+    const wx = Math.max(lx(5.4), a.pos.x);
+    view = along([a.pos, new THREE.Vector3(wx, lerp(a.pos.y, b.pos.y, 0.4), BACK + 2.4), b.pos], a, b, u);
   } else {
     const a = last("K8", t),
       b = mix(PC.K91, HP91, t);

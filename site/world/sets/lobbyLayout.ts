@@ -92,11 +92,17 @@ export const BOARD_ITEMS = {
   ].map(([x, y]) => ({ x, y, w: 0.17, h: 0.2 })) as Rect[],
 };
 
-/** Rack, from its centre at floor level (x right as seen from the lobby): 3 open books per tier (top: the articles). */
+/**
+ * Rack, from its centre at floor level (x right as seen from the lobby): 3 open books per tier, left to right. Issue
+ * #33: articles on the top tier's three and the bottom tier's left two (books 0–4).
+ */
 export const RACK_ITEMS = {
   books: [0.45, 0.07].flatMap((y0) => [-0.48, 0, 0.48].map((x) => ({ x, y: y0 + 0.135, w: 0.43, h: 0.26 }))) as Rect[],
-  /** "Lihat semua artikel": a card standing in the bottom tier's left place (the truck goes on left). */
-  button: { x: -0.48, y: 0.2, w: 0.43, h: 0.12 } as Rect,
+  /**
+   * "Lihat semua artikel": a card standing in the bottom tier's right place (book 5; issue #33, was the left). From
+   * there the camera backs off to the right before it turns left to the meeting room's glass (K8).
+   */
+  button: { x: 0.48, y: 0.2, w: 0.43, h: 0.12 } as Rect,
 };
 
 /**
