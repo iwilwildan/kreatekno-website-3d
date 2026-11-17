@@ -15,10 +15,10 @@ import { B5, beat5Camera } from "./outside";
 import { B9_START, beat9Camera } from "./beat9";
 import { B12_START, beat12Camera } from "./beat12";
 import { B15_START, beat15Camera } from "./beat15";
-import { pairX, scrollClock } from "./outsideCast";
+import { DEWI_K111, pairX, scrollClock } from "./outsideCast";
 import { LAYOUT_STEPS } from "../../sets/companyFront";
 import { BILLBOARD_SCALE, billboardFace } from "../../sets/street";
-import { SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
+import { K111_DESKS, SEG, TAKE_SCREENS, WHIP_AT, type KeyName } from "./timing";
 
 export { SEG, TAKE_SCREENS, KEYS, keyP, WHIP_AT } from "./timing";
 export { followDoorClock, heruAt, heruClock, heruGate, poseHeru, type HeruState } from "./heru";
@@ -77,15 +77,19 @@ const ARRIVE = 0.25;
 const DRIFT = { yaw: 0.05, settle: 0.14 };
 
 const paths = new Map<string, { curve: THREE.CatmullRomCurve3; atB: number }>();
-/** Dolly path K2 → over Heru's head → K2.1 → on, measured by length; `atB` is K2.1's share of it. */
-function panPath(t: number, heru: { x: number; z: number }, narrow: number) {
+/**
+ * Dolly path K2 → over Heru's head → K2.1 → on, measured by length; `atB` is K2.1's share of it. `heru` is where
+ * the one it passes over stands, and how high over the floor (default Heru's).
+ */
+function panPath(t: number, heru: { x: number; z: number; over?: number }, narrow: number) {
   const A = kf("K2", t),
     B = kf("K2.1", t, narrow),
-    id = `${t.toFixed(3)} ${narrow.toFixed(3)} ${heru.x.toFixed(3)} ${heru.z.toFixed(3)}`;
+    top = heru.over ?? 2.02,
+    id = `${t.toFixed(3)} ${narrow.toFixed(3)} ${heru.x.toFixed(3)} ${heru.z.toFixed(3)} ${top}`;
   let c = paths.get(id);
   if (!c) {
     // over Heru's head (hair top 1.8 m), then down to the seated staff
-    const over = new THREE.Vector3(lerp(heru.x, B.pos.x, 0.25), 2.02, heru.z - 0.15);
+    const over = new THREE.Vector3(lerp(heru.x, B.pos.x, 0.25), top, heru.z - 0.15);
     const dir = B.pos.clone().sub(over).setY(0).normalize();
     const curve = new THREE.CatmullRomCurve3(
       [A.pos, over, B.pos, B.pos.clone().addScaledVector(dir, 0.6)],
@@ -102,7 +106,7 @@ function panPath(t: number, heru: { x: number; z: number }, narrow: number) {
 }
 
 /** Camera after K2.1, before the whip: still drifting forward and left, slowing down (u over the K2.1 move). */
-function drift(t: number, heru: { x: number; z: number }, u: number, narrow: number): CamPose {
+function drift(t: number, heru: { x: number; z: number; over?: number }, u: number, narrow: number): CamPose {
   const { B, curve, atB } = panPath(t, heru, narrow);
   // the same speed per screen as on arrival, easing off over the move
   const k = (1 - (1 - u) ** 2) / 2,
@@ -123,6 +127,44 @@ function settle(t: number, u: number, narrow: number): CamPose {
 
 const SEG_K22 = SEG.find((s) => s.from === "K2.2" && s.type === "move")!.screens;
 
+/** The dolly K2 → K2.1 at u (0..1 over the move), over the head of the one standing at `heru`. */
+function dollyIn(t: number, heru: { x: number; z: number; over?: number }, u: number, narrow: number): CamPose {
+  const { A, B, curve, atB } = panPath(t, heru, narrow),
+    e = easeTo(u, ARRIVE),
+    // issue #15: coming down past Heru's head the camera looks a little lower, so Sinta's and Bayu's panels do
+    // not dip under the bottom edge on the way (most at e = 2/3, none at either end)
+    dip = DIP * (1 - t) * (27 / 4) * e ** 2 * (1 - e);
+  return {
+    pos: curve.getPointAt(atB * e),
+    quat: A.quat.clone().slerp(B.quat, e).multiply(pitchQ(-dip)),
+    fov: lerp(A.fov, B.fov, e),
+  };
+}
+/** K2.1 → K2.2 at u (0..1 over the move): the drift on from K2.1 blended into the settle on K2.2 by the whip. */
+function whipPan(
+  t: number,
+  heru: { x: number; z: number; over?: number },
+  u: number,
+  narrow: number,
+  whip: number,
+): CamPose {
+  const a = drift(t, heru, u, narrow),
+    b = settle(t, u, narrow);
+  return { pos: a.pos.lerp(b.pos, whip), quat: a.quat.slerp(b.quat, whip), fov: lerp(a.fov, b.fov, whip) };
+}
+/**
+ * User 17 Nov, 9:16: the reading of the desks after the K11.1 stop, beat 2's own (K2 → K2.1 → K2.2 and its hold)
+ * with Bu Dewi where Heru stood; s is screens into it, `whip` its own whip pan (deskWhipTarget).
+ */
+function desksAgain(s: number, t: number, narrow: number, whip: number): CamPose & { key: KeyName } {
+  const D = K111_DESKS,
+    // (her hijab's top at 1.88 m: as high over her as the way on to the classroom passed before, beat12)
+    dewi = { x: DEWI_K111.x, z: DEWI_K111.z, over: 2.12 };
+  if (s < D.dolly) return { ...dollyIn(t, dewi, s / D.dolly, narrow), key: "K11.1" };
+  if (s < D.dolly + D.whip) return { ...whipPan(t, dewi, (s - D.dolly) / D.whip, narrow, whip), key: "K11.1" };
+  return { ...kf("K2.2", t, narrow), key: "K11.1" };
+}
+
 /**
  * Camera for p; `heru` bends the K1 → K2 path so the camera follows him through the door and lifts the dolly
  * over his head; `whip` is the eased whip pan (0 = still at K2.1, 1 = at K2.2); `aspect` (width / height of the
@@ -142,8 +184,16 @@ export function cameraAt(
     narrow = narrowness(aspect);
   // beats 14–16 (tahap 10, greybox): out through COMPANY's door at nightfall, up to the billboard, back to the street
   if (x > B15_START) return { ...beat15Camera(x, t, aspect), key: seg.type === "hold" || u < 0.5 ? seg.from : seg.to! };
-  // beats 12–13 (tahap 9, greybox): into COMPANY, through the back door to the classroom, back out at dusk
-  if (x > B12_START) return { ...beat12Camera(x, t, aspect), key: seg.type === "hold" || u < 0.5 ? seg.from : seg.to! };
+  // beats 12–13 (tahap 9, greybox): into COMPANY, through the back door to the classroom, back out at dusk; 9:16
+  // reads the desks again after the K11.1 stop (user 17 Nov), and goes on from K2.2's view
+  const portrait = t >= 0.5;
+  if (portrait && x >= K111_DESKS.s && x <= K111_DESKS.s + K111_DESKS.len)
+    return desksAgain(x - K111_DESKS.s, t, narrow, whip);
+  if (x > B12_START)
+    return {
+      ...beat12Camera(x, t, aspect, portrait ? kf("K2.2", t, narrow) : undefined),
+      key: seg.type === "hold" || u < 0.5 ? seg.from : seg.to!,
+    };
   // beats 9b–11 (tahap 8): out of the lobby to the plaque, up into the sky and down at COMPANY
   if (x > B9_START) return { ...beat9Camera(x, t, aspect), key: seg.type === "hold" || u < 0.5 ? seg.from : seg.to! };
   // beats 6–9a (tahap 7): in through Kreatekno's door from where the truck stopped at K5a.6
@@ -168,29 +218,8 @@ export function cameraAt(
   }
   if (seg.type === "hold" && seg.from === "K0") return { ...k0(t), key: seg.from };
   if (seg.type === "hold") return { ...kf(seg.from as SolvedKey, t, narrow), key: seg.from };
-  if (seg.from === "K2") {
-    const { A, B, curve, atB } = panPath(t, heru, narrow),
-      e = easeTo(u, ARRIVE),
-      // issue #15: coming down past Heru's head the camera looks a little lower, so Sinta's and Bayu's panels do
-      // not dip under the bottom edge on the way (most at e = 2/3, none at either end)
-      dip = DIP * (1 - t) * (27 / 4) * e ** 2 * (1 - e);
-    return {
-      pos: curve.getPointAt(atB * e),
-      quat: A.quat.clone().slerp(B.quat, e).multiply(pitchQ(-dip)),
-      fov: lerp(A.fov, B.fov, e),
-      key: u < 0.5 ? "K2" : "K2.1",
-    };
-  }
-  if (seg.from === "K2.1") {
-    const a = drift(t, heru, u, narrow),
-      b = settle(t, u, narrow);
-    return {
-      pos: a.pos.lerp(b.pos, whip),
-      quat: a.quat.slerp(b.quat, whip),
-      fov: lerp(a.fov, b.fov, whip),
-      key: whip < 0.5 ? "K2.1" : "K2.2",
-    };
-  }
+  if (seg.from === "K2") return { ...dollyIn(t, heru, u, narrow), key: u < 0.5 ? "K2" : "K2.1" };
+  if (seg.from === "K2.1") return { ...whipPan(t, heru, u, narrow, whip), key: whip < 0.5 ? "K2.1" : "K2.2" };
   const A = seg.from === "K0" ? k0(t) : kf(seg.from as SolvedKey, t),
     B = kf(seg.to as SolvedKey, t),
     e = ease(u);
@@ -213,6 +242,18 @@ export function whipTarget(p: number) {
   if (seg.from === "K2.1") return u >= WHIP_AT ? 1 : 0;
   return SEG.indexOf(seg) > SEG.findIndex((s) => s.from === "K2.1") ? 1 : 0;
 }
+
+/**
+ * The whip pan of the reading of the desks after the K11.1 stop (9:16, user 17 Nov): 0 until the scroll is past its
+ * point (as far into its drift as beat 2's), 1 after. The world runs it on time as it does beat 2's.
+ */
+export function deskWhipTarget(p: number) {
+  const D = K111_DESKS;
+  return p * TAKE_SCREENS >= D.s + D.dolly + WHIP_AT * D.whip ? 1 : 0;
+}
+/** True while the camera may be on the reading of the desks after the K11.1 stop (its whip is the one shown). */
+export const inDesksAgain = (p: number) =>
+  p * TAKE_SCREENS >= K111_DESKS.s && p * TAKE_SCREENS <= K111_DESKS.s + K111_DESKS.len;
 
 /** Progress of the crane down (K0 → K1), 0..1, for the pigeons flying out of the frame. */
 export function craneAt(p: number) {

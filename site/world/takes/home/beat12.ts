@@ -17,7 +17,7 @@ import { counterFrame, LAYOUT_STEPS } from "../../sets/companyFront";
 import { DATA } from "./data";
 import { fitFov } from "./outside";
 import { k11View, mix, rig, track, v, type View } from "./beat9";
-import { SEG } from "./timing";
+import { K111_DESKS, SEG } from "./timing";
 
 const D2R = THREE.MathUtils.degToRad;
 const idx = (from: string, type: "move" | "hold") => SEG.findIndex((s) => s.from === from && s.type === type);
@@ -27,15 +27,18 @@ const seg = (from: string, type: "move" | "hold") => {
 };
 const k111 = seg("K11.1", "hold"),
   k12 = seg("K12", "hold"),
-  in0 = seg("K11", "move").s;
+  in0 = seg("K11", "move").s,
+  /** 9:16's second reading of the desks after the K11.1 stop (user 17 Nov; 16:9 passes it without scroll). */
+  desks = { s: K111_DESKS.s, len: K111_DESKS.len };
 /**
  * The segments of beats 12–13 (screens on the take's own timeline). `into` is the whole way in, K11 → K11.1 → K12
  * with the stop on K11.1 (issue #23), so the shares of it below (and in the world) are those of the single move it
- * replaced.
+ * replaced; the reading of the desks after the stop is not counted in it (intoX, intoU step over it).
  */
 export const B12 = {
   k11: seg("K11", "hold"),
-  into: { s: in0, len: k12.s - in0 },
+  into: { s: in0, len: k12.s - in0 - desks.len },
+  desks,
   k111,
   k12,
   out: seg("K12", "move"),
@@ -52,6 +55,10 @@ export const INTO = {
   backDoor: 0.92,
   hold: [(k111.s - in0) / B12.into.len, (k111.s + k111.len - in0) / B12.into.len] as const,
 };
+/** Screens at share u of the way in (past the K11.1 stop: after the reading of the desks). */
+export const intoX = (u: number) => B12.into.s + u * B12.into.len + (u > INTO.hold[1] ? desks.len : 0);
+/** Share of the way in at screens x (the end of the K11.1 stop all through the reading of the desks). */
+export const intoU = (x: number) => (x - B12.into.s - Math.min(desks.len, Math.max(0, x - desks.s))) / B12.into.len;
 
 const yawTo = (a: THREE.Vector3, b: THREE.Vector3) => Math.atan2(-(b.x - a.x), -(b.z - a.z));
 const pitchTo = (a: THREE.Vector3, b: THREE.Vector3) => Math.atan2(b.y - a.y, Math.hypot(b.x - a.x, b.z - a.z));
@@ -65,17 +72,24 @@ const look = (pos: THREE.Vector3, at: THREE.Vector3, fov: number): View => ({
 /** The solved K2 camera for format blend t (as the K2 hold shows it: takes/home/index kf). */
 const k2Cam = (t: number) => blendCam(DATA.cams.pc.K2, DATA.cams.hp.K2, t);
 /**
+ * A camera of beat 2 (its solved fov used as it is on every aspect) as a View whose fov comes out as its own after
+ * fitFov on this screen, and its roll (radians).
+ */
+function poseView(c: CamPose, t: number, aspect: number): View & { roll: number } {
+  const e = new THREE.Euler().setFromQuaternion(c.quat, "YXZ"),
+    // (fitFov's inverse: it widens the fov on screens narrower than the format's own aspect)
+    akey = Math.exp(THREE.MathUtils.lerp(Math.log(16 / 9), Math.log(9 / 16), t)),
+    fov = aspect >= akey ? c.fov : THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(D2R(c.fov) / 2) * (aspect / akey)));
+  return { pos: c.pos, yaw: e.y, pitch: e.x, fov, roll: e.z };
+}
+/**
  * Issue #23: K2's own view of the four desks (K11.1 on the way in, K13 on the way out), as a View whose fov comes out
  * as K2's after fitFov on this screen (the K2 hold uses the solved fov as it is, on every aspect). Its slight roll
  * (≤ 0.6°) is put back at the stops (k2Roll).
  */
 export function k2View(t: number, aspect: number): View {
-  const c = k2Cam(t),
-    e = new THREE.Euler().setFromQuaternion(c.quat, "YXZ"),
-    // (fitFov's inverse: it widens the fov on screens narrower than the format's own aspect)
-    akey = Math.exp(THREE.MathUtils.lerp(Math.log(16 / 9), Math.log(9 / 16), t)),
-    fov = aspect >= akey ? c.fov : THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(D2R(c.fov) / 2) * (aspect / akey)));
-  return { pos: c.pos, yaw: e.y, pitch: e.x, fov };
+  const { pos, yaw, pitch, fov } = poseView(k2Cam(t), t, aspect);
+  return { pos, yaw, pitch, fov };
 }
 /**
  * K2's roll as the camera comes to a stop on its view (over the last 0.3 screen before K11.1 and K13) and leaves it
@@ -83,7 +97,8 @@ export function k2View(t: number, aspect: number): View {
  */
 export function k2Roll(x: number, t: number) {
   const roll = new THREE.Euler().setFromQuaternion(k2Cam(t).quat, "YXZ").z,
-    e = B12.k111.s + B12.k111.len,
+    // (16:9 stays on K11.1 through the reading of the desks, which it passes without scroll)
+    e = desks.s + desks.len,
     out = B12.k13.s + B12.k13.len;
   const w = Math.max(
     smoothstep(B12.k111.s - 0.3, B12.k111.s, x) * (1 - smoothstep(e, e + 0.3, x)),
@@ -145,25 +160,39 @@ const doorTrack = (t: number, aspect: number) =>
       h0,
     );
   });
-/** K11.1 → K12: from K2's view across the room and through the back door into the classroom. */
-const intoTrack = (step: number, t: number, aspect: number) =>
-  cached(`into ${step} ${t.toFixed(3)} ${aspect.toFixed(3)}`, () => {
+/**
+ * K11.1 → K12: from K2's view across the room and through the back door into the classroom. With `k22` (9:16, user
+ * 17 Nov) from K2.2's view of Nadia's and Fajar's desks instead, where the reading of the desks ends: already past
+ * Bu Dewi, it rises from there to the gap between the middle desks.
+ */
+const intoTrack = (step: number, t: number, aspect: number, k22?: View) =>
+  cached(`into ${step} ${t.toFixed(3)} ${aspect.toFixed(3)}${k22 ? " k22" : ""}`, () => {
     const F = counterFrame(step),
       C = classFrame(step),
       end = k12View(step, t),
       k2 = k2View(t, aspect),
       [, h1] = INTO.hold,
-      T = 2 * Math.PI;
+      T = 2 * Math.PI,
+      gap = v(F.gapX, 1.85, F.gapZ, 0.05, -0.05, 48);
     // (yaws kept continuous: from facing the facade (0) round to the left (+) behind the counter, back to 2π at the
     // back door)
+    const from = k22
+      ? [
+          { at: h1, view: k22 },
+          // (up from the seated staff's eye height, turning from Nadia's and Fajar's desks to the gap)
+          { at: 0.64, view: mix(k22, gap, 0.55) },
+        ]
+      : [
+          { at: h1, view: k2 },
+          // (issue #23: over Bu Dewi's head, where Heru stood at K2: her hijab's top at 1.88 m)
+          { at: 0.58, view: v(F.gapX * 0.3, 2.12, -2.35, 0.03, -0.12, (k2.fov + 48) / 2) },
+          { at: 0.66, view: v(F.gapX * 0.5, 1.9, -3.0, 0.02, -0.07, 48) },
+        ];
     return inTrack(
       [
-        { at: h1, view: k2 },
-        // (issue #23: over Bu Dewi's head, where Heru stood at K2: her hijab's top at 1.88 m)
-        { at: 0.58, view: v(F.gapX * 0.3, 2.12, -2.35, 0.03, -0.12, (k2.fov + 48) / 2) },
-        { at: 0.66, view: v(F.gapX * 0.5, 1.9, -3.0, 0.02, -0.07, 48) },
+        ...from,
         // over Bu Dewi's head, through the gap between the middle desks, round the counter's right end
-        { at: 0.75, view: v(F.gapX, 1.85, F.gapZ, 0.05, -0.05, 48) },
+        { at: 0.75, view: gap },
         { at: 0.83, view: v(F.x1 + 0.55, 1.8, F.zMid - 0.4, 0.45, -0.04, 46) },
         { at: 0.88, view: v(F.x1 - 0.1, 1.75, F.zMid - 0.55, 0.8, -0.04, 46) },
         // turned to the back door, and through it (the leaf open into the classroom)
@@ -193,19 +222,30 @@ const outTrack = (step: number, t: number, aspect: number) =>
     ]);
   });
 
-/** Camera of beats 12–13 for screens x (≥ B12_START), format blend t, screen aspect. */
-export function beat12Camera(x: number, t: number, aspect: number): CamPose {
+/**
+ * Camera of beats 12–13 for screens x (≥ B12_START), format blend t, screen aspect. `k22` (9:16) is K2.2's camera,
+ * where the reading of the desks after the K11.1 stop ends (that reading is takes/home/index's): the way on to the
+ * classroom starts there.
+ */
+export function beat12Camera(x: number, t: number, aspect: number, k22?: CamPose): CamPose {
   const step = Math.round(t * LAYOUT_STEPS),
-    u = (x - B12.into.s) / B12.into.len,
-    [h0, h1] = INTO.hold;
+    u = intoU(x),
+    [h0, h1] = INTO.hold,
+    from = k22 && poseView(k22, t, aspect),
+    e = desks.s + desks.len;
   let view: View;
   if (u < h0) view = doorTrack(t, aspect)(u);
   else if (u <= h1) view = k2View(t, aspect);
-  else if (x < B12.k12.s) view = intoTrack(step, t, aspect)(u);
+  else if (x < B12.k12.s) view = intoTrack(step, t, aspect, from)(u);
   else if (x < B12.out.s) view = k12View(step, t);
   else if (x < B12.k13.s) view = outTrack(step, t, aspect)((x - B12.out.s) / B12.out.len);
   else view = k13View(t, aspect);
-  return { pos: view.pos, quat: rig(view.yaw, view.pitch).multiply(k2Roll(x, t)), fov: fitFov(view.fov, t, aspect) };
+  // (9:16 leaves K2.2's view with its roll, not K2's)
+  const roll =
+    from && x > e && x < e + 0.3
+      ? new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), from.roll * (1 - smoothstep(e, e + 0.3, x)))
+      : k2Roll(x, t);
+  return { pos: view.pos, quat: rig(view.yaw, view.pitch).multiply(roll), fov: fitFov(view.fov, t, aspect) };
 }
 
 // ---------- the copy on the TV (langkah 3): "Praktik naik kelas" ----------

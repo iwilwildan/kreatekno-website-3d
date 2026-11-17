@@ -2,7 +2,7 @@
 // the jump mark lands. Plain numbers from the take's timeline (no three.js), like plaqueStills.ts: screens on the
 // take's own (9:16) timeline.
 import { segmentStart } from "@/world/core/segments";
-import { SEG, type KeyName } from "@/world/takes/home/timing";
+import { K111_DESKS, SEG, type KeyName } from "@/world/takes/home/timing";
 
 const idx = (from: KeyName, type: "move" | "hold") => SEG.findIndex((s) => s.from === from && s.type === type);
 const start = (from: KeyName, type: "move" | "hold") => segmentStart(SEG, idx(from, type));
@@ -19,14 +19,15 @@ export const CLASS_KEYS = ["K11.1", "K12", "K13"] as const;
  * it comes through the back door, K13 as it comes back over the counter into the room (in by the K13 hold).
  */
 export function classStillFades(): Record<string, [number, number]> {
-  // (the way in, K11 → K11.1 → K12, measured as the single move it replaced)
+  // (the way in, K11 → K11.1 → K12, measured as the single move it replaced; 9:16's reading of the desks after the
+  // K11.1 stop is not counted in it, beat12 intoX)
   const i0 = start("K11", "move"),
-    il = start("K12", "hold") - i0,
+    il = start("K12", "hold") - i0 - K111_DESKS.len,
     o0 = start("K12", "move"),
     ol = len("K12", "move");
   return {
     "K11.1": [i0 + 0.6 * len("K11", "move"), start("K11.1", "hold")],
-    K12: [i0 + 0.93 * il, start("K12", "hold")],
+    K12: [i0 + 0.93 * il + K111_DESKS.len, start("K12", "hold")],
     K13: [o0 + 0.5 * ol, o0 + ol],
   };
 }

@@ -32,6 +32,8 @@ import {
   roomInView,
   TAKE_SCREENS,
   whipTarget,
+  deskWhipTarget,
+  inDesksAgain,
   type HeruState,
 } from "./takes/home";
 import { k3View, k4View, setSafeTop } from "./takes/home/counter";
@@ -55,7 +57,7 @@ import {
   plaqueCopyFade,
   plaqueStopAt,
 } from "./takes/home/beat9";
-import { B12, INTO, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
+import { B12, INTO, intoX, practiceAnchor, practiceAt, practiceCopyFade } from "./takes/home/beat12";
 import type { Classroom } from "./sets/classroom";
 import { B15, epilogueFade, nightAt } from "./takes/home/beat15";
 import { buildNight } from "./sets/night";
@@ -794,7 +796,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   // where the camera heads for: the scroll, or while it waits for Heru at the door, as far as he lets it
   const gate = { goal: target, catching: false, v: 0 };
   // the whip pan: linear time 0..1 toward its target (0 before the whip point, 1 after), shown eased
-  let whipT = whipTarget(target);
+  let whipT = whipTarget(target),
+    // and 9:16's second one, reading the desks again after the K11.1 stop (user 17 Nov)
+    deskWhipT = deskWhipTarget(target);
   // Heru's clock (seconds at his own pace), following the scroll no faster than he walks
   const heruClk = { x: heruClock(target, fmtT), v: 0 };
   // Counter choreography follows the same smoothed scroll as the camera (issue #4).
@@ -1023,13 +1027,20 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
             (typeof views)["page"],
           ],
       ),
-      // the desks' (issue #30): Sinta's and Bayu's at K2.1, Nadia's and Fajar's at K2.2, all four after at K13
+      // the desks' (issue #30): Sinta's and Bayu's at K2.1, Nadia's and Fajar's at K2.2, all four after at K13 (9:16:
+      // close up after the K11.1 stop, the same way, user 17 Nov)
       ...deskCopy().map(
         (d) =>
-          [d.anchor, cameraAt(deskReadAt(d) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, deskReadWhip(d), width / height)] as [
-            Anchor,
-            (typeof views)["page"],
-          ],
+          [
+            d.anchor,
+            cameraAt(
+              deskReadAt(d, fmtT >= 0.5) / TAKE_SCREENS,
+              fmtT,
+              { x: 0, z: 0 },
+              deskReadWhip(d, fmtT >= 0.5),
+              width / height,
+            ),
+          ] as [Anchor, (typeof views)["page"]],
       ),
       // the TV's: where the camera rests in the classroom (K12)
       [practiceCopy(), cameraAt(practiceAt() / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
@@ -1152,6 +1163,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const wt = whipTarget(shown);
     if (whipT !== wt) {
       whipT = wt > whipT ? Math.min(wt, whipT + dt / WHIP_S) : Math.max(wt, whipT - dt / WHIP_S);
+      needsRender = true;
+    }
+    const dwt = deskWhipTarget(shown);
+    if (deskWhipT !== dwt) {
+      deskWhipT = dwt > deskWhipT ? Math.min(dwt, deskWhipT + dt / WHIP_S) : Math.max(dwt, deskWhipT - dt / WHIP_S);
       needsRender = true;
     }
     // his clock follows the scroll itself (issue #6), the camera follows him
@@ -1349,7 +1365,14 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
 
     // the camera follows where the scroll puts Heru (his own clock may lag a little behind it)
-    const c = cameraAt(shown, fmtT, heruAt(shown, fmtT), whip, width / height, outClk.x);
+    const c = cameraAt(
+      shown,
+      fmtT,
+      heruAt(shown, fmtT),
+      inDesksAgain(shown) ? ease(deskWhipT) : whip,
+      width / height,
+      outClk.x,
+    );
     // the close-up light of the top views comes in as the camera tilts down past 35° (full from 75°), and the
     // pendant lamps' warm light goes with it
     const close = THREE.MathUtils.smoothstep(-new THREE.Euler().setFromQuaternion(c.quat, "YXZ").x, 0.6, 1.3);
@@ -1585,8 +1608,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       shadowDue = true;
     }
     // (drawn until the wooden door has shut behind the camera on its way out, below)
-    const classShown =
-      atCompany && xs > B12.into.s + (INTO.backDoor - 0.12) * B12.into.len && xs < B12.out.s + 0.6 * B12.out.len;
+    const classShown = atCompany && xs > intoX(INTO.backDoor - 0.12) && xs < B12.out.s + 0.6 * B12.out.len;
     if (classroom) classroom.group.visible = classroom.group.matrixWorldAutoUpdate = classShown;
     if (holos) holos.group.visible = atCompany && !hide;
     // the wooden back door swings open into the room as the camera nears it, and shuts again once the camera has
@@ -1594,7 +1616,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     if (room) {
       const open = atCompany
         ? -1.3 *
-          smoothstep(B12.into.s + 0.72 * B12.into.len, B12.into.s + 0.84 * B12.into.len, xs) *
+          smoothstep(intoX(0.72), intoX(0.84), xs) *
           (1 - smoothstep(B12.out.s + 0.42 * B12.out.len, B12.out.s + 0.58 * B12.out.len, xs))
         : 0;
       if (room.backDoor.rotation.y !== open) {
@@ -1628,7 +1650,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       }
     }
     // past the back door the three walkers are left behind in the front room and at its door (out of view)
-    const inClass = xs > B12.into.s + INTO.backDoor * B12.into.len;
+    const inClass = xs > intoX(INTO.backDoor);
     // (a member out of sight is not updated either: its skeleton's matrices cost every frame)
     for (const m of [heru, ...crew])
       if (m)
@@ -1653,10 +1675,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     const turn = 2 * Math.acos(Math.min(1, Math.abs(lastQuat.dot(c.quat))));
     lastQuat.copy(c.quat);
     const hfov = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(c.fov) / 2) * camera.aspect),
-      smear = whipT > 0 && whipT < 1 && !saver && rdt > 0 ? Math.min(0.08, ((turn / rdt) * (1 / 60)) / hfov) : 0;
+      whipping = (whipT > 0 && whipT < 1) || (deskWhipT > 0 && deskWhipT < 1),
+      smear = whipping && !saver && rdt > 0 ? Math.min(0.08, ((turn / rdt) * (1 / 60)) / hfov) : 0;
     // at rest: the camera has caught up with the scroll (or is held on a keyframe: shots ignore the scroll)
     // (or after 1.5 s anyway, so a visitor scrolling all through the load does not hold the world back)
-    const atRest = (opts.key || Math.abs(view.x - target) < 1e-3) && (whipT <= 0 || whipT >= 1);
+    const atRest = (opts.key || Math.abs(view.x - target) < 1e-3) && !whipping;
     if (drawWarm && (atRest || ts - warmAsked > 1500)) {
       warmDraw();
       drawWarm();
@@ -1749,7 +1772,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     for (const d of deskCopy()) {
       const q = quads[d.anchor.name],
         size = copySizes[d.anchor.name];
-      fade[d.anchor.name] = room?.group.visible && q ? deskCopyFade(d, xs, whip, fmtT >= 0.5) : 0;
+      fade[d.anchor.name] = room?.group.visible && q ? deskCopyFade(d, xs, whip, fmtT >= 0.5, ease(deskWhipT)) : 0;
       if (q && size && heruAhead && d.phase === "before" && fade[d.anchor.name] > 0.01)
         clips[d.anchor.name] = cutAround(q, d.anchor, size, heruAhead);
     }
@@ -1823,6 +1846,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       gate.catching = false;
       gate.v = 0;
       whipT = whipTarget(target);
+      deskWhipT = deskWhipTarget(target);
       heruClk.x = heruClock(target, fmtT);
       heruClk.v = 0;
       heru3Time = heru3Clock(target, room?.step ?? layoutStep(fmtT), fmtT);
