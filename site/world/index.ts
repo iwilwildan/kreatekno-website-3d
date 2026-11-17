@@ -1015,10 +1015,10 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
             (typeof views)["page"],
           ],
       ),
-      // the plaque's: each column where the camera reads it (9:16 its own stop, 16:9 the keyframe)
+      // the plaque's: where the camera reads them (one stop on both formats, user 17 Nov)
       ...plaqueCopy.map(
-        ({ anchor: a, stop }) =>
-          [a, cameraAt(plaqueStopAt(stop, fmtT) / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
+        (a) =>
+          [a, cameraAt(plaqueStopAt() / TAKE_SCREENS, fmtT, { x: 0, z: 0 }, 1, width / height)] as [
             Anchor,
             (typeof views)["page"],
           ],
@@ -1713,7 +1713,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       ...props.copyAnchors(),
       ...journey.map((j) => j.anchor),
       ...lobbyCopy.map((l) => l.anchor),
-      ...plaqueCopy.map((l) => l.anchor),
+      ...plaqueCopy,
       practiceCopy(),
       ...deskCopy().map((d) => d.anchor),
     ]) {
@@ -1737,9 +1737,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
     }
     // the plaque's (tahap 8): at its hold, a column cut by the screen's edges on 9:16 fading as it leaves (the lobby's rule)
     const pf = plaqueCopyFade(xs);
-    for (const l of plaqueCopy) {
-      const q = quads[l.anchor.name];
-      fade[l.anchor.name] = row ? pf * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1) : 0;
+    for (const a of plaqueCopy) {
+      const q = quads[a.name];
+      fade[a.name] = row ? pf * (fmtT >= 0.5 && q ? smoothstep(0.95, 0.995, inView(q, safeTop)) : 1) : 0;
     }
     // the desks' (issue #30): before in beat 2 from the moment Heru walks in, after at K11.1 and K13; printed on the
     // desks, cut by the screen's sides with them (the user, 16 Nov), and cut around Heru where he stands in front of

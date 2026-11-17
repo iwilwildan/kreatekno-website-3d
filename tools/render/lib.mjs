@@ -71,15 +71,15 @@ export const JOURNEY = {
 };
 /**
  * The lobby (tahap 7): on 9:16 a still per stop of a hold (site/world/takes/home/timing.ts STOP, LOBBY_STOPS): K6 the
- * strip then the 3 polaroids left to right (issue #17), K7 the sign, the 5 books left to right and the button (issue #33), K8 the left then the right columns.
+ * strip then the 3 polaroids left to right (issue #17), K7 the whole rack then its 3 columns of two books left to right (user 17 Nov), K8 the left then the right columns.
  * Hold length (screens) and the stops' keys.
  */
 export const LOBBY_HP = {
   K6: { len: 1.1, keys: ["K6", "K6b", "K6c", "K6d"] },
-  K7: { len: 2.0, keys: ["K7", "K7b", "K7c", "K7d", "K7e", "K7f", "K7g"] },
+  K7: { len: 2.0, keys: ["K7", "K7b", "K7c", "K7d"] },
   K8: { len: 0.75, keys: ["K8", "K8b"] },
-  // issue #34: About copy, facts/link, then the logo area in the same plaque (timing.ts PLAQUE_STOPS)
-  K9b: { len: 0.6, keys: ["K9b", "K9b-2", "K9b-3"] },
+  // the whole plaque at once (timing.ts PLAQUE_STOPS, user 17 Nov; issue #34 had three stops)
+  K9b: { len: 0.6, keys: ["K9b"] },
 };
 /** Screens from the hold's start to the middle of the camera's rest on stop i of n (stopSpan in timing.ts). */
 export function stopMid(len, n, i) {
@@ -100,12 +100,10 @@ export const LOBBY_COPY = {
   hp: {
     K6: ["board-strip"],
     K6b: ["testi-0"], K6c: ["testi-1"], K6d: ["testi-2"],
-    K7: ["rack-sign"], K7b: ["article-0"], K7c: ["article-1"], K7d: ["article-2"], K7e: ["article-3"], K7f: ["article-4"], K7g: ["rack-all"],
+    K7: ["rack-sign"], K7b: ["article-0", "article-3"], K7c: ["article-1", "article-4"], K7d: ["article-2", "rack-all"],
     K8: ["faq-title", ...notes(0, 1, 4, 5)],
     K8b: ["faq-help", ...notes(2, 3, 6, 7)],
-    K9b: ["about-0"],
-    "K9b-2": ["about-1"],
-    "K9b-3": ["about-2"],
+    K9b: ["about-hp-0", "about-hp-1", "about-hp-2"],
     K12: ["practice"],
   },
 };

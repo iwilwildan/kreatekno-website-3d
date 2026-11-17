@@ -59,8 +59,9 @@ export const KREATEKNO = {
   /** Glass door (two leaves), right of the middle; the wooden plaque and brass lamp left of it. */
   door: { cx: KX0 + 0.52 * 12.4, w: 2.1, h: 2.5 },
   // Tahap 8 / issue #34: one taller plaque holds About, the checklist and all client logos. Its top remains below
-  // the first-floor band, while the larger 3:2 face gives the logo grid room without introducing a second board.
-  plaque: { cx: KX0 + 0.2 * 12.4, y: 1.38, w: 2.4, h: 2.05 },
+  // the first-floor band, while the larger face gives the logo grid room without introducing a second board. User
+  // 17 Nov: 0.2 m shorter at the bottom (was 2.05 m, centre 1.38), the top and the lamp over it where they were
+  plaque: { cx: KX0 + 0.2 * 12.4, y: 1.48, w: 2.4, h: 1.85 },
   band: [3.0, 3.75] as const,
 };
 /** The pale blue-grey end house with a balcony, right of Kreatekno. */

@@ -1,4 +1,5 @@
-// Issue #34: verify the K9b About plaque and its integrated client-logo area at the four review viewports.
+// Issue #34: verify the K9b About plaque and its integrated client-logo area at the four review viewports (one stop
+// on the whole plaque on every format since 17 Nov; the phone's copy in three bands across it).
 // Screenshots are written only to the OS temp directory. Usage: node render/issue34.mjs
 import assert from "node:assert/strict";
 import { tmpdir } from "node:os";
@@ -11,19 +12,19 @@ const cases = [
     name: "tablet",
     viewport: { width: 768, height: 1024 },
     fmt: "hp",
-    stops: [0, 1, 2],
+    stops: [0],
   },
   {
     name: "hp-375",
     viewport: { width: 375, height: 812 },
     fmt: "hp",
-    stops: [0, 1, 2],
+    stops: [0],
   },
   {
     name: "hp-360",
     viewport: { width: 360, height: 740 },
     fmt: "hp",
-    stops: [0, 1, 2],
+    stops: [0],
   },
 ];
 
@@ -55,7 +56,7 @@ for (const locale of ["id", "en"])
             for (let i = 0; i < 12; i++)
               await new Promise((r) => requestAnimationFrame(r));
           },
-          [0.6, stopMid(0.6, 3, stop)],
+          [0.6, stopMid(0.6, 1, stop)],
         );
       await page.waitForFunction(() =>
         [...document.querySelectorAll(".plaque-trusted img")].every(
@@ -140,13 +141,8 @@ for (const locale of ["id", "en"])
       );
       assert.equal(measured.trustedLabel, "Trusted By");
       assert.equal(measured.trustedAlign, "left");
-      const target = stop == null ? null : ["about", "facts", "trusted"][stop];
-      if (target)
-        assert.ok(
-          measured.panels[target].visible && measured.panels[target].inside,
-          `${locale} ${c.name} stop ${stop}: ${target}`,
-        );
-      if (c.fmt === "pc") {
+      // user 17 Nov: one stop on the whole plaque on every format (the phone had three)
+      {
         assert.ok(
           measured.panels.about.visible && measured.panels.about.inside,
           `${locale} ${c.name}: About`,
