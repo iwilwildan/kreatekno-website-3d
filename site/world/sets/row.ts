@@ -34,22 +34,45 @@ function pave(tiles: THREE.Texture, parent: THREE.Object3D, ao: AoTarget[], id: 
   );
 }
 
-/** The KREATEKNO name in white letters, drawn with the site's display font (falls back to a bold sans). */
-function nameTexture(kit: Kit) {
+/** The existing white name with the brand mark in its left margin, on the same sign plane (issue #37). */
+function nameTexture(kit: Kit, signal?: AbortSignal) {
   const fam = getComputedStyle(document.documentElement).getPropertyValue("--font-display").trim() || "sans-serif";
-  return kit.canvasTex(1024, 128, (g, w, h) => {
+  let markX = 0;
+  const tex = kit.canvasTex(1024, 128, (g, w, h) => {
     g.font = `800 100px ${fam}`;
     g.textAlign = "center";
     g.textBaseline = "middle";
+    markX = (w - g.measureText("KREATEKNO").width) / 2 - h - 24;
     // a darker copy below: the letters read as standing a little off the band
     g.fillStyle = "rgba(60,30,110,.55)";
     g.fillText("KREATEKNO", w / 2 + 3, h / 2 + 6);
     g.fillStyle = "#ffffff";
     g.fillText("KREATEKNO", w / 2, h / 2);
   });
+  const ready = new Promise<void>((resolve) => {
+    const logo = new Image();
+    logo.decoding = "async";
+    const finish = () => {
+      logo.onload = logo.onerror = null;
+      signal?.removeEventListener("abort", finish);
+      resolve();
+    };
+    logo.onload = () => {
+      const c = tex.image as HTMLCanvasElement;
+      c.getContext("2d")!.drawImage(logo, markX, 0, c.height, c.height);
+      tex.needsUpdate = true;
+      finish();
+    };
+    // A failed decorative image leaves the existing name readable and never blocks world readiness.
+    logo.onerror = finish;
+    signal?.addEventListener("abort", finish, { once: true });
+    if (signal?.aborted) finish();
+    else logo.src = "/brand/kreatekno-mark.png";
+  });
+  return { tex, ready };
 }
 
-export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
+export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[], signal?: AbortSignal) {
   const { mat, canvasTex } = kit;
   const group = new THREE.Group();
   group.name = "row";
@@ -210,11 +233,13 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
     kg.add(back);
     lobbyBackdrop = back;
   }
+  const sign = nameTexture(kit, signal);
   {
     const name = new THREE.Mesh(
       new THREE.PlaneGeometry(4.6, 0.575),
-      new THREE.MeshStandardMaterial({ map: nameTexture(kit), transparent: true, roughness: 0.5, depthWrite: false }),
+      new THREE.MeshStandardMaterial({ map: sign.tex, transparent: true, roughness: 0.5, depthWrite: false }),
     );
+    name.name = "kreatekno-sign";
     name.position.set(kcx + 0.15, (K.band[0] + K.band[1]) / 2, 0.31);
     kg.add(name);
   }
@@ -292,7 +317,16 @@ export function buildRow(kit: Kit, M: RowMaterials, ao: AoTarget[]) {
   }
   /** The plaque's lamp, 0 (off) … 1 (lit, golden hour and later). */
   const setLamp = (k: number) => lamp?.set(k);
-  return { group, occ, doorHinge, lobbyBackdrop: lobbyBackdrop as THREE.Object3D | null, far, road, setLamp };
+  return {
+    group,
+    occ,
+    doorHinge,
+    lobbyBackdrop: lobbyBackdrop as THREE.Object3D | null,
+    far,
+    road,
+    setLamp,
+    ready: sign.ready,
+  };
 }
 export type Row = ReturnType<typeof buildRow>;
 

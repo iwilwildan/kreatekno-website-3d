@@ -2570,3 +2570,15 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
   - frame masuk dan keluar saat rushing dicek visual (screenshot hanya di chat): tokoh tidak hilang atau menembus, Wildan menyusul lewat pintu.
   - Typecheck, ESLint dan Prettier file terkait lulus; `next build` lulus.
 - Belum: tes di HP fisik (preview LAN tidak tersedia dari sesi cloud), gate pintu COMPANY sore hari (K11 → K12) hanya ikut profil kejaran yang lebih lembut, tokohnya tidak dipercepat. Belum di-commit ke `main`, menunggu konfirmasi user.
+
+### 2026-11-17 (issue GitHub #37: simbol logo pada fasad Kreatekno)
+
+- Keputusan user: fasad saja, simbol logo ditambah di kiri tulisan KREATEKNO yang sekarang; lobi tidak termasuk lingkup perubahan.
+- `world/sets/row.ts`: aset asli `/brand/kreatekno-mark.png` digambar di margin kiri tekstur papan nama yang sudah ada. Posisi, ukuran, font dan warna tulisan tetap. Simbol memakai satu tekstur dan plane yang sama, tanpa tambahan material, draw call atau segitiga.
+- `world/index.ts`: pemuatan deret ruko menunggu logo bersama AO dan menjadwalkan render ulang setelah siap. Abort saat world dilepas membuang callback; kegagalan gambar tetap menyelesaikan readiness dengan tulisan lama yang terbaca.
+- Dicek: render K5a.6, K9.1 dan K9b PC/HP sebelum-sesudah; review halaman K5a.1–K5a.6, K6, K9.1 dan K9b pada 1280×720, 768×1024, 375×812 dan 360×740. Simbol utuh di tekstur (x 96–212, y 14–113), berjarak sekitar 31 piksel tekstur dari awal tulisan. Tidak menutupi copy atau anchor HTML. Uji gambar logo gagal dimuat: world tetap siap.
+- Anggaran K5a.6 tetap 75 draw call / 90,2 ribu segitiga (PC), 62 / 81,4 ribu (HP). K9.1 dan K9b juga tetap. AO tidak dibake ulang karena plane, material penerima bayangan dan occluder tidak berubah.
+- Proyeksi semua keyframe di build produksi: simbol terlihat pada K5a.4 PC (sebagian di tepi kanan) dan K5a.6 PC/HP. Still terkait dirender ulang; kamera serta anchor fallback tetap. K9.1 melihat fasad dari dalam dan K9b close-up plakat, sehingga papan nama di luar pandangan kamera tersebut.
+- Typecheck, ESLint seluruh situs, Prettier file terkait dan build produksi lulus. Next.js menampilkan peringatan known security vulnerability yang sudah ada; build berhasil setelah mengulang perintah sesuai petunjuk CLI. Pembaruan dependensi di luar lingkup #37.
+- User menyetujui hasil dan meminta commit serta push ke main dengan tag issue #37. Commit hanya file perbaikan, tiga still terkait dan entri log ini; perubahan lain tidak ikut.
+- Belum: tes HP fisik, komentar GitHub dan penutupan issue. Screenshot review disimpan di scratchpad untuk chat saja.
