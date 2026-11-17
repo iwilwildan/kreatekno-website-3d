@@ -273,6 +273,14 @@
       "team": {
         "category": "Staff",
         "title": "How to train your staff to work with AI"
+      },
+      "promo": {
+        "category": "Promotion",
+        "title": "Weekly promo content ideas with help from AI"
+      },
+      "money": {
+        "category": "Money",
+        "title": "Record daily sales automatically so you can see profit and loss"
       }
     },
     "faq": {

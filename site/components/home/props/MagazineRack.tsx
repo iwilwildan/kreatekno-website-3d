@@ -1,15 +1,17 @@
-import { ArrowRight, BookOpenText } from "@phosphor-icons/react/ssr";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { BookArt, RackAllArt } from "./RackArt";
 
-const ARTICLES = ["admin", "service", "team"] as const;
+const ARTICLES = ["admin", "service", "team", "promo", "money"] as const;
 
 /**
- * Beat 7 · Artikel (tahap 7): the heading on the wooden sign above the lobby's rack (K7), the three starter articles
- * on the open books of its top tier (category and title on the left page, "Baca artikel" on the right), "Lihat semua
- * artikel" on the open book at the bottom tier's left (the truck goes on left from there). The links go to /artikel
- * until the articles exist (tahap 14). Real HTML rendered on the server; the world places each block on its book
- * (anchors "rack-sign", "article-0..2", "rack-all") and shows it at the K7 hold.
+ * Beat 7 · Artikel (tahap 7): the heading on the wooden sign above the lobby's rack (K7), the five starter articles
+ * on its open books, left to right (the top tier's three, the bottom tier's left two; issue #33), category and title
+ * on the left page, its picture and "Baca artikel" on the right; "Lihat semua artikel" under the five pictures as a
+ * fan of small cards, on the open book at the bottom tier's right (pictures: RackArt).
+ * The links go to /artikel until the articles exist (tahap 14). Real HTML rendered on the server; the world places
+ * each block on its book (anchors "rack-sign", "article-0..4", "rack-all") and shows it at the K7 hold.
  */
 export async function MagazineRack() {
   const t = await getTranslations("home.articles");
@@ -46,8 +48,7 @@ export async function MagazineRack() {
                 <h3 className="book-title">{t(`${k}.title`)}</h3>
               </div>
               <div className="book-right">
-                {/* (no numbers: on 9:16 the camera reads the books right to left) */}
-                <BookOpenText aria-hidden weight="duotone" className="book-icon" />
+                <BookArt k={k} />
                 <Link href="/artikel" className="book-link">
                   <span>{t("read")}</span>
                   <span className="sr-only">: {t(`${k}.title`)}</span>
@@ -66,6 +67,7 @@ export async function MagazineRack() {
         className="prop-copy lobby-copy book rack-all"
         suppressHydrationWarning
       >
+        <RackAllArt keys={ARTICLES} />
         <Link href="/artikel" className="btn btn-line text-navy">
           <span>{t("all")}</span>
           <ArrowRight aria-hidden className="size-[18px]" />
