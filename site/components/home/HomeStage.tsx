@@ -125,6 +125,7 @@ export async function HomeStage() {
       <script dangerouslySetInnerHTML={{ __html: `(${bootLock.toString()})(${BOOT_LIMIT_MS})` }} />
       <HomeTake
         loadingLabel={tStage("loading")}
+        navLabels={{ group: tStage("nav"), prev: tStage("prev"), next: tStage("next") }}
         stills={stills}
         copy={
           <>

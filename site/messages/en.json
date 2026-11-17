@@ -86,7 +86,10 @@
       "k12": "Wildan teaches at a wheeled TV in COMPANY's classroom; Bayu, Sinta, Nadia and Fajar sit at four desks by a late-afternoon window",
       "k13": "COMPANY's front room at dusk, seen from the door: the four staff desks empty, a purple hologram turning over each, the till counter behind them",
       "k16": "The night road in front of the row of shophouses: COMPANY with its window and door lit, the other shops with their rolling doors shut, small lamps on the roofs, the lit billboard and a starry sky",
-      "loading": "Loading"
+      "loading": "Loading",
+      "nav": "Story navigation",
+      "prev": "Previous",
+      "next": "Next"
     },
     "desks": {
       "before": {

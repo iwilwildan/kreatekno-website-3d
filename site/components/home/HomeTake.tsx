@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { CaretDown, CaretUp } from "@phosphor-icons/react/ssr";
 import { clamp01, scrollAtScreens, screensAtScroll, segmentStart, smoothstep } from "@/world/core/segments";
 import { SEG, TAKE_SCREENS, TAKE_SCROLL, keyP, type KeyName } from "@/world/takes/home/timing";
 import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type StillsData } from "./placeHero";
@@ -10,6 +11,8 @@ import { PLAQUE_STILLS, plaqueMark, plaqueStillFades } from "./plaqueStills";
 import { CLASS_STILLS, classMark, classStillFades } from "./classStills";
 import { NIGHT_STILLS, epilogueStill, nightStillFades } from "./nightStills";
 import stillsData from "./stills.json";
+import { mountTakeNav } from "./takeNav";
+import { takeStops } from "./takeStops";
 
 const STILLS = stillsData as unknown as StillsData;
 type Mode = "boot" | "live" | "stills";
@@ -98,6 +101,8 @@ const MARKS: { id: string; key: KeyName; at: number; atHp?: number }[] = [
     atHp: scrollAtScreens(SEG, m.hp, true),
   })),
 ];
+/** The Next/Previous buttons' stops per format, on the take's own timeline (screens). */
+const STOPS = { pc: takeStops(false).map((s) => s.at), hp: takeStops(true).map((s) => s.at) };
 const CROSSFADE_MS = 500;
 /** Share of the loading bar before the world reports its own steps: the take started, the world's code loaded. */
 const BAR_START = 0.02,
@@ -110,6 +115,7 @@ const BAR_START = 0.02,
  */
 export function HomeTake({
   loadingLabel,
+  navLabels,
   stills,
   headline,
   body,
@@ -117,6 +123,8 @@ export function HomeTake({
 }: {
   /** "Memuat" / "Loading": the loading bar's label, followed by the share done. */
   loadingLabel: string;
+  /** The Next/Previous buttons' names for screen readers, and their group's. */
+  navLabels: { group: string; prev: string; next: string };
   stills: ReactNode;
   headline: ReactNode;
   body: ReactNode;
@@ -126,6 +134,7 @@ export function HomeTake({
   const root = useRef<HTMLElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const loader = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<Mode>("boot");
   const [live, setLive] = useState(false);
   const [hud, setHud] = useState<string | null>(null);
@@ -256,6 +265,14 @@ export function HomeTake({
       };
       placeAnchors(el, quads, STILLS.aspect, quadMatrix3d, { fade, sizes });
     };
+    // Next/Previous: the stops as scroll tops on the current format, one screen of scroll = the stage's height
+    const nav = navRef.current
+      ? mountTakeNav(
+          navRef.current,
+          () => STOPS[fmtNow()].map((x) => scrollTopAt(x / TAKE_SCREENS)),
+          () => stage.clientHeight,
+        )
+      : null;
     let lastS = 0;
     const onScroll = () => {
       const s = readS(),
@@ -265,6 +282,7 @@ export function HomeTake({
       if (world && Math.abs(s - lastS) > JUMP_SCREENS) world.jump(p);
       else world?.setTarget(p);
       lastS = s;
+      nav?.update();
       if (current === "stills") {
         for (const [k, [a, b]] of Object.entries(STILL_FADES))
           el.querySelector<HTMLElement>(`[data-still="${k}"]`)?.style.setProperty(
@@ -379,6 +397,9 @@ export function HomeTake({
                 aoExport: w.aoExport,
                 aspect,
                 anchors: () => lastQuads,
+                // the Next/Previous stops on the current format: name and scroll top
+                stops: () =>
+                  takeStops(fmtNow() === "hp").map((t) => ({ key: t.key, top: scrollTopAt(t.at / TAKE_SCREENS) })),
                 stage: () => ({ w: stage.clientWidth, h: stage.clientHeight }),
                 canvasPNG: () => w.canvas.toDataURL("image/png"),
               },
@@ -415,6 +436,7 @@ export function HomeTake({
       clearTimeout(bootTimer);
       clearInterval(hudTimer);
       io.disconnect();
+      nav?.dispose();
       removeEventListener("scroll", onScroll);
       removeEventListener("resize", onResize);
       world?.dispose();
@@ -452,6 +474,15 @@ export function HomeTake({
           {body}
         </div>
         {copy}
+        {/* Next/Previous (user 17 Nov): scroll to the next or previous stop at an unhurried pace (takeNav.ts) */}
+        <div ref={navRef} className="take-nav" role="group" aria-label={navLabels.group}>
+          <button type="button" data-nav="prev" aria-label={navLabels.prev} title={navLabels.prev}>
+            <CaretUp aria-hidden weight="bold" />
+          </button>
+          <button type="button" data-nav="next" aria-label={navLabels.next} title={navLabels.next}>
+            <CaretDown aria-hidden weight="bold" />
+          </button>
+        </div>
         {/* Shown only while the scroll is locked (html[data-booting], stage.css); its share is set by setBar. */}
         <div
           ref={loader}
