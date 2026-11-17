@@ -2553,3 +2553,20 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Penyebab: bukan hold di `SEG`, tetapi gate kamera di `site/world/index.ts` (`DOOR_GATES` dari `takes/home/lobby.ts`; `exitCameraLimit` + `PLAQUE_GATE` dari `takes/home/beat9.ts`). Kamera dibatasi sampai jam tokoh (yang dibatasi pace 1,8× di lobby, Wildan mulai terlambat) menyusul, lalu mengejar scroll dengan kecepatan tetap `CATCH_UP` = 2 layar/s (4× scroll normal 2 s/layar).
 - Terukur: masuk dari K5a.4, scroll 3,6 layar dalam 0,5 s: kamera diam di 15,10 layar (gate 1) ±3,9 s, lalu mengejar ke 17,30 dalam ±2 s (total ±7 s). Masuk dari K5a.6: tanpa diam penuh, tetapi tertinggal sampai 2,9 layar dan tiba ±2,3 s. Keluar dari K9.1, 3,4 layar dalam 0,5 s: kamera diam di 23,13 ±2,5 s (jam Wildan belum mulai), merayap ±0,25 layar/s ±4 s, lalu melompat 23,9 → 25,6 dalam ±1 s (total ±8 s).
 - Belum: desktop tidak diukur terpisah (gate yang sama, segmen K9.1 → K9b tanpa `pc`), tes HP fisik, pilihan perbaikan menunggu keputusan user.
+
+### 2026-11-17 (perbaikan: kamera tertahan lalu melompat saat scroll cepat di pintu Kreatekno, tanpa issue GitHub)
+
+- Permintaan user: opsi 3 dari investigasi di atas (tokoh dipercepat saat kamera tertahan + gate lebih lembut), tanpa issue GitHub.
+- Perubahan:
+  - `takes/home/outsideCast.ts`: `rushPace(gap, base)` menaikkan pace dari `base` ke 3,2× saat scroll 1–4 s jalan di depan tokoh; `stepOutClock` memakainya di lobby hanya kalau dipanggil dengan `rushing`. `LOBBY_PACE` diekspor.
+  - `world/index.ts`: `rushing` = kamera sedang ditahan gate dan berada di pintu Kreatekno (masuk: `LOBBY_START − 1` sampai `DOOR_OPEN.to`; keluar: `B9.out.s − 0,5` sampai `PLAQUE_GATE`). Saat rushing, Heru/Bu Dewi memakai `rushPace`, jam Wildan mengikuti scroll (bukan kamera yang ditahan) dengan `rushPace` dan pegas lebih kaku (`RUSH_FOLLOW` 9, tanpa ekor lambat), dan Wildan menyusul rombongan lebih cepat (sisa jarak berkurang 1 s/s, maksimal pace mereka + 0,4).
+  - Kejaran kamera setelah gate: dari kecepatan tetap 2 layar/s menjadi profil percepatan dan perlambatan `CATCH_ACC` 3 layar/s² (maksimal tetap `CATCH_UP` 2 layar/s), mulai dari posisi dan kecepatan kamera saat itu, dan melambat sebelum gate. Berlaku untuk semua gate.
+  - `takes/home/heru.ts`: `PACE` diekspor (nilai tetap 1,5).
+- Dicek di build produksi lokal (detik simulasi, 390×844 kecuali disebut):
+  - masuk dari K5a.4 cepat: diam di gate 3,9 s → 1,5 s, tiba ±7,4 s → ±5,0 s; 1280×720 tiba ±5,2 s;
+  - keluar dari K9.1 cepat: diam 2,5 s → 1,0 s, lompatan 23,9 → 25,6 dalam 1 s diganti luncuran berpercepatan, tiba ±8,4 s → ±5,9 s; 1280×720 tiba ±6 s;
+  - scroll normal 2 s/layar: masuk sama dengan `main` (lag maks 0,43 vs 0,37 layar, tiba bersamaan); keluar lebih baik dari `main` (lag maks 1,6 → 0,76 layar, tiba ±1 s lebih cepat);
+  - K1 → K2 cepat (gate Heru): tiba ±3,4 s, sama dengan `main`;
+  - frame masuk dan keluar saat rushing dicek visual (screenshot hanya di chat): tokoh tidak hilang atau menembus, Wildan menyusul lewat pintu.
+  - Typecheck, ESLint dan Prettier file terkait lulus; `next build` lulus.
+- Belum: tes di HP fisik (preview LAN tidak tersedia dari sesi cloud), gate pintu COMPANY sore hari (K11 → K12) hanya ikut profil kejaran yang lebih lembut, tokohnya tidak dipercepat. Belum di-commit ke `main`, menunggu konfirmasi user.

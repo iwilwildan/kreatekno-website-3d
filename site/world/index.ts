@@ -71,18 +71,20 @@ import {
   BT2,
   exitFollowZ,
   kreLeafFor,
+  LOBBY_PACE,
   LT,
   OUT_BACK_GATE,
   outsideState,
   poseOutside,
   poseWildanOut,
   rightLeaf,
+  rushPace,
   wildanReach,
   scrollClock,
   stepOutClock,
   wildanStride,
 } from "./takes/home/outsideCast";
-import { followClock } from "./takes/home/heru";
+import { followClock, PACE } from "./takes/home/heru";
 import type { Row } from "./sets/row";
 import {
   B4_SECONDS,
@@ -100,6 +102,13 @@ import {
 const OMEGA = 8;
 /** Screens per second at most the camera catches up with the scroll after waiting for Heru at the door (issue #10). */
 const CATCH_UP = 2;
+/**
+ * Screens per second² it speeds up and slows down by while it catches up (17 Nov): a fast scroll held at a gate
+ * eases into the catch-up and settles on the scroll, instead of setting off and stopping at 2 screens per second.
+ */
+const CATCH_ACC = 3;
+/** How soon Wildan's own clock follows the scroll while the camera is held for him (1/s, else 3.5): no slow tail. */
+const RUSH_FOLLOW = 9;
 /** Duration of the whip pan to K2.2 (s). */
 const WHIP_S = 0.45;
 /** Bu Dewi's nod at K4.1: where it starts (screens: the K4.1 hold), how long it takes (s), her face meanwhile. */
@@ -781,7 +790,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
   // the scroll position shown, with the camera's inertia (position and velocity of a critically damped spring)
   const view = { x: target, v: 0 };
   // where the camera heads for: the scroll, or while it waits for Heru at the door, as far as he lets it
-  const gate = { goal: target, catching: false };
+  const gate = { goal: target, catching: false, v: 0 };
   // the whip pan: linear time 0..1 toward its target (0 before the whip point, 1 after), shown eased
   let whipT = whipTarget(target);
   // Heru's clock (seconds at his own pace), following the scroll no faster than he walks
@@ -1086,10 +1095,24 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       // there until they have walked back in and the leaves have shut (they vanished in one frame before, tahap 7)
       if (gated * TAKE_SCREENS < K42_PASS && outClk.x > OUT_BACK_GATE && seenAt(outClk.x))
         gated = Math.max(gated, K42_PASS / TAKE_SCREENS);
-      if (gated !== target) gate.catching = true;
+      if (gated !== target && !gate.catching) {
+        // (from where the camera is and as fast as it goes: it slows down into the gate, not stops at it)
+        gate.catching = true;
+        gate.goal = view.x;
+        gate.v = view.v;
+      }
       if (gate.catching) {
-        const max = (CATCH_UP / TAKE_SCREENS) * dt;
-        gate.goal += Math.max(-max, Math.min(max, gated - gate.goal));
+        // speed up and slow down at CATCH_ACC, at most CATCH_UP, so as to stop on where it may go
+        const d = gated - gate.goal,
+          acc = (CATCH_ACC / TAKE_SCREENS) * dt,
+          want =
+            Math.sign(d) * Math.min(CATCH_UP / TAKE_SCREENS, Math.sqrt((2 * CATCH_ACC * Math.abs(d)) / TAKE_SCREENS));
+        gate.v += Math.max(-acc, Math.min(acc, want - gate.v));
+        const next = gate.goal + gate.v * dt;
+        if ((gated - next) * d <= 0) {
+          gate.goal = gated;
+          gate.v = 0;
+        } else gate.goal = next;
         if (Math.abs(gate.goal - target) < 1e-6) gate.catching = false;
       }
       const goal = gate.catching ? gate.goal : (gate.goal = target);
@@ -1142,6 +1165,9 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       needsRender = true;
     }
     const outWas = outClk.x;
+    // 17 Nov: held at Kreatekno's door (in or out) by a fast scroll, they walk up to rushPace to let the camera on
+    const rushing =
+      gate.catching && ((xs > LOBBY_START - 1 && xs < DOOR_OPEN.to) || (xs > B9.out.s - 0.5 && xs < PLAQUE_GATE));
     if (opts.key || opts.shot) outClk.x = scrollClock(xs);
     // out on the street they follow the scroll as the camera shows it (along the row the camera follows them). While
     // a gate holds the camera at Kreatekno's door they follow the scroll itself: following the held camera, Bu Dewi
@@ -1152,10 +1178,11 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
         gate.catching && xs >= LOBBY_START - 0.2 ? Math.max(xs, target * TAKE_SCREENS) : xs,
         dt,
         seenAt,
+        rushing,
       );
     if (outClk.x !== outWas) needsRender = true;
     {
-      const wt = wildanAt(xs),
+      const wt = wildanAt(rushing ? Math.max(xs, target * TAKE_SCREENS) : xs),
         was = wClk.x;
       const wild = pair.find((m) => m.name === "wildan");
       if (opts.key || opts.shot) wClk.x = wt;
@@ -1164,7 +1191,8 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       else if (Math.abs(wt - wClk.x) > 3 && !wOut.on && !(wild?.mesh.visible && seenWildan(wild.mesh.position))) {
         wClk.x = wt;
         wClk.v = 0;
-      } else followClock(wClk, wt, dt);
+      } else if (rushing) followClock(wClk, wt, dt, rushPace(wt - wClk.x, PACE), RUSH_FOLLOW);
+      else followClock(wClk, wt, dt);
       if (wClk.x !== was) needsRender = true;
       // tahap 8: he joins their walk out once his own part is done (his clock at its end), from the spot it left him;
       // if their clock was already past his start then, he runs that much behind it and makes it up at 1.35× his
@@ -1179,7 +1207,12 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
           goal = wildanStride(outClk.x);
         if (wOut.off > 1 && at && goal && !seenWildan(at.body) && !seenWildan(goal.body))
           Object.assign(wOut, { off: 0, c: outClk.x });
-        const next = Math.min(outClk.x - Math.max(0, wOut.off - 0.35 * dt), wOut.c + 1.8 * dt);
+        // (17 Nov: rushing out after them he makes up his lag faster, and may walk a little faster than they do)
+        const rush = rushing ? rushPace(scrollClock(target * TAKE_SCREENS) - wOut.c, LOBBY_PACE) : LOBBY_PACE,
+          next = Math.min(
+            outClk.x - Math.max(0, wOut.off - (rushing ? 1 : 0.35) * dt),
+            wOut.c + (rushing ? rush + 0.4 : LOBBY_PACE) * dt,
+          );
         wOut.off = outClk.x - next;
         wOut.c = next;
         needsRender = true;
@@ -1786,6 +1819,7 @@ export async function mount(host: HTMLElement, opts: WorldOptions = {}) {
       target = view.x = gate.goal = Math.min(1, Math.max(0, p));
       view.v = 0;
       gate.catching = false;
+      gate.v = 0;
       whipT = whipTarget(target);
       heruClk.x = heruClock(target, fmtT);
       heruClk.v = 0;
