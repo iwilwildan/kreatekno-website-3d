@@ -1,6 +1,6 @@
 # Detail Solusi: Booking jasa langsung dari chat pelanggan
 
-Tanggal: 7 Nov 2026. Status: **rencana awal HTML dari katalog; belum diimplementasikan; storyboard 3D belum tersedia**.
+Tanggal: 7 Nov 2026. Status: **BJ1 selesai teknis 21 Nov 2026** (cerita Tonton pastel dari workflow nyata, copy ID/EN, lihat bagian 7); menunggu review user dan tes HP.
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md). Kontrak template, route, mesin, dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya menjabarkan kebutuhan khusus `booking-jasa`.
 
@@ -71,3 +71,82 @@ Hasil P2 menjadi masukan D4 (regresi lintas solusi); P2 tidak menunggu D4 selesa
 - [ ] Status cerita dilaporkan terpisah: belum tersedia / direncanakan / berjalan / direview / selesai.
 
 7 Nov 2026: subplan awal dibuat dari konten katalog atas permintaan pemisahan plan. Belum ada implementasi atau persetujuan storyboard baru.
+
+## 7. BJ1: cerita Tonton dari workflow nyata (disetujui 21 Nov 2026, selesai teknis, menunggu review user)
+
+Permintaan user 21 Nov: lengkapi halaman detail `booking-jasa` dengan mengacu ke workflow n8n klien jasa kebersihan (instance `n8n-kreatekno`). Nama klien dan detail sensitif tidak boleh tampil. Gaya mengikuti Order Grup OG5c (panggung Tonton pastel, caption `h3` + `p`, rel workflow, studi kasus di bawah tanpa tab) dan skill `n8n-portfolio-prototype`.
+
+### 7.1 Workflow yang dibaca (hanya baca, tidak dijalankan)
+
+Sistemnya terdiri dari belasan workflow aktif. Yang membentuk cerita:
+
+| Workflow (nama disamarkan) | Node | Peran |
+|---|---|---|
+| CS kirim (aktif) | 78 | Pesan chat masuk, buang duplikat, gerbang ambil alih admin 30 menit, gabung pesan beruntun 30 detik, anti-banjir, media diteruskan ke tim, panggil "otak", kirim balasan |
+| CS otak | 24 | Ambil riwayat 10 pesan + pengaturan, AI menganalisis pesan (tulis ulang pencarian + deteksi eskalasi), cari basis pengetahuan (hybrid vektor + teks), agen CS dengan tool `cari_kb`, `cek_jadwal`, `cari_booking`, `catat_booking`, `ajukan_perubahan` |
+| Cek jadwal | 5 | Aturan pasti di kode, bukan AI: minimal H-1, mulai 08.00 dan selesai sebelum 18.00 sesuai durasi, survey 13.00-20.00 berjarak 1 jam, Minggu/libur, periode tutup, bentrok. Hasil BOLEH/TIDAK + saran |
+| Catat booking | 8 | Pengaman: H-1, format, link lokasi wajib, satu pelanggan satu booking per tanggal, slot terisi. Simpan dengan nomor booking |
+| Sinkron booking | 8 | Tiap 2 menit menyalin booking ke tabel jadwal (Sheets) dan mengirim laporan booking baru ke grup tim (Telegram) |
+| Ajukan perubahan → Tombol → Putuskan | 16 + 4 + 20 | Batal/reschedule/ganti/tambah layanan divalidasi, dikirim ke grup tim dengan tombol Ya/Tidak (pengingat menit 15 dan 25). Ya: booking diubah (slot dicek ulang) dan pelanggan dikabari otomatis dalam jendela 24 jam; lewat dari itu tim diminta mengabari manual |
+| Notif internal, ambil alih, rangkum | 30 + … | Eskalasi diam-diam (layanan khusus, luar area, komplain, minta manusia) dengan ringkasan AI ke grup tim; balasan manual admin mematikan bot 30 menit untuk pelanggan itu |
+
+Temuan yang mengubah halaman sekarang:
+- **Tidak ada Google Calendar.** Booking disimpan di tabel data, disalin ke tabel jadwal (Sheets), dan dilaporkan ke grup tim. Copy sekarang ("kalender tim", `apps: calendar`) tidak sesuai workflow.
+- **Pembatalan tidak otomatis membebaskan slot.** Pembatalan dan perubahan selalu lewat persetujuan tim (Ya/Tidak). FAQ "slotnya kembali tersedia" benar setelah tim menyetujui.
+- **Booking minimal H-1** dan ada dua jenis: pengerjaan (harga pasti) dan survey gratis (harga setelah survey). Layanan konsultasi (kontrak, kapal) tidak dibooking, diserahkan ke tim.
+- Asisten memperkenalkan diri sebagai asisten virtual bila ditanya; permintaan bicara dengan manusia diarahkan ke telepon nomor yang sama.
+
+Yang tidak masuk halaman: nama klien, nama asisten, nama layanan khusus klien, harga asli, ID grup/tabel/kredensial, isi prompt, data eksekusi.
+
+### 7.2 Langkah (rel workflow, 6 node)
+
+| # | Rel | Isi | AI |
+|---|---|---|---|
+| 1 | Pesan masuk | Pelanggan chat kapan saja; pesan beruntun digabung jadi satu | |
+| 2 | AI menjawab | AI memahami kebutuhan, mencari layanan dan harga di daftar layanan | ya |
+| 3 | Cek jadwal | Aturan jadwal dicek pasti: H-1, jam kerja sesuai durasi, slot kosong | |
+| 4 | Tercatat | Setelah lokasi dikirim, booking tersimpan dengan nomor sendiri | |
+| 5 | Tim menerima | Booking masuk tabel jadwal dan laporan ke grup tim | |
+| 6 | Perubahan | Reschedule/batal diputuskan tim dengan Ya/Tidak; pelanggan dikabari | |
+
+### 7.3 Adegan ("satu booking berjalan")
+
+| # | Kicker | Caption (draf) | Kanvas |
+|---|---|---|---|
+| 1 | Sebelum | Chat booking menunggu admin. Jadwal tim tercatat di beberapa tempat. | Bubble pelanggan menumpuk ("besok bisa?", "harga sofa?"), penghitung "chat belum dibalas" naik, satu pil merah "bentrok" |
+| 2 | Langkah 1 · Pesan masuk | Pelanggan bertanya kapan saja, malam juga. | Latar ke malam; satu bubble pelanggan naik ke tengah: "cuci sofa 3 dudukan, Sabtu jam 10 bisa?" |
+| 3 | Langkah 2 · AI menjawab | AI memahami kebutuhan lalu menyebut harga dari daftar layanan. | Latar terang lagi; stabilo di kata kunci, chip Layanan / Hari / Jam lepas; bubble asisten dengan harga contoh |
+| 4 | Langkah 3 · Cek jadwal | Jadwal dicek dengan aturan pasti, bukan tebakan AI. | Strip slot Sabtu: 10.00 sudah terisi (pil "terisi"), 13.00 kosong menyala; tiga centang aturan (H-1, selesai sebelum 18.00, slot kosong) |
+| 5 | Langkah 4 · Tercatat | Pelanggan mengirim lokasi, booking tersimpan dengan nomornya. | Pin lokasi; chip bergabung jadi kartu booking #0918 |
+| 6 | Langkah 5 · Tim menerima | Tim melihat booking baru di tabel jadwal dan grup tim. | Kartu masuk ke baris tabel jadwal Sabtu; notifikasi "Booking baru" |
+| 7 | Langkah 6 · Perubahan | Mau pindah jadwal? Tim cukup menekan Ya. | Bubble "bisa diundur ke Senin?"; kartu permintaan dengan Ya/Tidak; Ya ditekan, baris berubah Sab → Sen, bubble "jadwal sudah diubah" |
+| 8 | Hasil · angka contoh | Pelanggan dapat jawaban saat itu, admin fokus ke yang khusus. | Tiga angka besar dari `metrics` + pil "angka contoh" |
+| 9 | Untuk bisnis Anda | Mau booking otomatis seperti ini untuk usaha Anda? | Angka diredupkan; CTA di caption |
+
+Contoh di kanvas: pelanggan fiktif "Bu Maya", layanan "Cuci sofa 3 dudukan", harga contoh "Rp250.000" (bukan harga klien), nomor booking contoh.
+
+### 7.4 Perubahan file (rencana)
+
+- `content/solusi/cerita/schema.ts`: schema per slug (union `order-grup` | `booking-jasa`), panggung booking punya schema sendiri. `index.ts` mendaftarkan cerita baru.
+- `content/solusi/cerita/booking-jasa.ts` baru: 9 adegan + teks panggung ID/EN.
+- `components/solusi/detail/`: `CeritaScroll.tsx` menerima konfigurasi per cerita (node rel + ikon, adegan malam, ukuran kanvas, panggung, film); timing per cerita (`ceritaTiming.ts` jadi fungsi dari daftar durasi); `PanggungBooking.tsx` + `ceritaFilmBooking.ts` baru; gaya `bj-*` di `detail.css`. Jalur Order Grup tidak berubah perilakunya.
+- `content/solusi/items/booking-jasa.ts`: copy disesuaikan dengan workflow, ditambah `painsLead`, `built`, `quote` (kutipan contoh), dan `en`.
+- `tools/solusi/og5-qa.mjs`: dibuat bisa menguji dua slug, atau QA baru `bj1-qa.mjs`.
+
+### 7.5 Cek
+
+Sama dengan OG5c: 9 adegan maju/mundur di 1440×900, 1024×1366, 390×844, 360×740 dan 1897×940; malam; node dan tombol; reduced motion; GSAP diblokir; EN; tanpa scroll ke samping; regresi Order Grup; typecheck, ESLint, Prettier, `logic.test.mjs`, `next build`. Screenshot hanya di chat.
+
+### 7.6 Keputusan user (21 Nov 2026)
+
+- Copy diselaraskan dengan workflow: "kalender" diganti "tabel jadwal", `apps` jadi WhatsApp + Google Sheets, FAQ pembatalan menyebut persetujuan tim, FAQ baru soal booking minimal H-1.
+- Label klien tanpa daerah: "Usaha jasa kebersihan rumah". Tanpa "(contoh)", karena kliennya nyata dan statusnya sudah berjalan; yang berlabel contoh adalah nama, kutipan dan angka.
+- Adegan malam di Langkah 1 (pesan masuk pukul 21.40); adegan lain terang.
+- Dilengkapi `painsLead`, `built` (5 poin), kutipan berlabel "kutipan contoh", dan seluruh copy `en`.
+
+### 7.7 Hasil implementasi (21 Nov)
+
+- Baru: `content/solusi/cerita/booking-jasa.ts`, `components/solusi/detail/PanggungBooking.tsx`, `ceritaFilmBooking.ts`, gaya `bj-*` di `detail.css`, `tools/solusi/bj1-qa.mjs`.
+- Diubah: `ceritaTiming.ts` (`makeTiming` per cerita; ekspor Order Grup tetap), `CeritaScroll.tsx` (konfigurasi per slug: ikon rel, adegan malam, film lazy), `cerita/schema.ts` (`BookingCeritaSchema`), `cerita/index.ts` (`storyFor` mengembalikan `{ slug, copy }`), `SolutionDetail.tsx`, `items/booking-jasa.ts`, `catalog.ts` (EN tanpa calendar), `tools/solusi/logic.test.mjs` (booking-jasa dikecualikan dari tes kesamaan dengan sumber v1, tes cerita booking dan anonimitas baru, filter aplikasi `sheets`).
+- Panggung memakai ulang kelas visual Order Grup (`og-bub`, `og-chip`, `og-mx`) dengan objek sendiri: bubble menumpuk, jam malam, stabilo → chip, slot hari Sabtu (10.00 terisi, 13.00 ditawarkan), tiga aturan, lokasi, kartu booking #0918, tabel jadwal + laporan, permintaan pindah jadwal dengan Ya/Tidak, tiga angka contoh.
+- Temuan di luar halaman ini: testimoni Home (`messages/*.json`) dan plakat "Trusted by" (`Plaque.tsx`) sudah menyebut nama klien ini. Halaman booking-jasa tidak menautkannya.

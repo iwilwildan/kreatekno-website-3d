@@ -57,6 +57,86 @@ export const CeritaLocaleSchema = z.strictObject({
   stage: PanggungSchema,
 });
 
+/** Booking field: picks the pastel chip colour. */
+export const BookingFieldSchema = z.enum(["service", "day", "time"]);
+const say = z.strictObject({ who: text, text: short });
+
+/**
+ * Every word visible on the Booking Jasa stage (BJ1 "one booking travels"): a customer chat becomes a priced
+ * answer, a schedule check, a numbered booking, a row in the team schedule, then a change the team approves.
+ * Only booking data: no chat chrome, timestamps on bubbles or table headers.
+ */
+export const BookingPanggungSchema = z.strictObject({
+  messages: z.array(z.strictObject({ who: text, text: short, tag: text.optional() })).length(6),
+  counter: z.strictObject({ value: z.number().int().positive(), label: text }),
+  clock: text,
+  ask: z.strictObject({
+    who: text,
+    parts: z.array(z.union([text, z.strictObject({ field: BookingFieldSchema, text })])).min(4),
+  }),
+  chips: z.array(z.strictObject({ field: BookingFieldSchema, value: text })).length(3),
+  reply: say,
+  day: z.strictObject({
+    title: text,
+    slots: z.array(z.strictObject({ time: text, state: z.enum(["taken", "asked", "free", "pick"]) })).length(4),
+    taken: text,
+    free: text,
+  }),
+  rules: z.array(text).length(3),
+  offer: say,
+  location: say,
+  card: z.strictObject({
+    no: text,
+    lines: z.array(z.strictObject({ label: text, value: text })).length(4),
+    status: text,
+  }),
+  table: z.strictObject({
+    rows: z.array(z.strictObject({ day: text, time: text, customer: text, service: text })).length(2),
+    added: z.strictObject({ day: text, moved: text, time: text, customer: text, service: text }),
+  }),
+  toast: z.strictObject({ title: text, text }),
+  change: z.strictObject({
+    ask: say,
+    title: text,
+    from: text,
+    to: text,
+    yes: text,
+    no: text,
+    done: say,
+  }),
+  sample: text,
+});
+
+export const BookingCeritaLocaleSchema = z.strictObject({
+  intro: text,
+  scenes: z.array(CeritaSceneSchema).length(9),
+  stage: BookingPanggungSchema,
+});
+
+export const BookingCeritaSchema = z
+  .strictObject({
+    slug: z.literal("booking-jasa"),
+    id: BookingCeritaLocaleSchema,
+    en: BookingCeritaLocaleSchema,
+  })
+  .superRefine((story, ctx) => {
+    for (const locale of ["id", "en"] as const) {
+      const copy = story[locale];
+      if (new Set(copy.scenes.map((scene) => scene.id)).size !== copy.scenes.length)
+        ctx.addIssue({ code: "custom", message: `${locale}: scene IDs must be unique` });
+      if (copy.scenes.filter((scene) => scene.cta).length !== 1 || !copy.scenes.at(-1)?.cta)
+        ctx.addIssue({ code: "custom", message: `${locale}: the final scene must be the only CTA` });
+      if (copy.stage.messages.filter((message) => message.tag).length !== 1)
+        ctx.addIssue({ code: "custom", message: `${locale}: exactly one bubble carries the waiting tag` });
+      const fields = copy.stage.ask.parts.flatMap((part) => (typeof part === "string" ? [] : [part.field]));
+      if (copy.stage.chips.map((chip) => chip.field).join() !== fields.join())
+        ctx.addIssue({ code: "custom", message: `${locale}: chips must follow the highlighted words in order` });
+      const states = copy.stage.day.slots.map((slot) => slot.state);
+      if (states.filter((v) => v === "asked").length !== 1 || states.filter((v) => v === "pick").length !== 1)
+        ctx.addIssue({ code: "custom", message: `${locale}: the day needs one asked (taken) and one picked slot` });
+    }
+  });
+
 export const CeritaSchema = z
   .strictObject({
     slug: z.literal("order-grup"),
@@ -85,3 +165,7 @@ export type CeritaLocale = z.infer<typeof CeritaLocaleSchema>;
 export type Panggung = z.infer<typeof PanggungSchema>;
 export type Role = z.infer<typeof RoleSchema>;
 export type Field = z.infer<typeof FieldSchema>;
+export type BookingCerita = z.infer<typeof BookingCeritaSchema>;
+export type BookingCeritaLocale = z.infer<typeof BookingCeritaLocaleSchema>;
+export type BookingPanggung = z.infer<typeof BookingPanggungSchema>;
+export type BookingField = z.infer<typeof BookingFieldSchema>;

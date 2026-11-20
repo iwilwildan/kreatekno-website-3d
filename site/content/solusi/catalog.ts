@@ -12,8 +12,8 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   "booking-jasa": {
     title: "Service booking assistant",
     result: "Customers see available times and book without waiting for an admin.",
-    summary: "Let customers book available slots while your team's calendar stays in sync.",
-    keywords: "booking schedule calendar appointment customer service field team",
+    summary: "Let customers book available slots while your team's schedule stays in sync.",
+    keywords: "booking schedule slot appointment customer service field team reschedule",
   },
   "berkas-dokumen": {
     title: "Document collection assistant",

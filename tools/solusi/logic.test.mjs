@@ -6,7 +6,10 @@ import { SOLUSI } from "../../site/content/solusi/index.ts";
 import { KARTU } from "../../site/content/solusi/kartu.ts";
 import { SolusiSchema, KartuSchema } from "../../site/content/solusi/schema.ts";
 import { CERITA } from "../../site/content/solusi/cerita/index.ts";
-import { CeritaSchema } from "../../site/content/solusi/cerita/schema.ts";
+import {
+  BookingCeritaSchema,
+  CeritaSchema,
+} from "../../site/content/solusi/cerita/schema.ts";
 import { buildTiers, fitIndustries } from "../../site/lib/solusi/tiers.ts";
 import { APPS, INDUSTRI } from "../../site/content/solusi/taksonomi.ts";
 import { searchList, searchPage } from "../../site/lib/solusi/search.ts";
@@ -20,6 +23,10 @@ import {
 } from "../../site/lib/solusi/pesan.ts";
 import { parseAnswers, answersQuery } from "../../site/lib/solusi/url.ts";
 import { readPrototype } from "./source.mjs";
+
+// Solutions whose ID copy was rewritten after the v1 migration, so source parity no longer applies:
+// booking-jasa (BJ1, 21 Nov 2026) now follows the client's real booking workflow (no calendar app).
+const REWRITTEN = new Set(["booking-jasa"]);
 
 test("12 unique solutions and 24 unique cards satisfy strict schemas", () => {
   assert.equal(SOLUSI.length, 12);
@@ -62,9 +69,36 @@ test("Order Grup story has stable bilingual scenes, stage copy and one final CTA
   }
 });
 
+test("Booking Jasa story has stable bilingual scenes, stage copy and one final CTA", () => {
+  const story = CERITA["booking-jasa"];
+  assert.equal(BookingCeritaSchema.safeParse(story).success, true);
+  for (const locale of ["id", "en"]) {
+    const copy = story[locale];
+    assert.equal(copy.scenes.length, 9);
+    assert.deepEqual(
+      copy.scenes.map((scene) => scene.id),
+      story.id.scenes.map((scene) => scene.id),
+    );
+    assert.equal(copy.scenes.filter((scene) => scene.cta).length, 1);
+    assert.equal(copy.scenes.at(-1).cta, true);
+    assert.equal(copy.stage.chips.length, 3);
+    assert.equal(copy.stage.day.slots.length, 4);
+  }
+  // The client stays anonymous: no client name, assistant name or region on the page.
+  const text = JSON.stringify([
+    story,
+    SOLUSI.find((s) => s.slug === "booking-jasa"),
+  ]);
+  assert.doesNotMatch(
+    text,
+    /\b(RHC|AIKA)\b|Riau|Pekanbaru|Home Cleaning|calendar|kalender/i,
+  );
+});
+
 test("all migrated ID copy and taxonomy equal source literals", () => {
   const source = readPrototype();
   for (const s of SOLUSI) {
+    if (REWRITTEN.has(s.slug)) continue;
     const old = source.SOLUSI.find((x) => x.slug === s.slug);
     for (const key of ["status", "industri", "tim", "apps"])
       assert.deepEqual(s[key], old[key]);
@@ -114,6 +148,7 @@ test("every copy field in COPY section 19 matches migrated data", () => {
   );
   let count = 0;
   for (const s of SOLUSI) {
+    if (REWRITTEN.has(s.slug)) continue;
     const section = copy
       .split(new RegExp(`### 19\\.\\d+ ${s.slug}\\r?\\n`))[1]
       ?.split(/### 19\./)[0];
@@ -197,10 +232,10 @@ test("search phrases, status, all teams and intersecting filters", () => {
     searchList(SOLUSI, {
       industri: "jasa",
       tim: "operasional",
-      app: "calendar",
+      app: "sheets",
       status: "jalan",
     }).map((s) => s.slug),
-    ["booking-jasa"],
+    ["booking-jasa", "berkas-dokumen"],
   );
   assert.equal(searchList(SOLUSI, { status: "jalan" }).length, 4);
   assert.equal(

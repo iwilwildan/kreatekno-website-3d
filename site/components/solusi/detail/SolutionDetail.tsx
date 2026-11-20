@@ -133,7 +133,7 @@ export function SolutionDetail({ solution, locale }: { solution: Solusi; locale:
             sample: labels.storySample,
             hint: labels.storyHint,
             rail: labels.storyRail,
-            of: story.scenes.map((_, index) => labels.storyOf(index + 1, story.scenes.length)),
+            of: story.copy.scenes.map((_, index) => labels.storyOf(index + 1, story.copy.scenes.length)),
             consult: labels.consult,
             prev: labels.storyPrev,
             next: labels.storyNext,
