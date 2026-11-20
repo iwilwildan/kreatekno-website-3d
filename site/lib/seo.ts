@@ -46,6 +46,11 @@ export function pageMetadata({
   };
 }
 
+/** Absolute URL of a solution detail page (`/solusi/[slug]`, `/en/solutions/[slug]`). */
+export function solutionUrl(locale: Locale, slug: string) {
+  return SITE_URL + getPathname({ locale, href: { pathname: "/solusi/[slug]", params: { slug } } });
+}
+
 export function solutionDetailMetadata({
   locale,
   slug,

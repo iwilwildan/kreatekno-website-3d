@@ -126,23 +126,22 @@ export function SolutionDetail({ solution, locale }: { solution: Solusi; locale:
         <CeritaScroll
           story={story}
           message={message}
+          metrics={copy.metrics ?? []}
           labels={{
-            eyebrow: labels.storyEyebrow,
-            question: copy.question,
+            title: labels.storyEyebrow,
             scroll: labels.storyScroll,
             sample: labels.storySample,
             hint: labels.storyHint,
             rail: labels.storyRail,
             of: story.scenes.map((_, index) => labels.storyOf(index + 1, story.scenes.length)),
-            no3d: labels.no3d,
-            greybox: labels.greybox,
             consult: labels.consult,
+            prev: labels.storyPrev,
+            next: labels.storyNext,
           }}
         />
       ) : (
         <section className="detail-fallback-story detail-inner">
-          <p className="detail-eyebrow">{labels.fallbackStory}</p>
-          <h2>{copy.question}</h2>
+          <h2>{labels.fallbackStory}</h2>
           <ol>
             {copy.steps.map((step) => (
               <li key={step.title}>

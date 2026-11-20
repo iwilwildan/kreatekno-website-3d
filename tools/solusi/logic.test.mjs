@@ -44,7 +44,7 @@ test("12 unique solutions and 24 unique cards satisfy strict schemas", () => {
   assert.doesNotMatch(text, /—|\bkamu\b|claude\.ai|\bwatch\b/i);
 });
 
-test("Order Grup story has stable bilingual scenes, valid areas and one final CTA", () => {
+test("Order Grup story has stable bilingual scenes, stage copy and one final CTA", () => {
   const story = CERITA["order-grup"];
   assert.equal(CeritaSchema.safeParse(story).success, true);
   for (const locale of ["id", "en"]) {
@@ -57,7 +57,8 @@ test("Order Grup story has stable bilingual scenes, valid areas and one final CT
     );
     assert.equal(copy.scenes.filter((scene) => scene.cta).length, 1);
     assert.equal(copy.scenes.at(-1).cta, true);
-    assert.ok(copy.areas.every((area) => copy.scenes[area.scene]));
+    assert.equal(copy.stage.chips.length, 5);
+    assert.equal(copy.stage.courier.length, 2);
   }
 });
 

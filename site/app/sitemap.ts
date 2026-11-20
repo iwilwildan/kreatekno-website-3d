@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SOLUSI } from "@/content/solusi";
 import { routing, type Pathname } from "@/i18n/routing";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, solutionUrl } from "@/lib/seo";
 
 const PAGES: { href: Exclude<Pathname, "/solusi/[slug]">; priority: number }[] = [
   { href: "/", priority: 1 },
@@ -10,9 +11,9 @@ const PAGES: { href: Exclude<Pathname, "/solusi/[slug]">; priority: number }[] =
   { href: "/kebijakan-privasi", priority: 0.2 },
 ];
 
-// TODO (tahap 12 dan 14): add solution and article detail pages from content/.
+// TODO (tahap 14): add article detail pages from content/.
 export default function sitemap(): MetadataRoute.Sitemap {
-  return PAGES.flatMap(({ href, priority }) =>
+  const pages = PAGES.flatMap(({ href, priority }) =>
     routing.locales.map((locale) => ({
       url: absoluteUrl(locale, href),
       priority,
@@ -21,4 +22,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       },
     })),
   );
+  const solutions = SOLUSI.flatMap(({ slug, updated }) =>
+    routing.locales.map((locale) => ({
+      url: solutionUrl(locale, slug),
+      lastModified: updated,
+      priority: 0.6,
+      alternates: {
+        languages: Object.fromEntries(routing.locales.map((l) => [l, solutionUrl(l, slug)])),
+      },
+    })),
+  );
+  return [...pages, ...solutions];
 }

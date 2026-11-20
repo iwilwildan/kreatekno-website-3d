@@ -1,56 +1,91 @@
 "use client";
 
-import { ArrowDown, ChatCircleDots } from "@phosphor-icons/react/ssr";
+import {
+  ArrowDown,
+  ArrowRight,
+  Bell,
+  ChatCircleDots,
+  CheckCircle,
+  Sparkle,
+  Table,
+  Truck,
+} from "@phosphor-icons/react/ssr";
 import { useEffect, useRef, useState } from "react";
 import type { CeritaLocale } from "@/content/solusi/cerita/schema";
+import type { Film } from "./ceritaFilm";
+import { packetAt, restTime, sceneAt, TOTAL } from "./ceritaTiming";
+import { Panggung } from "./Panggung";
 
-type StoryWorld = { setScene(scene: number): void; dispose(): void };
+/** Canvas design size in px (`.og-cv`), scaled to fit the stage. */
+const DESIGN = { w: 440, h: 520, max: 1.5 };
+/** Pinned scroll length of the story, in screens (as the Tonton prototype). */
+const SCREENS = 11;
+/** Rail nodes: the six workflow steps are scenes 1-6. */
+const NODES = [
+  { scene: 1, Icon: ChatCircleDots },
+  { scene: 2, Icon: Sparkle },
+  { scene: 3, Icon: Table },
+  { scene: 4, Icon: CheckCircle },
+  { scene: 5, Icon: Truck },
+  { scene: 6, Icon: Bell },
+];
+const NIGHT_SCENE = 6;
 
+/**
+ * Order Grup story in the Tonton layout (OG5c): a sticky pastel stage with the scene caption on the left, the
+ * motion-graphic canvas on the right and the workflow rail below. Scrolling through the reel maps linearly to
+ * the timeline. Captions and rail follow React state, so they work without GSAP; the canvas film is lazy.
+ */
 export function CeritaScroll({
   story,
   labels,
   message,
+  metrics,
 }: {
   story: CeritaLocale;
   labels: {
-    eyebrow: string;
-    question: string;
+    /** Section heading ("Cara kerjanya"); the solution question already sits in the hero answer box. */
+    title: string;
     scroll: string;
     sample: string;
     hint: string;
     rail: string;
     of: string[];
-    no3d: string;
-    greybox: string;
     consult: string;
+    prev: string;
+    next: string;
   };
   message: string;
+  metrics: Array<{ value: string; unit: string; label: string }>;
 }) {
-  const body = useRef<HTMLDivElement>(null);
+  const reel = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const worldHost = useRef<HTMLDivElement>(null);
-  const steps = useRef<Array<HTMLLIElement | null>>([]);
-  const world = useRef<StoryWorld | null>(null);
-  const activeRef = useRef(0);
+  const viz = useRef<HTMLDivElement>(null);
+  const bar = useRef<HTMLElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+  const film = useRef<Film | null>(null);
+  const position = useRef({ time: 0, scene: 0 });
   const [active, setActive] = useState(0);
-  const [failed, setFailed] = useState(false);
 
+  // Reel scroll → timeline time → scene, progress bar and rail packet.
   useEffect(() => {
     let frame = 0;
     const sync = () => {
       frame = 0;
-      const line =
-        innerHeight *
-        (matchMedia("(max-width: 759px), (max-width: 1023px) and (orientation: portrait)").matches ? 0.7 : 0.56);
-      let next = 0;
-      steps.current.forEach((step, index) => {
-        if (step && step.getBoundingClientRect().top < line) next = index;
-      });
-      setActive((current) => {
-        activeRef.current = next;
-        if (current !== next) world.current?.setScene(next);
-        return next;
-      });
+      const host = reel.current;
+      if (!host) return;
+      const rect = host.getBoundingClientRect();
+      const run = rect.height - innerHeight;
+      const q = run > 0 ? Math.min(1, Math.max(0, -rect.top / run)) : 0;
+      const time = q * TOTAL;
+      const scene = sceneAt(time);
+      position.current = { time, scene };
+      film.current?.seek(time, scene);
+      bar.current?.style.setProperty("transform", `scaleX(${q.toFixed(4)})`);
+      const packet = packetAt(time);
+      track.current?.style.setProperty("--p", String(packet ?? 0));
+      track.current?.style.setProperty("--pk", packet === null ? "0" : "1");
+      setActive(scene);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(sync);
@@ -65,41 +100,51 @@ export function CeritaScroll({
     };
   }, []);
 
+  // Fit the fixed-size canvas into its grid cell.
   useEffect(() => {
-    const target = body.current;
-    if (!target || !worldHost.current) return;
+    const area = viz.current;
+    if (!area) return;
+    const fit = () => {
+      const scale = Math.min(area.clientWidth / DESIGN.w, area.clientHeight / DESIGN.h, DESIGN.max);
+      if (scale > 0) area.style.setProperty("--og-s", scale.toFixed(3));
+    };
+    const observer = new ResizeObserver(fit);
+    observer.observe(area);
+    fit();
+    return () => observer.disconnect();
+  }, []);
+
+  // Load GSAP only when the story nears the viewport. Without it, CSS shows each scene's end pose.
+  useEffect(() => {
+    const target = reel.current;
+    if (!target || !stage.current) return;
     let cancelled = false;
     let fontTimer: ReturnType<typeof setTimeout> | undefined;
 
     const mount = async () => {
-      const fontWaitStarted = performance.now();
-      const fontsReady = document.fonts?.ready ?? Promise.resolve();
+      // Canvas offsets are measured from text layout, so wait (briefly) for the web fonts.
       await Promise.race([
-        fontsReady,
+        document.fonts?.ready ?? Promise.resolve(),
         new Promise<void>((resolve) => {
           fontTimer = setTimeout(resolve, 1500);
         }),
       ]);
       if (fontTimer) clearTimeout(fontTimer);
-      if (worldHost.current) {
-        worldHost.current.dataset.fontWaitMs = String(Math.round(performance.now() - fontWaitStarted));
-      }
-      if (cancelled || !worldHost.current) return;
-
+      if (cancelled || !stage.current) return;
       try {
-        const { mountOrderGroupStory } = await import("@/world/cerita");
-        if (cancelled || !worldHost.current) return;
-        world.current = mountOrderGroupStory(worldHost.current, activeRef.current, story, () => {
-          if (!cancelled) setFailed(true);
-        });
+        const { createFilm } = await import("./ceritaFilm");
+        if (cancelled || !stage.current) return;
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        film.current = createFilm(stage.current, reduced);
+        film.current.seek(position.current.time, position.current.scene);
       } catch {
-        if (!cancelled) setFailed(true);
+        // Static CSS poses stay in place.
       }
     };
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting || world.current) return;
+        if (!entry.isIntersecting || film.current) return;
         observer.disconnect();
         void mount();
       },
@@ -110,25 +155,28 @@ export function CeritaScroll({
       cancelled = true;
       if (fontTimer) clearTimeout(fontTimer);
       observer.disconnect();
-      world.current?.dispose();
-      world.current = null;
+      film.current?.dispose();
+      film.current = null;
     };
   }, [story]);
 
-  const jump = (index: number) => {
-    const step = steps.current[index];
-    if (!step) return;
-    const narrow = matchMedia("(max-width: 759px), (max-width: 1023px) and (orientation: portrait)").matches;
-    const rect = step.getBoundingClientRect();
-    const y = scrollY + rect.top - (narrow ? innerHeight * 0.6 : (innerHeight - rect.height) / 2) + 2;
+  const jump = (scene: number) => {
+    const host = reel.current;
+    if (!host) return;
+    const index = Math.max(0, Math.min(story.scenes.length - 1, scene));
+    const top = scrollY + host.getBoundingClientRect().top;
+    const y = top + (restTime(index) / TOTAL) * (host.offsetHeight - innerHeight);
     scrollTo({ top: y, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
+
+  const last = story.scenes.length - 1;
+  const stateOf = (scene: number) =>
+    active > NIGHT_SCENE || active > scene ? "done" : active === scene ? "on" : undefined;
 
   return (
     <section className="detail-story" aria-labelledby="story-title">
       <div className="detail-inner story-intro">
-        <p className="detail-eyebrow">{labels.eyebrow}</p>
-        <h2 id="story-title">{labels.question}</h2>
+        <h2 id="story-title">{labels.title}</h2>
         <p>
           {story.intro} {labels.scroll} {labels.sample}
         </p>
@@ -136,70 +184,79 @@ export function CeritaScroll({
           <ArrowDown aria-hidden /> {labels.hint}
         </span>
       </div>
-      <div ref={body} className="story-body">
-        <div className="story-sticky">
-          <div ref={stage} className={failed ? "story-stage no3d" : "story-stage"} aria-hidden="true">
-            <div ref={worldHost} className="story-world-host" />
-            <div className="story-grid" />
-            <div className="story-greybox-label">{labels.greybox}</div>
-            <div className="story-active-label">
-              <b>{story.scenes[active].rail}</b>
-              <span>{story.scenes[active].body}</span>
-            </div>
-            {failed && <div className="story-no3d">{labels.no3d}</div>}
+      <div ref={reel} className="story-reel" style={{ "--screens": SCREENS } as React.CSSProperties}>
+        <div ref={stage} className={active === NIGHT_SCENE ? "story-stage is-night" : "story-stage"}>
+          <div className="story-bar" aria-hidden="true">
+            <i ref={bar} />
           </div>
-          <nav className="story-rail" aria-label={labels.rail}>
-            {story.scenes.map((scene, index) => (
-              <button
-                key={scene.id}
-                type="button"
-                className={index < active ? "done" : ""}
-                aria-current={index === active ? "step" : undefined}
-                aria-label={`${labels.of[index]}: ${scene.rail}`}
-                onClick={() => jump(index)}
-              >
-                <span>{scene.rail}</span>
-                <i />
-              </button>
-            ))}
-          </nav>
-        </div>
-        <ol className="story-steps">
-          {story.scenes.map((scene, index) => (
-            <li
-              ref={(node) => {
-                steps.current[index] = node;
-              }}
-              className="story-step"
-              id={`scene-${scene.id}`}
-              key={scene.id}
-            >
-              <article className={index === active ? "story-card is-active" : "story-card"}>
-                <span className="story-number">{labels.of[index]}</span>
-                <p className="detail-eyebrow">{scene.eyebrow}</p>
-                <h3>{scene.title}</h3>
-                <p>{scene.body}</p>
-                {scene.cta && (
+          <div className="story-frame">
+            <div className="story-capcol">
+              <ol className="story-caps">
+                {story.scenes.map((scene, index) => (
+                  <li key={scene.id} id={`scene-${scene.id}`} className={index === active ? "is-live" : undefined}>
+                    <p className="story-kick">{scene.eyebrow}</p>
+                    <h3>{scene.title}</h3>
+                    <p>{scene.body}</p>
+                    {scene.cta && (
+                      <button
+                        type="button"
+                        className="solusi-button is-primary"
+                        data-contact
+                        data-src="solution-detail-story"
+                        data-intent="detail"
+                        data-msg={message}
+                        tabIndex={index === active ? undefined : -1}
+                      >
+                        <ChatCircleDots aria-hidden weight="bold" /> {labels.consult}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ol>
+              <div className="story-ctrl">
+                <button type="button" aria-label={labels.prev} disabled={active === 0} onClick={() => jump(active - 1)}>
+                  <ArrowRight aria-hidden weight="bold" className="is-back" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={labels.next}
+                  disabled={active === last}
+                  onClick={() => jump(active + 1)}
+                >
+                  <ArrowRight aria-hidden weight="bold" />
+                </button>
+                <span>{labels.of[active]}</span>
+              </div>
+            </div>
+            <div ref={viz} className="og-viz" aria-hidden="true">
+              <Panggung copy={story.stage} metrics={metrics} scene={active} />
+            </div>
+            <nav className={active === 0 ? "story-flow is-pre" : "story-flow"} aria-label={labels.rail}>
+              <div ref={track} className="story-track">
+                {NODES.map(({ scene, Icon }) => (
                   <button
+                    key={scene}
                     type="button"
-                    className="solusi-button is-primary"
-                    data-contact
-                    data-src="solution-detail-story"
-                    data-intent="detail"
-                    data-msg={message}
+                    className="story-node"
+                    data-s={stateOf(scene)}
+                    aria-current={active === scene ? "step" : undefined}
+                    aria-label={`${labels.of[scene]}: ${story.scenes[scene].rail}`}
+                    onClick={() => jump(scene)}
                   >
-                    <ChatCircleDots aria-hidden weight="bold" /> {labels.consult}
+                    <span className="story-nb">
+                      <Icon aria-hidden weight="bold" />
+                    </span>
+                    <span className="story-nl">{story.scenes[scene].rail}</span>
                   </button>
-                )}
-              </article>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div className="sr-only" aria-label="World example text">
-        {Object.entries(story.world).map(([id, value]) => (
-          <p key={id}>{value}</p>
-        ))}
+                ))}
+                <i className="story-pk" aria-hidden="true" />
+              </div>
+              <p className="story-now" aria-hidden="true">
+                {story.scenes[active].rail}
+              </p>
+            </nav>
+          </div>
+        </div>
       </div>
     </section>
   );
