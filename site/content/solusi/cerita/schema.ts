@@ -213,6 +213,93 @@ export const RisetCeritaSchema = z
     }
   });
 
+/** Clinic chat field: picks the pastel chip colour. */
+export const KlinikFieldSchema = z.enum(["service", "time"]);
+
+/**
+ * Every word visible on the CS Klinik stage (CK1 "one patient chat travels"): a late-night patient chat
+ * becomes two chips, the service chip finds its price in the service table, the time chip lands on a taken
+ * slot and three other times are offered, the picked slot becomes an appointment, the reply goes out while
+ * the patient's row is saved, and a medical question is passed to the staff (a design step, marked as such).
+ * Only chat and schedule data: no chat chrome, timestamps on bubbles or table headers.
+ */
+export const KlinikPanggungSchema = z.strictObject({
+  messages: z.array(z.strictObject({ who: text, text: short, tag: text.optional() })).length(6),
+  counter: z.strictObject({ value: z.number().int().positive(), label: text }),
+  clock: text,
+  ask: z.strictObject({
+    who: text,
+    parts: z.array(z.union([text, z.strictObject({ field: KlinikFieldSchema, text })])).min(3),
+  }),
+  chips: z.array(z.strictObject({ field: KlinikFieldSchema, value: text })).length(2),
+  prices: z.strictObject({
+    title: text,
+    rows: z.array(z.strictObject({ name: text, price: text })).length(4),
+    pick: z.number().int().min(0).max(3),
+  }),
+  day: z.strictObject({
+    title: text,
+    slots: z.array(z.strictObject({ time: text, state: z.enum(["asked", "alt", "pick"]) })).length(4),
+    taken: text,
+    free: text,
+    booked: text,
+  }),
+  offer: say,
+  choose: say,
+  reply: say,
+  leads: z.strictObject({
+    rows: z.array(z.strictObject({ no: text, last: text, summary: text })).length(2),
+    added: z.strictObject({ no: text, last: text, summary: text, next: text }),
+  }),
+  medical: z.strictObject({
+    ask: say,
+    chip: text,
+    staff: text,
+    line: text,
+    tag: text,
+  }),
+  sample: text,
+});
+
+export const KlinikCeritaLocaleSchema = z.strictObject({
+  intro: text,
+  scenes: z.array(CeritaSceneSchema).length(10),
+  stage: KlinikPanggungSchema,
+});
+
+export const KlinikCeritaSchema = z
+  .strictObject({
+    slug: z.literal("cs-klinik"),
+    id: KlinikCeritaLocaleSchema,
+    en: KlinikCeritaLocaleSchema,
+  })
+  .superRefine((story, ctx) => {
+    for (const locale of ["id", "en"] as const) {
+      const copy = story[locale];
+      const { stage } = copy;
+      if (new Set(copy.scenes.map((scene) => scene.id)).size !== copy.scenes.length)
+        ctx.addIssue({ code: "custom", message: `${locale}: scene IDs must be unique` });
+      if (copy.scenes.filter((scene) => scene.cta).length !== 1 || !copy.scenes.at(-1)?.cta)
+        ctx.addIssue({ code: "custom", message: `${locale}: the final scene must be the only CTA` });
+      if (stage.messages.filter((message) => message.tag).length !== 1)
+        ctx.addIssue({ code: "custom", message: `${locale}: exactly one bubble carries the waiting tag` });
+      const fields = stage.ask.parts.flatMap((part) => (typeof part === "string" ? [] : [part.field]));
+      if (stage.chips.map((chip) => chip.field).join() !== fields.join())
+        ctx.addIssue({ code: "custom", message: `${locale}: chips must follow the highlighted words in order` });
+      if (stage.prices.rows[stage.prices.pick].name !== stage.chips[0].value)
+        ctx.addIssue({ code: "custom", message: `${locale}: the picked price row is the asked service` });
+      const states = stage.day.slots.map((slot) => slot.state);
+      if (states.filter((v) => v === "asked").length !== 1 || states.filter((v) => v === "pick").length !== 1)
+        ctx.addIssue({ code: "custom", message: `${locale}: the day needs one asked (taken) and one picked slot` });
+      const picked = stage.day.slots.find((slot) => slot.state === "pick")!.time;
+      if (!stage.choose.text.includes(picked) || !stage.reply.text.includes(picked))
+        ctx.addIssue({ code: "custom", message: `${locale}: the patient's choice and the reply name the picked slot` });
+      const price = stage.prices.rows[stage.prices.pick].price;
+      if (!stage.leads.added.summary.includes(price) || !stage.leads.added.summary.includes(picked))
+        ctx.addIssue({ code: "custom", message: `${locale}: the saved summary carries the price and the slot` });
+    }
+  });
+
 export const CeritaSchema = z
   .strictObject({
     slug: z.literal("order-grup"),
@@ -248,3 +335,7 @@ export type BookingField = z.infer<typeof BookingFieldSchema>;
 export type RisetCerita = z.infer<typeof RisetCeritaSchema>;
 export type RisetCeritaLocale = z.infer<typeof RisetCeritaLocaleSchema>;
 export type RisetPanggung = z.infer<typeof RisetPanggungSchema>;
+export type KlinikCerita = z.infer<typeof KlinikCeritaSchema>;
+export type KlinikCeritaLocale = z.infer<typeof KlinikCeritaLocaleSchema>;
+export type KlinikPanggung = z.infer<typeof KlinikPanggungSchema>;
+export type KlinikField = z.infer<typeof KlinikFieldSchema>;

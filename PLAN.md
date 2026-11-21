@@ -2690,7 +2690,7 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Baru: `site/components/solusi/detail/Panggung.tsx`, `ceritaFilm.ts`, `tools/solusi/og5-qa.mjs`. Diubah: `CeritaScroll.tsx`, `SolutionDetail.tsx`, `detail.css`, `content/solusi/cerita/{schema,order-grup}.ts` (`stage` ID/EN menggantikan `areas`/`world`), `detail-copy.ts`, `tools/solusi/logic.test.mjs`, `site/package.json`/lock. Dihapus: `site/world/cerita/`.
 - Di luar plan: label adegan aktif di panggung dihapus; panggung sticky HP/tablet tegak 55svh → 62svh agar teks terbaca.
 - Dicek: `og5-qa.mjs` 87/87 di dev dan build produksi (4 viewport, maju/mundur, malam, reduced motion, GSAP diblokir, EN); chunk cerita 75,7 KB (28,8 KB gzip) vs 3D 159 KB; typecheck, ESLint, Prettier, `logic.test.mjs`, `next build` lulus. Build masih menampilkan peringatan kerentanan Next.js yang sudah ada (lulus setelah diulang). Screenshot hanya di chat.
-- Belum: tes HP Android user, review user. Tidak ada commit/push.
+- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
 - Lanjutan 20 Nov: atas permintaan user, `main` ditarik ke `992e2fb` (#38, #33, #42, #43, #44; fast-forward). Hanya `PLAN.md` bentrok (kedua sisi menambah log); entri upstream dan OG5 disimpan semua, tanpa baris lokal yang hilang. Build produksi ulang lulus; server 3300 jalan. `og5-qa.mjs` sekarang menunggu GSAP termuat sebelum cek pertama (dua kali gagal di cek desktop adegan 1 karena mengukur sebelum film siap, halaman sendiri benar); 3 kali berturut-turut 87/87.
 - Lanjutan 20 Nov: user menilai motion graphic OG5 jelek (desktop banyak ruang kosong tapi terlalu banyak teks, kesan mockup UI, gerak terputus). Audit dengan skill `design-taste-frontend`; user memilih arah "satu order berjalan", panggung desktop besar, copy kartu tetap, dan detail Solusi masuk sitemap. Cek SEO: semua copy cerita, FAQ JSON-LD dan canonical ada di HTML server; 12 halaman detail belum ada di `sitemap.xml`. Rencana OG5b di `PLAN-ORDER-GRUP.md` 8.7, belum diimplementasi.
 
@@ -2698,7 +2698,7 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 
 - User menyetujui rencana OG5b. Diubah: `Panggung.tsx`, `ceritaFilm.ts`, gaya `og-*` di `detail.css`, `CeritaScroll.tsx` (skala maksimum 1,5, tanpa grid dekorasi), `SolutionDetail.tsx`, `detail-copy.ts`, `content/solusi/cerita/{schema,order-grup}.ts` (teks panggung dipangkas ID/EN), `app/sitemap.ts` + `solutionUrl` di `lib/seo.ts` (24 URL detail dengan hreflang dan `lastModified`), `tools/solusi/{og5-qa,logic.test}.mjs`.
 - Dicek: `og5-qa.mjs` 87/87 di build produksi (4 viewport, maju/mundur, malam, reduced motion, GSAP diblokir, EN); sitemap berisi 24 URL detail; typecheck, ESLint, Prettier, `logic.test.mjs` 13/13, `next build` (lulus setelah diulang, peringatan Next.js yang sama). Cek visual menemukan dan memperbaiki posisi bubble balasan/kurir, kolom barang terpotong dan celah stabilo. Screenshot hanya di chat.
-- Belum: tes HP Android user, review user. Tidak ada commit/push.
+- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
 - Lanjutan 20 Nov: user menilai motion Tonton di artifact Carousel Konten (skill `n8n-portfolio-prototype`) sudah bagus dan bertanya soal SEO. Keputusan: gaya Tonton dipakai untuk Order Grup dulu, panggung pastel terang, tanpa tab, isi kanvas OG5b tetap, intro dipertahankan tanpa kotak putih. Rencana OG5c di `PLAN-ORDER-GRUP.md` 8.8, belum diimplementasi.
 
 ### 2026-11-20 (Solusi detail Order Grup: OG5c bingkai Tonton pastel)
@@ -2718,7 +2718,7 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Dicek: `bj1-qa.mjs` 106/106 di dev (5 viewport maju/mundur, malam, node dan tombol, reduced motion, GSAP diblokir, EN); frame desktop dan HP dicek visual (screenshot hanya di chat); Baca HP tanpa scroll samping; HTML server berisi 11 `h3`, canonical ID/EN, tanpa nama klien; typecheck, ESLint, Prettier, `logic.test.mjs` 14/14.
 - Build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `bj1-qa.mjs` 106/106 dan `og5-qa.mjs` 106/106 (Order Grup tanpa regresi). Error console hanya dari tes GSAP diblokir dan `/_vercel/insights/script.js` 404 di lokal.
 - Catatan: testimoni Home dan plakat/logo "Trusted by" sudah menyebut nama klien ini (konten lama, tidak diubah).
-- Belum: tes HP Android user, review user. Tidak ada commit/push.
+- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
 
 ### 2026-11-21 (rencana RT1: "Solusi terkait" jadi rak di semua detail Solusi)
 
@@ -2732,7 +2732,7 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Baru: `components/solusi/RakBox.tsx`, `components/solusi/detail/RakTerkait.tsx`, gaya `.etalase.is-mini` di `detail.css`, `tools/solusi/rt1-qa.mjs`. Diubah: `Etalase.tsx` (pakai `RakBox`, markup sama), `SolutionDetail.tsx`, `detail-copy.ts`.
 - Kemiripan: warna lampu, muka atas, punggung, tepi, panel, papan dan bayangan kontak diukur dari render 3D etalase 1440 px; sampel piksel kotak depan selisih ≤ 2/255, papan sama persis.
 - Dicek di build produksi: `rt1-qa.mjs` 31/31 (12 detail × ID/EN: kotak = `related()`, warna tim, tautan, papan; 4 viewport tanpa scroll samping; klik ke detail dan Back; axe rak), `etalase-qa.mjs` 114/114 (etalase 3D tidak regresi), `bj1-qa.mjs` 106/106, `og5-qa.mjs` 106/106 (error console hanya 404 analytics Vercel lokal dan GSAP yang sengaja diblokir); typecheck, ESLint, Prettier, `logic.test.mjs` 14/14, `next build`. Frame desktop dan HP dicek visual, screenshot hanya di chat.
-- Belum: tes HP Android user, review user. Tidak ada commit/push.
+- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
 
 ### 2026-11-21 (Solusi detail Riset Konten: RK1 cerita Tonton dari rancangan workflow)
 
@@ -2741,4 +2741,13 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Keputusan user: status `ide` dan klien "(contoh)"; copy ikut workflow; tambah aplikasi `threads`; contoh kanvas topik "Cashflow usaha".
 - Baru: `content/solusi/cerita/riset-konten.ts`, `components/solusi/detail/PanggungRiset.tsx`, `ceritaFilmRiset.ts`, gaya `rk-*` di `detail.css`, `tools/solusi/rk1-qa.mjs`. Diubah: `cerita/{schema,index}.ts`, `ceritaTiming.ts`, `CeritaScroll.tsx`, `SolutionDetail.tsx`, `RakBox.tsx`, `items/riset-konten.ts`, `catalog.ts`, `schema.ts`, `taksonomi.ts`, `tools/solusi/logic.test.mjs` (tes RK1, jumlah "Sudah berjalan" 3), `tools/solusi/etalase-qa.mjs` (9 "Siap dibuat").
 - Dicek di build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `rk1-qa.mjs` 106/106 (5 viewport maju/mundur, malam, urutan post, tanpa tumpang tindih, node dan tombol, reduced motion, GSAP diblokir, EN), `bj1-qa.mjs` 106/106, `og5-qa.mjs` 106/106, `rt1-qa.mjs` 31/31, `etalase-qa.mjs` 114/114 (error console hanya GSAP yang sengaja diblokir dan 404 analytics Vercel lokal); HTML server berisi 11 `h3` dan canonical; typecheck, ESLint, `logic.test.mjs` 15/15; Prettier bersih untuk file yang diubah (peringatan lama di `world/`). Frame desktop/HP, EN, tanpa GSAP, bagian Aplikasi dan kutipan dicek visual, screenshot hanya di chat. Perbaikan dari cek visual: kartu post 108 px.
-- Belum: tes HP Android user, review user. Tidak ada commit/push.
+- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
+
+### 2026-11-21 (Solusi detail CS Klinik: CK1 cerita Tonton dari workflow nyata)
+
+- Permintaan user: buat cerita detail `cs-klinik` dari workflow agen CS di instance `n8n-mcp` (hanya dibaca). Plan, temuan dan keputusan di `docs/plans/solusi/PLAN-CS-KLINIK.md` bagian 7.
+- Temuan: workflow aslinya booking konsultasi untuk usaha lain (bukan klinik), masih mode uji satu nomor, memakai tabel harga dan tabel leads selain kalender; aturan pertanyaan medis tidak ada dan langkah "AI berhenti saat admin membalas" masih TODO.
+- Keputusan user: pertanyaan medis ke staf dijadikan adegan Tonton bertanda rancangan (10 adegan, rel 7 node); contoh klinik gigi (scaling, Rp350.000, 19.00 terisi, alternatif 18.00/19.30/20.00); malam di Langkah 1; status tetap `ide`, apps + Sheets.
+- Baru: `content/solusi/cerita/cs-klinik.ts`, `components/solusi/detail/PanggungKlinik.tsx`, `ceritaFilmKlinik.ts`, gaya `ck-*` di `detail.css`, `tools/solusi/ck1-qa.mjs`. Diubah: `cerita/{schema,index}.ts`, `ceritaTiming.ts` (jumlah node rel per cerita), `CeritaScroll.tsx` (panjang reel dan jumlah node per cerita), `detail.css` (paket rel `--gaps`), `SolutionDetail.tsx` (ikon kalender), `items/cs-klinik.ts`, `catalog.ts`, `tools/solusi/logic.test.mjs`.
+- Dicek di build produksi: `ck1-qa.mjs` 114/114 (dua kali), `rk1`/`bj1`/`og5` 106/106, `rt1` 31/31, `etalase` 114/114; typecheck, ESLint, Prettier, `logic.test.mjs` 16/16, `next build`. Frame desktop/HP dan Baca HP dicek visual (screenshot hanya di chat); dua perbaikan dari cek visual (cincin di slot terisi, gaya pilihan Booking Jasa di slot 19.30).
+- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.

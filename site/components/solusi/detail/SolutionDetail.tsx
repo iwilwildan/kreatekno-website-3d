@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  CalendarDots,
   ChatCircleDots,
   Check,
   CheckCircle,
@@ -272,6 +273,8 @@ export function SolutionDetail({ solution, locale }: { solution: Solusi; locale:
                     <WhatsappLogo aria-hidden weight="fill" />
                   ) : app.id === "threads" ? (
                     <ThreadsLogo aria-hidden weight="bold" />
+                  ) : app.id === "calendar" ? (
+                    <CalendarDots aria-hidden weight="bold" />
                   ) : (
                     <Table aria-hidden weight="bold" />
                   )}

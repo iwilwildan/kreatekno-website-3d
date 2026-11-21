@@ -5,15 +5,19 @@ import {
   ArrowRight,
   ArrowsClockwise,
   Bell,
+  CalendarBlank,
   CalendarCheck,
   ChatCircleDots,
   CheckCircle,
+  Headset,
   Heart,
   ListBullets,
   MagnifyingGlass,
   MapPin,
+  PaperPlaneTilt,
   Sparkle,
   Table,
+  Tag,
   Truck,
   UsersThree,
 } from "@phosphor-icons/react/ssr";
@@ -23,35 +27,44 @@ import type { Film } from "./ceritaFilm";
 import { TIMING } from "./ceritaTiming";
 import { Panggung } from "./Panggung";
 import { PanggungBooking } from "./PanggungBooking";
+import { PanggungKlinik } from "./PanggungKlinik";
 import { PanggungRiset } from "./PanggungRiset";
 
-/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`), scaled to fit the stage. */
+/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`, `.ck-cv`), scaled to fit the stage. */
 const DESIGN = { w: 440, h: 520, max: 1.5 };
-/** Pinned scroll length of the story, in screens (as the Tonton prototype). */
-const SCREENS = 11;
-/** The six workflow steps on the rail are scenes 1-6. */
-const LAST_NODE = 6;
-/** Per story: rail icons (scenes 1-6), the scene drawn at night, and the lazily loaded film. */
+/**
+ * Per story: rail icons (the workflow steps are scenes 1..icons.length), the scene drawn at night, the pinned
+ * scroll length in screens (11 for nine scenes, as the Tonton prototype) and the lazily loaded film.
+ */
 const KIND = {
   "order-grup": {
     icons: [ChatCircleDots, Sparkle, Table, CheckCircle, Truck, Bell],
     night: 6,
+    screens: 11,
     film: () => import("./ceritaFilm"),
   },
   "booking-jasa": {
     icons: [ChatCircleDots, Sparkle, CalendarCheck, MapPin, UsersThree, ArrowsClockwise],
     night: 1,
+    screens: 11,
     film: () => import("./ceritaFilmBooking"),
   },
   "riset-konten": {
     icons: [ListBullets, Sparkle, Heart, MagnifyingGlass, Table, CheckCircle],
     night: 1,
+    screens: 11,
     film: () => import("./ceritaFilmRiset"),
+  },
+  "cs-klinik": {
+    icons: [ChatCircleDots, Sparkle, Tag, CalendarBlank, CalendarCheck, PaperPlaneTilt, Headset],
+    night: 1,
+    screens: 12,
+    film: () => import("./ceritaFilmKlinik"),
   },
 } as const;
 
 /**
- * A solution story in the Tonton layout (OG5c, Order Grup and Booking Jasa): a sticky pastel stage with the
+ * A solution story in the Tonton layout (OG5c; Order Grup, Booking Jasa, Riset Konten and CS Klinik): a sticky pastel stage with the
  * scene caption on the left, the motion-graphic canvas on the right and the workflow rail below. Scrolling
  * through the reel maps linearly to the story's timeline. Captions and rail follow React state, so they work
  * without GSAP; the canvas film is lazy.
@@ -193,8 +206,9 @@ export function CeritaScroll({
   };
 
   const last = copy.scenes.length - 1;
+  const lastNode = kind.icons.length;
   const stateOf = (scene: number) =>
-    active > LAST_NODE || active > scene ? "done" : active === scene ? "on" : undefined;
+    active > lastNode || active > scene ? "done" : active === scene ? "on" : undefined;
 
   return (
     <section className="detail-story" aria-labelledby="story-title">
@@ -207,7 +221,7 @@ export function CeritaScroll({
           <ArrowDown aria-hidden /> {labels.hint}
         </span>
       </div>
-      <div ref={reel} className="story-reel" style={{ "--screens": SCREENS } as React.CSSProperties}>
+      <div ref={reel} className="story-reel" style={{ "--screens": kind.screens } as React.CSSProperties}>
         <div ref={stage} className={active === kind.night ? "story-stage is-night" : "story-stage"}>
           <div className="story-bar" aria-hidden="true">
             <i ref={bar} />
@@ -254,6 +268,8 @@ export function CeritaScroll({
             <div ref={viz} className="og-viz" aria-hidden="true">
               {story.slug === "booking-jasa" ? (
                 <PanggungBooking copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "cs-klinik" ? (
+                <PanggungKlinik copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "riset-konten" ? (
                 <PanggungRiset copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : (
@@ -261,7 +277,11 @@ export function CeritaScroll({
               )}
             </div>
             <nav className={active === 0 ? "story-flow is-pre" : "story-flow"} aria-label={labels.rail}>
-              <div ref={track} className="story-track">
+              <div
+                ref={track}
+                className="story-track"
+                style={{ "--gaps": kind.icons.length - 1 } as React.CSSProperties}
+              >
                 {kind.icons.map((Icon, index) => {
                   const scene = index + 1;
                   return (

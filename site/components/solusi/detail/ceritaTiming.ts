@@ -1,13 +1,13 @@
 /**
  * Scene timing of the Tonton motion graphics, shared by the page (scroll → scene, rail, captions), the lazily
  * loaded GSAP films and QA. `in` = transition from the previous scene, `hold` = reading time (timeline seconds).
- * Every story has nine scenes and six rail nodes (scenes 1-6).
+ * The rail nodes are scenes 1..`nodes`: six for the nine-scene stories, seven for CS Klinik (ten scenes).
  */
 export type SceneTiming = ReadonlyArray<{ readonly in: number; readonly hold: number }>;
 
 export type Timing = ReturnType<typeof makeTiming>;
 
-export function makeTiming(sc: SceneTiming) {
+export function makeTiming(sc: SceneTiming, nodes = 6) {
   const start: number[] = [];
   const end: number[] = [];
   sc.reduce((t, s, i) => {
@@ -30,18 +30,18 @@ export function makeTiming(sc: SceneTiming) {
   const restTime = (scene: number) => end[scene] - sc[scene].hold * 0.5;
 
   /**
-   * Data packet on the workflow rail at time `t`, as a fractional node index (rail nodes are scenes 1-6),
-   * or null while it is off the rail.
+   * Data packet on the workflow rail at time `t`, as a fractional node index (rail nodes are scenes
+   * 1..`nodes`), or null while it is off the rail.
    */
   const packetAt = (t: number): number | null => {
-    if (t < start[1] || t >= start[7]) return null;
+    if (t < start[1] || t >= start[nodes + 1]) return null;
     let k = 1;
-    for (let i = 1; i <= 6; i++) if (t >= start[i]) k = i;
+    for (let i = 1; i <= nodes; i++) if (t >= start[i]) k = i;
     if (k === 1) return 0;
     return k - 2 + Math.min(1, (t - start[k]) / sc[k].in);
   };
 
-  return { SC: sc, START: start, END: end, TOTAL: total, sceneAt, restTime, packetAt };
+  return { SC: sc, NODES: nodes, START: start, END: end, TOTAL: total, sceneAt, restTime, packetAt };
 }
 
 /** Order Grup (OG5b/OG5c). */
@@ -86,4 +86,26 @@ export const RISET_KONTEN = makeTiming([
   { in: 0.6, hold: 0.9 },
 ]);
 
-export const TIMING = { "order-grup": ORDER_GRUP, "booking-jasa": BOOKING_JASA, "riset-konten": RISET_KONTEN } as const;
+/** CS Klinik (CK1 "one patient chat travels"): ten scenes, seven rail nodes. */
+export const CS_KLINIK = makeTiming(
+  [
+    { in: 1.6, hold: 0.6 },
+    { in: 1.2, hold: 0.6 },
+    { in: 1.4, hold: 0.7 },
+    { in: 1.5, hold: 0.7 },
+    { in: 1.8, hold: 0.7 },
+    { in: 1.3, hold: 0.7 },
+    { in: 1.4, hold: 0.7 },
+    { in: 1.6, hold: 0.7 },
+    { in: 1.0, hold: 0.6 },
+    { in: 0.6, hold: 0.9 },
+  ],
+  7,
+);
+
+export const TIMING = {
+  "order-grup": ORDER_GRUP,
+  "booking-jasa": BOOKING_JASA,
+  "riset-konten": RISET_KONTEN,
+  "cs-klinik": CS_KLINIK,
+} as const;

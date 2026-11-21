@@ -29,9 +29,10 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "cs-klinik": {
     title: "Clinic customer-service assistant",
-    result: "Routine patient questions are answered consistently, including after hours.",
-    summary: "Answer common clinic questions and route cases that need a human.",
-    keywords: "clinic patient customer service questions whatsapp hours price",
+    result: "Patient chats are answered at any hour, and appointments are lined up before the clinic opens.",
+    summary:
+      "Answer price and schedule questions from your own data, book appointments and pass medical questions to staff.",
+    keywords: "clinic patient customer service questions whatsapp hours price appointment booking calendar",
   },
   "pengingat-tagihan": {
     title: "Invoice reminder assistant",

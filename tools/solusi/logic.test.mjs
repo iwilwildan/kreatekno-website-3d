@@ -9,6 +9,7 @@ import { CERITA } from "../../site/content/solusi/cerita/index.ts";
 import {
   BookingCeritaSchema,
   CeritaSchema,
+  KlinikCeritaSchema,
   RisetCeritaSchema,
 } from "../../site/content/solusi/cerita/schema.ts";
 import { buildTiers, fitIndustries } from "../../site/lib/solusi/tiers.ts";
@@ -27,8 +28,9 @@ import { readPrototype } from "./source.mjs";
 
 // Solutions whose ID copy was rewritten after the v1 migration, so source parity no longer applies:
 // booking-jasa (BJ1, 21 Nov 2026) now follows the client's real booking workflow (no calendar app);
-// riset-konten (RK1, 21 Nov 2026) follows the content-research workflow design (status "ide", Threads).
-const REWRITTEN = new Set(["booking-jasa", "riset-konten"]);
+// riset-konten (RK1, 21 Nov 2026) follows the content-research workflow design (status "ide", Threads);
+// cs-klinik (CK1, 21 Nov 2026) follows the customer-service agent workflow (status "ide", plus Sheets).
+const REWRITTEN = new Set(["booking-jasa", "riset-konten", "cs-klinik"]);
 
 test("12 unique solutions and 24 unique cards satisfy strict schemas", () => {
   assert.equal(SOLUSI.length, 12);
@@ -128,6 +130,43 @@ test("Riset Konten story has stable bilingual scenes, stage copy and one final C
   assert.doesNotMatch(JSON.stringify(story), /Threads|Telegram|Sheets/i);
 });
 
+test("CS Klinik story has stable bilingual scenes, stage copy and one final CTA", () => {
+  const story = CERITA["cs-klinik"];
+  assert.equal(KlinikCeritaSchema.safeParse(story).success, true);
+  for (const locale of ["id", "en"]) {
+    const copy = story[locale];
+    assert.equal(copy.scenes.length, 10);
+    assert.deepEqual(
+      copy.scenes.map((scene) => scene.id),
+      story.id.scenes.map((scene) => scene.id),
+    );
+    assert.equal(copy.scenes.filter((scene) => scene.cta).length, 1);
+    assert.equal(copy.scenes.at(-1).cta, true);
+    assert.equal(copy.stage.chips.length, 2);
+    assert.equal(copy.stage.day.slots.length, 4);
+  }
+  // The medical step is a design step for clinics, and the caption says so.
+  assert.match(story.id.scenes[7].body, /rancangan/);
+  assert.match(story.en.scenes[7].body, /design/);
+  const solution = SOLUSI.find((s) => s.slug === "cs-klinik");
+  // The workflow serves another business: the status stays "ide" and the clinic is a labelled sample.
+  assert.equal(solution.status, "ide");
+  assert.deepEqual(solution.apps, ["whatsapp", "calendar", "sheets"]);
+  assert.match(solution.id.client, /\(contoh\)$/);
+  assert.match(solution.en.client, /\(sample\)$/);
+  // No persona, phone numbers, models or the workflow's own business on the story or the page.
+  const text = JSON.stringify([story, solution]);
+  assert.doesNotMatch(
+    text,
+    /Willy|Gemini|n8n|Automation|otomasi|62\d{8,}|08\d{8,}|AI Automation Meeting/i,
+  );
+  // Visible stage and captions name no platform (WhatsApp and Google appear only in the page copy).
+  assert.doesNotMatch(
+    JSON.stringify(story),
+    /WhatsApp|Google|Sheets|Calendar|Telegram/i,
+  );
+});
+
 test("all migrated ID copy and taxonomy equal source literals", () => {
   const source = readPrototype();
   for (const s of SOLUSI) {
@@ -200,7 +239,8 @@ test("every copy field in COPY section 19 matches migrated data", () => {
       count++;
     }
   }
-  assert.ok(count > 300, `Checked ${count} fields`);
+  // 272 fields once booking-jasa, riset-konten and cs-klinik left the source copy (21 Nov 2026).
+  assert.ok(count > 250, `Checked ${count} fields`);
 });
 
 test("seven tiers and source ordering match LOGIKA 6, without decor since 13 Nov", () => {

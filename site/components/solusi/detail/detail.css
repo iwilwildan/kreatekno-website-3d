@@ -445,7 +445,7 @@
   position: absolute;
   z-index: 2;
   top: 20px;
-  left: calc(var(--nw) / 2 + (100% - var(--nw)) * var(--p, 0) / 5);
+  left: calc(var(--nw) / 2 + (100% - var(--nw)) * var(--p, 0) / var(--gaps, 5));
   width: 10px;
   height: 10px;
   margin: -5px 0 0 -5px;
@@ -1725,6 +1725,275 @@
   opacity: 0.35;
 }
 .story-stage:has(.rk-cv:not(.is-film)[data-scene="1"]) {
+  background: #3b3f86;
+}
+/* CS Klinik stage (CK1 "one patient chat travels"): same canvas, bubbles, chips, day slots and results as Order
+   Grup and Booking Jasa; two pastels mark the service and the time, a pink one the medical question. */
+.ck-cv {
+  --ck-service: #eadcfd;
+  --ck-time: #fff1c9;
+  --ck-med: #ffe2ee;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 520px;
+  color: var(--og-navy);
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  transform: translate(-50%, -50%) scale(var(--og-s));
+}
+.ck-cv > * {
+  position: absolute;
+  margin: 0;
+}
+.ck-cv svg {
+  flex: none;
+}
+.ck-cv .ck-ask {
+  top: 62px;
+}
+.ck-cv .ck-chips {
+  top: 222px;
+}
+.ck-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(159, 14, 214, 0.08);
+  box-shadow: 0 0 0 3px var(--og-purple);
+  pointer-events: none;
+}
+
+/* 4 · the service table */
+.ck-prices {
+  top: 24px;
+  left: 20px;
+  display: grid;
+  width: 400px;
+  gap: 8px;
+  border-radius: 22px;
+  padding: 16px 16px 14px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.ck-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 4px;
+  font-size: 17px;
+}
+.ck-h svg {
+  color: var(--og-purple);
+}
+.ck-pr {
+  position: relative;
+  display: flex;
+  height: 50px;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 14px;
+  padding: 0 16px;
+  background: #f6f4fc;
+  font-weight: 600;
+}
+.ck-pr b {
+  font-variant-numeric: tabular-nums;
+}
+.ck-price {
+  top: 4px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 9px 16px 9px 13px;
+  background: var(--ck-service);
+  box-shadow: 0 14px 24px -18px rgba(19, 25, 81, 0.6);
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 5-6 · the day, three other times and the appointment */
+.ck-cv .ck-day {
+  top: 60px;
+}
+/* All three offered times look the same until the patient picks one (the Booking Jasa pick style stays off). */
+.ck-cv .ck-slot.is-pick {
+  background: #f6f4fc;
+  box-shadow: none;
+}
+.ck-cv .ck-slot.is-pick .bj-pill {
+  color: #6b6f93;
+  background: white;
+}
+.ck-ev {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 76px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 0 14px;
+  color: white;
+  background: var(--og-purple);
+  font-size: 15px;
+  font-weight: 800;
+}
+.ck-cv .ck-offer,
+.ck-cv .ck-choose {
+  top: 374px;
+  font-size: 17px;
+}
+.ck-cv .ck-offer {
+  right: 20px;
+}
+.ck-cv .ck-choose {
+  left: 20px;
+}
+
+/* 7 · the reply and the patient table */
+.ck-cv .ck-reply {
+  top: 84px;
+  right: 20px;
+  font-size: 17px;
+}
+.ck-leads {
+  top: 196px;
+  left: 0;
+  width: 440px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.ck-tr {
+  display: grid;
+  height: 66px;
+  grid-template-columns: 90px 66px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  font-size: 14.5px;
+  line-height: 1.3;
+}
+.ck-tr + .ck-tr {
+  border-top: 1px solid #ebe8f5;
+}
+.ck-tr.is-new {
+  background: #faf4fe;
+  font-weight: 700;
+}
+.ck-no {
+  color: #6b6f93;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ck-tr.is-new .ck-no {
+  color: var(--og-purple);
+}
+.ck-last {
+  color: #6b6f93;
+  font-size: 13.5px;
+}
+.ck-sum {
+  min-width: 0;
+}
+.ck-sum:not(.og-swap),
+.ck-sum > span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* 8 · the medical question goes to the staff */
+.ck-cv .ck-med {
+  top: 24px;
+  left: 20px;
+  font-size: 17px;
+}
+.ck-cv .ck-medchip {
+  top: 104px;
+  left: 20px;
+  background: var(--ck-med);
+}
+.ck-staff {
+  top: 112px;
+  left: 30px;
+  display: flex;
+  width: 380px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 20px;
+  padding: 12px 14px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.ck-staff-i {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--ck-med);
+  font-size: 20px;
+}
+.ck-staff-t {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+.ck-staff-t b {
+  font-size: 16px;
+}
+.ck-staff-t small {
+  color: #565b81;
+  font-size: 14px;
+}
+
+/* Without the film: each scene's end pose from data-scene. */
+.ck-cv:not(.is-film) > :not(.og-pile),
+.ck-cv:not(.is-film) :is(.og-ring, .og-now, .ck-glow, .ck-ev) {
+  visibility: hidden;
+}
+.ck-cv:not(.is-film):not([data-scene="0"]) > .og-pile {
+  visibility: hidden;
+}
+.ck-cv:not(.is-film)[data-scene="0"] > .og-count,
+.ck-cv:not(.is-film)[data-scene="1"] > .ck-clock,
+.ck-cv:not(.is-film):is([data-scene="1"], [data-scene="2"]) > .ck-ask,
+.ck-cv:not(.is-film)[data-scene="1"] .og-ring,
+.ck-cv:not(.is-film)[data-scene="2"] > .ck-chips,
+.ck-cv:not(.is-film)[data-scene="3"] > .ck-prices,
+.ck-cv:not(.is-film)[data-scene="3"] .ck-pr .ck-glow,
+.ck-cv:not(.is-film):is([data-scene="4"], [data-scene="5"]) > :is(.ck-price, .ck-day),
+.ck-cv:not(.is-film)[data-scene="4"] > .ck-offer,
+.ck-cv:not(.is-film)[data-scene="4"] .ck-slot:not(.is-asked) .ck-glow,
+.ck-cv:not(.is-film)[data-scene="5"] > .ck-choose,
+.ck-cv:not(.is-film)[data-scene="5"] .ck-ev,
+.ck-cv:not(.is-film)[data-scene="6"] > .ck-reply,
+.ck-cv:not(.is-film):is([data-scene="6"], [data-scene="7"]) > .ck-leads,
+.ck-cv:not(.is-film)[data-scene="7"] > :is(.ck-med, .ck-staff),
+.ck-cv:not(.is-film)[data-scene="7"] .og-now,
+.ck-cv:not(.is-film):is([data-scene="8"], [data-scene="9"]) > .og-mx {
+  visibility: visible;
+}
+.ck-cv:not(.is-film)[data-scene="7"] .og-was {
+  visibility: hidden;
+}
+.ck-cv:not(.is-film)[data-scene="1"] .og-hl {
+  background-size: 0% 60%;
+}
+.story-stage:has(.ck-cv:not(.is-film)[data-scene="1"]) {
   background: #3b3f86;
 }
 .detail-fallback-story {
