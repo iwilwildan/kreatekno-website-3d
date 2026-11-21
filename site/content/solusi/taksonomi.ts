@@ -136,6 +136,16 @@ export const APPS = [
     icon: "InstagramLogo",
     color: "#C2307A",
   },
+  // RK1 (21 Nov 2026): the content-research workflow reads Threads, not Instagram.
+  {
+    id: "threads",
+    label: {
+      id: "Threads",
+      en: "Threads",
+    },
+    icon: "ThreadsLogo",
+    color: "#1C1C1C",
+  },
   {
     id: "gmail",
     label: {

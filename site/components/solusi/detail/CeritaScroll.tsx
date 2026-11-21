@@ -8,6 +8,9 @@ import {
   CalendarCheck,
   ChatCircleDots,
   CheckCircle,
+  Heart,
+  ListBullets,
+  MagnifyingGlass,
   MapPin,
   Sparkle,
   Table,
@@ -20,8 +23,9 @@ import type { Film } from "./ceritaFilm";
 import { TIMING } from "./ceritaTiming";
 import { Panggung } from "./Panggung";
 import { PanggungBooking } from "./PanggungBooking";
+import { PanggungRiset } from "./PanggungRiset";
 
-/** Canvas design size in px (`.og-cv`, `.bj-cv`), scaled to fit the stage. */
+/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`), scaled to fit the stage. */
 const DESIGN = { w: 440, h: 520, max: 1.5 };
 /** Pinned scroll length of the story, in screens (as the Tonton prototype). */
 const SCREENS = 11;
@@ -38,6 +42,11 @@ const KIND = {
     icons: [ChatCircleDots, Sparkle, CalendarCheck, MapPin, UsersThree, ArrowsClockwise],
     night: 1,
     film: () => import("./ceritaFilmBooking"),
+  },
+  "riset-konten": {
+    icons: [ListBullets, Sparkle, Heart, MagnifyingGlass, Table, CheckCircle],
+    night: 1,
+    film: () => import("./ceritaFilmRiset"),
   },
 } as const;
 
@@ -245,6 +254,8 @@ export function CeritaScroll({
             <div ref={viz} className="og-viz" aria-hidden="true">
               {story.slug === "booking-jasa" ? (
                 <PanggungBooking copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "riset-konten" ? (
+                <PanggungRiset copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : (
                 <Panggung copy={story.copy.stage} metrics={metrics} scene={active} />
               )}

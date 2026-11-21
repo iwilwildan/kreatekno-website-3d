@@ -137,6 +137,82 @@ export const BookingCeritaSchema = z
     }
   });
 
+const kwPart = z.strictObject({ kw: text });
+
+/**
+ * Every word visible on the Riset Konten stage (RK1 "one topic travels"): scattered idea notes become a topic
+ * list, the picked topic becomes a trend summary whose key phrases lift out as keywords, the keywords pull in
+ * the most-liked posts, the posts fold into an audience-pattern card, the card becomes a row in the research
+ * table, and the team approves it. Only research data: no app chrome, timestamps on posts or table headers.
+ * Posts are listed from most to least liked; the film starts them shuffled.
+ */
+export const RisetPanggungSchema = z.strictObject({
+  notes: z.array(short).length(6),
+  counter: z.strictObject({ value: z.number().int().positive(), label: text }),
+  clock: text,
+  topics: z.array(text).length(5),
+  pick: z.number().int().min(1).max(4),
+  research: z.strictObject({
+    title: text,
+    parts: z.array(z.union([text, kwPart])).min(4),
+  }),
+  keywords: z.array(text).length(3),
+  posts: z.array(z.strictObject({ who: text, text: short, likes: text })).length(6),
+  sort: text,
+  analysis: z.strictObject({
+    title: text,
+    complaintsLabel: text,
+    complaints: z.array(short).length(3),
+    angleLabel: text,
+    angle: text,
+    scoreLabel: text,
+    score: z.number().int().min(1).max(10),
+    of: text,
+  }),
+  table: z.strictObject({
+    rows: z
+      .array(z.strictObject({ topic: text, angle: text, score: text, status: z.enum(["approved", "skipped"]) }))
+      .length(2),
+    added: z.strictObject({ topic: text, angle: text, score: text }),
+  }),
+  status: z.strictObject({ new: text, approved: text, skipped: text }),
+  notify: z.strictObject({ title: text, topic: text, angle: text, score: text, yes: text, no: text }),
+  sample: text,
+});
+
+export const RisetCeritaLocaleSchema = z.strictObject({
+  intro: text,
+  scenes: z.array(CeritaSceneSchema).length(9),
+  stage: RisetPanggungSchema,
+});
+
+export const RisetCeritaSchema = z
+  .strictObject({
+    slug: z.literal("riset-konten"),
+    id: RisetCeritaLocaleSchema,
+    en: RisetCeritaLocaleSchema,
+  })
+  .superRefine((story, ctx) => {
+    for (const locale of ["id", "en"] as const) {
+      const copy = story[locale];
+      const { stage } = copy;
+      if (new Set(copy.scenes.map((scene) => scene.id)).size !== copy.scenes.length)
+        ctx.addIssue({ code: "custom", message: `${locale}: scene IDs must be unique` });
+      if (copy.scenes.filter((scene) => scene.cta).length !== 1 || !copy.scenes.at(-1)?.cta)
+        ctx.addIssue({ code: "custom", message: `${locale}: the final scene must be the only CTA` });
+      const words = stage.research.parts.flatMap((part) => (typeof part === "string" ? [] : [part.kw]));
+      if (words.length !== stage.keywords.length)
+        ctx.addIssue({ code: "custom", message: `${locale}: one highlighted phrase per keyword` });
+      if (stage.table.added.topic !== stage.topics[stage.pick] || stage.notify.topic !== stage.topics[stage.pick])
+        ctx.addIssue({ code: "custom", message: `${locale}: the new row and the summary carry the picked topic` });
+      if (
+        stage.table.added.score !== stage.notify.score ||
+        !stage.notify.score.startsWith(String(stage.analysis.score))
+      )
+        ctx.addIssue({ code: "custom", message: `${locale}: the score is the same on the card, row and summary` });
+    }
+  });
+
 export const CeritaSchema = z
   .strictObject({
     slug: z.literal("order-grup"),
@@ -169,3 +245,6 @@ export type BookingCerita = z.infer<typeof BookingCeritaSchema>;
 export type BookingCeritaLocale = z.infer<typeof BookingCeritaLocaleSchema>;
 export type BookingPanggung = z.infer<typeof BookingPanggungSchema>;
 export type BookingField = z.infer<typeof BookingFieldSchema>;
+export type RisetCerita = z.infer<typeof RisetCeritaSchema>;
+export type RisetCeritaLocale = z.infer<typeof RisetCeritaLocaleSchema>;
+export type RisetPanggung = z.infer<typeof RisetPanggungSchema>;

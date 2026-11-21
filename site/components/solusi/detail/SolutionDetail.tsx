@@ -4,6 +4,7 @@ import {
   Check,
   CheckCircle,
   Table,
+  ThreadsLogo,
   Warning,
   WhatsappLogo,
   X,
@@ -269,6 +270,8 @@ export function SolutionDetail({ solution, locale }: { solution: Solusi; locale:
                 <div key={app.id}>
                   {app.id === "whatsapp" ? (
                     <WhatsappLogo aria-hidden weight="fill" />
+                  ) : app.id === "threads" ? (
+                    <ThreadsLogo aria-hidden weight="bold" />
                   ) : (
                     <Table aria-hidden weight="bold" />
                   )}

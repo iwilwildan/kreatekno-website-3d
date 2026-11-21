@@ -160,8 +160,9 @@ async function etalase(browser, view, locale) {
   });
   check(
     scope,
-    "etalase: 12 kotak di 7 rak, 8 Siap dibuat",
-    et.prods === 12 && et.tiers === 7 && et.ide === 8,
+    // 9 since RK1 (21 Nov 2026): riset-konten moved to "ide" because its workflow has not run yet.
+    "etalase: 12 kotak di 7 rak, 9 Siap dibuat",
+    et.prods === 12 && et.tiers === 7 && et.ide === 9,
     et,
   );
   check(

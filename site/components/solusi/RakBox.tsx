@@ -11,6 +11,7 @@ import {
   InstagramLogo,
   Storefront,
   Table,
+  ThreadsLogo,
   Truck,
   WhatsappLogo,
 } from "@phosphor-icons/react/ssr";
@@ -32,6 +33,7 @@ const ICONS: Record<string, Icon> = {
   WhatsappLogo,
   Table,
   InstagramLogo,
+  ThreadsLogo,
   Envelope,
   CalendarDots,
   Folder,

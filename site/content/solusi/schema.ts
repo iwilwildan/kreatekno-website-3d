@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const IndustriSchema = z.enum(["retail", "klinik", "properti", "logistik", "jasa", "perjalanan"]);
 export const TimSchema = z.enum(["marketing", "penjualan", "cs", "operasional", "keuangan", "manajemen", "sdm"]);
-export const AppSchema = z.enum(["whatsapp", "sheets", "instagram", "gmail", "calendar", "drive"]);
+export const AppSchema = z.enum(["whatsapp", "sheets", "instagram", "threads", "gmail", "calendar", "drive"]);
 export const SlugSchema = z.enum([
   "order-grup",
   "booking-jasa",

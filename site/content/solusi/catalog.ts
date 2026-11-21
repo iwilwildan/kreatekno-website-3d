@@ -23,9 +23,9 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "riset-konten": {
     title: "Content research assistant",
-    result: "Your team receives relevant content ideas with usable angles each week.",
-    summary: "Research topics and turn them into a practical weekly content queue.",
-    keywords: "content research ideas social media marketing instagram",
+    result: "Your team receives audience complaints and usable content angles every morning and evening.",
+    summary: "Research one topic per session from trends and popular posts, then let the team approve or skip it.",
+    keywords: "content research ideas trends social media marketing threads audience",
   },
   "cs-klinik": {
     title: "Clinic customer-service assistant",

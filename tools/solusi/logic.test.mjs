@@ -9,6 +9,7 @@ import { CERITA } from "../../site/content/solusi/cerita/index.ts";
 import {
   BookingCeritaSchema,
   CeritaSchema,
+  RisetCeritaSchema,
 } from "../../site/content/solusi/cerita/schema.ts";
 import { buildTiers, fitIndustries } from "../../site/lib/solusi/tiers.ts";
 import { APPS, INDUSTRI } from "../../site/content/solusi/taksonomi.ts";
@@ -25,8 +26,9 @@ import { parseAnswers, answersQuery } from "../../site/lib/solusi/url.ts";
 import { readPrototype } from "./source.mjs";
 
 // Solutions whose ID copy was rewritten after the v1 migration, so source parity no longer applies:
-// booking-jasa (BJ1, 21 Nov 2026) now follows the client's real booking workflow (no calendar app).
-const REWRITTEN = new Set(["booking-jasa"]);
+// booking-jasa (BJ1, 21 Nov 2026) now follows the client's real booking workflow (no calendar app);
+// riset-konten (RK1, 21 Nov 2026) follows the content-research workflow design (status "ide", Threads).
+const REWRITTEN = new Set(["booking-jasa", "riset-konten"]);
 
 test("12 unique solutions and 24 unique cards satisfy strict schemas", () => {
   assert.equal(SOLUSI.length, 12);
@@ -93,6 +95,37 @@ test("Booking Jasa story has stable bilingual scenes, stage copy and one final C
     text,
     /\b(RHC|AIKA)\b|Riau|Pekanbaru|Home Cleaning|calendar|kalender/i,
   );
+});
+
+test("Riset Konten story has stable bilingual scenes, stage copy and one final CTA", () => {
+  const story = CERITA["riset-konten"];
+  assert.equal(RisetCeritaSchema.safeParse(story).success, true);
+  for (const locale of ["id", "en"]) {
+    const copy = story[locale];
+    assert.equal(copy.scenes.length, 9);
+    assert.deepEqual(
+      copy.scenes.map((scene) => scene.id),
+      story.id.scenes.map((scene) => scene.id),
+    );
+    assert.equal(copy.scenes.filter((scene) => scene.cta).length, 1);
+    assert.equal(copy.scenes.at(-1).cta, true);
+    assert.equal(copy.stage.keywords.length, 3);
+    assert.equal(copy.stage.posts.length, 6);
+  }
+  const solution = SOLUSI.find((s) => s.slug === "riset-konten");
+  // The workflow has not run yet: the status stays "ide" and the client is a labelled sample.
+  assert.equal(solution.status, "ide");
+  assert.deepEqual(solution.apps, ["threads", "sheets"]);
+  assert.match(solution.id.client, /\(contoh\)$/);
+  assert.match(solution.en.client, /\(sample\)$/);
+  // No tools, models, prompts or the weekly claims the workflow does not support on the story or the page.
+  const text = JSON.stringify([story, solution]);
+  assert.doesNotMatch(
+    text,
+    /Sonar|Perplexity|Apify|OpenRouter|Gemini|Instagram|n8n|kalender konten|setiap Senin|Jakarta/i,
+  );
+  // Visible stage and captions name no platform (Threads appears only in the solution's FAQ and apps).
+  assert.doesNotMatch(JSON.stringify(story), /Threads|Telegram|Sheets/i);
 });
 
 test("all migrated ID copy and taxonomy equal source literals", () => {
@@ -237,7 +270,7 @@ test("search phrases, status, all teams and intersecting filters", () => {
     }).map((s) => s.slug),
     ["booking-jasa", "berkas-dokumen"],
   );
-  assert.equal(searchList(SOLUSI, { status: "jalan" }).length, 4);
+  assert.equal(searchList(SOLUSI, { status: "jalan" }).length, 3);
   assert.equal(
     searchList(SOLUSI, { industri: "klinik", app: "gmail", status: "jalan" })
       .length,

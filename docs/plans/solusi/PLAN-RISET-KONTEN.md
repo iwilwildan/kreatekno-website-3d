@@ -1,6 +1,6 @@
 # Detail Solusi: Ide konten mingguan dari tren media sosial
 
-Tanggal: 7 Nov 2026. Status: **rencana awal HTML dari katalog; belum diimplementasikan; storyboard 3D belum tersedia**.
+Tanggal: 7 Nov 2026. Status: **RK1 selesai teknis 21 Nov 2026** (cerita Tonton pastel dari rancangan workflow, copy ID/EN diselaraskan, status `ide`, lihat bagian 7); menunggu review user dan tes HP.
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md). Kontrak template, route, mesin, dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya menjabarkan kebutuhan khusus `riset-konten`.
 
@@ -71,3 +71,84 @@ Hasil P2 menjadi masukan D4 (regresi lintas solusi); P2 tidak menunggu D4 selesa
 - [ ] Status cerita dilaporkan terpisah: belum tersedia / direncanakan / berjalan / direview / selesai.
 
 7 Nov 2026: subplan awal dibuat dari konten katalog atas permintaan pemisahan plan. Belum ada implementasi atau persetujuan storyboard baru.
+
+## 7. RK1: cerita Tonton dari workflow nyata (disetujui 21 Nov 2026, selesai teknis, menunggu review user)
+
+Permintaan user 21 Nov: setelah pencocokan workflow di instance `n8n-kreatekno` dengan 12 halaman Solusi, user memilih `riset-konten` sebagai cerita Tonton berikutnya. Gaya dan mesin mengikuti Order Grup OG5c dan Booking Jasa BJ1 (panggung pastel, caption `h3` + `p`, rel workflow, studi kasus di bawah tanpa tab) serta skill `n8n-portfolio-prototype`. Tidak ada library baru.
+
+### 7.1 Workflow yang dibaca (hanya baca, tidak dijalankan)
+
+| Workflow (nama disamarkan) | Node | Status | Peran |
+|---|---|---|---|
+| Riset utama | 22 | Nonaktif, 0 eksekusi | Topik bergilir → AI riset tren → kata kunci → cari post ramai → AI membaca pola → tabel riset → notifikasi tim |
+| Persetujuan | 5 | Nonaktif, 0 eksekusi | Tombol setuju/lewati dari tim → baris riset diberi status DISETUJUI/DILEWATI → pesan diedit |
+
+Alur riset utama (urutan asli):
+1. **Topik bergilir** (Code): 15 topik pebisnis kecil (keuangan, marketing, tim, mindset, strategi, teknologi). Dua sesi sehari, pagi 08.00 dan malam 20.00; sesi malam memakai topik lain (geser 7), siklus 15 hari A/B. Tiap topik punya umur riset sendiri (7, 14 atau 30 hari).
+2. **AI riset tren** (model riset web): ringkasan faktual tren, isu yang ramai dan pergeseran cara pandang di Indonesia untuk topik itu.
+3. **AI membuat kata kunci** → disimpan ke tabel bank kata kunci.
+4. **Cari post ramai** (scraper media sosial): cari dengan kata kunci, urutkan menurut jumlah suka, ambil 5 akun teratas, lalu ambil post mereka dan simpan 10 post teratas.
+5. **AI membaca pola** dari 10 post: keluhan audiens, skor ramai (dari 10), sudut konten, kata kunci utama.
+6. **Tabel riset mentah** (Sheets, append) → **notifikasi** ke grup tim: topik, kata kunci, keluhan, skor ramai, sudut konten, ID sesi.
+
+Temuan yang mengubah halaman:
+- **Workflow belum pernah berjalan.** Keduanya nonaktif dan tanpa eksekusi. Pemicu masih manual (belum terjadwal), ID tabel masih placeholder, aktor scraper kosong, prompt kata kunci dan analisis kosong, satu node riset HTTP tidak tersambung. Status katalog "Sudah berjalan" dan klien "Brand edukasi bisnis, Jakarta" tidak didukung bukti dari instance ini.
+- **Persetujuan belum tersambung.** Notifikasi riset tidak memuat tombol, padahal workflow persetujuan menunggu klik tombol. Cerita boleh menampilkan langkah ini sebagai rancangan, bukan sebagai fakta yang sudah berjalan.
+- **Ritme dua kali sehari dengan topik bergilir**, bukan "setiap minggu" / "daftar siap setiap Senin".
+- **Platform yang dibaca Threads**, bukan Instagram. `AppSchema` belum punya `threads`.
+- **Hasil per sesi berupa satu baris riset** (keluhan audiens, sudut konten, skor ramai, kata kunci), bukan "20 ide dengan contoh judul". Tidak ada kalender konten; yang ada status disetujui/dilewati di tabel.
+
+Yang tidak masuk halaman: nama klien atau brand, nama bot, daftar topik asli secara utuh, isi prompt, ID tabel/kredensial/webhook, model dan nama layanan di Tonton (hanya di "Alat yang dipakai").
+
+### 7.2 Langkah (rel workflow, 6 node, `--gaps: 5`)
+
+| # | Rel | Isi | AI |
+|---|---|---|---|
+| 1 | Topik dipilih | Topik berganti tiap sesi pagi dan malam | |
+| 2 | AI riset tren | Ringkasan tren terbaru + kata kunci | ya |
+| 3 | Post ramai | Post dengan suka terbanyak dikumpulkan | |
+| 4 | AI membaca pola | Keluhan audiens, sudut konten, skor ramai | ya |
+| 5 | Tabel riset | Hasil tersimpan satu baris per sesi | |
+| 6 | Tim memilih | Setuju atau lewati dari grup tim | |
+
+### 7.3 Adegan ("satu topik berjalan")
+
+| # | Kicker | Caption (draf) | Kanvas |
+|---|---|---|---|
+| 1 | Sebelum | Ide konten dicari dari nol, berjam-jam setiap minggu. | Catatan ide berserakan dengan tanda tanya, penghitung "jam riset" naik ke 4 j |
+| 2 | Langkah 1 · Topik | Setiap pagi dan malam, topik riset berganti sendiri. | Catatan merapat jadi daftar topik yang bergulir; satu berhenti dan menyala: "Cashflow usaha", pil "Pagi" |
+| 3 | Langkah 2 · AI riset tren | AI merangkum apa yang sedang ramai soal topik itu. | Pil topik melebar jadi kartu ringkasan; stabilo di tiga frasa yang lepas jadi chip kata kunci ("telat bayar", "modal kerja", "tagihan") |
+| 4 | Langkah 3 · Post ramai | Post yang paling banyak disukai dikumpulkan. | Chip kata kunci menarik kartu post kecil dengan angka suka; kartu berurut, 10 teratas tinggal, sisanya pudar |
+| 5 | Langkah 4 · AI membaca pola | AI membaca keluhan audiens dan sudut kontennya. | 10 kartu menyatu jadi kartu analisis: 3 keluhan, 1 sudut konten, skor ramai 8/10 |
+| 6 | Langkah 5 · Tabel riset | Hasil riset tersimpan rapi, satu baris tiap sesi. | Kartu analisis melipat jadi baris tabel (Topik, Keluhan, Sudut, Skor, Status "Baru") di bawah baris sesi sebelumnya |
+| 7 | Langkah 6 · Tim memilih | Sesi malam masuk ke grup tim. Tim cukup memilih. | Panggung malam (sesi 20.00); kartu ringkasan dengan Setuju/Lewati; Setuju ditekan, status baris jadi "Disetujui" (hijau) |
+| 8 | Hasil · angka contoh | Tim marketing mulai menulis dari riset, bukan dari tebakan. | Tiga angka dari `metrics` + pil "angka contoh" |
+| 9 | Untuk bisnis Anda | Mau riset konten otomatis seperti ini untuk usaha Anda? | Angka diredupkan; CTA di caption |
+
+Contoh di kanvas: topik "Cashflow usaha", kata kunci dan keluhan fiktif, angka suka fiktif. Usulan `metrics` (angka contoh): 14 riset per minggu (pagi dan malam), 10 post teratas dibaca tiap riset, 4 jam riset manual per minggu yang tidak perlu lagi.
+
+### 7.4 Perubahan file (rencana)
+
+- `content/solusi/cerita/schema.ts`: `RisetCeritaSchema` + panggung riset; `index.ts` mendaftarkan `riset-konten` di `storyFor`.
+- `content/solusi/cerita/riset-konten.ts` baru: 9 adegan + teks panggung ID/EN.
+- `components/solusi/detail/`: `PanggungRiset.tsx` + `ceritaFilmRiset.ts` baru, konfigurasi slug di `CeritaScroll.tsx` (ikon rel, adegan malam 7), gaya `rk-*` di `detail.css`. Jalur Order Grup dan Booking Jasa tidak berubah.
+- `content/solusi/items/riset-konten.ts`: copy disesuaikan dengan keputusan 7.6, ditambah `painsLead`, `built`, kutipan contoh, dan `en`.
+- `tools/solusi/rk1-qa.mjs` baru (pola `bj1-qa.mjs`), tes cerita dan anonimitas di `logic.test.mjs`.
+
+### 7.5 Cek
+
+Sama dengan BJ1: 9 adegan maju/mundur di 1440×900, 1024×1366, 390×844, 360×740 dan 1897×940; malam; node dan tombol; reduced motion; GSAP diblokir; EN; tanpa scroll ke samping; regresi Order Grup dan Booking Jasa; typecheck, ESLint, Prettier, `logic.test.mjs`, `next build`. Screenshot hanya di chat.
+
+### 7.6 Keputusan user (21 Nov 2026)
+
+- Status layanan jadi `ide`; klien ditulis sebagai contoh: "Brand edukasi bisnis (contoh)". Cerita memakai rancangan workflow apa adanya, dan langkah persetujuan ditulis sebagai bagian rancangan.
+- Copy diselaraskan dengan workflow: riset pagi dan malam dengan topik bergilir, hasil berupa keluhan audiens, sudut konten dan skor ramai, tim memilih Setuju/Lewati. Tanpa "20 ide setiap minggu", "setiap Senin" dan "kalender konten". Ditambah `painsLead`, `built`, kutipan contoh dan `en`.
+- Aplikasi: tambah `threads` ke `AppSchema` dan taksonomi (ikon `ThreadsLogo` Phosphor); `riset-konten` memakai Threads + Google Sheets.
+- Contoh kanvas: topik "Cashflow usaha", kata kunci dan post fiktif.
+
+### 7.7 Hasil implementasi (21 Nov)
+
+- Baru: `content/solusi/cerita/riset-konten.ts`, `components/solusi/detail/PanggungRiset.tsx`, `ceritaFilmRiset.ts`, gaya `rk-*` di `detail.css`, `tools/solusi/rk1-qa.mjs`.
+- Diubah: `cerita/schema.ts` (`RisetCeritaSchema`: kata kunci sama dengan frasa yang distabilo, topik dan skor sama di kartu, baris dan ringkasan), `cerita/index.ts`, `ceritaTiming.ts` (`RISET_KONTEN`), `CeritaScroll.tsx` (ikon rel, malam di adegan 2, film lazy), `items/riset-konten.ts` (status `ide`, Threads + Sheets, copy ID/EN baru, `painsLead`, `built`, kutipan contoh), `catalog.ts` (EN), `schema.ts` + `taksonomi.ts` (`threads`, ikon `ThreadsLogo`, warna #1C1C1C), `RakBox.tsx` dan `SolutionDetail.tsx` (ikon Threads), `tools/solusi/logic.test.mjs` (riset-konten keluar dari tes kesamaan sumber v1, tes cerita dan isi baru, jumlah "Sudah berjalan" 4 → 3).
+- Panggung: catatan ide berserakan + penghitung 4 jam → daftar 5 topik, sorotan berhenti di "Cashflow usaha" (malam) → pil topik, ringkasan tren, tiga frasa jadi chip kata kunci → chip naik, 6 post masuk acak lalu berurut menurut suka, dua terbawah meredup → 4 post teratas menyatu jadi kartu pola audiens (3 keluhan, sudut konten, skor 8/10) → kartu jadi baris baru tabel riset → ringkasan ke grup tim, Setuju ditekan, status Baru → Disetujui → tiga angka contoh.
+- Kartu post dinaikkan ke 108 px setelah cek visual (angka suka tertimpa teks dua baris).

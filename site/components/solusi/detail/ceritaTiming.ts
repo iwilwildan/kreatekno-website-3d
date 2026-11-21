@@ -73,4 +73,17 @@ export const BOOKING_JASA = makeTiming([
   { in: 0.6, hold: 0.9 },
 ]);
 
-export const TIMING = { "order-grup": ORDER_GRUP, "booking-jasa": BOOKING_JASA } as const;
+/** Riset Konten (RK1 "one topic travels"). */
+export const RISET_KONTEN = makeTiming([
+  { in: 1.6, hold: 0.6 },
+  { in: 1.6, hold: 0.6 },
+  { in: 2.0, hold: 0.7 },
+  { in: 2.0, hold: 0.7 },
+  { in: 1.5, hold: 0.7 },
+  { in: 1.2, hold: 0.6 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.0, hold: 0.6 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+export const TIMING = { "order-grup": ORDER_GRUP, "booking-jasa": BOOKING_JASA, "riset-konten": RISET_KONTEN } as const;

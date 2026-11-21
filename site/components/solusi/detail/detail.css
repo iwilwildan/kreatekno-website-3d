@@ -1251,6 +1251,482 @@
 .story-stage:has(.bj-cv:not(.is-film)[data-scene="1"]) {
   background: #3b3f86;
 }
+
+/* Riset Konten stage (RK1 "one topic travels"): same canvas, chips, results and Yes/No buttons as Order Grup
+   and Booking Jasa; the three keyword pastels mark the phrases, chips and complaints that belong together. */
+.rk-cv {
+  --rk-k0: #eadcfd;
+  --rk-k1: #d6f6fd;
+  --rk-k2: #fff1c9;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 520px;
+  color: var(--og-navy);
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  transform: translate(-50%, -50%) scale(var(--og-s));
+}
+.rk-cv > * {
+  position: absolute;
+  margin: 0;
+}
+.rk-cv svg {
+  flex: none;
+}
+
+/* 1 · scattered idea notes */
+.rk-notes {
+  inset: 0;
+  padding: 0;
+  list-style: none;
+}
+.rk-note {
+  position: absolute;
+  display: inline-flex;
+  max-width: 200px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 16px;
+  padding: 12px 16px;
+  background: white;
+  box-shadow: var(--og-shadow);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.rk-note svg {
+  color: var(--og-purple);
+  font-size: 18px;
+}
+.rk-note:nth-child(1) {
+  top: 28px;
+  left: 16px;
+  rotate: -4deg;
+}
+.rk-note:nth-child(2) {
+  top: 140px;
+  left: 216px;
+  rotate: 3deg;
+}
+.rk-note:nth-child(3) {
+  top: 196px;
+  left: 24px;
+  rotate: 2deg;
+}
+.rk-note:nth-child(4) {
+  top: 290px;
+  left: 232px;
+  rotate: -3deg;
+}
+.rk-note:nth-child(5) {
+  top: 360px;
+  left: 12px;
+  rotate: -2deg;
+}
+.rk-note:nth-child(6) {
+  top: 430px;
+  left: 200px;
+  rotate: 4deg;
+}
+
+/* 2 · the session and its topic list */
+.rk-clock {
+  top: 6px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: white;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.rk-clock svg {
+  color: #ffd983;
+}
+.rk-topics {
+  top: 70px;
+  left: 40px;
+  width: 360px;
+  border-radius: 22px;
+  padding: 10px;
+  background: white;
+  box-shadow: var(--og-shadow);
+  list-style: none;
+}
+.rk-topics li {
+  position: relative;
+  display: flex;
+  height: 58px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.rk-n {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 999px;
+  color: #6b6f93;
+  background: #f6f4fc;
+  font-size: 13px;
+  font-weight: 800;
+}
+.rk-sel {
+  position: absolute;
+  top: calc(10px + var(--i) * 58px);
+  right: 10px;
+  left: 10px;
+  height: 58px;
+  border-radius: 14px;
+  background: #f4e7fd;
+  box-shadow: 0 0 0 3px var(--og-purple);
+}
+
+/* 3 · trend summary and keywords */
+.rk-topic {
+  top: 20px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 16px 10px 12px;
+  color: white;
+  background: var(--og-purple);
+  font-size: 17px;
+  font-weight: 800;
+}
+.rk-topic svg {
+  font-size: 18px;
+}
+.rk-sum {
+  top: 84px;
+  left: 20px;
+  display: grid;
+  width: 400px;
+  gap: 10px;
+  border-radius: 22px;
+  padding: 18px 20px 20px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.rk-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--og-purple);
+  font-size: 15px;
+  font-weight: 800;
+}
+.rk-sum p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.rk-cv .rk-kws {
+  top: 300px;
+  gap: 8px;
+}
+.rk-kws .og-chip {
+  gap: 7px;
+  padding: 9px 13px 9px 11px;
+  font-size: 15px;
+}
+.rk-kws .og-chip svg {
+  font-size: 16px;
+}
+
+/* 4 · the most-liked posts */
+.rk-posts {
+  top: 116px;
+  left: 20px;
+  display: grid;
+  width: 400px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.rk-post {
+  display: grid;
+  height: 108px;
+  box-sizing: border-box;
+  align-content: start;
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.rk-post p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  -webkit-box-orient: vertical;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  -webkit-line-clamp: 2;
+}
+.rk-likes {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--og-purple);
+  font-size: 13.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.rk-sort {
+  top: 474px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #565b81;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* 5 · audience pattern */
+.rk-ana {
+  top: 56px;
+  left: 30px;
+  display: grid;
+  width: 380px;
+  gap: 8px;
+  border-radius: 24px;
+  padding: 20px 22px 22px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.rk-ana-h {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.rk-score {
+  display: grid;
+  justify-items: end;
+}
+.rk-score b {
+  font:
+    800 56px/0.95 var(--font-bricolage),
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.rk-score small {
+  color: var(--og-purple);
+  font-size: 22px;
+  letter-spacing: 0;
+}
+.rk-score > span {
+  color: #6b6f93;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.rk-lbl {
+  margin: 0;
+  color: #6b6f93;
+  font-size: 13px;
+  font-weight: 700;
+}
+.rk-cmp {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.rk-cmp li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.rk-cmp li::before {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--rk-k0);
+  box-shadow: inset 0 0 0 1px rgba(19, 25, 81, 0.12);
+  content: "";
+}
+.rk-cmp li:nth-child(2)::before {
+  background: var(--rk-k1);
+}
+.rk-cmp li:nth-child(3)::before {
+  background: var(--rk-k2);
+}
+.rk-angle {
+  margin: 0;
+  color: var(--og-purple);
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+/* 6-7 · research table and the team's choice */
+.rk-tbl {
+  top: 40px;
+  left: 0;
+  width: 440px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.rk-tr {
+  display: grid;
+  height: 70px;
+  grid-template-columns: minmax(0, 1fr) 52px 100px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  font-size: 14.5px;
+  line-height: 1.3;
+}
+.rk-tr + .rk-tr {
+  border-top: 1px solid #ebe8f5;
+}
+.rk-tr.is-new {
+  background: #faf4fe;
+}
+.rk-tp {
+  display: grid;
+  min-width: 0;
+}
+.rk-tp b {
+  font-size: 15.5px;
+}
+.rk-tr.is-new .rk-tp b {
+  color: var(--og-purple);
+}
+.rk-tp small {
+  overflow: hidden;
+  color: #6b6f93;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rk-scr {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.rk-st {
+  display: inline-flex;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.rk-st.is-new {
+  color: var(--og-purple);
+  background: #f4e7fd;
+}
+.rk-st.is-approved {
+  color: #1c7a43;
+  background: #e1f4e8;
+}
+.rk-st.is-skipped {
+  color: #6b6f93;
+  box-shadow: inset 0 0 0 1.5px rgba(19, 25, 81, 0.2);
+}
+.rk-ntf {
+  top: 280px;
+  left: 30px;
+  display: grid;
+  width: 380px;
+  gap: 12px;
+  border-radius: 22px;
+  padding: 16px 18px 18px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.rk-ntf-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rk-ntf-h img {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  padding: 3px;
+  background: var(--og-navy);
+}
+.rk-ntf-h b {
+  font-size: 16px;
+}
+.rk-ntf-h span {
+  margin-left: auto;
+  color: var(--og-purple);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.rk-ntf p {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  color: #565b81;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.rk-ntf p b {
+  color: var(--og-navy);
+  font-size: 17px;
+}
+
+/* Without the film: each scene's end pose from data-scene. */
+.rk-cv:not(.is-film) > :not(.rk-notes),
+.rk-cv:not(.is-film) .og-now,
+.rk-cv:not(.is-film) .bj-tick {
+  visibility: hidden;
+}
+.rk-cv:not(.is-film):not([data-scene="0"]) > .rk-notes {
+  visibility: hidden;
+}
+.rk-cv:not(.is-film)[data-scene="0"] > .og-count,
+.rk-cv:not(.is-film)[data-scene="1"] > :is(.rk-clock, .rk-topics),
+.rk-cv:not(.is-film)[data-scene="2"] > :is(.rk-topic, .rk-sum, .rk-kws),
+.rk-cv:not(.is-film)[data-scene="3"] > :is(.rk-kws, .rk-posts, .rk-sort),
+.rk-cv:not(.is-film)[data-scene="4"] > .rk-ana,
+.rk-cv:not(.is-film):is([data-scene="5"], [data-scene="6"]) > .rk-tbl,
+.rk-cv:not(.is-film)[data-scene="6"] > .rk-ntf,
+.rk-cv:not(.is-film)[data-scene="6"] :is(.og-now, .bj-tick),
+.rk-cv:not(.is-film):is([data-scene="7"], [data-scene="8"]) > .og-mx {
+  visibility: visible;
+}
+.rk-cv:not(.is-film)[data-scene="6"] .og-was {
+  visibility: hidden;
+}
+.rk-cv:not(.is-film)[data-scene="3"] > .rk-kws {
+  transform: translateY(-280px);
+}
+.rk-cv:not(.is-film)[data-scene="3"] .rk-post:nth-child(n + 5) {
+  opacity: 0.35;
+}
+.story-stage:has(.rk-cv:not(.is-film)[data-scene="1"]) {
+  background: #3b3f86;
+}
 .detail-fallback-story {
   display: grid;
   gap: 14px;
