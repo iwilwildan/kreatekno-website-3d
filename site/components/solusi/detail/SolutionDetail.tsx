@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  ArrowRight,
   ChatCircleDots,
   Check,
   CheckCircle,
@@ -18,9 +17,9 @@ import { Link } from "@/i18n/navigation";
 import { detailMessage } from "@/lib/solusi/pesan";
 import { related } from "@/lib/solusi/related";
 import { SOLUSI } from "@/content/solusi";
-import { catalogCopy } from "@/content/solusi/catalog";
 import { KontakModal } from "../KontakModal";
 import { CeritaScroll } from "./CeritaScroll";
+import { RakTerkait } from "./RakTerkait";
 
 const dateLocale = { id: "id-ID", en: "en-US" } as const;
 
@@ -309,20 +308,17 @@ export function SolutionDetail({ solution, locale }: { solution: Solusi; locale:
               </Link>
             </div>
           </section>
-          <section className="detail-section is-wide">
-            <p className="detail-eyebrow">{labels.relatedEyebrow}</p>
-            <h2>{labels.relatedTitle}</h2>
-            <div className="detail-related">
-              {relatedItems.map((item) => (
-                <Link key={item.slug} href={{ pathname: "/solusi/[slug]", params: { slug: item.slug } }}>
-                  <ArrowRight aria-hidden />
-                  <span>{catalogCopy(item, locale).title}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
         </div>
       </div>
+      <section className="detail-related detail-inner" aria-labelledby="related-title">
+        <p className="detail-eyebrow">{labels.relatedEyebrow}</p>
+        <h2 id="related-title">{labels.relatedTitle}</h2>
+        <RakTerkait
+          slugs={relatedItems.map((item) => item.slug)}
+          locale={locale}
+          labels={{ shelf: labels.relatedShelf, previous: labels.relatedPrev, next: labels.relatedNext }}
+        />
+      </section>
       <KontakModal />
     </main>
   );

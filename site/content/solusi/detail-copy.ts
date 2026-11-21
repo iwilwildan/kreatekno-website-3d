@@ -47,6 +47,9 @@ const ID = {
   ctaBody: "Ceritakan alur kerja Anda. Kami bantu petakan solusinya, gratis.",
   relatedEyebrow: "Solusi terkait",
   relatedTitle: "Biasanya juga dibutuhkan",
+  relatedShelf: "Sering dipakai bersama",
+  relatedPrev: "Geser rak solusi terkait ke kiri",
+  relatedNext: "Geser rak solusi terkait ke kanan",
   fallbackStory: "Langkah kerja",
 };
 
@@ -97,6 +100,9 @@ const EN: typeof ID = {
   ctaBody: "Tell us about your workflow. We will help map the solution, free of charge.",
   relatedEyebrow: "Related solutions",
   relatedTitle: "Often needed together",
+  relatedShelf: "Often used together",
+  relatedPrev: "Scroll the related solutions shelf left",
+  relatedNext: "Scroll the related solutions shelf right",
   fallbackStory: "Workflow steps",
 };
 

@@ -2719,3 +2719,17 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `bj1-qa.mjs` 106/106 dan `og5-qa.mjs` 106/106 (Order Grup tanpa regresi). Error console hanya dari tes GSAP diblokir dan `/_vercel/insights/script.js` 404 di lokal.
 - Catatan: testimoni Home dan plakat/logo "Trusted by" sudah menyebut nama klien ini (konten lama, tidak diubah).
 - Belum: tes HP Android user, review user. Tidak ada commit/push.
+
+### 2026-11-21 (rencana RT1: "Solusi terkait" jadi rak di semua detail Solusi)
+
+- Permintaan user setelah BJ1 di-commit (`cefbd52`, di-push ke `main`): ganti "Solusi terkait" di setiap halaman detail dengan satu rak seperti etalase, kotak berwarna tim.
+- Keputusan user: HTML/CSS saja (tanpa 3D), isi hanya solusi terkait, judul tetap dan papan rak tanpa nama tim. Rencana di `docs/plans/solusi/PLAN-DETAIL.md` bagian 10 (ekstrak `RakBox` dari `Etalase.tsx`, komponen `RakTerkait`, gaya `.etalase-mini`, QA).
+- Belum: persetujuan plan dan implementasi. Tidak ada kode yang berubah, tidak ada commit/push.
+
+### 2026-11-21 (RT1: "Solusi terkait" jadi rak etalase di semua detail Solusi)
+
+- User menyetujui rencana RT1 ("setuju mulai, buat semirip mungkin dengan etalase 3D world"). Rak HTML/CSS satu baris, kotak berwarna tim, papan "Sering dipakai bersama"; isi tetap 2 solusi terkait. Rincian di `docs/plans/solusi/PLAN-DETAIL.md` bagian 10.
+- Baru: `components/solusi/RakBox.tsx`, `components/solusi/detail/RakTerkait.tsx`, gaya `.etalase.is-mini` di `detail.css`, `tools/solusi/rt1-qa.mjs`. Diubah: `Etalase.tsx` (pakai `RakBox`, markup sama), `SolutionDetail.tsx`, `detail-copy.ts`.
+- Kemiripan: warna lampu, muka atas, punggung, tepi, panel, papan dan bayangan kontak diukur dari render 3D etalase 1440 px; sampel piksel kotak depan selisih ≤ 2/255, papan sama persis.
+- Dicek di build produksi: `rt1-qa.mjs` 31/31 (12 detail × ID/EN: kotak = `related()`, warna tim, tautan, papan; 4 viewport tanpa scroll samping; klik ke detail dan Back; axe rak), `etalase-qa.mjs` 114/114 (etalase 3D tidak regresi), `bj1-qa.mjs` 106/106, `og5-qa.mjs` 106/106 (error console hanya 404 analytics Vercel lokal dan GSAP yang sengaja diblokir); typecheck, ESLint, Prettier, `logic.test.mjs` 14/14, `next build`. Frame desktop dan HP dicek visual, screenshot hanya di chat.
+- Belum: tes HP Android user, review user. Tidak ada commit/push.

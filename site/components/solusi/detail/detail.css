@@ -1537,19 +1537,119 @@
   margin: 0;
   color: #b6bbe2;
 }
+/* "Solusi terkait" shelf (RT1): one etalase tier without the 3D world. The lit faces are measured from the
+   etalase render at 1440 px (rak.ts: hemisphere + directional light, tilt 0.2): the front face multiplies the
+   team colour by about (0.92, 0.90, 0.95), the top face by 0.96 with a bright rounded ridge, the right edge
+   darkens over 9 px; panel #F1F1F5 lit to #DAD7E7 → #D4D1E2; plank #B4A9D5 as top face, ridge, front, edge;
+   a dark contact shadow under each box on the plank. Multiply layers keep the team colour from `--c`. */
 .detail-related {
   display: grid;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding-bottom: 96px;
+  scroll-margin-top: 96px;
 }
-.detail-related a {
-  display: grid;
-  grid-template-columns: 22px 1fr;
-  gap: 10px;
-  color: var(--detail-ink);
-  font-weight: 800;
+.detail-related h2 {
+  max-width: 28ch;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
 }
-.detail-related svg {
-  color: var(--detail-purple);
+.solusi-page.solusi-detail .etalase.is-mini {
+  --shelf-pad: 26px;
+  margin-top: 10px;
+  overflow: visible;
+  background: none;
+}
+.solusi-page.solusi-detail .etalase.is-mini .counter {
+  border-radius: 18px 18px 0 0;
+  padding: 18px 18px 22px;
+}
+.solusi-page.solusi-detail .etalase.is-mini .plinth {
+  height: 18px;
+  border-radius: 0 0 14px 14px;
+}
+.solusi-page.solusi-detail .etalase.is-mini .tier {
+  padding: 0 10px var(--shelf-pad);
+}
+.solusi-page.solusi-detail .etalase.is-mini .row {
+  z-index: 3;
+}
+.solusi-page.solusi-detail .etalase.is-mini .track {
+  padding-bottom: 8px;
+}
+.solusi-page.solusi-detail .etalase.is-mini .slot {
+  position: relative;
+}
+.solusi-page.solusi-detail .etalase.is-mini .slot::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 305px;
+  left: -12%;
+  width: 124%;
+  height: 8px;
+  background: radial-gradient(
+    ellipse 50% 100% at 50% 0,
+    rgba(5, 7, 31, 0.92),
+    rgba(5, 7, 31, 0.62) 40%,
+    rgba(5, 7, 31, 0) 100%
+  );
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out);
+}
+.solusi-page.solusi-detail .etalase.is-mini .slot:has(.prod:hover, .prod:focus-visible)::after {
+  opacity: 0.55;
+}
+.solusi-page.solusi-detail .etalase.is-mini .pk {
+  border-radius: 6px;
+  background-color: var(--c);
+  background-image:
+    linear-gradient(to right, rgb(240, 240, 242), #fff 3px, #fff calc(100% - 9px), rgb(229, 229, 232) 100%),
+    linear-gradient(
+      to bottom,
+      rgb(176, 176, 196) 0,
+      rgb(244, 244, 244) 1.5px 9px,
+      #fff 11px 14px,
+      rgb(236, 232, 245) 17px,
+      rgb(234, 230, 243) 40px,
+      rgb(232, 228, 241) 100%
+    );
+  background-blend-mode: multiply, multiply;
+}
+.solusi-page.solusi-detail .etalase.is-mini .cover {
+  background: linear-gradient(#dad7e7, #d4d1e2 40%);
+}
+.solusi-page.solusi-detail .etalase.is-mini .plank {
+  z-index: 1;
+  height: calc(var(--shelf-pad) + 8px);
+  align-items: flex-end;
+  padding: 0 0 7px 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to bottom,
+    #aba1ca 0 9px,
+    #b3a8d6 10px 12px,
+    #a397c9 14px calc(100% - 5px),
+    #9c8fc3 calc(100% - 4px),
+    #8c7fb6 100%
+  );
+}
+.solusi-page.solusi-detail .etalase.is-mini .plank span {
+  font: 700 0.75rem/1 var(--font-body);
+  letter-spacing: 0.02em;
+  color: var(--color-navy);
+}
+@media (max-width: 760px) {
+  .solusi-page.solusi-detail .etalase.is-mini .counter {
+    padding: 12px 10px 18px;
+  }
+  .solusi-page.solusi-detail .etalase.is-mini .tier {
+    padding: 0 8px var(--shelf-pad);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .solusi-page.solusi-detail .etalase.is-mini .slot::after {
+    transition: none;
+  }
 }
 
 @media (max-width: 999px) {

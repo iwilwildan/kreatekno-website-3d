@@ -136,3 +136,30 @@ Format subplan baru: identitas/status → sumber → lingkup HTML/cerita → alu
 - 8 Nov 2026: user menyetujui S5 dan memulai S6 melalui “lanjutkan”. D0–D2 selesai teknis: schema detail/cerita, route ID/EN, canonical/hreflang, template HTML, FAQ JSON-LD, kontak detail, fallback langkah untuk 11 slug, serta Order Grup sebagai fixture. Build 54 halaman, typecheck, lint, tes logika, dan QA browser lulus. D3 baru mencakup controller scroll/rel, lazy WebGL, reduced motion dan dispose; CSS3D/koreografi belum dimulai.
 - 8 Nov 2026: OG3 menyelesaikan implementasi D3 pada pilot: layer CSS3D dimiliki host DOM khusus, loop berhenti di luar viewport/tab tersembunyi, lompatan acak mengembalikan state deterministik, reduced motion langsung pose akhir, dan unmount melepas WebGL/CSS3D. Uji zoom/perangkat nyata tetap lingkup OG4.
 - 8 Nov 2026: OG4 memvalidasi D3 pada gagal/slow chunk, font lambat dengan gerbang maksimum 1,5 detik, context lost, route exit sebelum mount, resize saat animasi, reflow setara 200%, ID/EN/kontak/Back, dan tiga lifecycle. Browser QA lulus 47/47; bundle cerita 159.235 byte transfer dan emulasi 390×844 selama 60,06 detik rata-rata 32,22 fps. Android/iOS fisik, suhu perangkat, dan kanal kontak produksi masih batas prarilis; D4 menunggu P2 sebelas slug lain.
+
+## 10. RT1: "Solusi terkait" jadi rak (disetujui 21 Nov 2026, selesai teknis, menunggu review user)
+
+Permintaan user: bagian "Solusi terkait" di setiap halaman detail diganti rak seperti etalase `/solusi`: **satu rak** berisi kotak solusi, tiap kotak berwarna tim masing-masing.
+
+**Keputusan user (21 Nov):** (1) HTML/CSS saja, tanpa dunia 3D rak; (2) isi rak hanya solusi terkait (hasil `related()`); (3) judul bagian tetap, papan rak berisi satu tulisan umum tanpa nama tim.
+
+**Yang sudah ada dan dipakai ulang** (hasil baca kode):
+- `Etalase.tsx` menggambar kotak sebagai `li.slot > a.prod > span.pk` (status, `.cover` dengan judul, hasil dan chip "Cocok untuk", ikon aplikasi). Gaya `.etalase ...` di `toko.css` sudah punya mode cadangan tanpa 3D (`.solusi-page:not(.solusi-world-ready) .etalase .pk`: latar `var(--c)` radius 6, panel `#F1F1F5`). `RakTrack.tsx` memberi panah, seret mouse dan snap. `toko.css` dan `detail.css` sama-sama dimuat layout `/solusi`, jadi gayanya sudah tersedia di detail.
+- Warna kotak = `team.color` dari `taksonomi.ts` (tim pertama solusi), seperti pada tier etalase.
+
+**Rancangan**
+1. Ekstrak satu kotak dari `Etalase.tsx` menjadi komponen bersama `RakBox` (props: solusi, locale, href, warna tim; `FitChips`, ikon dan `ICONS` ikut pindah). Etalase memanggilnya tanpa perubahan perilaku (markup dan atribut `data-slot`/`data-color` tetap sama supaya pass 3D etalase dan `etalase-qa.mjs` tidak terganggu).
+2. Komponen baru `RakTerkait` di `components/solusi/detail/`: satu `<section class="etalase etalase-mini">` berisi `RakTrack` dan papan rak satu baris (teks umum dari `detail-copy.ts`, ID/EN), tanpa `.plinth` dan tanpa `.room`/`.counter` etalase. Tiap kotak memakai warna timnya lewat `--c` di `li`, bukan di tier.
+3. `SolutionDetail.tsx`: bagian "Solusi terkait" dipindah dari kolom isi ke bagian selebar kontainer setelah `.detail-page` (rak 216 px per kotak terlalu sempit di kolom isi). Judul h2 dan eyebrow tetap; daftar tautan lama dihapus. Tautan memakai `Link` dengan `pathname: "/solusi/[slug]"` (bukan href mentah) supaya slug EN benar.
+4. Gaya: blok `.etalase-mini` kecil di `detail.css` (latar rak, papan, jarak) dengan mode tanpa 3D dipaksa selalu aktif; hover naik 6 px dan fokus seperti etalase; `prefers-reduced-motion` mematikan transisi.
+5. Aksesibilitas dan SEO: setiap kotak tetap satu tautan dengan nama jelas (judul + status), chip sr-only, ikon aplikasi `role="img"` berlabel; HTML server memuat semua judul terkait.
+6. Cek: HTML server ID/EN (12 detail, tautan benar, tanpa nama klien); visual 1440, 1024 tegak, 390, 360 (kotak tidak terpotong, panah hanya saat meluber, tanpa scroll ke samping, warna sesuai tim); klik kotak ke detail yang benar dan Back; reduced motion; axe kontras; `etalase-qa.mjs` dan `bj1-qa.mjs`/`og5-qa.mjs` tidak regresi; typecheck, ESLint, Prettier, `logic.test.mjs`, `next build`. Screenshot hanya di chat.
+
+**Asumsi yang perlu dikonfirmasi saat review**
+- Jumlah kotak tetap 2 (isi `related()` sekarang). Rak dengan 2 kotak 216 px akan terlihat pendek di layar lebar; kalau mau lebih ramai, cukup naikkan `slice(0, 2)` di `lib/solusi/related.ts` menjadi 3 atau 4 (tes `related` di `logic.test.mjs` ikut disesuaikan).
+- Rak di bawah CTA atau di atasnya: saya pertahankan posisi sekarang (setelah CTA).
+
+**Hasil implementasi (21 Nov).** User menyetujui ("setuju mulai, buat semirip mungkin dengan etalase 3D world"); jumlah kotak tetap 2 (`related()` tidak diubah).
+- Baru: `components/solusi/RakBox.tsx` (kotak etalase bersama, `FitChips` dan ikon ikut pindah), `components/solusi/detail/RakTerkait.tsx`, gaya `.etalase.is-mini` di `detail.css`, `tools/solusi/rt1-qa.mjs`. Diubah: `Etalase.tsx` (memakai `RakBox`, markup sama), `SolutionDetail.tsx` (bagian terkait selebar kontainer setelah `.detail-page`), `detail-copy.ts` (papan "Sering dipakai bersama"/"Often used together", label panah ID/EN).
+- Kemiripan dengan 3D: warna diukur dari render etalase 1440 px (pass `rak.ts`). Muka depan kotak = warna tim × (0,92; 0,90; 0,95), muka atas 10 px × 0,96 dengan punggung terang 4 px, tepi kanan menggelap 9 px, panel `#DAD7E7 → #D4D1E2`, papan muka atas/punggung/depan/tepi bawah, bayangan kontak gelap di bawah kotak. Sampel piksel versi CSS: depan (123,185,203) vs 3D (124,186,205); muka atas dan papan sama persis.
+
