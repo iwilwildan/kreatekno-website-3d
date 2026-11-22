@@ -300,6 +300,95 @@ export const KlinikCeritaSchema = z
     }
   });
 
+/** Prospect summary field: picks the pastel chip colour. */
+export const ProspekFieldSchema = z.enum(["unit", "reason"]);
+export const ProspekStatusSchema = z.enum(["pending", "deal", "lost"]);
+const words = (max: number) => text.refine((v) => v.trim().split(/\s+/).length <= max, `Exceeds ${max} words`);
+
+/**
+ * Every word visible on the Follow-up Prospek stage (FP1 "one prospect row travels"): prospects who asked for
+ * time pile up, the morning check reads the prospect table, the filter keeps the one row that is still pending
+ * and quiet for more than three days, its chat summary lifts out two chips that become a short AI draft, the
+ * draft lands with the marketing team who send it themselves, and the row is marked as contacted (a design
+ * step, marked as such). Only prospect data: no chat chrome, timestamps on bubbles or table headers.
+ */
+export const ProspekPanggungSchema = z.strictObject({
+  messages: z.array(z.strictObject({ who: text, text: short, tag: text.optional() })).length(6),
+  counter: z.strictObject({ value: z.number().int().positive(), label: text }),
+  alarm: z.strictObject({ time: text, label: text }),
+  table: z.strictObject({
+    title: text,
+    time: text,
+    rows: z
+      .array(
+        z.strictObject({
+          name: text,
+          summary: text,
+          status: ProspekStatusSchema,
+          last: text,
+          days: z.number().int().min(0),
+        }),
+      )
+      .length(4),
+    pick: z.number().int().min(0).max(3),
+  }),
+  status: z.strictObject({ pending: text, deal: text, lost: text }),
+  filters: z.array(text).length(2),
+  quietDays: z.number().int().positive(),
+  lead: z.strictObject({
+    name: text,
+    parts: z.array(z.union([text, z.strictObject({ field: ProspekFieldSchema, text })])).min(3),
+  }),
+  chips: z.array(z.strictObject({ field: ProspekFieldSchema, value: text })).length(2),
+  draft: z.strictObject({ who: text, text: words(20) }),
+  team: z.strictObject({ title: text, line: text, send: text, sent: text }),
+  update: z.strictObject({ status: text, last: text, tag: text }),
+  sample: text,
+});
+
+export const ProspekCeritaLocaleSchema = z.strictObject({
+  intro: text,
+  scenes: z.array(CeritaSceneSchema).length(9),
+  stage: ProspekPanggungSchema,
+});
+
+export const ProspekCeritaSchema = z
+  .strictObject({
+    slug: z.literal("followup-prospek"),
+    id: ProspekCeritaLocaleSchema,
+    en: ProspekCeritaLocaleSchema,
+  })
+  .superRefine((story, ctx) => {
+    for (const locale of ["id", "en"] as const) {
+      const copy = story[locale];
+      const { stage } = copy;
+      if (new Set(copy.scenes.map((scene) => scene.id)).size !== copy.scenes.length)
+        ctx.addIssue({ code: "custom", message: `${locale}: scene IDs must be unique` });
+      if (copy.scenes.filter((scene) => scene.cta).length !== 1 || !copy.scenes.at(-1)?.cta)
+        ctx.addIssue({ code: "custom", message: `${locale}: the final scene must be the only CTA` });
+      if (stage.messages.filter((message) => message.tag).length !== 1)
+        ctx.addIssue({ code: "custom", message: `${locale}: exactly one bubble carries the waiting tag` });
+      const passes = stage.table.rows.flatMap((row, index) =>
+        row.status === "pending" && row.days > stage.quietDays ? [index] : [],
+      );
+      if (passes.join() !== String(stage.table.pick))
+        ctx.addIssue({ code: "custom", message: `${locale}: only the picked row is pending and quiet too long` });
+      const row = stage.table.rows[stage.table.pick];
+      const said = stage.lead.parts.map((part) => (typeof part === "string" ? part : part.text)).join("");
+      if (row.name !== stage.lead.name || row.summary !== said)
+        ctx.addIssue({ code: "custom", message: `${locale}: the lead card is the picked row's name and summary` });
+      const fields = stage.lead.parts.flatMap((part) => (typeof part === "string" ? [] : [part.field]));
+      if (stage.chips.map((chip) => chip.field).join() !== fields.join())
+        ctx.addIssue({ code: "custom", message: `${locale}: chips must follow the highlighted words in order` });
+      const draft = stage.draft.text.toLowerCase();
+      if (
+        !draft.includes(row.name.toLowerCase()) ||
+        stage.chips.some((chip) => !draft.includes(chip.value.toLowerCase()))
+      )
+        ctx.addIssue({ code: "custom", message: `${locale}: the draft names the prospect, the unit and the reason` });
+    }
+  });
+
 export const CeritaSchema = z
   .strictObject({
     slug: z.literal("order-grup"),
@@ -339,3 +428,7 @@ export type KlinikCerita = z.infer<typeof KlinikCeritaSchema>;
 export type KlinikCeritaLocale = z.infer<typeof KlinikCeritaLocaleSchema>;
 export type KlinikPanggung = z.infer<typeof KlinikPanggungSchema>;
 export type KlinikField = z.infer<typeof KlinikFieldSchema>;
+export type ProspekCerita = z.infer<typeof ProspekCeritaSchema>;
+export type ProspekCeritaLocale = z.infer<typeof ProspekCeritaLocaleSchema>;
+export type ProspekPanggung = z.infer<typeof ProspekPanggungSchema>;
+export type ProspekField = z.infer<typeof ProspekFieldSchema>;

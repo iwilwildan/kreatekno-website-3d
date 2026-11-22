@@ -48,9 +48,9 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "followup-prospek": {
     title: "Lead follow-up assistant",
-    result: "Every lead gets recorded and followed up at the right time.",
-    summary: "Keep promising leads from disappearing after an ad, chat or site visit.",
-    keywords: "lead prospect sales property ads follow up customer",
+    result: "Every morning the team knows who to contact and already has a draft message.",
+    summary: "Prospects quiet for more than three days are found every morning, with a draft from their last chat.",
+    keywords: "lead prospect sales property site visit follow up reminder draft message",
   },
   "carousel-konten": {
     title: "Carousel content assistant",

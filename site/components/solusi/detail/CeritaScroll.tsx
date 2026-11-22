@@ -9,6 +9,8 @@ import {
   CalendarCheck,
   ChatCircleDots,
   CheckCircle,
+  Clock,
+  Funnel,
   Headset,
   Heart,
   ListBullets,
@@ -19,6 +21,7 @@ import {
   Table,
   Tag,
   Truck,
+  UserList,
   UsersThree,
 } from "@phosphor-icons/react/ssr";
 import { useEffect, useRef, useState } from "react";
@@ -28,12 +31,13 @@ import { TIMING } from "./ceritaTiming";
 import { Panggung } from "./Panggung";
 import { PanggungBooking } from "./PanggungBooking";
 import { PanggungKlinik } from "./PanggungKlinik";
+import { PanggungProspek } from "./PanggungProspek";
 import { PanggungRiset } from "./PanggungRiset";
 
-/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`, `.ck-cv`), scaled to fit the stage. */
+/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`, `.ck-cv`, `.fp-cv`), scaled to fit the stage. */
 const DESIGN = { w: 440, h: 520, max: 1.5 };
 /**
- * Per story: rail icons (the workflow steps are scenes 1..icons.length), the scene drawn at night, the pinned
+ * Per story: rail icons (the workflow steps are scenes 1..icons.length), the scene drawn at night (-1: none), the pinned
  * scroll length in screens (11 for nine scenes, as the Tonton prototype) and the lazily loaded film.
  */
 const KIND = {
@@ -61,10 +65,16 @@ const KIND = {
     screens: 12,
     film: () => import("./ceritaFilmKlinik"),
   },
+  "followup-prospek": {
+    icons: [Clock, UserList, Funnel, Sparkle, UsersThree, CheckCircle],
+    night: -1,
+    screens: 11,
+    film: () => import("./ceritaFilmProspek"),
+  },
 } as const;
 
 /**
- * A solution story in the Tonton layout (OG5c; Order Grup, Booking Jasa, Riset Konten and CS Klinik): a sticky pastel stage with the
+ * A solution story in the Tonton layout (OG5c; Order Grup, Booking Jasa, Riset Konten, CS Klinik and Follow-up Prospek): a sticky pastel stage with the
  * scene caption on the left, the motion-graphic canvas on the right and the workflow rail below. Scrolling
  * through the reel maps linearly to the story's timeline. Captions and rail follow React state, so they work
  * without GSAP; the canvas film is lazy.
@@ -270,6 +280,8 @@ export function CeritaScroll({
                 <PanggungBooking copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "cs-klinik" ? (
                 <PanggungKlinik copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "followup-prospek" ? (
+                <PanggungProspek copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "riset-konten" ? (
                 <PanggungRiset copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : (

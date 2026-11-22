@@ -103,9 +103,23 @@ export const CS_KLINIK = makeTiming(
   7,
 );
 
+/** Follow-up Prospek (FP1 "one prospect row travels"): nine scenes, six rail nodes. */
+export const FOLLOWUP_PROSPEK = makeTiming([
+  { in: 1.6, hold: 0.6 },
+  { in: 1.0, hold: 0.6 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.4, hold: 0.7 },
+  { in: 2.0, hold: 0.8 },
+  { in: 1.6, hold: 0.7 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.0, hold: 0.6 },
+  { in: 0.6, hold: 0.9 },
+]);
+
 export const TIMING = {
   "order-grup": ORDER_GRUP,
   "booking-jasa": BOOKING_JASA,
   "riset-konten": RISET_KONTEN,
   "cs-klinik": CS_KLINIK,
+  "followup-prospek": FOLLOWUP_PROSPEK,
 } as const;

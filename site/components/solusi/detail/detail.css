@@ -1996,6 +1996,291 @@
 .story-stage:has(.ck-cv:not(.is-film)[data-scene="1"]) {
   background: #3b3f86;
 }
+/* Follow-up Prospek stage (FP1 "one prospect row travels"): same canvas, bubbles, chips, highlights and results
+   as Order Grup; two pastels mark the unit and the reason, status pills mark pending, won and lost. */
+.fp-cv {
+  --fp-unit: #eadcfd;
+  --fp-reason: #fff1c9;
+  --fp-filter: #e1f1ff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 520px;
+  color: var(--og-navy);
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  transform: translate(-50%, -50%) scale(var(--og-s));
+}
+.fp-cv > * {
+  position: absolute;
+  margin: 0;
+}
+.fp-cv svg {
+  flex: none;
+}
+
+/* 2 · every morning */
+.fp-alarm {
+  top: 120px;
+  left: 90px;
+  display: grid;
+  width: 260px;
+  justify-items: center;
+  gap: 6px;
+  border-radius: 28px;
+  padding: 26px 20px 24px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.fp-alarm svg {
+  color: #f2a516;
+  font-size: 40px;
+}
+.fp-alarm b {
+  font:
+    800 72px/1 var(--font-bricolage),
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.fp-alarm small {
+  color: #565b81;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* 3-4, 7 · the prospect table and its filters */
+.fp-cv .fp-filters {
+  top: 8px;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+.fp-filters .og-chip {
+  padding: 9px 14px 9px 11px;
+  background: var(--fp-filter);
+  font-size: 15px;
+  white-space: nowrap;
+}
+.fp-table {
+  top: 64px;
+  left: 0;
+  width: 440px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.fp-th {
+  display: flex;
+  height: 50px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+.fp-th b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+}
+.fp-th b svg {
+  color: var(--og-purple);
+}
+.fp-th small {
+  color: #6b6f93;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fp-th .og-sample {
+  margin-left: auto;
+}
+.fp-tr {
+  position: relative;
+  display: grid;
+  height: 78px;
+  grid-template-columns: minmax(0, 1fr) 108px 74px;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #ebe8f5;
+  padding: 0 16px;
+  font-size: 14.5px;
+  line-height: 1.3;
+}
+.fp-glow {
+  border-radius: 14px;
+  inset: 4px 6px;
+}
+.fp-who {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+.fp-who b {
+  font-size: 15.5px;
+}
+.fp-who small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #565b81;
+  font-size: 13.5px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.fp-stc {
+  justify-self: start;
+}
+.fp-st {
+  width: max-content;
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: #fff1c9;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+.fp-tr[data-status="deal"] .fp-st {
+  background: #d9f5e3;
+}
+.fp-tr[data-status="lost"] .fp-st {
+  color: #565b81;
+  background: #efedf6;
+}
+.fp-tr .fp-st.is-done {
+  padding-inline: 10px;
+  color: white;
+  background: var(--og-purple);
+  font-size: 12.5px;
+}
+.fp-last {
+  color: #6b6f93;
+  font-size: 13px;
+  font-weight: 600;
+}
+.fp-tr.is-pick .fp-last .og-now {
+  color: var(--og-purple);
+  font-weight: 800;
+}
+
+/* 5 · the picked row's summary, its two chips and the AI draft */
+.fp-cv .fp-lead {
+  top: 24px;
+}
+.fp-cv .fp-chips {
+  top: 156px;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+.fp-chips .og-chip {
+  padding: 9px 14px 9px 11px;
+  font-size: 15.5px;
+  white-space: nowrap;
+}
+.fp-cv .fp-draft {
+  top: 220px;
+  left: 36px;
+  width: 368px;
+  max-width: none;
+  min-height: 120px;
+  font-size: 16.5px;
+  line-height: 1.5;
+}
+
+/* 6 · the marketing team card; the draft lands in its slot */
+.fp-team {
+  top: 24px;
+  left: 20px;
+  display: grid;
+  width: 400px;
+  gap: 12px;
+  border-radius: 24px;
+  padding: 16px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.fp-team-h {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  gap: 12px;
+}
+.fp-team-i {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--fp-filter);
+  font-size: 22px;
+}
+.fp-team-t {
+  display: grid;
+  line-height: 1.3;
+}
+.fp-team-t b {
+  font-size: 17px;
+}
+.fp-team-t small {
+  color: #565b81;
+  font-size: 14px;
+}
+.fp-slot {
+  height: 120px;
+}
+.fp-act {
+  justify-items: end;
+}
+.fp-send,
+.fp-sent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 18px 10px 14px;
+  font-size: 16px;
+  font-weight: 800;
+}
+.fp-send {
+  color: white;
+  background: var(--og-purple);
+}
+.fp-sent {
+  color: #1d6b3f;
+  background: #d9f5e3;
+}
+
+/* Without the film: each scene's end pose from data-scene. */
+.fp-cv:not(.is-film) > :not(.og-pile),
+.fp-cv:not(.is-film) :is(.og-now, .fp-glow, .fp-th .og-sample, .fp-send) {
+  visibility: hidden;
+}
+.fp-cv:not(.is-film):not([data-scene="0"]) > .og-pile {
+  visibility: hidden;
+}
+.fp-cv:not(.is-film)[data-scene="0"] > .og-count,
+.fp-cv:not(.is-film)[data-scene="1"] > .fp-alarm,
+.fp-cv:not(.is-film):is([data-scene="2"], [data-scene="3"], [data-scene="6"]) > .fp-table,
+.fp-cv:not(.is-film)[data-scene="3"] > .fp-filters,
+.fp-cv:not(.is-film)[data-scene="3"] .fp-glow,
+.fp-cv:not(.is-film)[data-scene="4"] > .fp-lead,
+.fp-cv:not(.is-film):is([data-scene="4"], [data-scene="5"]) > .fp-draft,
+.fp-cv:not(.is-film)[data-scene="5"] > .fp-team,
+.fp-cv:not(.is-film)[data-scene="6"] :is(.og-now, .fp-th .og-sample),
+.fp-cv:not(.is-film):is([data-scene="7"], [data-scene="8"]) > .og-mx {
+  visibility: visible;
+}
+.fp-cv:not(.is-film)[data-scene="6"] .fp-tr.is-pick .og-was {
+  visibility: hidden;
+}
+.fp-cv:not(.is-film)[data-scene="3"] .fp-tr:not(.is-pick) {
+  opacity: 0.35;
+}
+.fp-cv:not(.is-film)[data-scene="5"] > .fp-draft {
+  transform: translateY(-120px);
+}
 .detail-fallback-story {
   display: grid;
   gap: 14px;
