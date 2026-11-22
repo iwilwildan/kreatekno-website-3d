@@ -196,7 +196,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
 | 12  | Solusi v1 dan detail          | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail                                                                                               | fondasi 1–3; halaman depan dimajukan 7 Nov | 🟡 S5 disetujui; D0–D3 dan Order Grup OG0–OG4 selesai teknis 8 Nov, menunggu review final pilot |
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
-| 14 | Halaman lain | Artikel (MDX, 3 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | ⬜ |
+| 14 | Halaman lain | Artikel (MDX, 5 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | 🟡 plan disetujui 22 Nov; 14A Kebijakan Privasi, 14B Tentang dan 14C Artikel selesai teknis, menunggu review |
 | 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
 
 Tahap 14 tidak bergantung pada 3D, jadi bisa dikerjakan kapan saja setelah tahap 1 kalau input tim sudah ada.
@@ -655,9 +655,75 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 
 ### Tahap 14: Halaman lain
 
-- Artikel: layout editorial (referensi Maglr), 3 artikel awal dari `docs/SITE-BRIEF.md` 6.
-- Tentang: cerita, tim (Founder + 2 Co-founder), cara kerja, nilai, peta kantor, CTA.
+- Artikel: layout editorial (referensi Maglr), 5 artikel awal dari rak Home K7.
+- Tentang: cerita, tim (Founder + 2 Co-founder), cara kerja, nilai, kantor, CTA.
 - Kebijakan Privasi: draf Claude, direview sebelum tayang.
+
+#### Plan tahap 14 (disusun 22 Nov setelah riset dan jawaban user, disetujui 22 Nov)
+
+Kondisi sekarang: `/artikel`, `/tentang`, `/kebijakan-privasi` (dan `/en/articles`, `/en/about`, `/en/privacy-policy`) masih `PagePlaceholder`; meta title/description ID dan EN sudah ada di `messages`. Rak Home K7 menautkan 5 artikel ke `/artikel`, plakat K9b menautkan "Kenali kami lebih jauh" ke `/tentang`, footer menautkan Kebijakan Privasi. Situs tidak memasang cookie dan tidak memakai `localStorage`/`sessionStorage`; satu-satunya pelacakan adalah `@vercel/analytics` (event `whatsapp_click`, `solutions_contact_click`).
+
+Temuan riset (22 Nov):
+
+- **UU PDP:** UU 27/2022 berlaku penuh sejak 17 Okt 2024. Aturan pelaksananya, PP 33/2026, dilaporkan ditetapkan 16 Jul 2026 dengan masa transisi 6 bulan (berlaku ±16 Jan 2027); lembaga pengawas PDP belum terbentuk per Okt 2026. Isi PP dicek ke salinan resmi JDIH di awal 14A sebelum dikutip ([Kompas](https://www.kompas.id/artikel/peraturan-pelaksana-uu-pdp-akhirnya-terbit-lembaga-pengawas-masih-dinanti), [Bisnis](https://teknologi.bisnis.com/read/20260913/84/2003698/pembentukan-badan-pdp-dipercepat-implementasi-uu-pdp-dinilai-belum-efektif), [SIP Law](https://siplawfirm.id/id/publikasi/pp-33-2026-pelindungan-data-pribadi)).
+- **Vercel Web Analytics** tidak memakai cookie; pengunjung dikenali lewat hash dari request yang berlaku satu hari, data agregat ([Vercel docs](https://vercel.com/docs/analytics/privacy-policy)). Jadi tidak perlu banner cookie selama tidak ada embed pihak ketiga.
+- **MDX:** `@next/mdx` resmi dari Next hanya mengompilasi `.mdx` dan tidak membaca frontmatter YAML; metadata ditulis sebagai `export const meta = {…}` di file MDX dan divalidasi zod, tanpa `gray-matter` atau `remark-frontmatter` ([Next.js MDX guide](https://nextjs.org/docs/app/guides/mdx)). Versi terbaru `@next/mdx` 16.4.6, tapi dipasang **16.4.3** supaya sama dengan `next`.
+- **Article structured data:** tidak ada properti wajib; `author` (Person atau Organization), `headline`, `datePublished`, `dateModified`, `image` direkomendasikan ([Google](https://developers.google.com/search/docs/data-types/article)).
+- **kreatekno.com/about** (situs lama): "Kami yang di Balik Layar" (manusia, bukan robot; "Lho, kok bisa sih?"), tim Heru, Wildan, Andi dengan peran dan deskripsi, berdiri 2025, visi "lingkungan kerja yang lebih cerdas dan produktif", CTA penutup. Tidak ada alamat, peta, statistik, logo klien atau kebijakan privasi. Produk #KaryawanAI tidak dipakai lagi.
+
+Keputusan dari jawaban user (22 Nov):
+
+| Topik | Keputusan |
+| --- | --- |
+| Format konten | MDX resmi Next: `@next/mdx` 16.4.3, `@mdx-js/loader` 3.1.1, `@mdx-js/react` 3.1.1 (disetujui 22 Nov, dicatat di aturan 8 `CLAUDE.md` saat dipasang). Artikel dan teks Kebijakan Privasi di MDX; label UI tetap di `messages` |
+| Artikel awal | 5 judul rak Home: Admin, Melayani pembeli, Staf, Promosi, Keuangan. Draf ID dan EN oleh Claude, direview tim |
+| Penulis | "Tim Kreatekno" (`author` = Organization) |
+| Visual artikel | Editorial Maglr: judul besar, drop cap, pull quote, pita warna penuh, progress baca. Sampul tiap artikel memakai ilustrasi SVG `RackArt` dari rak Home |
+| Tim di Tentang | Heru "Founder", Wildan dan Andi "Co-founder" (label brief), bio singkat dari situs lama |
+| Foto tim | Potret tokoh vinyl Heru, Wildan, Andi dirender dari scene sendiri (WebP), bukan foto asli |
+| Kantor | Tanpa embed Google Maps. Alamat teks + tombol "Buka di Maps" + still fasad Kreatekno dari world (K5a.6). Alamat masih placeholder lewat env |
+| Kebijakan Privasi | Situs + kanal konsultasi (WhatsApp, Instagram, email) dibahas lengkap, plus bagian singkat data pelanggan klien (Kreatekno sebagai prosesor sesuai perjanjian). Acuan UU 27/2022 dan PP 33/2026 |
+| Sapaan | "kamu" di ketiga halaman, termasuk Kebijakan Privasi (isi tetap jelas dan formal) |
+| #KaryawanAI | Tidak disebut; sejarah cukup "berdiri 2025" |
+| Kontak | Alamat lengkap dan email privasi belum ada: `NEXT_PUBLIC_OFFICE_ADDRESS`, `NEXT_PUBLIC_MAPS_URL`, `NEXT_PUBLIC_PRIVACY_EMAIL` (fallback `CONTACT_EMAIL`). Halaman menulis "menyusul" sampai terisi; Kebijakan Privasi tidak tayang di production sebelum terisi |
+| Urutan | 14A Kebijakan Privasi → 14B Tentang → 14C Artikel, berhenti untuk review di akhir tiap bagian |
+
+Bersama (dikerjakan di awal 14A):
+
+1. Pasang tiga paket MDX versi persis, `npm audit`, `next.config.ts` dengan `createMDX` (`pageExtensions` tidak diubah karena MDX diimpor sebagai modul, bukan route), `mdx-components.tsx` di root `site/`.
+2. `lib/content.ts`: muat MDX per bahasa, skema zod untuk `meta`, build gagal kalau `meta` salah atau pasangan ID/EN tidak lengkap.
+3. Komponen MDX bersama di `components/mdx/`: `PullQuote`, `Callout`, `Band` (pita warna penuh), `Figure`, `Steps`, `Cta` (tombol "Konsultasi gratis" dengan `data-src` per halaman). Tipografi prosa di CSS sendiri (tanpa `@tailwindcss/typography`).
+
+**14A Kebijakan Privasi** (`content/legal/{id,en}/kebijakan-privasi.mdx`)
+
+1. Riset ulang singkat: salinan resmi PP 33/2026 di JDIH (pasal hak subjek data, kewajiban pengendali/prosesor, transfer ke luar negeri, pemberitahuan kegagalan), status lembaga PDP.
+2. Draf ID dan EN: siapa kami (PT Kreatekno Kreatif Teknologi sebagai pengendali, alamat, kontak); data yang dikumpulkan (kunjungan situs lewat Vercel Analytics tanpa cookie dan log hosting; chat WhatsApp, Instagram, email: nama, nomor, isi pesan, lampiran); tujuan dan dasar pemrosesan; pihak lain yang terlibat (Meta, Vercel, penyedia email) dan transfer ke luar negeri; lama simpan; keamanan; hak kamu (akses, perbaikan, hapus, tarik persetujuan, keberatan, salinan data) dan cara memintanya; data pelanggan klien (Kreatekno memproses atas instruksi klien, diatur perjanjian kerja); anak; tanpa cookie; perubahan kebijakan; tanggal berlaku. Teks yang terlihat tidak menyebut nama platform kecuali di bagian pihak ketiga, karena di sana nama perusahaan wajib disebut untuk transparansi (dikonfirmasi user saat review draf).
+3. Halaman: daftar isi samping di desktop (sticky), akordeon tidak dipakai supaya bisa dicari dan dicetak; tanggal "Berlaku sejak"; JSON-LD `WebPage` + `BreadcrumbList`.
+4. Catatan di halaman dan di log: draf Claude bukan nasihat hukum, direview tim (dan sebaiknya konsultan hukum) sebelum tayang.
+
+**14B Tentang** (copy di `messages`, karena pendek dan banyak dipakai komponen)
+
+1. Potret vinyl: `tools/render/team.mjs` merender Heru, Wildan, Andi (pose berdiri ¾, latar polos sesuai palet halaman) ke `public/team/{heru,wildan,andi}.webp` (±40–60 KB). Dikirim di chat untuk dicek sebelum dipakai.
+2. Section: hero (H1 + lead dari `home.about.body`); cerita (berdiri 2025, badan usaha resmi, Pekanbaru, nada "Kami yang di balik layar"); visi; tim (3 kartu: potret, nama, Founder/Co-founder, bio dua kalimat); cara kerja 5 langkah (pakai ulang copy Cara kerja Home); nilai (3–4 butir, draf dari `SITE-BRIEF` 3: disesuaikan per usaha, mitra, ketemu langsung, didampingi setelah tayang, AI tidak menggantikan staf); Trusted By (13 logo yang sudah ada) + Official Partner Odoo; kantor (still K5a.6, alamat, "Buka di Maps", "Ketemu langsung"); CTA "Konsultasi gratis".
+3. JSON-LD `AboutPage` + `Organization` (`foundingDate` 2025, `founder`, `address`), `BreadcrumbList`.
+4. Gerak ringan sesuai `SITE-BRIEF` 8 (muncul saat masuk layar, tanpa scroll-jacking), `prefers-reduced-motion` dihormati.
+
+**14C Artikel**
+
+1. Route: `/artikel/[slug]` ↔ `/en/articles/[slug]` di `i18n/routing.ts`, slug per bahasa dengan kunci artikel bersama supaya pindah bahasa tetap di artikel yang sama; `generateStaticParams` untuk semua slug; `lib/seo.ts` untuk URL artikel; sitemap (TODO tahap 14 dihapus).
+2. Konten: 5 artikel `content/articles/{id,en}/*.mdx`, ±900–1.300 kata (ID), `meta`: kunci, slug, judul, ringkasan, kategori (Admin, Melayani pembeli, Staf, Promosi, Keuangan), tanggal terbit/ubah, ilustrasi `RackArt`, Solusi terkait. Copy mengikuti `SITE-BRIEF` 2 (tanpa em dash, tanpa kalimat ambigu, tanpa janji waktu, tanpa nama platform di teks).
+3. Daftar `/artikel`: hero, filter kategori (tautan biasa, tanpa JS wajib), kartu dengan sampul `RackArt`, kategori, judul, ringkasan, waktu baca.
+4. Detail: progress baca (bar tipis, JS kecil, mati di reduced motion), judul besar, kategori, tanggal, waktu baca, sampul, drop cap, pull quote, pita warna, CTA di tengah dan akhir artikel, 2 artikel terkait, tautan ke Solusi terkait. JSON-LD `BlogPosting` (author Organization) + `BreadcrumbList`; gambar OG per artikel lewat `opengraph-image`.
+5. Rak Home K7: tiap buku menautkan artikelnya sendiri (ID dan EN), "Lihat semua artikel" tetap ke `/artikel`. Kamera dan anchor K7 tidak berubah.
+
+Cek di tiap bagian:
+
+- Playwright di 360×740, 375×812, 768×1024, 1280×720, 1440×900, ID dan EN: tanpa scroll samping, satu H1, urutan heading, fokus keyboard, tautan dan tombol bekerja, axe tanpa pelanggaran serius, console bersih (selain 404 analytics lokal).
+- HTML server memuat seluruh teks, canonical dan hreflang benar, JSON-LD valid, sitemap; tanpa em dash di copy terlihat.
+- `typecheck`, ESLint, Prettier, `next build` (semua route statis); Home K7 dan K9b tidak regresi (jalur kamera dan tautan).
+- Screenshot hanya di chat. Tes HP lewat `site-prod-3300`.
+
+**Selesai bila** ketiga halaman lengkap di ID dan EN, statis, lolos cek di atas, dan disetujui user; Kebijakan Privasi juga direview tim sebelum tayang.
 
 ### Tahap 15: QA dan tayang
 
@@ -690,6 +756,7 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - [x] Repo GitHub: `iwilwildan/kreatekno-website-3d` (2 Nov).
 - [ ] Akun Vercel Kreatekno.
 - [ ] Dari `docs/SITE-BRIEF.md` 11: nomor WhatsApp bisnis, alamat kantor lengkap, nama dan bio tim, logo klien dan izinnya, link media sosial, analytics, akses domain.
+- [ ] Tahap 14: email untuk urusan privasi, link Google Maps kantor, lama simpan chat konsultasi yang tidak berlanjut jadi kerja sama, dan apakah Instagram pribadi Heru, Wildan, Andi boleh ditautkan di Tentang.
 
 ## 8. Log
 
@@ -2760,3 +2827,48 @@ Detail di **[PLAN-SOLUSI.md](PLAN-SOLUSI.md)**: sumber v1, arsitektur etalase, d
 - Baru: `content/solusi/cerita/followup-prospek.ts`, `components/solusi/detail/PanggungProspek.tsx`, `ceritaFilmProspek.ts`, gaya `fp-*` di `detail.css`, `tools/solusi/fp1-qa.mjs`. Diubah: `cerita/schema.ts`, `cerita/index.ts`, `ceritaTiming.ts`, `CeritaScroll.tsx`, `items/followup-prospek.ts` (copy ID/EN baru, status tetap `ide`, angka contoh), `catalog.ts`, `logic.test.mjs`.
 - Dicek: `fp1-qa.mjs` 107/107 di dev dan build produksi; regresi build produksi: `ck1-qa.mjs` 114/114, `rk1`/`bj1`/`og5` 106/106, `rt1` 31/31, `etalase` 114/114 (error console hanya GSAP yang sengaja diblokir dan 404 analytics Vercel lokal); HTML server 11 `h3` (9 caption + 2 kecocokan), canonical ID/EN, tanpa nomor, prompt, nama model, em dash; typecheck, ESLint, Prettier, `logic.test.mjs` 17/17, `next build` (peringatan keamanan Next.js yang sama, upgrade tidak dijalankan). Screenshot hanya di chat.
 - User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: tes HP Android user, review tim.
+
+### 2026-11-22 (tahap 14 riset dan plan: Kebijakan Privasi, Tentang, Artikel)
+
+- Permintaan user: rencanakan halaman Artikel lengkap, Tentang lengkap (acuan kreatekno.com/about) dan Kebijakan Privasi.
+- Dicek: ketiga route ID/EN masih `PagePlaceholder`, meta sudah ada; rak Home K7 punya 5 judul artikel; situs tanpa cookie dan tanpa storage browser, pelacakan hanya `@vercel/analytics`; kreatekno.com/about dibaca (tim Heru, Wildan, Andi, berdiri 2025, visi, tanpa alamat/peta/privasi).
+- Riset: UU PDP 27/2022 dan PP 33/2026 (ditetapkan 16 Jul 2026, transisi 6 bulan, lembaga PDP belum terbentuk per Okt 2026; isi PP dicek ke JDIH di awal 14A); Vercel Web Analytics tanpa cookie; `@next/mdx` tanpa frontmatter YAML (pakai `export const meta` + zod); properti Article structured data.
+- Jawaban user: MDX resmi Next (3 paket disetujui, `@next/mdx` dipasang 16.4.3), 5 artikel rak Home, penulis "Tim Kreatekno", editorial Maglr + sampul `RackArt`, tim Founder/Co-founder dengan potret tokoh vinyl, kantor tanpa embed peta, Privasi mencakup situs + chat + data klien, sapaan "kamu", #KaryawanAI tidak disebut, alamat dan email privasi placeholder lewat env, urutan Privasi → Tentang → Artikel.
+- Plan ditulis di "Plan tahap 14" (bagian 5); status tahap 14 jadi 🟡; pertanyaan terbuka tahap 14 ditambah di bagian 7.
+- Belum: persetujuan plan dan implementasi. Tidak ada kode, dependensi, commit atau push yang berubah.
+
+### 2026-11-22 (tahap 14A: Kebijakan Privasi)
+
+- User menyetujui plan tahap 14 ("Mulai kerjakan").
+- Riset: pasal UU PDP yang dikutip dicek langsung dari salinan BPK (`peraturan.bpk.go.id`, LN 2022/196): hak Pasal 5–13, permohonan tercatat Pasal 14, dasar pemrosesan Pasal 20, informasi wajib Pasal 21, anak Pasal 25, batas 3 x 24 jam Pasal 30/32/40/41, kebocoran Pasal 46, transfer Pasal 56. Salinan resmi PP 33/2026 belum terbaca (JDIH tidak bisa dicari lewat fetch, peraturan.go.id 404; sumber sekunder beda satu hari soal tanggal), jadi draf hanya menulis "peraturan pelaksananya" tanpa nomor pasal PP.
+- Dipasang (versi persis, disetujui 22 Nov, dicatat di aturan 8 `CLAUDE.md`): `@next/mdx` 16.4.3, `@mdx-js/loader` 3.1.1, `@mdx-js/react` 3.1.1, `@types/mdx` 2.0.14. `npm audit` tidak menambah temuan (8 temuan moderat lama semuanya dari `next` 16.4.3).
+- Baru: `mdx-components.tsx` (h2 dengan id, tautan luar `noopener`, komponen global), `components/mdx/{Prose,Callout,Contact}.tsx` + `prose.css`, `content/legal/{schema,index}.ts`, `content/legal/id/kebijakan-privasi.mdx`, `content/legal/en/privacy-policy.mdx`, `components/legal/{LegalPage,TocSpy}.tsx` + `legal.css`, `lib/slug.ts`, `tools/legal/privasi-qa.mjs`. Diubah: `next.config.ts` (`createMDX`), `lib/site.ts` + `.env.example` (`NEXT_PUBLIC_OFFICE_ADDRESS`, `NEXT_PUBLIC_MAPS_URL`, `NEXT_PUBLIC_PRIVACY_EMAIL`), `lib/seo.ts` (`breadcrumbJsonLd`, `webPageJsonLd`), `messages/{id,en}.json` (kunci `legal`), halaman `kebijakan-privasi`, `app/sitemap.ts`, `i18n/routing.ts`.
+- Halaman: hero dengan jejak halaman, H1, lead, tanggal berlaku/diperbarui, catatan draf, kartu navy "Ringkasnya" (4 poin); isi 14 bagian ID/EN dengan "kamu"; daftar isi sticky di desktop (bagian aktif ditandai) dan `<details>` di HP/tablet; JSON-LD `WebPage` + `BreadcrumbList`. Status `draft` → `noindex, follow` dan tidak masuk sitemap sampai diubah ke `final`. Alamat dan email privasi tampil "menyusul" sampai env diisi.
+- Temuan saat tes: next-intl memasang cookie sesi `NEXT_LOCALE` di halaman ID dan saat pindah bahasa, padahal cookie itu tidak pernah dibaca karena `localeDetection: false`. Dimatikan dengan `localeCookie: false` supaya klaim "tanpa cookie" benar; pindah bahasa tetap bekerja.
+- Dicek: `privasi-qa.mjs` 160/160 di dev dan build produksi (port 3200): 360, 375, 768, 1280, 1440 × ID/EN, satu H1, tanpa scroll samping, daftar isi = 14 heading dan lompatan mendarat di bawah header, `noindex`, canonical + hreflang, JSON-LD, tanpa em dash, tanpa cookie dan storage (juga setelah pindah bahasa), axe `main` + footer tanpa pelanggaran serius, console bersih. Seluruh situs (Home ID/EN, Solusi ID/EN, detail Order Grup, Artikel, Tentang) tanpa cookie dan storage. Sitemap 32 URL tanpa halaman privasi. Typecheck, ESLint, Prettier, `next build` (lulus setelah diulang; peringatan keamanan Next.js 16.4.3 yang sama, upgrade tidak dijalankan). Dua perbaikan dari cek visual: lebar baris teks dibatasi `min(68ch, 42rem)`, gaya "menyusul" tanpa latar. Screenshot hanya di chat.
+- Temuan lama (bukan dari perubahan ini): axe `label-content-name-mismatch` di tombol ID/EN header (teks "ID"/"EN", label "Bahasa Indonesia"/"English").
+- Perlu dikonfirmasi tim sebelum `status: "final"`: lama simpan chat (draf: 2 tahun), dokumen klien (umumnya 10 tahun), klaim keamanan (verifikasi dua langkah di akun kerja), pesan lanjutan konsultasi, penyebutan nama Meta dan Vercel di bagian pihak lain, email privasi dan alamat. Sebaiknya juga dibaca konsultan hukum.
+- Belum: review user, tes HP fisik, 14B Tentang, 14C Artikel. Tidak ada commit/push.
+
+### 2026-11-22 (tahap 14B: Tentang)
+
+- User melanjutkan ke 14B ("Lanjutkan") setelah 14A.
+- Potret tim: lab tokoh (`world/cast/lab.ts`, hanya dev lewat `?lab`) mendapat `&view=portrait` (¾, kepala sampai pinggang, latar transparan). `tools/render/team.mjs` baru merender Heru, Wildan, Andi dan menulis `site/public/team/{heru,wildan,andi}.webp` (1280×1600 dengan alpha, 41–44 KB). Render dari scene sendiri, bukan gambar referensi tim.
+- Baru: `components/about/AboutPage.tsx` + `about.css`, `lib/clients.ts` (daftar 13 logo dipindah dari `Plaque.tsx`, isi dan urutan sama), `aboutPageJsonLd` di `lib/seo.ts`, `tools/legal/tentang-qa.mjs`. Diubah: halaman `tentang`, `messages/{id,en}.json` (`pages.about`), `components/home/props/Plaque.tsx` (impor `CLIENTS`).
+- Isi halaman (ID/EN, "kamu", copy draf Claude dari kreatekno.com/about dan `SITE-BRIEF`): hero (kicker "Kami yang di balik layar", H1, lead, 4 fakta plakat Home, Konsultasi gratis + Ketemu langsung, still fasad K5a.6; HP memakai still 9:16 dipotong 4:5); Cerita kami (berdiri 2025, "Lho, kok bisa sih?"); Tim kami (Heru Founder, Wildan dan Andi Co-founder, bio dua kalimat, potret vinyl; HP dan tablet kecil kartu baris, 3 kolom mulai 768 px); Yang kami percaya (navy, 4 nilai); Cara kerja (4 langkah dari copy Home `home.journey`); Trusted By (13 logo + nama, Official Partner Odoo); Kantor (alamat "menyusul", "Link peta menyusul" sampai `NEXT_PUBLIC_MAPS_URL` diisi, Ketemu langsung) dan CTA navy (Konsultasi gratis + Lihat solusi). Tanpa embed peta. Animasi muncul saat scroll hanya dengan CSS `animation-timeline: view()` dan tidak aktif di reduced motion.
+- JSON-LD `AboutPage` (mainEntity Organization, `foundingDate` 2025, 3 founder) + `BreadcrumbList`.
+- Dicek: `tentang-qa.mjs` 168/168 di dev dan build produksi (port 3200): 360, 375, 768, 1280, 1440 × ID/EN, satu H1, 7 H2, tanpa scroll samping, canonical + hreflang, JSON-LD, potret dan 13 logo termuat dengan alt, tombol WhatsApp per bagian (`about-hero`, `about-office`, `about-cta`), tanpa em dash, tanpa cookie/storage, kartu tidak tersembunyi setelah scroll maupun di reduced motion, axe `main` + footer tanpa pelanggaran serius, pindah bahasa, console bersih; plakat Home tetap 13 logo dan menautkan `/tentang`. Regresi: `privasi-qa.mjs` 160/160, seluruh situs tanpa cookie. Typecheck, ESLint, Prettier, `next build` (lulus). Tiga perbaikan dari cek visual: kartu tim baris di HP (halaman 10.644 → 9.509 px), still hero HP 4:5, tim 3 kolom di tablet supaya Andi tidak sendirian. Screenshot hanya di chat; tangkapan penuh Playwright di 375 px berulang dari atas setelah ±8.200 px (batas alat, halaman dicek lewat viewport).
+- Perlu dikonfirmasi tim: bio tiga orang (diringkas dari situs lama, tanpa nama platform), label Founder/Co-founder, apakah Instagram pribadi boleh ditautkan, alamat dan link Maps.
+- Belum: review user, tes HP fisik, 14C Artikel. Tidak ada commit/push.
+
+### 2026-11-22 (tahap 14C: Artikel)
+
+- User melanjutkan ke 14C ("Lanjutkan") setelah 14B.
+- Route `/artikel/[slug]` ↔ `/en/articles/[slug]` dengan slug per bahasa (`content/articles/slugs.ts`, kunci = buku rak Home: admin, service, team, promo, money). Slug bahasa lain di bawah bahasa ini 404.
+- Konten: 10 file MDX (`content/articles/{id,en}/KEY.mdx`, ±650–900 kata ID), draf Claude dengan "kamu", tanpa em dash, tanpa nama platform di teks artikel, tanpa janji waktu. `meta` (judul sama dengan rak Home, ringkasan ≤ 170 karakter, tanggal, 1–3 Solusi terkait) divalidasi zod; slug Solusi dicek ke katalog saat build; waktu baca dihitung dari sumber MDX (200 kata/menit, 2–3 menit). Penulis "Tim Kreatekno".
+- Baru: `content/articles/{slugs,schema,index}.ts`, `components/articles/{ArticlesPage,ArticlePage,ArticleCard,ArticleCover,ReadingProgress}.tsx` + `articles.css`, `components/mdx/Editorial.tsx` (`PullQuote`, `Band` pita warna penuh, `Cta` Konsultasi gratis dengan `data-src` `artikel-KEY`), `app/[locale]/(pages)/artikel/[slug]/{page,opengraph-image}.tsx`, `lib/og.ts` (fungsi font OG dipindah dari `app/[locale]/opengraph-image.tsx`), `tools/legal/artikel-qa.mjs`. Diubah: `i18n/routing.ts`, `lib/seo.ts` (`StaticPathname` mengecualikan semua `[slug]`, `articleUrl`, `articleMetadata`, `blogPostingJsonLd`), `app/sitemap.ts` (10 URL artikel dengan hreflang; total 42), `components/layout/LangSwitch.tsx` (artikel dikenali dari slug karena `usePathname` memberi path konkret saat prerender), `components/home/props/MagazineRack.tsx` (tiap buku ke artikelnya), `components/mdx/prose.css` (gaya tautan tidak mengenai `.btn`, daftar bernomor tampil), `components/legal/LegalPage.tsx` (tipe), `mdx-components.tsx`, `messages/{id,en}.json` (`pages.articles`).
+- Halaman daftar: hero, artikel pertama lebar, 4 kartu, pita CTA navy; JSON-LD `CollectionPage` + `BreadcrumbList`. Filter kategori dari plan tidak dibuat: tiap artikel awal punya kategori sendiri, jadi filter hanya akan menampilkan satu artikel; ditambah kalau satu kategori punya ≥ 2 artikel.
+- Halaman detail: bar progres baca, hero berwarna sampul buku rak (sampul = ilustrasi `RackArt` yang sama), drop cap, pull quote, pita warna penuh, callout, CTA, baris penulis, Solusi terkait (judul dan ringkasan dari katalog Solusi), "Baca juga" 2 artikel; JSON-LD `BlogPosting` (author Organization) + `BreadcrumbList`; gambar OG per artikel (judul, kategori, warna sampul). `image` tidak dimasukkan ke JSON-LD karena URL gambar OG memakai hash build.
+- Dicek: `artikel-qa.mjs` 617/617 di build produksi (port 3200): daftar 5 viewport × ID/EN, tiap artikel di 375 dan 1440 (admin di 5 viewport) × ID/EN; satu H1, tanpa scroll samping, canonical + hreflang ke slug terjemahan, og:type article dan gambar OG `image/png`, JSON-LD, drop cap, pita selebar layar, progres baca 0 → 1, 2 Solusi terkait dan 2 artikel lain (semua 200), CTA per artikel, tanpa em dash dan nama platform di teks artikel, pindah bahasa ke slug terjemahan, slug bahasa lain 404, rak Home ID/EN menautkan tiap buku, sitemap, axe tanpa pelanggaran serius, tanpa cookie, console bersih. Regresi: `tentang-qa.mjs` 168/168, `privasi-qa.mjs` 160/160, seluruh situs tanpa cookie. Typecheck, ESLint, Prettier, `next build`. Perbaikan dari tes dan cek visual: teks tombol CTA di artikel tidak terbaca (warna tautan prosa), nomor daftar hilang, rumus progres baca, kartu "Baca juga" dan sampul hero HP diperkecil, pindah bahasa EN → ID tetap di slug EN.
+- Temuan, tidak diubah: (1) ringkasan katalog Solusi yang tampil di "Solusi terkait" menyebut WhatsApp dan Google Sheets (copy Solusi lama); (2) og:image Home dan artikel ID memakai path `/id/...` yang dialihkan 307, artikel EN memakai path internal `/en/artikel/...` (keduanya tetap 200); (3) di detail Solusi EN, tombol EN menunjuk `/en/solusi/...` (perilaku lama LangSwitch untuk halaman dinamis); (4) di dev server muncul peringatan Next "URL data during prerendering" untuk `params` di `/artikel/[slug]` dan `/solusi/[slug]`, tidak muncul di build produksi.
+- Belum: review user dan tim untuk isi 5 artikel ID/EN, tes HP fisik. Tidak ada commit/push.

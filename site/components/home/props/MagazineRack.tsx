@@ -1,5 +1,6 @@
 import { ArrowRight } from "@phosphor-icons/react/ssr";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { ARTICLE_SLUGS } from "@/content/articles/slugs";
 import { Link } from "@/i18n/navigation";
 import { BookArt, RackAllArt } from "./RackArt";
 
@@ -10,11 +11,12 @@ const ARTICLES = ["admin", "service", "team", "promo", "money"] as const;
  * on its open books, left to right (the top tier's three, the bottom tier's left two; issue #33), category and title
  * on the left page, its picture and "Baca artikel" on the right; "Lihat semua artikel" under the five pictures as a
  * fan of small cards, on the open book at the bottom tier's right (pictures: RackArt).
- * The links go to /artikel until the articles exist (tahap 14). Real HTML rendered on the server; the world places
+ * Each book links to its article (tahap 14C), "Lihat semua artikel" to /artikel. Real HTML rendered on the server; the world places
  * each block on its book (anchors "rack-sign", "article-0..4", "rack-all") and shows it at the K7 hold.
  */
 export async function MagazineRack() {
   const t = await getTranslations("home.articles");
+  const locale = await getLocale();
   return (
     <>
       <div
@@ -49,7 +51,10 @@ export async function MagazineRack() {
               </div>
               <div className="book-right">
                 <BookArt k={k} />
-                <Link href="/artikel" className="book-link">
+                <Link
+                  href={{ pathname: "/artikel/[slug]", params: { slug: ARTICLE_SLUGS[k][locale] } }}
+                  className="book-link"
+                >
                   <span>{t("read")}</span>
                   <span className="sr-only">: {t(`${k}.title`)}</span>
                   <ArrowRight aria-hidden weight="bold" className="book-arrow" />

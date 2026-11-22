@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { AboutPage } from "@/components/about/AboutPage";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,7 +13,6 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function AboutPage() {
-  const t = await getTranslations("pages.about");
-  return <PagePlaceholder title={t("title")} />;
+export default function Page() {
+  return <AboutPage />;
 }

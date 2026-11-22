@@ -440,14 +440,111 @@
       }
     },
     "articles": {
-      "title": "Articles"
+      "title": "Articles",
+      "kicker": "Reading for business owners",
+      "lead": "Practical guides on AI assistants, admin automation, content and staff training, written in plain language so you can try them in your own business.",
+      "featured": "Featured article",
+      "more": "More articles",
+      "read": "Read article",
+      "minutes": "{n} min read",
+      "by": "Kreatekno team",
+      "published": "Published",
+      "category": "Category",
+      "progress": "Reading progress",
+      "related": "Related solutions",
+      "relatedBody": "Automation examples connected to this article.",
+      "relatedLink": "See solution",
+      "next": "Read next",
+      "author": "Written by the Kreatekno team from experience setting up AI assistants and automations for small businesses.",
+      "all": "All articles",
+      "cta": {
+        "title": "Want to try it in your business?",
+        "body": "Tell us which task takes up most of your staff's time. We help you map the solution, free of charge."
+      }
     },
     "about": {
-      "title": "About Kreatekno"
+      "title": "About Kreatekno",
+      "kicker": "The people behind the scenes",
+      "lead": "We are a small team from Pekanbaru that sets up AI assistants, creates content with AI, and trains business owners and workers. We want businesses to grow without sacrificing the people in them.",
+      "facadeAlt": "The Kreatekno office in a row of shophouses, with purple glass and the word KREATEKNO above the door",
+      "story": {
+        "title": "Our story",
+        "p1": "Kreatekno was founded in 2025 in Pekanbaru as PT Kreatekno Kreatif Teknologi. Behind every system we build are people, not robots: a small team that enjoys connecting different apps into systems that run on their own.",
+        "p2": "What we build varies, from AI assistants that answer customer chats, automatic sales recaps and invoices, and product photos and videos made with AI, to training for staff. The goal is always the same: lighter daily work for your business.",
+        "quote": "Wait, how is that possible?",
+        "quoteBody": "We often hear this when a client's system starts running. The answer isn't magic. We map the workflow with you, build it, and then test it with your own business data."
+      },
+      "team": {
+        "title": "Our team",
+        "intro": "Three people with skills that complement each other: building systems, designing solutions and marketing, and design.",
+        "note": "The team portraits show the same characters as the story on the home page.",
+        "founder": "Founder",
+        "cofounder": "Co-founder",
+        "heru": {
+          "bio": "Sets Kreatekno's direction and strategy. Heru designs and builds AI assistants and automations, including connecting the apps a client already uses.",
+          "alt": "Portrait of Heru as a vinyl toy character in a purple blazer with a shoulder bag"
+        },
+        "wildan": {
+          "bio": "Turns business needs into solution designs. Wildan also builds relationships with clients and introduces Kreatekno through digital channels.",
+          "alt": "Portrait of Wildan as a vinyl toy character in a purple shirt with a lanyard"
+        },
+        "andi": {
+          "bio": "Handles visual design for Kreatekno and its clients, from brand identity and social media content to clean, easy-to-use web pages.",
+          "alt": "Portrait of Andi as a vinyl toy character in a purple hoodie with headphones around the neck"
+        }
+      },
+      "belief": {
+        "kicker": "What we believe",
+        "title": "AI helps staff move up, not replace them.",
+        "body": "Repetitive work can be done by AI. Owners and staff then spend the time they get back on customers, strategy and new ideas. That smarter, more productive workplace is what we want to build.",
+        "fit": {
+          "title": "Fits how your business works",
+          "body": "We start from the workflow you already have, not from a template. The solution adapts to the way your business works."
+        },
+        "partner": {
+          "title": "Working as a partner",
+          "body": "We discuss the problem with you from the start, then build the solution together until the system runs."
+        },
+        "meet": {
+          "title": "Meet face to face",
+          "body": "Our office is in Pekanbaru. If you prefer to meet in person, we can sit at the same table."
+        },
+        "support": {
+          "title": "Support after launch",
+          "body": "We keep monitoring and improving the AI assistant, and staff are trained until they are comfortable using it."
+        }
+      },
+      "trusted": {
+        "body": "Businesses and communities that already work with us."
+      },
+      "office": {
+        "title": "Our office",
+        "body": "Drop by for a chat, or set a time by chat first so we are ready to welcome you.",
+        "address": "Address",
+        "maps": "Open in Maps",
+        "mapsPending": "Map link coming soon"
+      },
+      "cta": {
+        "title": "Tell us about the one task you most want to automate.",
+        "body": "We help you map the solution, free of charge. By chat, or face to face in Pekanbaru."
+      }
     },
     "privacy": {
       "title": "Privacy Policy"
     }
+  },
+  "legal": {
+    "emailPending": "privacy email coming soon",
+    "addressPending": "full address coming soon",
+    "summary": "In short",
+    "toc": "On this page",
+    "effective": "Effective from",
+    "updated": "Updated",
+    "draftTitle": "Draft under review",
+    "draftBody": "This policy is still a draft. The Kreatekno team is checking it before it takes effect.",
+    "breadcrumb": "Breadcrumb",
+    "home": "Home",
+    "top": "Back to top"
   },
   "notFound": {
     "title": "Page not found",

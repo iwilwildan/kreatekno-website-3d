@@ -1,0 +1,124 @@
+/* Long-form text rendered from MDX (content/legal, content/articles). Mobile first. */
+.prose-k {
+  --prose-ink: var(--color-ink);
+  --prose-muted: var(--color-muted);
+  --prose-line: rgba(19, 25, 81, 0.13);
+  --prose-accent: var(--color-purple);
+  /* ±70–75 characters per line in Plus Jakarta Sans (its "0" is wide, so 68ch alone ran to ±120) */
+  max-width: min(68ch, 42rem);
+  color: var(--prose-ink);
+  font-size: 1.0625rem;
+  line-height: 1.72;
+}
+@media (min-width: 1024px) {
+  .prose-k {
+    font-size: 1.125rem;
+  }
+}
+
+.prose-k > :first-child {
+  margin-top: 0;
+}
+.prose-k p,
+.prose-k ul,
+.prose-k ol {
+  margin: 0 0 1.1em;
+}
+.prose-k h2 {
+  margin: 2.6em 0 0.7em;
+  color: var(--color-navy);
+  font-size: clamp(1.45rem, 1.1rem + 1.2vw, 1.85rem);
+  line-height: 1.15;
+  scroll-margin-top: calc(var(--nav-top) + var(--nav-h) + 24px);
+}
+.prose-k h3 {
+  margin: 1.9em 0 0.5em;
+  color: var(--color-navy);
+  font-size: 1.2rem;
+  scroll-margin-top: calc(var(--nav-top) + var(--nav-h) + 24px);
+}
+.prose-k strong {
+  color: var(--color-navy);
+  font-weight: 700;
+}
+.prose-k a:not(.btn) {
+  color: var(--color-purple-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--color-purple) 45%, transparent);
+  overflow-wrap: anywhere;
+  transition: text-decoration-color 160ms ease;
+}
+.prose-k a:not(.btn):hover {
+  text-decoration-color: currentColor;
+}
+
+.prose-k ul {
+  padding: 0;
+  list-style: none;
+}
+.prose-k ul > li {
+  position: relative;
+  padding-left: 1.4em;
+}
+.prose-k ul > li + li {
+  margin-top: 0.45em;
+}
+.prose-k ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.68em;
+  width: 0.42em;
+  height: 0.42em;
+  border-radius: 999px;
+  background: var(--prose-accent);
+}
+.prose-k ol {
+  padding-left: 1.5em;
+  list-style: decimal;
+}
+.prose-k ol > li {
+  padding-left: 0.2em;
+}
+.prose-k ol > li + li {
+  margin-top: 0.45em;
+}
+.prose-k ol > li::marker {
+  color: var(--prose-accent);
+  font-weight: 700;
+}
+
+/* A fact that comes from an env var and isn't filled in yet (components/mdx/Contact.tsx). */
+.prose-pending {
+  color: var(--prose-muted);
+  font-style: italic;
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+  text-underline-offset: 3px;
+}
+
+.prose-callout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  margin: 1.6em 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: #eeeafb;
+}
+.prose-callout > div > :last-child {
+  margin-bottom: 0;
+}
+.prose-callout-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-purple);
+}
+.prose-callout-title {
+  margin-bottom: 0.3em !important;
+  color: var(--color-navy);
+  font-weight: 700;
+}

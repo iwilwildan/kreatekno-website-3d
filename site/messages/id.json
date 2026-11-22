@@ -440,14 +440,111 @@
       }
     },
     "articles": {
-      "title": "Artikel"
+      "title": "Artikel",
+      "kicker": "Bacaan untuk pemilik usaha",
+      "lead": "Panduan praktis tentang asisten AI, otomasi admin, konten, dan pelatihan staf. Ditulis dengan bahasa sederhana supaya mudah kamu coba di usahamu.",
+      "featured": "Artikel pilihan",
+      "more": "Artikel lainnya",
+      "read": "Baca artikel",
+      "minutes": "{n} menit baca",
+      "by": "Tim Kreatekno",
+      "published": "Terbit",
+      "category": "Kategori",
+      "progress": "Progres membaca",
+      "related": "Solusi terkait",
+      "relatedBody": "Contoh otomasi yang berhubungan dengan artikel ini.",
+      "relatedLink": "Lihat solusi",
+      "next": "Baca juga",
+      "author": "Ditulis oleh tim Kreatekno dari pengalaman memasang asisten AI dan otomasi untuk usaha kecil.",
+      "all": "Semua artikel",
+      "cta": {
+        "title": "Mau coba di usahamu?",
+        "body": "Ceritakan pekerjaan yang paling menyita waktu stafmu. Kami bantu petakan solusinya, gratis."
+      }
     },
     "about": {
-      "title": "Tentang Kreatekno"
+      "title": "Tentang Kreatekno",
+      "kicker": "Kami yang di balik layar",
+      "lead": "Kami tim kecil dari Pekanbaru yang memasang asisten AI, membuat konten dengan AI, dan melatih pemilik usaha serta pekerja. Kami ingin usaha tumbuh tanpa mengorbankan orang-orang di dalamnya.",
+      "facadeAlt": "Kantor Kreatekno di deretan ruko, dengan kaca ungu dan tulisan KREATEKNO di atas pintu",
+      "story": {
+        "title": "Cerita kami",
+        "p1": "Kreatekno berdiri pada 2025 di Pekanbaru sebagai PT Kreatekno Kreatif Teknologi. Di balik semua sistem yang kami buat ada manusia, bukan robot: tim kecil yang senang menyambungkan aplikasi yang berbeda menjadi sistem yang bekerja sendiri.",
+        "p2": "Yang kami bangun beragam, dari asisten AI yang membalas chat pembeli, rekap penjualan dan tagihan otomatis, foto dan video produk dengan AI, sampai pelatihan untuk staf. Tujuannya sama: pekerjaan harian usahamu jadi lebih ringan.",
+        "quote": "Lho, kok bisa sih?",
+        "quoteBody": "Kalimat ini sering kami dengar saat sistem klien mulai berjalan. Jawabannya bukan sulap. Alur kerjanya kami petakan bersamamu, kami bangun, lalu kami uji dengan data usahamu sendiri."
+      },
+      "team": {
+        "title": "Tim kami",
+        "intro": "Tiga orang dengan keahlian yang saling melengkapi: pengembangan sistem, rancangan solusi dan pemasaran, serta desain.",
+        "note": "Potret tim digambar sebagai tokoh yang sama dengan cerita di beranda.",
+        "founder": "Founder",
+        "cofounder": "Co-founder",
+        "heru": {
+          "bio": "Menentukan arah dan strategi Kreatekno. Heru merancang dan membangun asisten AI serta otomasi, termasuk menyambungkan aplikasi yang sudah dipakai klien.",
+          "alt": "Potret Heru sebagai tokoh mainan vinyl, berjas ungu dengan tas selempang"
+        },
+        "wildan": {
+          "bio": "Menerjemahkan kebutuhan usaha menjadi rancangan solusi. Wildan juga menjalin hubungan dengan klien dan mengenalkan Kreatekno lewat kanal digital.",
+          "alt": "Potret Wildan sebagai tokoh mainan vinyl, berkemeja ungu dengan lanyard"
+        },
+        "andi": {
+          "bio": "Mengurus desain visual Kreatekno dan klien, dari identitas brand dan konten media sosial sampai halaman website yang rapi dan mudah dipakai.",
+          "alt": "Potret Andi sebagai tokoh mainan vinyl, berhoodie ungu dengan headphone di leher"
+        }
+      },
+      "belief": {
+        "kicker": "Yang kami percaya",
+        "title": "AI membantu staf naik kelas, bukan menggantikan mereka.",
+        "body": "Pekerjaan berulang bisa dikerjakan AI. Waktu yang tersisa dipakai pemilik usaha dan staf untuk pelanggan, strategi, dan ide baru. Itu lingkungan kerja yang lebih cerdas dan produktif yang ingin kami bangun.",
+        "fit": {
+          "title": "Mengikuti cara usahamu",
+          "body": "Kami mulai dari alur kerja yang sudah berjalan, bukan dari template. Solusinya menyesuaikan cara usahamu bekerja."
+        },
+        "partner": {
+          "title": "Bekerja sebagai mitra",
+          "body": "Kami ikut membahas masalahnya dari awal, lalu membangun solusinya bersamamu sampai sistem berjalan."
+        },
+        "meet": {
+          "title": "Bisa ketemu langsung",
+          "body": "Kantor kami ada di Pekanbaru. Kalau kamu lebih nyaman bertatap muka, kita bisa duduk satu meja."
+        },
+        "support": {
+          "title": "Didampingi setelah berjalan",
+          "body": "Asisten AI tetap kami pantau dan perbaiki, dan staf dilatih sampai nyaman memakainya."
+        }
+      },
+      "trusted": {
+        "body": "Usaha dan komunitas yang sudah bekerja bersama kami."
+      },
+      "office": {
+        "title": "Kantor kami",
+        "body": "Mampir untuk ngobrol, atau atur jadwal dulu lewat chat supaya kami siap menyambutmu.",
+        "address": "Alamat",
+        "maps": "Buka di Maps",
+        "mapsPending": "Link peta menyusul"
+      },
+      "cta": {
+        "title": "Yuk, ceritakan satu pekerjaan yang paling ingin kamu otomatiskan.",
+        "body": "Kami bantu petakan solusinya, gratis. Lewat chat, atau ketemu langsung di Pekanbaru."
+      }
     },
     "privacy": {
       "title": "Kebijakan Privasi"
     }
+  },
+  "legal": {
+    "emailPending": "email privasi menyusul",
+    "addressPending": "alamat lengkap menyusul",
+    "summary": "Ringkasnya",
+    "toc": "Isi halaman",
+    "effective": "Berlaku sejak",
+    "updated": "Diperbarui",
+    "draftTitle": "Draf untuk direview",
+    "draftBody": "Kebijakan ini masih draf. Tim Kreatekno sedang memeriksanya sebelum mulai berlaku.",
+    "breadcrumb": "Jejak halaman",
+    "home": "Beranda",
+    "top": "Kembali ke atas"
   },
   "notFound": {
     "title": "Halaman tidak ditemukan",

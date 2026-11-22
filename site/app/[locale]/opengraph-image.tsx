@@ -4,6 +4,7 @@ import { cacheLife } from "next/cache";
 import { ImageResponse } from "next/og";
 import { getTranslations } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
+import { displayFont } from "@/lib/og";
 import { BRAND } from "@/lib/site";
 
 export const alt = "Kreatekno · Automate You";
@@ -13,20 +14,6 @@ export const contentType = "image/png";
 // One image per locale, rendered at build time.
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
-}
-
-/** Bricolage Grotesque as TTF (Satori can't read woff2). Falls back to the default font when offline. */
-async function displayFont(text: string) {
-  try {
-    const css = await fetch(
-      `https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@96,700&text=${encodeURIComponent(text)}`,
-    ).then((r) => r.text());
-    const url = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)?.[1];
-    if (!url) return null;
-    return await fetch(url).then((r) => r.arrayBuffer());
-  } catch {
-    return null;
-  }
 }
 
 /** Everything the image needs, cached so the image is rendered at build time instead of on every request. */

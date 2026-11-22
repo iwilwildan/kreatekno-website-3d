@@ -1,6 +1,7 @@
 // Dev-only turnaround stage for the cast (/?lab=heru): the character on a grey studio floor in the four
 // turnaround views (front, three-quarter, side, back), or a close-up (&view=face), or walking past the camera
-// (&walk, tahap 4: the gait and the springs, seen from the side). Loaded with import() only
+// (&walk, tahap 4: the gait and the springs, seen from the side), or a three-quarter bust on a transparent
+// background (&view=portrait, tahap 14B: team portraits on the About page). Loaded with import() only
 // when ?lab is in the URL, so it never ships to visitors. window.__lab tells tools when the frame is ready.
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -14,11 +15,17 @@ import { Walk, walkPose } from "./walk";
 export function mountLab(params: URLSearchParams) {
   const name = params.get("lab") || "heru",
     view = params.get("view") || "sheet",
-    saver = params.has("hemat");
+    saver = params.has("hemat"),
+    portrait = view === "portrait";
   const canvasEl = document.createElement("canvas");
   Object.assign(canvasEl.style, { position: "fixed", inset: "0", width: "100%", height: "100%", zIndex: "60" });
   document.body.appendChild(canvasEl);
-  const renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, preserveDrawingBuffer: true });
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvasEl,
+    antialias: true,
+    preserveDrawingBuffer: true,
+    alpha: portrait,
+  });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
@@ -27,7 +34,8 @@ export function mountLab(params: URLSearchParams) {
   renderer.shadowMap.type = THREE.PCFShadowMap;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#dcdbe3");
+  // portrait: transparent, the page paints its own backdrop behind the PNG
+  scene.background = portrait ? null : new THREE.Color("#dcdbe3");
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.4;
@@ -43,7 +51,7 @@ export function mountLab(params: URLSearchParams) {
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   // &flat: no floor shadow, so tools can measure silhouettes
-  if (!params.has("flat")) scene.add(floor);
+  if (!params.has("flat") && !portrait) scene.add(floor);
 
   const spec = CAST[name as keyof typeof CAST] ?? LOBBY_CAST[name as keyof typeof LOBBY_CAST] ?? CAST.heru,
     build = (o: { saver: boolean }) => buildMember(spec, o);
@@ -56,7 +64,7 @@ export function mountLab(params: URLSearchParams) {
       ? poseNames.map(() => 0)
       : view === "sheet"
         ? [0, -0.5, -Math.PI / 2, Math.PI]
-        : [Number(params.get("rot") ?? 0)];
+        : [Number(params.get("rot") ?? (portrait ? -0.45 : 0))];
   const gap = 0.75;
   let triangles = 0;
   let buildMs = 0,
@@ -77,13 +85,23 @@ export function mountLab(params: URLSearchParams) {
     return m;
   });
 
-  const camera = new THREE.PerspectiveCamera(view === "face" ? 14 : 10, 1, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(view === "face" ? 14 : portrait ? 16 : 10, 1, 0.1, 100);
   const resize = () => {
     const w = innerWidth,
       h = innerHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    if (view === "face") {
+    if (portrait) {
+      // head and shoulders down to the belt: from 0.34 m above the eyes to 0.78 m below, whatever the height
+      const eye = members[0].point([0, 1.55, 0])[1],
+        top = eye + 0.34,
+        bottom = eye - 0.78,
+        mid = (top + bottom) / 2,
+        tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)),
+        dist = Math.max((top - bottom) / 2 / tan, 0.42 / camera.aspect / tan);
+      camera.position.set(0, mid + 0.12, dist);
+      camera.lookAt(0, mid, 0);
+    } else if (view === "face") {
       // framed on this character's face (the warp puts it lower on shorter people)
       const eye = members[0].point([0, 1.55, 0]);
       camera.position.set(0, eye[1] + 0.03, 2.4);

@@ -3,8 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ARTICLE_SLUGS, articleKeyOf } from "@/content/articles/slugs";
 import { getPathname, usePathname } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 
 /**
  * Links to the same page in the other language. Plain anchors with the clean URL
@@ -31,6 +32,17 @@ export function LangSwitch({ tone = "light", className = "" }: { tone?: "light" 
     };
   }, [pathname]);
 
+  // Article slugs differ per language (content/articles/slugs.ts). The article is recognised by its slug, because
+  // during prerendering usePathname gives the concrete path ("/artikel/admin-…") instead of "/artikel/[slug]".
+  const articleKey = typeof params.slug === "string" ? articleKeyOf(locale, params.slug) : undefined;
+  const hrefFor = (l: Locale) =>
+    articleKey
+      ? getPathname({
+          locale: l,
+          href: { pathname: "/artikel/[slug]", params: { slug: ARTICLE_SLUGS[articleKey][l] } },
+        })
+      : `${getPathname({ locale: l, href: { pathname, params } as never })}${solutionSuffix}`;
+
   const track = tone === "dark" ? "bg-white/10" : "bg-navy/7";
   const idle = tone === "dark" ? "text-on-night-muted hover:text-on-night" : "text-muted hover:text-navy";
   const active = tone === "dark" ? "bg-on-night text-navy" : "bg-paper text-navy shadow-[0_1px_3px_rgba(19,25,81,.18)]";
@@ -40,8 +52,8 @@ export function LangSwitch({ tone = "light", className = "" }: { tone?: "light" 
       {routing.locales.map((l) => (
         <a
           key={l}
-          // Dynamic pages (e.g. /artikel/[slug]) need their params to build the other-language URL.
-          href={`${getPathname({ locale: l, href: { pathname, params } as never })}${solutionSuffix}`}
+          // Dynamic pages (e.g. /solusi/[slug]) need their params to build the other-language URL.
+          href={hrefFor(l)}
           hrefLang={l}
           lang={l}
           aria-label={l === "id" ? t("idName") : t("enName")}
