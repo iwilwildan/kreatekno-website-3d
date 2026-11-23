@@ -5,11 +5,13 @@
  * falls back to the stills at BOOT_LIMIT_MS. If the page never hydrates, the script releases itself a second later.
  *
  * It must stay self-contained: it is inlined with Function.prototype.toString.
+ * A visit that comes from another page of the site (client-side navigation) never runs the inline script: HomeTake
+ * then locks from its effect, with `from` = the time the take mounted, so the limit counts from there.
  * Reduced motion gets the stacked stills (stage.css) and is never locked; nor are the review tools.
  * `overflow: hidden` on the root (stage.css) stops the scroll on most browsers; iOS Safari does not always honour
  * it, so wheel, touch and scroll keys are also cancelled, except inside a dialog (the phone menu) and on controls.
  */
-export function bootLock(limitMs: number) {
+export function bootLock(limitMs: number, from = 0) {
   const root = document.documentElement;
   if (!matchMedia("(prefers-reduced-motion: no-preference)").matches) return;
   if (/[?&](lab|shot|bake)(=|&|$)/.test(location.search)) return;
@@ -34,7 +36,7 @@ export function bootLock(limitMs: number) {
   root.setAttribute("data-booting", "");
   for (const type of ["wheel", "touchmove", "keydown"]) addEventListener(type, stop, o);
   (window as Window & { __takeUnlock?: () => void }).__takeUnlock = unlock;
-  setTimeout(unlock, Math.max(0, limitMs - performance.now()) + 1000);
+  setTimeout(unlock, Math.max(0, limitMs - (performance.now() - from)) + 1000);
 }
 
 /** The longest the visitor waits on the loading bar, from the start of the navigation (ms). */

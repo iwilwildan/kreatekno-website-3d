@@ -121,8 +121,11 @@ export async function HomeStage() {
 
   return (
     <>
-      {/* Locks the scroll while the world boots, before the take is parsed (bootLock.ts). */}
-      <script dangerouslySetInnerHTML={{ __html: `(${bootLock.toString()})(${BOOT_LIMIT_MS})` }} />
+      {/* Locks the scroll while the world boots, before the take is parsed (bootLock.ts). It runs only when the
+          page is opened on Home, and tells HomeTake so (__takeInline). */}
+      <script
+        dangerouslySetInnerHTML={{ __html: `window.__takeInline=1;(${bootLock.toString()})(${BOOT_LIMIT_MS})` }}
+      />
       <HomeTake
         loadingLabel={tStage("loading")}
         navLabels={{ group: tStage("nav"), prev: tStage("prev"), next: tStage("next") }}

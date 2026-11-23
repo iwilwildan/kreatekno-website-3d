@@ -5,7 +5,7 @@ import { CaretDown, CaretUp } from "@phosphor-icons/react/ssr";
 import { clamp01, scrollAtScreens, screensAtScroll, segmentStart, smoothstep } from "@/world/core/segments";
 import { SEG, TAKE_SCREENS, TAKE_SCROLL, keyP, type KeyName } from "@/world/takes/home/timing";
 import { placeAnchors, placeHero, PORTRAIT_QUERY, quadMatrix3d, type Quad, type StillsData } from "./placeHero";
-import { BOOT_LIMIT_MS, bootUnlock } from "./bootLock";
+import { BOOT_LIMIT_MS, bootLock, bootUnlock } from "./bootLock";
 import { LOBBY_STILLS, lobbyMarks, lobbyStillFades } from "./lobbyStills";
 import { PLAQUE_STILLS, plaqueMark, plaqueStillFades } from "./plaqueStills";
 import { CLASS_STILLS, classMark, classStillFades } from "./classStills";
@@ -141,7 +141,8 @@ export function HomeTake({
 
   useEffect(() => {
     const el = root.current,
-      canvasHost = host.current;
+      canvasHost = host.current,
+      bar = loader.current;
     if (!el || !canvasHost) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const stage = el.querySelector<HTMLElement>("[data-stage]")!;
@@ -158,6 +159,13 @@ export function HomeTake({
         stop?.();
       };
     }
+    // The inline lock (HomeStage) runs only when the page is opened on Home, and the boot limit counts from the
+    // start of that navigation. Coming from another page of the site (client-side navigation), nothing locked yet
+    // and the document may be older than the limit: lock here, and count the limit from now.
+    const inline = (window as Window & { __takeInline?: number }).__takeInline === 1;
+    delete (window as Window & { __takeInline?: number }).__takeInline;
+    const bootFrom = inline ? 0 : performance.now();
+    if (!inline) bootLock(BOOT_LIMIT_MS, bootFrom);
     const dev = ["hud", "shot", "bake", "k", "fmt"].some((k) => params.has(k));
     let world: World | null = null,
       worldMod: WorldModule | null = null,
@@ -324,10 +332,11 @@ export function HomeTake({
       toStills();
     } else {
       gl.getExtension("WEBGL_lose_context")?.loseContext();
-      // A slow phone or a stalled download gets the stills, at most BOOT_LIMIT_MS after the page was opened
-      // (the scroll is locked until then): the visitor never waits on the loading bar longer than that.
+      // A slow phone or a stalled download gets the stills, at most BOOT_LIMIT_MS after the page was opened, or
+      // after Home was reached from another page (the scroll is locked until then): the visitor never waits on the
+      // loading bar longer than that.
       if (!params.has("shot") && !params.has("bake"))
-        bootTimer = setTimeout(toStills, Math.max(0, BOOT_LIMIT_MS - performance.now()));
+        bootTimer = setTimeout(toStills, Math.max(0, BOOT_LIMIT_MS - (performance.now() - bootFrom)));
       const start = async () => {
         if (disposed || abandoned) return;
         performance.mark("take:start");
@@ -440,6 +449,15 @@ export function HomeTake({
       removeEventListener("scroll", onScroll);
       removeEventListener("resize", onResize);
       world?.dispose();
+      // Next keeps a page the visitor left (React Activity) and runs this effect again on the way back: the next
+      // visit boots from the start, not with this one's state (live, the loading bar at 100%).
+      setMode("boot");
+      setLive(false);
+      setHud(null);
+      bar?.style.removeProperty("--boot");
+      bar?.setAttribute("aria-valuenow", "0");
+      const text = bar?.querySelector(".take-loader-text");
+      if (text) text.textContent = `${loadingLabel} 0%`;
     };
     // the label comes from the server and never changes for this take
     // eslint-disable-next-line react-hooks/exhaustive-deps
