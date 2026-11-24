@@ -19,7 +19,7 @@ Status layanan dari katalog ("Sudah berjalan" / "Siap dibuat") **bukan** status 
 | ---------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------ |
 | [Order Grup](docs/plans/solusi/PLAN-ORDER-GRUP.md)               | Sudah berjalan              | OG0–OG4 selesai teknis 8 Nov; QA pilot 47/47, menunggu review final user |
 | [Booking Jasa](docs/plans/solusi/PLAN-BOOKING-JASA.md)           | Sudah berjalan              | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
-| [Berkas Dokumen](docs/plans/solusi/PLAN-BERKAS-DOKUMEN.md)       | Sudah berjalan              | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
+| [Berkas Dokumen](docs/plans/solusi/PLAN-BERKAS-DOKUMEN.md)       | Siap dibuat (sejak 24 Nov; sebelumnya Sudah berjalan) | S8 N1b: copy dari template, klien contoh; cerita belum |
 | [Riset Konten](docs/plans/solusi/PLAN-RISET-KONTEN.md)           | Sudah berjalan              | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
 | [CS Klinik](docs/plans/solusi/PLAN-CS-KLINIK.md)                 | Siap dibuat                 | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
 | [Pengingat Tagihan](docs/plans/solusi/PLAN-PENGINGAT-TAGIHAN.md) | Siap dibuat                 | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
@@ -29,6 +29,12 @@ Status layanan dari katalog ("Sudah berjalan" / "Siap dibuat") **bukan** status 
 | [Asisten SOP](docs/plans/solusi/PLAN-ASISTEN-SOP.md)             | Siap dibuat                 | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
 | [Stok Menipis](docs/plans/solusi/PLAN-STOK-MENIPIS.md)           | Siap dibuat                 | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
 | [Ulasan Pelanggan](docs/plans/solusi/PLAN-ULASAN-PELANGGAN.md)   | Siap dibuat                 | Rencana HTML dari katalog; cerita 3D belum tersedia                      |
+| [Solusi dari template n8n.io (S8)](docs/plans/solusi/PLAN-KATALOG-N8N.md) | Siap dibuat (5 slug baru) | N0 dan N1a disetujui; N1b (copy 7 halaman lama) selesai teknis 24 Nov, menunggu review |
+| [Catat Pengeluaran](docs/plans/solusi/PLAN-CATAT-PENGELUARAN.md) | Siap dibuat | S8 N0 23 Nov: data, copy katalog, kotak etalase; Baca lengkap dan cerita belum |
+| [Balas Komentar](docs/plans/solusi/PLAN-BALAS-KOMENTAR.md) | Siap dibuat | S8 N0 23 Nov: data, copy katalog, kotak etalase; Baca lengkap dan cerita belum |
+| [Faktur Pemasok](docs/plans/solusi/PLAN-FAKTUR-PEMASOK.md) | Siap dibuat | S8 N0 23 Nov: data, copy katalog, kotak etalase; Baca lengkap dan cerita belum |
+| [Layanan SDM](docs/plans/solusi/PLAN-LAYANAN-SDM.md) | Siap dibuat | S8 N0 23 Nov: data, copy katalog, kotak etalase; Baca lengkap dan cerita belum |
+| [Onboarding Klien](docs/plans/solusi/PLAN-ONBOARDING-KLIEN.md) | Siap dibuat | S8 N0 23 Nov: data, copy katalog, kotak etalase; Baca lengkap dan cerita belum |
 
 Urutan baca: induk → fondasi detail → subplan slug → spesifikasi sumber yang dirujuk. Perubahan lintas solusi masuk fondasi; keputusan kamera, adegan, dan isi satu solusi masuk subplannya. Setiap keputusan mencatat tanggal dan asal persetujuan. Usulan di dokumen sumber bukan persetujuan otomatis.
 
@@ -237,6 +243,7 @@ _Status: ✅ selesai · 🟡 berjalan · ⬜ belum._ Setiap tahap mulai dengan r
 | S5b   | Revisi etalase v1 13 Nov      | Kotak etalase 216×305, tanpa dekor, kotak meja baru; [subplan](docs/plans/solusi/PLAN-REVISI-ETALASE.md) | ✅ disetujui 14 Nov; 13 selisih di luar etalase menunggu keputusan (subplan 8.1) |
 | S6    | Program halaman detail        | Fondasi D0–D4 + subplan 12 slug, pilot Order Grup terlebih dahulu              | 🟡 D0–D3 + OG0–OG4 selesai teknis 8 Nov; pilot 47/47 dan regresi lulus, P0–P2 sebelas slug serta D4 belum    |
 | S7    | Pengerasan                    | HP, a11y, reduced motion, anggaran, ukur ulang vs v1                           | ⬜                                                                                                           |
+| S8    | Solusi dari template n8n.io   | 5 slug baru + Baca/Tonton 7 slug lama; [subplan](docs/plans/solusi/PLAN-KATALOG-N8N.md) | 🟡 plan disetujui 23 Nov; N0 selesai teknis, menunggu review |
 | T1–T3 | Tonton lama                   | Lihat bagian 8; hubungan dengan cerita inline harus diputuskan                 | ⬜ belum mulai                                                                                               |
 
 ### S0. Persiapan

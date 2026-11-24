@@ -10,6 +10,11 @@ import { carouselKonten } from "./items/carousel-konten";
 import { asistenSop } from "./items/asisten-sop";
 import { stokMenipis } from "./items/stok-menipis";
 import { ulasanPelanggan } from "./items/ulasan-pelanggan";
+import { catatPengeluaran } from "./items/catat-pengeluaran";
+import { balasKomentar } from "./items/balas-komentar";
+import { fakturPemasok } from "./items/faktur-pemasok";
+import { layananSdm } from "./items/layanan-sdm";
+import { onboardingKlien } from "./items/onboarding-klien";
 
 export const SOLUSI = [
   orderGrup,
@@ -24,4 +29,9 @@ export const SOLUSI = [
   asistenSop,
   stokMenipis,
   ulasanPelanggan,
+  catatPengeluaran,
+  balasKomentar,
+  fakturPemasok,
+  layananSdm,
+  onboardingKlien,
 ];

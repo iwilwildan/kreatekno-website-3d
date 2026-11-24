@@ -1,62 +1,160 @@
-// Source: Solusi v1 COPY 19; client metrics remain examples.
+// S8 N1b (24 Nov 2026): rewritten from the public n8n.io template 6679 (sales and costs in a spreadsheet compared
+// across the current period, last month and last year, summarised by AI, and open to questions in chat), adapted to
+// a nightly recap. The nightly message goes out as an approved message template (outside the 24-hour window only
+// approved templates are allowed); free questions work once the owner replies. Status "ide": the client (set A,
+// 24 Nov), quote and metrics are samples.
 import type { Solusi } from "../schema";
 
 export const rekapPenjualan: Solusi = {
   slug: "rekap-penjualan",
   status: "ide",
-  updated: "2026-10-30",
+  updated: "2026-11-24",
   industri: ["retail", "logistik"],
   tim: ["manajemen", "keuangan"],
   apps: ["sheets", "whatsapp"],
+  metricsKind: "example",
   id: {
     title: "Rekap penjualan harian tanpa hitung manual",
     question: "Bagaimana pemilik usaha menerima rekap penjualan setiap hari tanpa menghitung sendiri?",
     result: "Angka penjualan sampai di HP pemilik setiap malam",
     summary:
-      "Setiap malam pemilik menerima rekap penjualan di WhatsApp: total, produk terlaris, dan perbandingan dengan hari sebelumnya.",
+      "Setiap malam pemilik menerima rekap penjualan: total, produk terlaris, dan perbandingan dengan hari dan minggu sebelumnya.",
     answer:
-      "Data penjualan dari tabel yang sudah dipakai tim dirangkum setiap malam menjadi satu pesan WhatsApp untuk pemilik: total penjualan, produk terlaris, dan perbandingan dengan hari sebelumnya. Pemilik tidak perlu membuka laptop atau menunggu laporan admin.",
+      "Setiap malam data penjualan dari tabel yang sudah dipakai staf dijumlahkan per hari, produk, dan wilayah. Angkanya dibandingkan dengan hari sebelumnya dan hari yang sama minggu lalu, lalu AI menulis ringkasan pendek berisi total, produk terlaris, dan perubahan yang perlu diperhatikan. Pemilik menerima ringkasan itu di HP dan bisa bertanya balik, misalnya penjualan bulan lalu untuk produk tertentu.",
+    client: "Distributor minuman (contoh)",
+    painsLead:
+      "Distributor minuman mencatat pengiriman ke puluhan toko setiap hari dalam satu tabel. Pemilik baru tahu angka penjualan setelah admin selesai menghitung keesokan harinya, dan laporan mingguan sering terlambat karena admin sibuk dengan pesanan.",
     pains: [
       "Pemilik baru tahu angka penjualan setelah admin selesai menghitung.",
       "Laporan mingguan sering terlambat atau tidak dibuat.",
+      "Penurunan penjualan satu produk baru terlihat setelah beberapa minggu.",
     ],
+    built: {
+      h: "Satu ringkasan setiap malam, dengan angka pembanding",
+      lead: "Staf tetap mencatat penjualan di tabel yang sama. Setiap malam angkanya dirangkum dan dibandingkan, lalu pemilik menerima ringkasan pendek yang bisa ditanya balik.",
+      points: [
+        "Membaca tabel penjualan setiap malam pukul 21.00.",
+        "Menjumlahkan penjualan per hari, produk, dan wilayah.",
+        "Membandingkan angka hari ini dengan kemarin dan dengan hari yang sama minggu lalu.",
+        "Menulis ringkasan pendek: total, produk terlaris, dan perubahan yang perlu diperhatikan.",
+        "Mengirim ringkasan ke pemilik setiap malam.",
+        "Menjawab pertanyaan pemilik tentang periode lain, misalnya bulan lalu atau tahun lalu.",
+      ],
+    },
+    quote: {
+      text: "Sekarang saya tahu angka hari ini sebelum tidur. Kalau ada produk yang turun, saya tanya balik dan langsung melihat perbandingannya dengan bulan lalu.",
+      by: "Pemilik distributor minuman",
+    },
     steps: [
-      {
-        title: "Penjualan tercatat seperti biasa",
-        body: "Tim tetap memakai tabel atau catatan yang sudah ada.",
-      },
-      {
-        title: "Angka dirangkum",
-        body: "Total, produk terlaris, dan perbandingan harian disusun.",
-      },
-      {
-        title: "Rekap dikirim",
-        body: "Pemilik menerima satu pesan setiap malam.",
-      },
-      {
-        title: "Pemilik memutuskan",
-        body: "Keputusan stok dan promosi diambil dari angka hari itu.",
-      },
+      { title: "Penjualan tercatat seperti biasa", body: "Staf tetap memakai tabel yang sudah ada." },
+      { title: "Angka dirangkum", body: "Total, produk terlaris, dan perbandingan disusun setiap malam." },
+      { title: "Ringkasan dikirim", body: "Pemilik menerima satu pesan setiap malam." },
+      { title: "Pemilik bertanya balik", body: "Angka periode lain bisa ditanyakan lewat chat." },
     ],
     compare: [
-      {
-        aspect: "Melihat angka harian",
-        before: "Menunggu admin",
-        after: "Langsung di HP",
-      },
-      {
-        aspect: "Laporan mingguan",
-        before: "Sering terlambat",
-        after: "Terbentuk dari rekap harian",
-      },
+      { aspect: "Melihat angka harian", before: "Menunggu admin", after: "Di HP setiap malam" },
+      { aspect: "Laporan mingguan", before: "Sering terlambat", after: "Terbentuk dari rekap harian" },
+      { aspect: "Membandingkan periode", before: "Membuka banyak file", after: "Cukup bertanya" },
     ],
-    fit: ["Pemilik toko atau distributor yang ingin memantau penjualan dari HP."],
+    fit: [
+      "Pemilik toko atau distributor yang ingin memantau penjualan dari HP.",
+      "Usaha yang sudah mencatat penjualan harian di satu tabel.",
+    ],
     notFit: ["Usaha yang belum mencatat penjualan sama sekali."],
-    prep: ["Tabel penjualan yang sudah dipakai tim", "Angka apa saja yang ingin dilihat pemilik"],
+    prep: [
+      "Tabel penjualan yang sudah dipakai staf",
+      "Angka apa saja yang ingin dilihat pemilik",
+      "Jam rekap yang diinginkan",
+    ],
+    metrics: [
+      { value: "21.00", unit: "WIB", label: "ringkasan penjualan dikirim setiap malam" },
+      { value: "2", unit: "pembanding", label: "kemarin dan hari yang sama minggu lalu" },
+      { value: "1", unit: "pesan", label: "ringkasan untuk pemilik, bisa ditanya balik" },
+    ],
     faq: [
       {
         q: "Kalau data penjualan masih di buku tulis?",
-        a: "Kami bantu pindahkan ke tabel sederhana lebih dulu.",
+        a: "Penjualan perlu dicatat di tabel lebih dulu. Kami bisa membantu menyiapkan tabel atau form pencatatan yang sederhana.",
+      },
+      {
+        q: "Apakah rekap malam boleh dikirim lewat WhatsApp?",
+        a: "Boleh, memakai template pesan yang sudah disetujui, karena aturan WhatsApp Business membatasi pesan bebas di luar 24 jam sejak pemilik terakhir membalas. Setelah pemilik membalas, pertanyaan bebas bisa dijawab seperti biasa.",
+      },
+      {
+        q: "Apakah angka yang ditulis AI bisa dipercaya?",
+        a: "Angka dijumlahkan dari tabel sebelum AI menulis ringkasan. AI hanya menyusun kalimatnya, bukan menghitung.",
+      },
+    ],
+  },
+  en: {
+    title: "Daily sales recap without manual counting",
+    question: "How can an owner get a daily sales recap without counting it themselves?",
+    result: "Sales figures reach the owner's phone every night",
+    summary: "Every night the owner receives a sales recap: total, top products and a comparison with earlier days.",
+    answer:
+      "Every night the sales data in the table your staff already use is totalled by day, product and area. The figures are compared with the previous day and the same day last week, then AI writes a short summary with the total, top products and changes worth noticing. The owner receives it on their phone and can ask follow-up questions, such as last month's sales of a certain product.",
+    client: "Beverage distributor (sample)",
+    painsLead:
+      "A beverage distributor records deliveries to dozens of shops every day in one table. The owner only learns the sales figures after the admin finishes counting the next day, and the weekly report is often late because the admin is busy with orders.",
+    pains: [
+      "The owner only sees sales figures after the admin finishes counting.",
+      "Weekly reports are often late or never made.",
+      "A drop in one product's sales only shows after several weeks.",
+    ],
+    built: {
+      h: "One summary every night, with figures to compare",
+      lead: "Staff keep recording sales in the same table. Every night the figures are summarised and compared, and the owner receives a short summary they can ask about.",
+      points: [
+        "Reads the sales table every night at 9 pm.",
+        "Totals sales by day, product and area.",
+        "Compares today with yesterday and with the same day last week.",
+        "Writes a short summary: total, top products and changes worth noticing.",
+        "Sends the summary to the owner every night.",
+        "Answers the owner's questions about other periods, such as last month or last year.",
+      ],
+    },
+    quote: {
+      text: "Now I know today's figures before bed. If a product drops, I ask and see the comparison with last month straight away.",
+      by: "Beverage distributor owner",
+    },
+    steps: [
+      { title: "Sales recorded as usual", body: "Staff keep using the table they already have." },
+      { title: "Figures summarised", body: "Total, top products and comparisons are prepared every night." },
+      { title: "Summary sent", body: "The owner receives one message every night." },
+      { title: "Owner asks back", body: "Figures for other periods can be asked in chat." },
+    ],
+    compare: [
+      { aspect: "Seeing daily figures", before: "Waiting for the admin", after: "On the phone every night" },
+      { aspect: "Weekly report", before: "Often late", after: "Built from the daily recaps" },
+      { aspect: "Comparing periods", before: "Opening many files", after: "Just ask" },
+    ],
+    fit: [
+      "Shop owners or distributors who want to follow sales from their phone.",
+      "Businesses that already record daily sales in one table.",
+    ],
+    notFit: ["Businesses that do not record sales at all yet."],
+    prep: [
+      "The sales table your staff already use",
+      "The figures the owner wants to see",
+      "The time you want the recap",
+    ],
+    metrics: [
+      { value: "9", unit: "pm", label: "the sales summary is sent every night" },
+      { value: "2", unit: "comparisons", label: "yesterday and the same day last week" },
+      { value: "1", unit: "message", label: "summary for the owner, open to questions" },
+    ],
+    faq: [
+      {
+        q: "What if sales are still written in a notebook?",
+        a: "Sales need to be recorded in a table first. We can help set up a simple table or entry form.",
+      },
+      {
+        q: "Can the nightly recap be sent on WhatsApp?",
+        a: "Yes, using an approved message template, because WhatsApp Business limits free-form messages outside 24 hours of the owner's last reply. Once the owner replies, free questions can be answered as usual.",
+      },
+      {
+        q: "Can the figures written by AI be trusted?",
+        a: "Figures are totalled from the table before AI writes the summary. AI only writes the sentences, it does not do the counting.",
       },
     ],
   },

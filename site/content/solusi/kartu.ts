@@ -1,4 +1,5 @@
 // Source: Solusi v1 COPY 16. English draft added with the bilingual HTML stage S2.
+// S8 N0 (23 Nov 2026): the five template-based solutions are mapped onto existing cards (weights 1-2), no new cards.
 import type { Kartu } from "./schema";
 
 export const KARTU: Kartu[] = [
@@ -25,6 +26,8 @@ export const KARTU: Kartu[] = [
     solusi: {
       "order-grup": 3,
       "rekap-penjualan": 1,
+      "faktur-pemasok": 2,
+      "catat-pengeluaran": 1,
     },
   },
   {
@@ -77,6 +80,7 @@ export const KARTU: Kartu[] = [
     solusi: {
       "cs-klinik": 3,
       "booking-jasa": 1,
+      "balas-komentar": 2,
     },
   },
   {
@@ -101,6 +105,7 @@ export const KARTU: Kartu[] = [
     tim: ["operasional", "keuangan"],
     solusi: {
       "berkas-dokumen": 3,
+      "onboarding-klien": 1,
     },
   },
   {
@@ -125,6 +130,7 @@ export const KARTU: Kartu[] = [
     tim: ["keuangan", "operasional"],
     solusi: {
       "berkas-dokumen": 3,
+      "onboarding-klien": 1,
     },
   },
   {
@@ -211,6 +217,7 @@ export const KARTU: Kartu[] = [
     tim: ["penjualan", "marketing"],
     solusi: {
       "followup-prospek": 3,
+      "balas-komentar": 2,
     },
   },
   {
@@ -223,6 +230,7 @@ export const KARTU: Kartu[] = [
     tim: ["sdm", "operasional"],
     solusi: {
       "asisten-sop": 3,
+      "layanan-sdm": 2,
     },
   },
   {
@@ -235,6 +243,7 @@ export const KARTU: Kartu[] = [
     tim: ["sdm", "manajemen"],
     solusi: {
       "asisten-sop": 3,
+      "layanan-sdm": 1,
     },
   },
   {
@@ -298,6 +307,7 @@ export const KARTU: Kartu[] = [
       "cs-klinik": 2,
       "booking-jasa": 1,
       "order-grup": 1,
+      "balas-komentar": 1,
     },
   },
 ];

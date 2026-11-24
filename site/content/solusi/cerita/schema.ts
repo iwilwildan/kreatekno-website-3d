@@ -432,3 +432,103 @@ export type ProspekCerita = z.infer<typeof ProspekCeritaSchema>;
 export type ProspekCeritaLocale = z.infer<typeof ProspekCeritaLocaleSchema>;
 export type ProspekPanggung = z.infer<typeof ProspekPanggungSchema>;
 export type ProspekField = z.infer<typeof ProspekFieldSchema>;
+
+/** Receipt field lifted out by AI: picks the pastel chip colour. */
+export const NotaFieldSchema = z.enum(["shop", "date", "total", "category"]);
+/** Spending category: picks the pill colour in the table and the bar colour in the recap. */
+export const NotaCategorySchema = z.enum(["bahan", "operasional", "kemasan"]);
+/** Ways to send a receipt; the story follows the photo. */
+export const NotaWaySchema = z.enum(["photo", "text", "voice"]);
+/** Rupiah amount as shown ("Rp186.500" / "Rp186,500"); the digits are the value the cross-checks use. */
+const money = text.regex(/^Rp\d{1,3}([.,]\d{3})+$/, "Amount must read like Rp186.500");
+export const rupiah = (value: string) => Number(value.replace(/\D/g, ""));
+const expenseRow = z.strictObject({ shop: text, meta: text, category: NotaCategorySchema, total: money });
+
+/**
+ * Every word visible on the Catat Pengeluaran stage (CP1 "one receipt travels"): receipts pile up until the end
+ * of the month, a staff member picks the photo out of three ways to send and sends it, the receipt is read line by
+ * line, AI lifts out the shop, date and total and adds a category, a blurry receipt from another branch is asked
+ * again while this one passes, the entry becomes a row in the spending table with a confirmation, and the owner
+ * receives the morning recap. Only receipt data: no chat chrome, timestamps on bubbles or table headers.
+ */
+export const NotaPanggungSchema = z.strictObject({
+  slips: z.array(z.strictObject({ who: text, text: short, tag: text.optional() })).length(6),
+  counter: z.strictObject({ value: z.number().int().positive(), label: text }),
+  ways: z.array(z.strictObject({ kind: NotaWaySchema, label: text })).length(3),
+  chat: z.strictObject({ title: text, sender: text, photo: text }),
+  receipt: z.strictObject({
+    shop: text,
+    date: text,
+    items: z.array(z.strictObject({ name: text, price: money })).length(3),
+    totalLabel: text,
+    total: money,
+  }),
+  categories: z.strictObject({ bahan: text, operasional: text, kemasan: text }),
+  category: NotaCategorySchema,
+  chips: z.array(z.strictObject({ field: NotaFieldSchema, value: text })).length(4),
+  check: z.strictObject({ ok: text, bad: text, blurWho: text, ask: z.strictObject({ who: text, text: words(8) }) }),
+  table: z.strictObject({ title: text, time: text, rows: z.array(expenseRow).length(3), added: expenseRow }),
+  confirm: z.strictObject({ who: text, text: words(12) }),
+  recap: z.strictObject({
+    time: text,
+    to: text,
+    title: text,
+    date: text,
+    total: money,
+    lines: z.array(z.strictObject({ category: NotaCategorySchema, value: money })).length(3),
+  }),
+  sample: text,
+});
+
+export const NotaCeritaLocaleSchema = z.strictObject({
+  intro: text,
+  scenes: z.array(CeritaSceneSchema).length(9),
+  stage: NotaPanggungSchema,
+});
+
+export const NotaCeritaSchema = z
+  .strictObject({
+    slug: z.literal("catat-pengeluaran"),
+    id: NotaCeritaLocaleSchema,
+    en: NotaCeritaLocaleSchema,
+  })
+  .superRefine((story, ctx) => {
+    for (const locale of ["id", "en"] as const) {
+      const copy = story[locale];
+      const { stage } = copy;
+      const issue = (message: string) => ctx.addIssue({ code: "custom", message: `${locale}: ${message}` });
+      if (new Set(copy.scenes.map((scene) => scene.id)).size !== copy.scenes.length) issue("scene IDs must be unique");
+      if (copy.scenes.filter((scene) => scene.cta).length !== 1 || !copy.scenes.at(-1)?.cta)
+        issue("the final scene must be the only CTA");
+      if (stage.slips.filter((slip) => slip.tag).length !== 1) issue("exactly one slip carries the tag");
+      if (stage.ways.map((way) => way.kind).join() !== "photo,text,voice") issue("ways are photo, text, voice");
+      const { receipt, chips, table, recap } = stage;
+      const items = receipt.items.reduce((sum, item) => sum + rupiah(item.price), 0);
+      if (items !== rupiah(receipt.total)) issue("the three items add up to the receipt total");
+      if (chips.map((chip) => chip.field).join() !== "shop,date,total,category")
+        issue("chips are shop, date, total, category");
+      const chip = (field: string) => chips.find((c) => c.field === field)!.value;
+      const label = stage.categories[stage.category];
+      if (chip("shop") !== receipt.shop || chip("date") !== receipt.date || chip("total") !== receipt.total)
+        issue("the shop, date and total chips repeat the receipt");
+      if (chip("category") !== label) issue("the category chip is the receipt's category");
+      const { added } = table;
+      if (added.shop !== receipt.shop || added.total !== receipt.total || added.category !== stage.category)
+        issue("the added row is the receipt");
+      const confirm = stage.confirm.text;
+      if (!confirm.includes(receipt.shop) || !confirm.includes(receipt.total) || !confirm.includes(label))
+        issue("the confirmation names the shop, total and category");
+      const lines = recap.lines.reduce((sum, line) => sum + rupiah(line.value), 0);
+      if (lines !== rupiah(recap.total)) issue("the recap lines add up to the recap total");
+      if (recap.lines.map((line) => line.category).join() !== "bahan,operasional,kemasan")
+        issue("the recap lists every category once, in order");
+      const own = recap.lines.find((line) => line.category === stage.category)!;
+      if (rupiah(own.value) < rupiah(receipt.total)) issue("the recap includes the receipt in its category");
+    }
+  });
+
+export type NotaCerita = z.infer<typeof NotaCeritaSchema>;
+export type NotaCeritaLocale = z.infer<typeof NotaCeritaLocaleSchema>;
+export type NotaPanggung = z.infer<typeof NotaPanggungSchema>;
+export type NotaField = z.infer<typeof NotaFieldSchema>;
+export type NotaCategory = z.infer<typeof NotaCategorySchema>;

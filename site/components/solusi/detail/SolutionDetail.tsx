@@ -4,12 +4,17 @@ import {
   ChatCircleDots,
   Check,
   CheckCircle,
+  Envelope,
+  Folder,
+  InstagramLogo,
   Table,
+  TelegramLogo,
   ThreadsLogo,
   Warning,
   WhatsappLogo,
   X,
 } from "@phosphor-icons/react/ssr";
+import type { Icon } from "@phosphor-icons/react";
 import type { CSSProperties } from "react";
 import { storyFor } from "@/content/solusi/cerita";
 import { detailLabels } from "@/content/solusi/detail-copy";
@@ -38,6 +43,19 @@ function iconList(items: string[], kind: "warning" | "check" | "x" = "check") {
     </ul>
   );
 }
+
+// S8 N1a (23 Nov 2026): the glyph follows the taxonomy icon, as on the shelf boxes; before, every app other than
+// WhatsApp, Threads and Calendar fell back to the table glyph (Instagram, Gmail and Drive showed a spreadsheet).
+const APP_ICONS: Record<string, Icon> = {
+  WhatsappLogo,
+  Table,
+  InstagramLogo,
+  ThreadsLogo,
+  Envelope,
+  CalendarDots,
+  Folder,
+  TelegramLogo,
+};
 
 export function SolutionDetail({ solution, locale }: { solution: Solusi; locale: SolusiLocale }) {
   const labels = detailLabels(locale);
@@ -269,15 +287,10 @@ export function SolutionDetail({ solution, locale }: { solution: Solusi; locale:
             <div className="detail-apps">
               {apps.map((app) => (
                 <div key={app.id}>
-                  {app.id === "whatsapp" ? (
-                    <WhatsappLogo aria-hidden weight="fill" />
-                  ) : app.id === "threads" ? (
-                    <ThreadsLogo aria-hidden weight="bold" />
-                  ) : app.id === "calendar" ? (
-                    <CalendarDots aria-hidden weight="bold" />
-                  ) : (
-                    <Table aria-hidden weight="bold" />
-                  )}
+                  {(() => {
+                    const Glyph = APP_ICONS[app.icon] ?? Table;
+                    return <Glyph aria-hidden weight={app.id === "whatsapp" ? "fill" : "bold"} />;
+                  })()}
                   <strong>{app.label[locale]}</strong>
                 </div>
               ))}

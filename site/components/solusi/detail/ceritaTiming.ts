@@ -116,10 +116,24 @@ export const FOLLOWUP_PROSPEK = makeTiming([
   { in: 0.6, hold: 0.9 },
 ]);
 
+/** Catat Pengeluaran (CP1 "one receipt travels"): nine scenes, six rail nodes. */
+export const CATAT_PENGELUARAN = makeTiming([
+  { in: 1.6, hold: 0.6 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.6, hold: 0.7 },
+  { in: 1.8, hold: 0.8 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.6, hold: 0.7 },
+  { in: 1.4, hold: 0.8 },
+  { in: 1.0, hold: 0.6 },
+  { in: 0.6, hold: 0.9 },
+]);
+
 export const TIMING = {
   "order-grup": ORDER_GRUP,
   "booking-jasa": BOOKING_JASA,
   "riset-konten": RISET_KONTEN,
   "cs-klinik": CS_KLINIK,
   "followup-prospek": FOLLOWUP_PROSPEK,
+  "catat-pengeluaran": CATAT_PENGELUARAN,
 } as const;

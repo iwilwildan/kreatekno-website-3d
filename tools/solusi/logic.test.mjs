@@ -10,8 +10,10 @@ import {
   BookingCeritaSchema,
   CeritaSchema,
   KlinikCeritaSchema,
+  NotaCeritaSchema,
   ProspekCeritaSchema,
   RisetCeritaSchema,
+  rupiah,
 } from "../../site/content/solusi/cerita/schema.ts";
 import { buildTiers, fitIndustries } from "../../site/lib/solusi/tiers.ts";
 import { APPS, INDUSTRI } from "../../site/content/solusi/taksonomi.ts";
@@ -36,12 +38,31 @@ const REWRITTEN = new Set([
   "riset-konten",
   "cs-klinik",
   "followup-prospek",
+  // S8 N1b (24 Nov 2026): rewritten from real workflows or public n8n.io templates (PLAN-KATALOG-N8N.md 11).
+  "asisten-sop",
+  "carousel-konten",
+  "berkas-dokumen",
+  "stok-menipis",
+  "pengingat-tagihan",
+  "ulasan-pelanggan",
+  "rekap-penjualan",
 ]);
+// S8 N0 (23 Nov 2026): five solutions drawn from public n8n.io templates have no v1 source copy, and their
+// weights on existing cards are additions to the source cards (docs/plans/solusi/PLAN-KATALOG-N8N.md).
+const S8 = new Set([
+  "catat-pengeluaran",
+  "balas-komentar",
+  "faktur-pemasok",
+  "layanan-sdm",
+  "onboarding-klien",
+]);
+const withoutS8 = (solusi) =>
+  Object.fromEntries(Object.entries(solusi).filter(([slug]) => !S8.has(slug)));
 
-test("12 unique solutions and 24 unique cards satisfy strict schemas", () => {
-  assert.equal(SOLUSI.length, 12);
+test("17 unique solutions and 24 unique cards satisfy strict schemas", () => {
+  assert.equal(SOLUSI.length, 17);
   assert.equal(KARTU.length, 24);
-  assert.equal(new Set(SOLUSI.map((s) => s.slug)).size, 12);
+  assert.equal(new Set(SOLUSI.map((s) => s.slug)).size, 17);
   assert.equal(new Set(KARTU.map((c) => c.id)).size, 24);
   SOLUSI.forEach((s) =>
     assert.equal(SolusiSchema.safeParse(s).success, true, s.slug),
@@ -212,10 +233,119 @@ test("Follow-up Prospek story has stable bilingual scenes, stage copy and one fi
   );
 });
 
+test("Catat Pengeluaran story (CP1): bilingual scenes, one CTA, figures that add up", () => {
+  const story = CERITA["catat-pengeluaran"];
+  assert.equal(NotaCeritaSchema.safeParse(story).success, true);
+  for (const locale of ["id", "en"]) {
+    const copy = story[locale];
+    assert.equal(copy.scenes.length, 9);
+    assert.deepEqual(
+      copy.scenes.map((scene) => scene.id),
+      story.id.scenes.map((scene) => scene.id),
+    );
+    assert.equal(copy.scenes.at(-1).cta, true);
+    const { receipt, recap } = copy.stage;
+    assert.equal(rupiah(receipt.total), 186500);
+    assert.equal(rupiah(recap.total), 642500);
+  }
+  // The broken schema rule must bite: a wrong item price no longer adds up to the total.
+  const broken = structuredClone(story);
+  broken.id.stage.receipt.items[0].price = "Rp100.000";
+  assert.equal(NotaCeritaSchema.safeParse(broken).success, false);
+  // Sample data, labelled as such; the stage and captions name no platform or template.
+  assert.match(story.id.scenes[7].body, /contoh/);
+  assert.match(story.en.scenes[7].body, /sample/);
+  assert.doesNotMatch(
+    JSON.stringify(story),
+    /WhatsApp|Google|Sheets|Telegram|n8n|template|Postgres/i,
+  );
+});
+
+test("S8 template-based solutions: status ide, no template or platform names in the headline copy", () => {
+  const items = SOLUSI.filter((s) => S8.has(s.slug));
+  assert.equal(items.length, 5);
+  for (const s of items) {
+    assert.equal(s.status, "ide", s.slug);
+    assert.doesNotMatch(
+      JSON.stringify(s),
+      /n8n|template|upload-post|HubSpot|Postgres/i,
+      s.slug,
+    );
+    assert.doesNotMatch(
+      [s.id.title, s.id.question, s.id.result, s.id.summary, s.id.answer].join(
+        " ",
+      ),
+      /WhatsApp|Instagram|Google|Gmail|Sheets|Drive|Excel/i,
+      s.slug,
+    );
+    assert.ok(
+      KARTU.some((c) => c.solusi[s.slug]),
+      `${s.slug} on a card`,
+    );
+    // N1a (23 Nov 2026): full ID/EN copy like FP1, with sample client, quote and metrics.
+    assert.equal(s.metricsKind, "example", s.slug);
+    for (const copy of [s.id, s.en]) {
+      assert.ok(copy, `${s.slug} has EN copy`);
+      assert.ok(
+        copy.painsLead &&
+          copy.built &&
+          copy.quote &&
+          copy.metrics?.length === 3,
+        s.slug,
+      );
+      assert.match(copy.client, /\((contoh|sample)\)$/, s.slug);
+      assert.ok(copy.summary.split(/\s+/).length <= 20, `${s.slug} summary`);
+    }
+  }
+});
+
+test("S8 N1b rewritten pages: full ID/EN copy with sample labels, no platform names in the headline copy", () => {
+  const slugs = [
+    "asisten-sop",
+    "carousel-konten",
+    "berkas-dokumen",
+    "stok-menipis",
+    "pengingat-tagihan",
+    "ulasan-pelanggan",
+    "rekap-penjualan",
+  ];
+  for (const slug of slugs) {
+    const s = SOLUSI.find((x) => x.slug === slug);
+    assert.equal(s.status, "ide", slug);
+    assert.equal(s.metricsKind, "example", slug);
+    for (const copy of [s.id, s.en]) {
+      assert.ok(
+        copy?.painsLead &&
+          copy.built &&
+          copy.quote &&
+          copy.metrics?.length === 3,
+        slug,
+      );
+      assert.match(copy.client, /\((contoh|sample)\)$/, slug);
+      assert.doesNotMatch(
+        [
+          copy.title,
+          copy.question,
+          copy.result,
+          copy.summary,
+          copy.answer,
+        ].join(" "),
+        /WhatsApp|Instagram|Telegram|Google|Gmail|Sheets|Drive|n8n|template/i,
+        slug,
+      );
+    }
+  }
+  // The travel-agency client was dropped from berkas-dokumen (user decision 24 Nov 2026).
+  assert.doesNotMatch(
+    JSON.stringify(SOLUSI.find((x) => x.slug === "berkas-dokumen")),
+    /agen perjalanan|visa/i,
+  );
+});
+
 test("all migrated ID copy and taxonomy equal source literals", () => {
   const source = readPrototype();
   for (const s of SOLUSI) {
-    if (REWRITTEN.has(s.slug)) continue;
+    if (REWRITTEN.has(s.slug) || S8.has(s.slug)) continue;
     const old = source.SOLUSI.find((x) => x.slug === s.slug);
     for (const key of ["status", "industri", "tim", "apps"])
       assert.deepEqual(s[key], old[key]);
@@ -252,7 +382,13 @@ test("all migrated ID copy and taxonomy equal source literals", () => {
   for (const c of KARTU) {
     const old = source.KARTU.find((x) => x.id === c.id);
     assert.deepEqual(
-      { id: c.id, t: c.text.id, ind: c.industri, tim: c.tim, sol: c.solusi },
+      {
+        id: c.id,
+        t: c.text.id,
+        ind: c.industri,
+        tim: c.tim,
+        sol: withoutS8(c.solusi),
+      },
       old,
     );
   }
@@ -265,7 +401,7 @@ test("every copy field in COPY section 19 matches migrated data", () => {
   );
   let count = 0;
   for (const s of SOLUSI) {
-    if (REWRITTEN.has(s.slug)) continue;
+    if (REWRITTEN.has(s.slug) || S8.has(s.slug)) continue;
     const section = copy
       .split(new RegExp(`### 19\\.\\d+ ${s.slug}\\r?\\n`))[1]
       ?.split(/### 19\./)[0];
@@ -285,27 +421,29 @@ test("every copy field in COPY section 19 matches migrated data", () => {
     }
   }
   // 245 fields once booking-jasa, riset-konten, cs-klinik and followup-prospek left the source copy (22 Nov 2026).
-  assert.ok(count > 225, `Checked ${count} fields`);
+  // 41 fields since S8 N1b (24 Nov 2026): only order-grup still follows the v1 source copy.
+  assert.ok(count >= 41, `Checked ${count} fields`);
 });
 
 test("seven tiers and source ordering match LOGIKA 6, without decor since 13 Nov", () => {
   const tiers = buildTiers(SOLUSI);
   assert.deepEqual(
     tiers.map((t) => [t.team.id, t.solutions.length]),
+    // S8 N0 (23 Nov 2026): four full tiers of three; ties keep the TIM order, so marketing comes first.
     [
+      ["marketing", 3],
       ["cs", 3],
       ["operasional", 3],
-      ["marketing", 2],
-      ["penjualan", 1],
-      ["keuangan", 1],
+      ["keuangan", 3],
+      ["penjualan", 2],
+      ["sdm", 2],
       ["manajemen", 1],
-      ["sdm", 1],
     ],
   );
   assert.ok(tiers.every((t) => !("decorations" in t)));
   assert.deepEqual(
     tiers[0].solutions.map((s) => s.slug),
-    ["booking-jasa", "cs-klinik", "ulasan-pelanggan"],
+    ["riset-konten", "carousel-konten", "balas-komentar"],
   );
   assert.equal(buildTiers([]).length, 0);
 });
@@ -333,12 +471,13 @@ test("app colours keep 3:1 on the white circle (WCAG 1.4.11)", () => {
 
 test("search phrases, status, all teams and intersecting filters", () => {
   for (const [term, n] of [
+    // S8 N0 (23 Nov 2026): terms re-picked so 1 to 5 results still step by one with 17 solutions.
     ["stok", 1],
-    ["dokumen", 2],
-    ["pemilik", 3],
-    ["jadwal", 4],
-    ["pelanggan", 5],
-    ["", 12],
+    ["foto", 2],
+    ["rekap", 3],
+    ["harga", 4],
+    ["jadwal", 5],
+    ["", 17],
   ])
     assert.equal(searchList(SOLUSI, { term }).length, n, term);
   assert.deepEqual(
@@ -353,9 +492,10 @@ test("search phrases, status, all teams and intersecting filters", () => {
       app: "sheets",
       status: "jalan",
     }).map((s) => s.slug),
-    ["booking-jasa", "berkas-dokumen"],
+    // S8 N1b (24 Nov 2026): berkas-dokumen moved to "ide" (sample client, template-based).
+    ["booking-jasa"],
   );
-  assert.equal(searchList(SOLUSI, { status: "jalan" }).length, 3);
+  assert.equal(searchList(SOLUSI, { status: "jalan" }).length, 2);
   assert.equal(
     searchList(SOLUSI, { industri: "klinik", app: "gmail", status: "jalan" })
       .length,
@@ -363,21 +503,27 @@ test("search phrases, status, all teams and intersecting filters", () => {
   );
 });
 
-test("six per page: all 12 reachable, no overlap, boundaries and no results", () => {
+test("six per page: all 17 reachable, no overlap, boundaries and no results", () => {
   const first = searchPage(SOLUSI),
-    second = searchPage(SOLUSI, {}, 2);
-  assert.equal(first.total, 12);
+    second = searchPage(SOLUSI, {}, 2),
+    third = searchPage(SOLUSI, {}, 3);
+  assert.equal(first.total, 17);
+  assert.equal(first.pageCount, 3);
   assert.equal(first.hasNext, true);
   assert.equal(first.hasPrevious, false);
-  assert.equal(second.hasNext, false);
+  assert.equal(second.hasNext, true);
   assert.equal(second.hasPrevious, true);
+  assert.equal(third.hasNext, false);
+  assert.equal(third.items.length, 5);
   assert.equal(
-    new Set([...first.items, ...second.items].map((s) => s.slug)).size,
-    12,
+    new Set(
+      [...first.items, ...second.items, ...third.items].map((s) => s.slug),
+    ).size,
+    17,
   );
   for (const page of [-3, 0, NaN, Infinity])
     assert.equal(searchPage(SOLUSI, {}, page).page, 1);
-  assert.equal(searchPage(SOLUSI, {}, 99).page, 2);
+  assert.equal(searchPage(SOLUSI, {}, 99).page, 3);
   assert.equal(searchPage(SOLUSI, { term: "unmatched" }, 9).pageCount, 0);
   assert.equal(searchPage(SOLUSI, { term: "stok" }, 2).page, 1);
 });
@@ -412,6 +558,8 @@ test("LOGIKA 11.5: three deterministic rounds, scoring and ranking without perce
       ["cs-klinik", 7, 1],
       ["booking-jasa", 5.5, 2],
       ["order-grup", 2, 3],
+      // S8 N0: balas-komentar has weight 1 on k24 ("you still answer chats yourself").
+      ["balas-komentar", 0.5, 4],
     ],
   );
   assert.ok(results(SOLUSI, state).every((r) => !("pct" in r)));

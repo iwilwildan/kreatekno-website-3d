@@ -2281,6 +2281,484 @@
 .fp-cv:not(.is-film)[data-scene="5"] > .fp-draft {
   transform: translateY(-120px);
 }
+/* CP1 · Catat Pengeluaran ("one receipt travels") */
+.cp-cv {
+  --cp-shop: #e1f1ff;
+  --cp-date: #fff1c9;
+  --cp-total: #d9f5e3;
+  --cp-category: #eadcfd;
+  --cp-item: #f1eefc;
+  --cp-bahan: #ffe2c7;
+  --cp-operasional: #e1f1ff;
+  --cp-kemasan: #e3f5d8;
+  --cp-bar-bahan: #ef8f3f;
+  --cp-bar-operasional: #4f7fe3;
+  --cp-bar-kemasan: #4aa66b;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 520px;
+  color: var(--og-navy);
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  transform: translate(-50%, -50%) scale(var(--og-s));
+}
+.cp-cv > * {
+  position: absolute;
+  margin: 0;
+}
+.cp-cv svg {
+  flex: none;
+}
+
+/* 1 · receipt slips pile up */
+.cp-slip {
+  border-bottom: 2px dashed #d9d6ea;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* a small receipt drawn in CSS */
+.cp-thumb {
+  display: grid;
+  width: 150px;
+  gap: 7px;
+  border: 1px solid #ebe8f5;
+  border-radius: 6px;
+  padding: 12px 14px 14px;
+  background: white;
+}
+.cp-thumb b {
+  overflow: hidden;
+  font-size: 11.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cp-thumb i {
+  height: 7px;
+  border-radius: 4px;
+  background: #e6e3f2;
+}
+.cp-thumb i:nth-of-type(2) {
+  width: 78%;
+}
+.cp-thumb i:nth-of-type(3) {
+  width: 64%;
+}
+.cp-thumb span {
+  border-top: 1.5px dashed #d9d6ea;
+}
+.cp-thumb i.is-total {
+  width: 56%;
+  height: 9px;
+  justify-self: end;
+  background: #c9c5e0;
+}
+.cp-thumb.is-blur > * {
+  filter: blur(2.5px);
+}
+
+/* 2 · three ways to send, then the chat */
+.cp-ways {
+  top: 20px;
+  left: 20px;
+  display: flex;
+  width: 400px;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.cp-ways li {
+  position: relative;
+  display: grid;
+  flex: 1;
+  justify-items: center;
+  gap: 6px;
+  border-radius: 20px;
+  padding: 16px 0 14px;
+  background: white;
+  box-shadow: var(--og-shadow);
+  font-size: 15px;
+  font-weight: 700;
+}
+.cp-ways svg {
+  color: #6b6f93;
+  font-size: 30px;
+}
+.cp-ways li.is-pick svg {
+  color: var(--og-purple);
+}
+.cp-pick {
+  border-radius: 20px;
+}
+.cp-chat {
+  top: 132px;
+  left: 20px;
+  display: grid;
+  width: 400px;
+  gap: 12px;
+  border-radius: 24px;
+  padding: 16px;
+  background: #f6f4fc;
+  box-shadow: var(--og-shadow);
+}
+.cp-chat-h {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  gap: 12px;
+}
+.cp-chat-h b {
+  font-size: 17px;
+}
+.cp-chat-i {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--cp-shop);
+  font-size: 20px;
+}
+.cp-msg {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+.cp-msg .cp-thumb {
+  width: 190px;
+}
+.cp-msg small {
+  color: #6b6f93;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* 3-4 · the receipt and its chips */
+.cp-receipt {
+  top: 16px;
+  left: 60px;
+  display: grid;
+  width: 320px;
+  gap: 6px;
+  overflow: hidden;
+  border-radius: 8px;
+  padding: 18px 22px 20px;
+  background: white;
+  box-shadow: var(--og-shadow);
+  font-variant-numeric: tabular-nums;
+}
+.cp-receipt hr {
+  width: 100%;
+  margin: 4px 0;
+  border: 0;
+  border-top: 1.5px dashed #d9d6ea;
+}
+.cp-shop {
+  justify-self: center;
+  font-size: 19px;
+}
+.cp-date {
+  justify-self: center;
+  color: #565b81;
+  font-size: 14px;
+  font-weight: 700;
+}
+.cp-item .og-hl,
+.cp-sum {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cp-item {
+  font-size: 15px;
+  font-weight: 600;
+}
+.cp-sum {
+  font-size: 17px;
+  font-weight: 800;
+}
+.cp-scan {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--og-purple);
+  box-shadow: 0 0 14px 3px rgba(159, 14, 214, 0.35);
+  opacity: 0;
+}
+.cp-cv .cp-chips {
+  top: 290px;
+  gap: 10px;
+}
+.cp-chips .og-chip {
+  padding: 9px 14px 9px 11px;
+  font-size: 15.5px;
+  white-space: nowrap;
+}
+.cp-chips .og-chip[data-field="category"] svg {
+  color: var(--og-purple);
+}
+
+/* 5 · checked */
+.cp-card {
+  top: 24px;
+  display: grid;
+  width: 210px;
+  justify-items: start;
+  gap: 10px;
+  border-radius: 22px;
+  padding: 16px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.cp-card .cp-thumb {
+  width: 100%;
+}
+.cp-ok {
+  left: 0;
+}
+.cp-bad {
+  left: 230px;
+}
+.cp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 7px 12px 7px 9px;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1;
+}
+.cp-pill svg {
+  font-size: 17px;
+}
+.cp-pill.is-ok {
+  color: #1d6b3f;
+  background: #d9f5e3;
+}
+.cp-pill.is-bad {
+  color: #9b1c31;
+  background: #fde1e5;
+}
+.cp-cv .cp-ask {
+  top: 318px;
+  left: 120px;
+  width: 320px;
+  max-width: none;
+  font-size: 15.5px;
+}
+
+/* 6 · the spending table and the confirmation */
+.cp-table {
+  top: 8px;
+  left: 0;
+  width: 440px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.cp-th {
+  display: flex;
+  height: 50px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+.cp-th b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+}
+.cp-th b svg {
+  color: var(--og-purple);
+}
+.cp-th small {
+  margin-left: auto;
+  color: #6b6f93;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.cp-tr {
+  position: relative;
+  display: grid;
+  height: 62px;
+  grid-template-columns: minmax(0, 1fr) 104px 88px;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #ebe8f5;
+  padding: 0 16px;
+  font-size: 14.5px;
+  line-height: 1.3;
+}
+.cp-glow {
+  inset: 4px 6px;
+  border-radius: 14px;
+}
+.cp-who {
+  display: grid;
+  min-width: 0;
+}
+.cp-who b {
+  overflow: hidden;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cp-who small {
+  color: #565b81;
+  font-size: 13px;
+}
+.cp-cat {
+  width: max-content;
+  justify-self: start;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1;
+}
+.cp-cat[data-category="bahan"] {
+  background: var(--cp-bahan);
+}
+.cp-cat[data-category="operasional"] {
+  background: var(--cp-operasional);
+}
+.cp-cat[data-category="kemasan"] {
+  background: var(--cp-kemasan);
+}
+.cp-amt {
+  justify-self: end;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.cp-cv .cp-confirm {
+  top: 330px;
+  left: 60px;
+  width: 380px;
+  max-width: none;
+  font-size: 15.5px;
+}
+
+/* 7 · morning recap */
+.cp-clock {
+  top: 18px;
+  left: 110px;
+  display: flex;
+  width: 220px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.cp-clock svg {
+  color: #f2a516;
+  font-size: 24px;
+}
+.cp-clock b {
+  font:
+    800 26px/1 var(--font-bricolage),
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.cp-clock small {
+  color: #565b81;
+  font-size: 15px;
+  font-weight: 700;
+}
+.cp-recap {
+  top: 96px;
+  left: 20px;
+  display: grid;
+  width: 400px;
+  gap: 14px;
+  border-radius: 24px;
+  padding: 20px 22px 22px;
+  background: white;
+  box-shadow: var(--og-shadow);
+}
+.cp-recap-h {
+  display: grid;
+}
+.cp-recap-h b {
+  font-size: 18px;
+}
+.cp-recap-h small {
+  color: #565b81;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cp-recap-total {
+  font:
+    800 46px/1 var(--font-bricolage),
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.cp-bar {
+  display: grid;
+  gap: 6px;
+}
+.cp-bar-l {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cp-bar-t {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #efedf6;
+}
+.cp-bar-t i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transform-origin: left center;
+}
+.cp-bar[data-category="bahan"] i {
+  background: var(--cp-bar-bahan);
+}
+.cp-bar[data-category="operasional"] i {
+  background: var(--cp-bar-operasional);
+}
+.cp-bar[data-category="kemasan"] i {
+  background: var(--cp-bar-kemasan);
+}
+
+/* Without the film: each scene's end pose from data-scene. */
+.cp-cv:not(.is-film) > :not(.og-pile),
+.cp-cv:not(.is-film) :is(.cp-pick, .cp-glow) {
+  visibility: hidden;
+}
+.cp-cv:not(.is-film):not([data-scene="0"]) > .og-pile {
+  visibility: hidden;
+}
+.cp-cv:not(.is-film)[data-scene="0"] > .og-count,
+.cp-cv:not(.is-film)[data-scene="1"] > :is(.cp-ways, .cp-chat),
+.cp-cv:not(.is-film)[data-scene="1"] .cp-pick,
+.cp-cv:not(.is-film):is([data-scene="2"], [data-scene="3"]) > .cp-receipt,
+.cp-cv:not(.is-film)[data-scene="3"] > .cp-chips,
+.cp-cv:not(.is-film)[data-scene="4"] > :is(.cp-ok, .cp-bad, .cp-ask),
+.cp-cv:not(.is-film)[data-scene="5"] > :is(.cp-table, .cp-confirm),
+.cp-cv:not(.is-film)[data-scene="5"] .cp-glow,
+.cp-cv:not(.is-film)[data-scene="6"] > :is(.cp-clock, .cp-recap),
+.cp-cv:not(.is-film):is([data-scene="7"], [data-scene="8"]) > .og-mx {
+  visibility: visible;
+}
+
 .detail-fallback-story {
   display: grid;
   gap: 14px;

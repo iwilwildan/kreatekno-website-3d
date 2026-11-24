@@ -1,5 +1,6 @@
 import type { SolusiLocale, SolusiSlug } from "../schema";
 import { bookingJasaStory } from "./booking-jasa";
+import { catatPengeluaranStory } from "./catat-pengeluaran";
 import { csKlinikStory } from "./cs-klinik";
 import { followupProspekStory } from "./followup-prospek";
 import { orderGrupStory } from "./order-grup";
@@ -8,11 +9,13 @@ import {
   BookingCeritaSchema,
   CeritaSchema,
   KlinikCeritaSchema,
+  NotaCeritaSchema,
   ProspekCeritaSchema,
   RisetCeritaSchema,
   type BookingCeritaLocale,
   type CeritaLocale,
   type KlinikCeritaLocale,
+  type NotaCeritaLocale,
   type ProspekCeritaLocale,
   type RisetCeritaLocale,
 } from "./schema";
@@ -23,6 +26,7 @@ const stories = {
   "riset-konten": RisetCeritaSchema.parse(risetKontenStory),
   "cs-klinik": KlinikCeritaSchema.parse(csKlinikStory),
   "followup-prospek": ProspekCeritaSchema.parse(followupProspekStory),
+  "catat-pengeluaran": NotaCeritaSchema.parse(catatPengeluaranStory),
 } satisfies Partial<Record<SolusiSlug, unknown>>;
 
 /** One story in one locale, tagged with its slug so the page picks the matching stage and film. */
@@ -31,7 +35,8 @@ export type StoryEntry =
   | { slug: "booking-jasa"; copy: BookingCeritaLocale }
   | { slug: "riset-konten"; copy: RisetCeritaLocale }
   | { slug: "cs-klinik"; copy: KlinikCeritaLocale }
-  | { slug: "followup-prospek"; copy: ProspekCeritaLocale };
+  | { slug: "followup-prospek"; copy: ProspekCeritaLocale }
+  | { slug: "catat-pengeluaran"; copy: NotaCeritaLocale };
 
 export function storyFor(slug: SolusiSlug, locale: SolusiLocale): StoryEntry | undefined {
   if (slug === "order-grup") return { slug, copy: stories[slug][locale] };
@@ -39,6 +44,7 @@ export function storyFor(slug: SolusiSlug, locale: SolusiLocale): StoryEntry | u
   if (slug === "riset-konten") return { slug, copy: stories[slug][locale] };
   if (slug === "cs-klinik") return { slug, copy: stories[slug][locale] };
   if (slug === "followup-prospek") return { slug, copy: stories[slug][locale] };
+  if (slug === "catat-pengeluaran") return { slug, copy: stories[slug][locale] };
   return undefined;
 }
 

@@ -194,7 +194,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review dan tes HP fisik |
 | 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review; `issue4*.mjs` dan tes HP fisik di laptop |
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
-| 12  | Solusi v1 dan detail          | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail                                                                                               | fondasi 1–3; halaman depan dimajukan 7 Nov | 🟡 S5 disetujui; D0–D3 dan Order Grup OG0–OG4 selesai teknis 8 Nov, menunggu review final pilot |
+| 12  | Solusi v1 dan detail          | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail; S8 (23 Nov) 5 slug baru dari template n8n.io di `docs/plans/solusi/PLAN-KATALOG-N8N.md`                                                                                               | fondasi 1–3; halaman depan dimajukan 7 Nov | 🟡 S5 disetujui; D0–D3 dan Order Grup OG0–OG4 selesai teknis 8 Nov, menunggu review final pilot |
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
 | 14 | Halaman lain | Artikel (MDX, 5 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | 🟡 plan disetujui 22 Nov; 14A Kebijakan Privasi, 14B Tentang dan 14C Artikel selesai teknis, menunggu review |
 | 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
@@ -2881,3 +2881,59 @@ Cek di tiap bagian:
 - Perbaikan: skrip inline menandai `window.__takeInline`; kalau tidak ada (datang dari halaman lain), `HomeTake` memanggil `bootLock(BOOT_LIMIT_MS, from)` dari efeknya dan batas boot dihitung dari saat take dipasang (`bootLock` mendapat parameter `from`, default 0 sehingga load langsung tidak berubah). Cleanup efek mengembalikan `mode`, `live`, HUD dan bar loader ke awal. File: `components/home/{bootLock.ts,HomeStage.tsx,HomeTake.tsx}`.
 - Dicek (build produksi, SwiftShader headless): Artikel→Home 3 dan 20 dtk (pc), Tentang→Home 20 dtk (hp), Solusi→Home 20 dtk (tablet 820×1180), Kebijakan Privasi→Home, Artikel→Home (hp), Home→Artikel/Tentang/Solusi→Home (pc/hp/tablet), `/en/articles`→`/en` (hp, pc): semua mengunci scroll dengan loader terlihat, lalu `live`, scroll jalan setelahnya, console tanpa error. Load langsung `/` tetap terkunci dari skrip inline lalu live. Typecheck, ESLint, Prettier lulus. Screenshot hanya di chat.
 - Belum: tes HP fisik user, issue GitHub, commit/push.
+
+### 2026-11-23 (riset template n8n.io untuk rak Solusi)
+- Riset saja, tanpa perubahan kode. Katalog template n8n.io ditelusuri lewat `search_templates` (n8n-mcp, cermin katalog n8n.io) dengan kata kunci WhatsApp, invoice, inventory, review, expense, instagram, real estate, meeting, onboarding, resume, payment reminder.
+- Hasil: referensi untuk 8 Solusi berstatus `ide` (mis. 3979 stok + persetujuan, 14313 pengingat tagihan bertahap, 4966 bot SOP dari Google Docs, 4028 carousel, 6679 laporan dari Sheets, 6112 agregasi ulasan) dan 5 kandidat Solusi baru: catat nota/pengeluaran lewat chat (5201, 4136, 4020), balas komentar IG + DM (5941, 3896), faktur pemasok ke Sheets dengan validasi (4247, 4452), layanan SDM lewat chat + saring CV (4975, 6680), onboarding klien baru (3958, 4448).
+- Catatan: 6474 (booking + bayar Xendit) memakai community node GOWA dan template Rapiwa memakai API WhatsApp tidak resmi, jadi hanya referensi alur. Slug baru butuh perubahan `SlugSchema`, `catalog.ts` EN, item, dan pemetaan kartu.
+- Belum: user memilih kandidat; belum dicek di situs n8n.io langsung (database template n8n-mcp bisa tertinggal beberapa minggu).
+
+### 2026-11-23 (plan S8: Solusi dari template n8n.io)
+
+- Permintaan user: pelajari semua workflow n8n.io yang diusulkan dan buat plan untuk menjadikannya halaman Solusi. Plan di `docs/plans/solusi/PLAN-KATALOG-N8N.md`; indeks di `PLAN-SOLUSI.md` (S8) dan baris tahap 12.
+- Dipelajari: 30 template dari API publik n8n.io (diunduh ke scratchpad, diringkas per node, tidak diimpor atau dijalankan).
+- Temuan: 5941 hanya membalas komentar walau deskripsinya menyebut DM; DM dari komentar lewat API resmi Meta dibatasi 1 pesan per komentar dalam 7 hari; WhatsApp Business melarang asisten AI serbaguna sejak 15 Jan 2026 (bot fungsi bisnis tetap boleh); jendela 24 jam berlaku untuk semua pesan terjadwal; UU PDP Pasal 10 untuk keputusan otomatis (saring CV dikeluarkan, cuti diputuskan atasan); template banyak memakai layanan di luar `apps` kita dan beberapa community node.
+- Keputusan user: 5 slug baru (`catat-pengeluaran`, `balas-komentar`, `faktur-pemasok`, `layanan-sdm`, `onboarding-klien`) + cerita Tonton untuk 7 slug lama; workflow nyata jadi sumber utama untuk `asisten-sop`, `carousel-konten`, `berkas-dokumen`; Baca dulu untuk semua, lalu Tonton satu per tahap; label seperti FP1; IG = balasan publik + 1 DM; SDM = cuti + kebijakan tanpa saring CV; urutan Tonton 5 baru dulu.
+- Belum: persetujuan plan, N0. Tidak ada kode yang berubah, tidak ada commit/push.
+
+### 2026-11-23 (S8 N0: 5 Solusi baru dari template n8n.io, data dan etalase)
+
+- User menyetujui plan S8 ("Setuju, mulai N0"). Rincian di `docs/plans/solusi/PLAN-KATALOG-N8N.md` bagian 9.
+- Baru: 5 item `catat-pengeluaran`, `balas-komentar`, `faktur-pemasok`, `layanan-sdm`, `onboarding-klien` (status `ide`, copy katalog ID, ringkasan EN) dan 5 subplan. Diubah: `schema.ts`, `index.ts`, `catalog.ts`, `kartu.ts` (slug baru dipetakan ke 8 kartu yang ada), `logic.test.mjs`, `etalase-qa.mjs`, `PLAN-SOLUSI.md`.
+- Dampak terlihat: etalase 17 kotak di 7 rak, rak teratas sekarang Marketing; Cari 3 halaman. Judul/hasil 3 slug baru dipendekkan karena terpotong di kotak.
+- Dicek di build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `etalase-qa.mjs` 114/114 (satu run sebelumnya 113/114: cek reduced motion HP gagal karena jeda 250 ms, lulus saat diulang), `rt1-qa.mjs` 41/41 (17 detail × ID/EN), regresi cerita `og5` 106/106, `fp1` 107/107, `ck1` 114/114, `rk1` 106/106, `bj1` 106/106 (error console hanya 404 analytics Vercel lokal dan GSAP yang sengaja diblokir); `logic.test.mjs` 18/18; typecheck, Prettier; ESLint untuk `content/solusi`. Etalase ID/EN dan detail `catat-pengeluaran` dicek visual (screenshot hanya di chat).
+- Belum: review user, N1a. Tidak ada commit/push.
+
+### 2026-11-23 (S8 N1a: copy Baca ID/EN 5 Solusi baru)
+
+- User menyetujui N0 ("Sesuai, mulai N1a"). Keputusan: klien contoh set A (kedai kopi, toko hijab online, toko bangunan, jaringan minimarket, agensi pemasaran digital); email sambutan onboarding berupa draf yang dicek staf. Rincian di `docs/plans/solusi/PLAN-KATALOG-N8N.md` bagian 10.
+- Diubah: 5 item S8 (copy ID/EN lengkap seperti FP1), `catalog.ts`, `SolutionDetail.tsx` (ikon aplikasi mengikuti taksonomi; Instagram, Gmail dan Drive sebelumnya tampil sebagai ikon tabel), `logic.test.mjs`, `etalase-qa.mjs`, 5 subplan. Baru: `tools/solusi/s8-qa.mjs`. Judul `balas-komentar` tanpa janji waktu.
+- Dicek di build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `s8-qa.mjs` 550/550, `rt1-qa.mjs` 41/41, `etalase-qa.mjs` 114/114, `logic.test.mjs` 18/18; typecheck, ESLint, Prettier. Ikon aplikasi di detail dan halaman `balas-komentar` desktop dicek visual (screenshot hanya di chat).
+- **Belum lulus: QA cerita** `og5` 74–78/106, `bj1` 80/106, `rk1` 80/106, `ck1` 86/114, `fp1` 77/107; caption dan elemen panggung tertinggal satu adegan saat scroll. Bukan dari perubahan N1a: dengan `SolutionDetail.tsx` versi HEAD hasilnya sama (og5 75/106). Saat itu laptop memakai baterai (`BatteryStatus` 1) dengan beban CPU 50%, dan build 2,5× lebih lambat dari biasanya (10,6 dtk vs 4,0 dtk); di N0 kelima QA ini lulus penuh. Perlu diulang dengan charger terpasang.
+- 24 Nov (charger terpasang): QA cerita diulang. Dengan CPU masih 29–56% (proses lain), og5 102/106 lalu 100/106, bj1 101/106, rk1 102/106, ck1 112/114, fp1 107/107; adegan yang gagal berpindah antar run, karena QA memberi jeda tetap 1,1 detik setelah scroll. Dengan CPU 11–15%: **og5 106/106, bj1 106/106, rk1 106/106, ck1 114/114**, fp1 107/107 (error console hanya GSAP yang sengaja diblokir dan 404 analytics lokal). Regresi cerita lulus; QA cerita perlu dijalankan saat mesin sepi.
+- Belum: review user, N1b. Tidak ada commit/push.
+
+### 2026-11-24 (S8 N1b: copy Baca ID/EN 7 Solusi lama dari workflow nyata dan template)
+
+- User menyetujui N1a ("Sesuai, mulai N1b"). Workflow nyata dibaca (hanya baca): SOP di `n8n-mcp` (Telegram, jawab dari SOP dengan sumber), carousel di `n8n-kreatekno` dan `n8n-mcp` (bingkai brand, caption, status siap dicek), sub-workflow potong visa di `n8n-kreatekno` (tidak dipakai). Rincian di `docs/plans/solusi/PLAN-KATALOG-N8N.md` bagian 11.
+- Keputusan user: `berkas-dokumen` dari template dan jadi `ide` (klien contoh kantor notaris), `asisten-sop` lewat Telegram, klien contoh set A, pengingat tagihan langsung ke pelanggan dengan template pesan yang disetujui.
+- Diubah: 7 item (copy ID/EN lengkap), `schema.ts` dan `taksonomi.ts` (aplikasi `telegram`), `RakBox.tsx` dan `SolutionDetail.tsx` (ikon Telegram), `catalog.ts`, `logic.test.mjs`, `etalase-qa.mjs`, `s8-qa.mjs`, 7 subplan, `PLAN-SOLUSI.md`. Judul `carousel-konten` tanpa nama platform. "Sudah berjalan" tinggal 2.
+- Temuan keamanan pada workflow klien agen perjalanan masih terbuka; rincian hanya di chat, tidak dicatat di repo publik.
+- Dicek di build produksi (charger terpasang, CPU 5–27%): `s8-qa.mjs` 1320/1320 (12 slug × ID/EN × 5 viewport), `rt1-qa.mjs` 41/41, `etalase-qa.mjs` 114/114, cerita `og5` 106/106, `bj1` 106/106, `rk1` 106/106, `ck1` 114/114, `fp1` 107/107 (error console hanya GSAP yang sengaja diblokir dan 404 analytics lokal); `logic.test.mjs` 19/19; typecheck, ESLint, Prettier. Ikon Telegram di detail `asisten-sop` dicek visual (screenshot hanya di chat).
+- Belum: review user, rencana tahap Tonton N2 (`catat-pengeluaran`). Tidak ada commit/push.
+
+
+### 2026-11-24 (S8 N2: storyboard Tonton Catat Pengeluaran)
+
+- User menyetujui N1b ("Sesuai, mulai N2"). Mesin cerita FP1/CK1 dipelajari (9 adegan, 6 node rel, panggung pastel, film GSAP). Riset awal tahap tanpa temuan baru.
+- Keputusan user: data contoh set usulan (Rina, Cabang Sudirman, Toko Sumber Makmur, total Rp186.500, rekap Rp642.500), langkah "Dicek" menampilkan nota lolos dan nota buram yang diminta kirim ulang, langkah 1 menampilkan tiga ikon cara kirim.
+- Draf rel (6 node) dan 9 adegan ditulis di `docs/plans/solusi/PLAN-CATAT-PENGELUARAN.md` bagian 4, beserta rencana file dan cek.
+- Belum: review storyboard user, implementasi. Tidak ada kode yang berubah, tidak ada commit/push.
+
+### 2026-11-24 (S8 N2: cerita Tonton Catat Pengeluaran diimplementasi)
+
+- User menyetujui storyboard ("Sesuai, implementasi"). Cerita CP1 "satu nota berjalan": 9 adegan, rel 6 node, panggung siang. Rincian di `docs/plans/solusi/PLAN-CATAT-PENGELUARAN.md` bagian 4.5.
+- Baru: `cerita/catat-pengeluaran.ts`, `PanggungNota.tsx`, `ceritaFilmNota.ts`, gaya `cp-*`, `tools/solusi/cp1-qa.mjs`. Diubah: `cerita/schema.ts` (`NotaCeritaSchema` dengan aturan silang angka), `cerita/index.ts`, `ceritaTiming.ts`, `CeritaScroll.tsx`, `logic.test.mjs`.
+- Dicek di build produksi: `cp1-qa.mjs` 107/107, regresi cerita `og5`/`bj1`/`rk1` 106/106, `ck1` 114/114, `fp1` 107/107, `rt1` 41/41, `etalase` 114/114, `s8` 1320/1320; `logic.test.mjs` 20/20, typecheck, ESLint, Prettier. Satu perbaikan dari cek visual (thumbnail nota di chat). Bundle client tanpa zod.
+- Belum: review user, tes HP Android, N3 (`balas-komentar`). Tidak ada commit/push.
+

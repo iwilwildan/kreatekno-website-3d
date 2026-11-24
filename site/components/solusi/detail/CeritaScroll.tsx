@@ -6,6 +6,7 @@ import {
   ArrowsClockwise,
   Bell,
   CalendarBlank,
+  Camera,
   CalendarCheck,
   ChatCircleDots,
   CheckCircle,
@@ -17,7 +18,9 @@ import {
   MagnifyingGlass,
   MapPin,
   PaperPlaneTilt,
+  Scan,
   Sparkle,
+  Sun,
   Table,
   Tag,
   Truck,
@@ -31,10 +34,11 @@ import { TIMING } from "./ceritaTiming";
 import { Panggung } from "./Panggung";
 import { PanggungBooking } from "./PanggungBooking";
 import { PanggungKlinik } from "./PanggungKlinik";
+import { PanggungNota } from "./PanggungNota";
 import { PanggungProspek } from "./PanggungProspek";
 import { PanggungRiset } from "./PanggungRiset";
 
-/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`, `.ck-cv`, `.fp-cv`), scaled to fit the stage. */
+/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`, `.ck-cv`, `.fp-cv`, `.cp-cv`), scaled to fit the stage. */
 const DESIGN = { w: 440, h: 520, max: 1.5 };
 /**
  * Per story: rail icons (the workflow steps are scenes 1..icons.length), the scene drawn at night (-1: none), the pinned
@@ -71,10 +75,16 @@ const KIND = {
     screens: 11,
     film: () => import("./ceritaFilmProspek"),
   },
+  "catat-pengeluaran": {
+    icons: [Camera, Scan, Sparkle, CheckCircle, Table, Sun],
+    night: -1,
+    screens: 11,
+    film: () => import("./ceritaFilmNota"),
+  },
 } as const;
 
 /**
- * A solution story in the Tonton layout (OG5c; Order Grup, Booking Jasa, Riset Konten, CS Klinik and Follow-up Prospek): a sticky pastel stage with the
+ * A solution story in the Tonton layout (OG5c; Order Grup, Booking Jasa, Riset Konten, CS Klinik, Follow-up Prospek and Catat Pengeluaran): a sticky pastel stage with the
  * scene caption on the left, the motion-graphic canvas on the right and the workflow rail below. Scrolling
  * through the reel maps linearly to the story's timeline. Captions and rail follow React state, so they work
  * without GSAP; the canvas film is lazy.
@@ -282,6 +292,8 @@ export function CeritaScroll({
                 <PanggungKlinik copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "followup-prospek" ? (
                 <PanggungProspek copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "catat-pengeluaran" ? (
+                <PanggungNota copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "riset-konten" ? (
                 <PanggungRiset copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : (

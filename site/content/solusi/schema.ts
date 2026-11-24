@@ -2,7 +2,17 @@ import { z } from "zod";
 
 export const IndustriSchema = z.enum(["retail", "klinik", "properti", "logistik", "jasa", "perjalanan"]);
 export const TimSchema = z.enum(["marketing", "penjualan", "cs", "operasional", "keuangan", "manajemen", "sdm"]);
-export const AppSchema = z.enum(["whatsapp", "sheets", "instagram", "threads", "gmail", "calendar", "drive"]);
+// S8 N1b (24 Nov 2026): telegram for the SOP bot and the carousel review chat, as in the real workflows.
+export const AppSchema = z.enum([
+  "whatsapp",
+  "sheets",
+  "instagram",
+  "threads",
+  "gmail",
+  "calendar",
+  "drive",
+  "telegram",
+]);
 export const SlugSchema = z.enum([
   "order-grup",
   "booking-jasa",
@@ -16,6 +26,12 @@ export const SlugSchema = z.enum([
   "asisten-sop",
   "stok-menipis",
   "ulasan-pelanggan",
+  // S8 (23 Nov 2026): solutions drawn from public n8n.io templates, see docs/plans/solusi/PLAN-KATALOG-N8N.md.
+  "catat-pengeluaran",
+  "balas-komentar",
+  "faktur-pemasok",
+  "layanan-sdm",
+  "onboarding-klien",
 ]);
 export const KartuIdSchema = z.string().regex(/^k([1-9]|1\d|2[0-4])$/);
 const text = z.string().min(1);

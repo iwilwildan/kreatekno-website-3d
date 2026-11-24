@@ -173,6 +173,16 @@ export const APPS = [
     icon: "Folder",
     color: "#A86F00",
   },
+  // S8 N1b (24 Nov 2026): the SOP bot and the carousel review chat run on Telegram in the real workflows.
+  {
+    id: "telegram",
+    label: {
+      id: "Telegram",
+      en: "Telegram",
+    },
+    icon: "TelegramLogo",
+    color: "#0077B5",
+  },
 ] as const;
 export const STATUS = {
   jalan: { id: "Sudah berjalan", en: "In use" },

@@ -161,8 +161,9 @@ async function etalase(browser, view, locale) {
   check(
     scope,
     // 9 since RK1 (21 Nov 2026): riset-konten moved to "ide" because its workflow has not run yet.
-    "etalase: 12 kotak di 7 rak, 9 Siap dibuat",
-    et.prods === 12 && et.tiers === 7 && et.ide === 9,
+    // 14 since S8 N0 (23 Nov 2026): five template-based solutions, all "ide"; 15 since N1b (berkas-dokumen).
+    "etalase: 17 kotak di 7 rak, 15 Siap dibuat",
+    et.prods === 17 && et.tiers === 7 && et.ide === 15,
     et,
   );
   check(
@@ -174,8 +175,8 @@ async function etalase(browser, view, locale) {
   check(scope, "etalase: tanpa scroll horizontal halaman", !et.overflowX);
   check(
     scope,
-    "rak 3D: 12 kotak dan 7 papan tergambar",
-    et.rak.boxes === 12 && et.rak.planks === 7 && et.rak.rows > 0,
+    "rak 3D: 17 kotak dan 7 papan tergambar",
+    et.rak.boxes === 17 && et.rak.planks === 7 && et.rak.rows > 0,
     et.rak,
   );
   check(
@@ -190,8 +191,9 @@ async function etalase(browser, view, locale) {
   check(
     scope,
     "nama tautan kotak: status, judul, bidang usaha, aplikasi",
-    /(Sudah berjalan|In use)/.test(name) &&
-      /(Jasa|Services)/.test(name) &&
+    // S8 N0: the first shelf is marketing now (riset-konten, "ide"), so any status label counts.
+    /(Sudah berjalan|In use|Siap dibuat|Ready to build)/.test(name) &&
+      /(Cocok untuk|Good for)/.test(name) &&
       /(Aplikasi|Apps):/.test(name),
     name.slice(0, 200),
   );
@@ -269,14 +271,19 @@ async function etalase(browser, view, locale) {
   }
   if (locale === "id") await axe(page, scope, "etalase");
   if (view === "desktop" && locale === "id") {
+    const firstHref = await page
+      .locator(".etalase .prod")
+      .first()
+      .getAttribute("href");
     await page.locator(".etalase .prod").first().click();
     await page
-      .waitForURL(/\/solusi\/booking-jasa$/, { timeout: 30000 })
+      .waitForURL((url) => url.pathname === firstHref, { timeout: 30000 })
       .catch(() => {});
     check(
       scope,
       "klik kotak membuka detail",
-      /\/solusi\/booking-jasa$/.test(page.url()),
+      /^\/solusi\/[a-z-]+$/.test(firstHref) &&
+        new URL(page.url()).pathname === firstHref,
       page.url(),
     );
     await page.goBack();
@@ -463,10 +470,10 @@ async function contactAndSearch(browser, view) {
       !(await page.locator("[data-box-summary]").count()),
     );
   }
-  // pagination 7-12
+  // pagination 7-12 (17 solutions since S8 N0: three pages)
   await page.locator(".pagination button").last().click();
   await page.waitForFunction(() =>
-    document.querySelector(".pagination span")?.textContent?.includes("2 / 2"),
+    document.querySelector(".pagination span")?.textContent?.includes("2 / 3"),
   );
   await page.waitForFunction(() => !window.__solusi.boxes.moving);
   check(
@@ -477,16 +484,16 @@ async function contactAndSearch(browser, view) {
   );
   await page.locator(".pagination button").first().click();
   await page.waitForFunction(() =>
-    document.querySelector(".pagination span")?.textContent?.includes("1 / 2"),
+    document.querySelector(".pagination span")?.textContent?.includes("1 / 3"),
   );
   // keywords via "Cari kembali"
   const counts = {};
   for (const [term, n] of [
     ["stok", 1],
-    ["dokumen", 2],
-    ["pemilik", 3],
-    ["jadwal", 4],
-    ["pelanggan", 5],
+    ["foto", 2],
+    ["rekap", 3],
+    ["harga", 4],
+    ["jadwal", 5],
   ]) {
     await page.locator(".result-bar button").click();
     await page.waitForFunction(

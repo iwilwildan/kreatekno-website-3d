@@ -17,9 +17,10 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "berkas-dokumen": {
     title: "Document collection assistant",
-    result: "Customer documents arrive in the right folder with their status recorded.",
-    summary: "Collect, label and check customer files without sorting chat attachments by hand.",
-    keywords: "documents files drive upload customer admin travel property",
+    result: "Complete, tidy files for each customer.",
+    summary:
+      "Customers send document photos or PDFs in chat, files are stored per customer and completeness is tracked.",
+    keywords: "documents files folder upload customer admin notary property travel completeness id card",
   },
   "riset-konten": {
     title: "Content research assistant",
@@ -36,15 +37,16 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "pengingat-tagihan": {
     title: "Invoice reminder assistant",
-    result: "Payment reminders go out on schedule without awkward manual follow-ups.",
-    summary: "Send polite, timely invoice reminders and keep the follow-up status visible.",
-    keywords: "invoice payment reminder finance admin whatsapp overdue",
+    result: "Payments arrive on time without manual chasing.",
+    summary: "Each morning unpaid invoices are checked, and customers get a polite reminder for their due-date stage.",
+    keywords: "invoice payment reminder finance admin whatsapp email overdue due date stages",
   },
   "rekap-penjualan": {
     title: "Sales recap assistant",
-    result: "Owners receive a clear sales recap without waiting for tomorrow's spreadsheet.",
-    summary: "Combine daily sales records into a timely summary for the people who need it.",
-    keywords: "sales recap report spreadsheet management retail logistics",
+    result: "Sales figures reach the owner's phone every night.",
+    summary:
+      "Every night the owner gets a sales recap with top products and comparisons, and can ask follow-up questions.",
+    keywords: "sales recap report spreadsheet management distributor retail logistics nightly comparison",
   },
   "followup-prospek": {
     title: "Lead follow-up assistant",
@@ -54,27 +56,60 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "carousel-konten": {
     title: "Carousel content assistant",
-    result: "A brief becomes a structured carousel draft your team can refine.",
-    summary: "Speed up carousel production from first outline to a review-ready draft.",
-    keywords: "carousel content social media instagram design marketing",
+    result: "A carousel draft with its caption, ready to check.",
+    summary: "Write one topic in a table, and slides with a caption are made on your brand frame for checking.",
+    keywords: "carousel content social media instagram design marketing brand caption slides",
   },
   "asisten-sop": {
     title: "SOP assistant",
-    result: "Staff can ask questions and receive answers grounded in approved SOPs.",
-    summary: "Make operating procedures easier to find and use during everyday work.",
-    keywords: "sop staff training human resources operations knowledge assistant",
+    result: "Supervisors stop answering the same questions.",
+    summary: "Staff ask in chat and get answers from your SOPs, with the document and section named.",
+    keywords: "sop staff training human resources operations knowledge assistant telegram clinic branches",
   },
   "stok-menipis": {
     title: "Low-stock alert assistant",
-    result: "Your team is warned before important stock runs out.",
-    summary: "Watch stock levels and prompt reordering before a shortage disrupts sales.",
-    keywords: "stock inventory reorder warehouse retail logistics operations",
+    result: "Reorder on time, and shelves stay stocked.",
+    summary: "Goods in and out are recorded, and purchasing staff are alerted when stock nears its minimum.",
+    keywords: "stock inventory reorder warehouse retail grocery logistics operations minimum alert",
   },
   "ulasan-pelanggan": {
     title: "Customer feedback assistant",
-    result: "Feedback from different channels becomes a clear list of recurring issues.",
-    summary: "Collect customer feedback and surface the themes your team should address first.",
-    keywords: "reviews feedback complaints customer service management sentiment",
+    result: "The owner sees complaint patterns every week.",
+    summary:
+      "Reviews and complaints from many places are gathered in one table, with the top topics summarised weekly.",
+    keywords: "reviews feedback complaints customer service management restaurant branches weekly summary",
+  },
+  "catat-pengeluaran": {
+    title: "Expense receipt assistant",
+    result: "Every receipt is recorded the same day, with its category.",
+    summary: "Send a receipt photo or voice note in chat, and the shop, date, total and category are recorded.",
+    keywords: "expenses receipts photo voice note bookkeeping finance owner daily recap spending",
+  },
+  "balas-komentar": {
+    title: "Comment reply assistant",
+    result: "Everyone who asks in the comments gets the details right away.",
+    summary:
+      "Comments with a keyword get a short reply, then the commenter receives one private message with a catalog.",
+    keywords: "comments price questions social media instagram private message catalog marketing sales",
+  },
+  "faktur-pemasok": {
+    title: "Supplier invoice assistant",
+    result: "Price differences are caught before an invoice is paid.",
+    summary: "Invoices from email or a folder are read, checked against supplier prices, then wait for owner approval.",
+    keywords: "supplier invoices bills purchasing price check approval finance operations email folder",
+  },
+  "layanan-sdm": {
+    title: "HR chat assistant",
+    result: "Quick answers, and leave approved by managers with one tap.",
+    summary: "Employees request leave or ask about rules in chat. Leave balance is checked and the manager decides.",
+    keywords: "human resources leave request employees policy questions manager approval staff",
+  },
+  "onboarding-klien": {
+    title: "Client onboarding assistant",
+    result: "A welcome, a prep list and a kickoff meeting on the same day.",
+    summary:
+      "After a deal, a welcome email and prep list are drafted for your staff, and a kickoff meeting is proposed.",
+    keywords: "client onboarding welcome email checklist kickoff meeting calendar services sales",
   },
 };
 
