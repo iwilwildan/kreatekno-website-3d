@@ -198,6 +198,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
 | 14 | Halaman lain | Artikel (MDX, 5 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | 🟡 plan disetujui 22 Nov; 14A Kebijakan Privasi, 14B Tentang dan 14C Artikel selesai teknis, menunggu review |
 | 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
+| 16 | Artikel 3D (Pustaka) | Halaman depan `/artikel` jadi meja perpustakaan dengan Andi pustakawan, rak buku artikel dan mode Tanya pustakawan (P0–P5 di `docs/plans/artikel/PLAN-PUSTAKA.md`). Mengubah keputusan lingkup 3D 31 Okt untuk halaman depan Artikel saja | 12 (toko Solusi), 14C | ⬜ plan menunggu persetujuan (24 Nov) |
 
 Tahap 14 tidak bergantung pada 3D, jadi bisa dikerjakan kapan saja setelah tahap 1 kalau input tim sudah ada.
 
@@ -2937,3 +2938,20 @@ Cek di tiap bagian:
 - Dicek di build produksi: `cp1-qa.mjs` 107/107, regresi cerita `og5`/`bj1`/`rk1` 106/106, `ck1` 114/114, `fp1` 107/107, `rt1` 41/41, `etalase` 114/114, `s8` 1320/1320; `logic.test.mjs` 20/20, typecheck, ESLint, Prettier. Satu perbaikan dari cek visual (thumbnail nota di chat). Bundle client tanpa zod.
 - Belum: review user, tes HP Android, N3 (`balas-komentar`). Tidak ada commit/push.
 
+### 2026-11-24 (rencana: halaman depan Artikel jadi meja perpustakaan 3D dengan Andi)
+
+- Permintaan user: halaman depan Artikel dijadikan 3D seperti halaman depan Solusi; meja penjaga perpustakaan dengan Andi sebagai pustakawan, etalase berisi buku-buku artikel.
+- Dibaca: bagian PLAN.md yang relevan (keputusan, tahapan, tahap 14, log Solusi S3–S5b, Andi tahap 7, rak K7 #33), PLAN-SOLUSI.md 3–5, kode `world/solusi`, `sets/toko.ts`, `SolusiPage.tsx`, `Etalase.tsx`, `ArticlesPage.tsx`, `andi.png`. `/solusi` dan `/artikel` dibuka di dev server (screenshot hanya di chat).
+- Riset: three.js tetap 0.186.1 (changelog r188+ tidak ditemukan, dicek ulang di P0); pola aksesibilitas kanvas = daftar HTML asli + lapisan 3D + versi tanpa 3D, sama dengan etalase Solusi; tidak perlu library baru.
+- Keputusan user: kardigan pustakawan (rambut dan headphone tetap), buku sampul menghadap depan, satu mode Tanya pustakawan lewat kartu peminjaman (kata kunci + topik), set navy seperti toko, detail artikel tetap editorial, copy draf Claude direview.
+- Plan di `docs/plans/artikel/PLAN-PUSTAKA.md` (P0–P5); baris tahap 16 ditambah.
+- Belum: persetujuan plan, implementasi. Tidak ada kode, dependensi, commit atau push yang berubah.
+
+### 2026-11-24 (Pustaka P0: audit rilis, baseline Solusi, batas modul bersama)
+
+- User menyetujui plan Pustaka ("Setuju, mulai P0"). Rincian di `docs/plans/artikel/PLAN-PUSTAKA.md` bagian 6.
+- Rilis: three r187 (30 Okt) mengubah PMREM dan scissor/viewport; wiki 187 → 188 menambah specular dari `HemisphereLight` pada `MeshStandardMaterial`, yang dipakai toko, jadi three tetap 0.186.1. Next.js 16.4.3 terkena advisory keamanan 3 Nov (perbaikan di 16.4.5); tidak diubah, diusulkan sebagai pekerjaan terpisah.
+- Baru: `tools/pustaka/solusi-baseline.mjs` (record/compare angka dan piksel toko Solusi di 11 viewport, reduced motion). Dua rekaman identik; celah bibir 8,000 px di semua viewport. `etalase-qa.mjs` 114/114.
+- Temuan: `s5-final.mjs` usang sejak S8 (mengharapkan 12 Solusi) dan `s4-final.mjs` gagal acak karena waktu tunggu di SwiftShader; halaman diprobe dan berperilaku benar. Skrip tidak diubah.
+- Keputusan teknis: meja pustaka memakai komposisi dan kamera toko apa adanya; `kamera`, `rak`, `kotak` pindah ke `world/meja/` dengan opsi; pengendali tokoh ke `world/meja/tokoh.ts`. Pemindahan baru di P3/P4 dengan syarat baseline identik.
+- Belum: review user, P1. Kode situs tidak berubah. Atas permintaan user ("commit dan push dulu p0 + Next.js upgrade ke main"), P0 di-commit ke `main` dan di-push bersama upgrade Next.js 16.4.5 (hanya file P0 dan entri log Pustaka; entri log lama yang belum di-commit tidak ikut).
