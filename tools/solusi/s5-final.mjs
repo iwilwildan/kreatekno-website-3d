@@ -1,10 +1,19 @@
 // S5 orthographic catalogue, served boxes, summaries and dealt-card QA.
 // S5b (14 Nov): tag positions come from fixtures/etalase-2026-11-13.json (v1 13 Nov). Phones (≤ 760 px)
 // serve two rows from four results (decision 17), so their tags are checked for rows, overlap and bounds.
+// 26 Nov: result counts, pages and search terms come from the Solusi data itself (site/content/solusi through
+// the page's own searchPage), not hard numbers, and fixed sleeps became waits on window.__solusi state.
 // Usage: BASE=http://localhost:3000 node tools/solusi/s5-final.mjs <output directory>
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { launch } from "../render/lib.mjs";
+
+// Node 24 strips TS; the hooks must be registered before the site modules load, hence dynamic imports.
+await import("./register.mjs");
+const { SOLUSI } = await import("../../site/content/solusi/index.ts");
+const { catalogCopy } = await import("../../site/content/solusi/catalog.ts");
+const { searchPage, PAGE_SIZE } =
+  await import("../../site/lib/solusi/search.ts");
 
 const base = process.env.BASE || "http://localhost:3000";
 const out = process.argv[2];
@@ -35,14 +44,45 @@ const viewports = [
   [375, 812],
   [360, 740],
 ];
-const searches = [
-  ["stok", 1],
-  ["dokumen", 2],
-  ["pemilik", 3],
-  ["jadwal", 4],
-  ["pelanggan", 5],
-  ["", 6],
-];
+// /solusi is the Indonesian page, so results are computed for locale "id", exactly as SolusiPage does.
+const firstPage = (term) => searchPage(SOLUSI, { term }, 1, "id");
+const all = firstPage("");
+const pageCount = all.pageCount;
+if (pageCount < 2)
+  throw new Error(
+    `Pagination needs more than ${PAGE_SIZE} Solusi; found ${all.total}`,
+  );
+const secondPage = searchPage(SOLUSI, {}, 2, "id");
+const secondLabels = secondPage.items.map((_, index) =>
+  String(PAGE_SIZE + index + 1),
+);
+// One term per box count 1..PAGE_SIZE (the fixture holds tag positions for each count). Earlier terms are tried
+// first so results stay comparable over time; the rest are words from the catalogue copy, sorted for a stable pick.
+const preferred = ["stok", "dokumen", "pemilik", "jadwal", "pelanggan"];
+const words = [
+  ...new Set(
+    SOLUSI.flatMap((solution) =>
+      Object.values(catalogCopy(solution, "id"))
+        .join(" ")
+        .toLowerCase()
+        .split(/[^a-z]+/)
+        .filter((word) => word.length >= 4),
+    ),
+  ),
+].sort();
+const searches = Array.from({ length: PAGE_SIZE }, (_, index) => {
+  const count = index + 1;
+  if (count === PAGE_SIZE && all.items.length === PAGE_SIZE) return ["", count];
+  const term = [...preferred, ...words].find(
+    (word) => firstPage(word).items.length === count,
+  );
+  if (term === undefined)
+    throw new Error(`No catalogue word gives ${count} result(s)`);
+  return [term, count];
+});
+console.log(
+  `Solusi: ${all.total}, ${pageCount} pages; terms ${searches.map(([term, count]) => `${count}="${term}"`).join(" ")}`,
+);
 
 const browser = await launch({ gpu: true });
 const report = { checks: [], tagSamples: [], errors: [] };
@@ -66,6 +106,18 @@ const waitWorld = (page) =>
     timeout: 120000,
     polling: 50,
   });
+// window.__solusi.fps counts frames per window of at least 1 s. Right after a navigation that window still holds
+// the shader and AO warm-up, which read 8.9 fps on the 26 Nov run although the settled page draws ±100 fps.
+// Timed checks (served-box fps, the 1080 ms card deal) start once a window is settled.
+const waitSettled = (page) =>
+  page.waitForFunction(
+    () => window.__solusi?.ready && window.__solusi.fps >= 20,
+    null,
+    {
+      timeout: 60000,
+      polling: 50,
+    },
+  );
 const centers = (page) =>
   page.locator("[data-box-tag]:not([hidden])").evaluateAll((tags) =>
     tags.map((tag) => {
@@ -120,20 +172,21 @@ try {
 
   await page.goto(`${base}/solusi#cari`, { waitUntil: "networkidle" });
   await waitWorld(page);
+  await waitSettled(page);
   await page.locator(".receipt-submit").click();
   await page.waitForFunction(() => window.__solusi?.boxes?.moving === true);
-  check("six boxes animate from the cashier", true);
+  const served = all.items.length;
+  check(`${served} boxes animate from the cashier`, true);
   await page.waitForFunction(
-    () =>
-      window.__solusi?.boxes?.count === 6 && !window.__solusi?.boxes?.moving,
-    null,
-    {
-      timeout: 5000,
-    },
+    (wanted) =>
+      window.__solusi?.boxes?.count === wanted &&
+      !window.__solusi?.boxes?.moving,
+    served,
+    { timeout: 30000, polling: 50 },
   );
   check(
-    "first result view serves six boxes",
-    (await centers(page)).length === 6,
+    `first result view serves ${served} boxes`,
+    (await centers(page)).length === served,
   );
   world = await page.evaluate(() => window.__solusi);
   check(
@@ -185,37 +238,98 @@ try {
   );
   await page.waitForSelector("[data-box-summary]");
   check("fine-pointer hover opens summary from the 3D box", true);
+  // The summary closes on a 240 ms timer. SwiftShader can delay the pointer event itself, so the old 1 s upper
+  // bound timed out now and then; wait for the close (with the served boxes still up) and check the lower bound.
+  const leftAt = Date.now();
   await page.mouse.move(720, 45);
   await page.waitForFunction(
-    () => !document.querySelector("[data-box-summary]"),
+    () =>
+      !document.querySelector("[data-box-summary]") &&
+      window.__solusi?.boxes?.visible === true,
     null,
-    { timeout: 1000 },
+    { timeout: 10000, polling: 20 },
   );
-  check("leaving a 3D box closes its summary after 240ms", true);
+  const closedAfter = Date.now() - leftAt;
+  check(
+    "leaving a 3D box closes its summary after 240ms",
+    closedAfter >= 230,
+    `${closedAfter}ms`,
+  );
 
+  const pageLabel = `2 / ${pageCount}`;
   await page.locator(".pagination button").last().click();
-  await page.waitForFunction(() =>
-    document.querySelector(".pagination span")?.textContent?.includes("2 / 2"),
+  await page.waitForFunction(
+    ({ label, wanted }) =>
+      document.querySelector(".pagination span")?.textContent?.trim() ===
+        label &&
+      window.__solusi?.boxes?.count === wanted &&
+      !window.__solusi?.boxes?.moving &&
+      document.querySelectorAll("[data-box-tag]:not([hidden])").length ===
+        wanted,
+    { label: pageLabel, wanted: secondLabels.length },
+    { timeout: 30000, polling: 50 },
   );
   check(
-    "next page serves results 7 through 12",
+    `next page (${pageLabel}) serves results ${secondLabels[0]} through ${secondLabels.at(-1)}`,
     (await page.locator("[data-box-tag]").allTextContents()).join(",") ===
-      "7,8,9,10,11,12",
+      secondLabels.join(","),
   );
+  // Relayout runs 250 ms after the last resize event. At 1280 × 800 the tags already land near v1 before it
+  // (116 ms on 26 Nov), so instead of sleeping a fixed 330 ms the check waits for the first frame drawn after
+  // that timer (__solusi is a new object every frame) and then compares the tags with v1.
+  const resizedWanted = expected.get("1280x800").tags[secondLabels.length];
+  await page.evaluate(() => {
+    window.__s5Resized = undefined;
+    window.__s5Frame = undefined;
+    addEventListener("resize", () => (window.__s5Resized = performance.now()));
+  });
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.waitForTimeout(330);
-  const resized = await centers(page);
-  const resizedWanted = expected.get("1280x800").tags[6];
+  const relaid = await page
+    .waitForFunction(
+      (wanted) => {
+        const world = window.__solusi;
+        if (!(performance.now() - window.__s5Resized >= 260)) return false;
+        if (!window.__s5Frame) {
+          window.__s5Frame = world;
+          return false;
+        }
+        if (world === window.__s5Frame) return false;
+        if (world?.stage?.width !== innerWidth || world.boxes?.moving)
+          return false;
+        const tags = [
+          ...document.querySelectorAll("[data-box-tag]:not([hidden])"),
+        ];
+        return (
+          tags.length === wanted.length &&
+          tags.every((tag, index) => {
+            const rect = tag.getBoundingClientRect();
+            return (
+              Math.abs(rect.x + rect.width / 2 - wanted[index].x) <= 2 &&
+              Math.abs(rect.y + rect.height / 2 - wanted[index].y) <= 2
+            );
+          })
+        );
+      },
+      resizedWanted,
+      { timeout: 10000, polling: 20 },
+    )
+    .then(
+      () => true,
+      () => false,
+    );
   check(
     "served boxes relayout 250ms after resize",
-    resized.every(
-      (point, index) =>
-        Math.abs(point.x - resizedWanted[index].x) <= 2 &&
-        Math.abs(point.y - resizedWanted[index].y) <= 2,
-    ),
+    relaid,
+    JSON.stringify(await centers(page)),
   );
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.waitForTimeout(330);
+  await page.waitForFunction(
+    () =>
+      window.__solusi?.stage?.width === innerWidth &&
+      !window.__solusi?.boxes?.moving,
+    null,
+    { timeout: 10000, polling: 20 },
+  );
   await page.locator(".result-bar button").click();
   await page.waitForFunction(
     () => window.__solusi?.boxes?.visible === false,
@@ -227,13 +341,24 @@ try {
   await page.locator(".panel-close").click();
   await page.goto(`${base}/solusi#kartu`, { waitUntil: "networkidle" });
   await waitWorld(page);
+  await waitSettled(page);
   await page.locator(".industry-grid button").first().click();
   await page.locator(".industry-sheet .solusi-button").click();
-  await page.waitForFunction(() => window.__solusi?.cardFlying === true);
-  check(
-    "cashier deals a 3D card before the HTML deck",
-    await page.locator(".deal-placeholder").isVisible(),
-  );
+  // The placeholder lives 1080 ms on a DOM timer, so both states are read in the same poll.
+  const dealt = await page
+    .waitForFunction(
+      () =>
+        window.__solusi?.cardFlying === true &&
+        Boolean(document.querySelector(".deal-placeholder")) &&
+        !document.querySelector(".problem-card"),
+      null,
+      { timeout: 3000, polling: 20 },
+    )
+    .then(
+      () => true,
+      () => false,
+    );
+  check("cashier deals a 3D card before the HTML deck", dealt);
   await page.waitForSelector(".problem-card.is-top", { timeout: 3000 });
   check(
     "HTML deck appears after the 3D deal",
@@ -266,8 +391,8 @@ try {
     const reducedErrors = watchErrors(reduced);
     await reduced.goto(`${base}/solusi#cari`, { waitUntil: "networkidle" });
     await waitWorld(reduced);
-    for (const [term, count] of searches) {
-      if (count > 1) {
+    for (const [index, [term, count]] of searches.entries()) {
+      if (index > 0) {
         await reduced
           .locator(".result-bar button")
           .evaluate((button) => button.click());
