@@ -2,19 +2,23 @@
 // right, locks framing the face, one strand sticking up), black headphones round his neck, purple hoodie with
 // the hood down, drawstrings and a kangaroo pocket over a white tee, purple lanyard with a white card, wide black
 // trousers, chunky white sneakers. Measured on refs/KARKATER/andi.png (front, three-quarter, side, back); in the
-// team's video K7 - K8 he sits at a laptop in the meeting room.
+// team's video K7 - K8 he sits at a laptop in the meeting room. His hair, face, body, headphones and legs are
+// shared helpers here, so the Articles librarian (andiPustakawan.ts) is the same Andi in another outfit.
 import * as THREE from "three";
 import { G, mtx, type Vec3 } from "../core/kit";
 import { weave } from "./atlas";
-import { limb, SIDES } from "./body";
+import { limb, SIDES, type Body } from "./body";
 import { HERU, HERU_HAIR_JOINTS, HERU_HAIR_SPRING_SPECS, HERU_HAIR_SPRINGS } from "./heru";
 import { loft } from "./loft";
+import type { FaceSpec } from "./face";
+import type { ColliderSpec } from "../motion/springs";
 import { buildMember, frontU, type Ctx, type MemberSpec } from "./member";
 import { intersect, sd, subtract, union, type Sdf } from "./sdf";
 import { axesY, shirtRings } from "./wardrobe";
 import { lanyard } from "./wildan";
 
-const P = {
+/** Andi's colours (median pixels of the turnaround). */
+export const ANDI_COLORS = {
   skin: "#b8775a",
   hair: "#29282d",
   tip: "#d65a26",
@@ -144,7 +148,7 @@ function paintHair(g: CanvasRenderingContext2D, w: number, h: number, fringe: bo
     px = (x: number) => ((x - B.x0) / (B.x1 - B.x0)) * w,
     py = (y: number) => ((B.y1 - y) / (B.y1 - B.y0)) * h,
     m = w / (B.x1 - B.x0);
-  weave(g, w, h, P.hair, 0.025, 71);
+  weave(g, w, h, ANDI_COLORS.hair, 0.025, 71);
   // orange tips: the last few centimetres of the locks at the nape and the cheeks (one tongue per lock)
   const tips = (y0: number, y1: number) => {
     g.beginPath();
@@ -158,8 +162,8 @@ function paintHair(g: CanvasRenderingContext2D, w: number, h: number, fringe: bo
   };
   const tipFill = g.createLinearGradient(0, py(1.49), 0, py(1.38));
   tipFill.addColorStop(0, "rgba(214,90,38,0)");
-  tipFill.addColorStop(0.35, P.tip);
-  tipFill.addColorStop(1, P.tipDeep);
+  tipFill.addColorStop(0.35, ANDI_COLORS.tip);
+  tipFill.addColorStop(1, ANDI_COLORS.tipDeep);
   g.fillStyle = tipFill;
   if (!fringe) tips(1.455, 1.36);
   if (fringe) paintFringe(g, px, py, m);
@@ -194,7 +198,7 @@ function paintFringe(g: CanvasRenderingContext2D, px: (x: number) => number, py:
     const gr = g.createLinearGradient(px(XP + s * (s > 0 ? 0.04 : 0.07)), 0, px(XP + s * 0.17), 0);
     gr.addColorStop(0, "rgba(214,90,38,0)");
     gr.addColorStop(0.55, "rgba(214,90,38,0.85)");
-    gr.addColorStop(1, P.tip);
+    gr.addColorStop(1, ANDI_COLORS.tip);
     g.fillStyle = gr;
     g.beginPath();
     const n = 16,
@@ -241,9 +245,9 @@ const HOOD = { y0: 0.72, y1: 1.335 };
 function paintHoodie(g: CanvasRenderingContext2D, w: number, h: number) {
   const fx = frontU(w, 0.19),
     fy = axesY(h, HOOD.y0, HOOD.y1);
-  weave(g, w, h, P.hoodie, 0.06, 72);
+  weave(g, w, h, ANDI_COLORS.hoodie, 0.06, 72);
   // kangaroo pocket: a trapezoid with slanted openings at the sides
-  g.strokeStyle = P.hoodieDark;
+  g.strokeStyle = ANDI_COLORS.hoodieDark;
   g.lineWidth = 2.5;
   g.beginPath();
   g.moveTo(fx(0.13), fy(0.785));
@@ -261,7 +265,7 @@ function paintHoodie(g: CanvasRenderingContext2D, w: number, h: number) {
     g.fill();
   }
   // ribbed hem band
-  g.fillStyle = P.hoodieDark;
+  g.fillStyle = ANDI_COLORS.hoodieDark;
   g.fillRect(0, fy(0.77), w, 2);
   g.fillStyle = "rgba(30,15,60,0.18)";
   for (let x = 0; x < w; x += 5) g.fillRect(x, fy(0.77), 1.5, h - fy(0.77));
@@ -288,10 +292,10 @@ function hoodSdf(): Sdf {
 }
 
 /** Headphones round the neck: a band behind, the cups resting on the collar either side of the chin. */
-function headphones(c: Ctx) {
+export function andiHeadphones(c: Ctx) {
   const { fig } = c;
-  const shell = c.swatch(P.phones, 0.4),
-    cushion = c.swatch(P.cushion, 0.75);
+  const shell = c.swatch(ANDI_COLORS.phones, 0.4),
+    cushion = c.swatch(ANDI_COLORS.cushion, 0.75);
   for (const [, s] of SIDES) {
     // the cup faces out and a little forward, tipped back onto the hood
     const at = mtx([s * 0.088, 1.36, 0.078], [0.25, s * 0.6, Math.PI / 2]);
@@ -320,17 +324,106 @@ function headphones(c: Ctx) {
   fig.add(new THREE.TubeGeometry(curve, c.seg(16, 10), 0.012, 6), shell, "chest");
 }
 
+/** Andi's measures: Heru's body with narrower shoulders (1.69 m comes from the member's height). */
+export const ANDI_BODY: Body = { ...HERU, shoulder: [0.176, 1.232, 0] };
+
+export const andiFace = (): Omit<FaceSpec, "box"> => ({
+  skin: ANDI_COLORS.skin,
+  blush: "rgba(214,112,92,0.2)",
+  brow: { y: 1.612, x: 0.076, w: 0.072, thick: 0.017, tilt: -0.06, arch: 0.006, color: ANDI_COLORS.brow },
+  mouth: { y: 1.452, w: 0.09, color: ANDI_COLORS.lip, lip: "#c07a64" },
+});
+
+/** Head, shoulder line, chest and spine colliders for the hair springs (and the lanyard on Home). */
+export const ANDI_COLLIDERS: ColliderSpec[] = [
+  { bone: "head", at: [0, 1.58, -0.015], r: 0.17 },
+  { bone: "chest", at: [-0.17, 1.3, -0.03], to: [0.17, 1.3, -0.03], r: 0.08 },
+  { bone: "chest", at: [0, 1.05, -0.02], r: 0.13 },
+  { bone: "spine", at: [0, 0.8, 0], to: [0, 1.0, 0], r: 0.155 },
+];
+
+/** Layered hair with orange tips (three spring chains, Heru's) and the long fringe, a part of its own. */
+export function andiHair(c: Ctx) {
+  const { fig } = c;
+  const B = HAIR_BOX;
+  c.soft(
+    hairSdf(),
+    [B.x0, B.y0, -0.25],
+    [B.x1, B.y1, 0.23],
+    [26, 20],
+    c.cell(256, 256, (g, w, h) => paintHair(g, w, h, false), 0.5),
+    fig.hem(fig.rigid("head"), HERU_HAIR_SPRINGS, 1.56, 1.42, -0.015),
+  );
+  // (the fringe's grid only spans the front of the head)
+  c.soft(
+    hairSdf(true),
+    [B.x0, B.y0, 0.0],
+    [B.x1, B.y1, 0.23],
+    [28, 18],
+    c.cell(256, 256, (g, w, h) => paintHair(g, w, h, true), 0.5),
+  );
+}
+
+/** Wide black trousers and chunky white sneakers. */
+export function andiLegs(c: Ctx) {
+  const { fig } = c;
+  const trousers = c.cell(128, 128, (g, w, h) => weave(g, w, h, ANDI_COLORS.trousers, 0.05, 74), 0.88);
+  fig.add(
+    loft(
+      [
+        { y: 0.655, rx: 0.105, rz: 0.08 },
+        { y: 0.69, rx: 0.155, rz: 0.105 },
+        { y: 0.74, rx: 0.17, rz: 0.115 },
+      ],
+      20,
+    ),
+    trousers,
+    "hips",
+  );
+  c.legs(
+    [
+      [0, 0.098, 0.1],
+      [0.45, 0.098, 0.1],
+      [1, 0.104, 0.104],
+    ],
+    trousers,
+    { top: 0.74, hem: 0.085 },
+  );
+  c.shoes(
+    0.3,
+    0.175,
+    0.135,
+    c.cell(
+      128,
+      128,
+      (g, w, h) => {
+        g.fillStyle = ANDI_COLORS.shoe;
+        g.fillRect(0, 0, w, h);
+        g.fillStyle = ANDI_COLORS.sole;
+        g.fillRect(w * 0.33, 0, w * 0.34, h);
+        g.strokeStyle = "rgba(150,145,160,0.6)";
+        g.lineWidth = 2;
+        for (let k = 0; k < 4; k++) {
+          const y = h * (0.45 + k * 0.07);
+          for (const x0 of [0, w]) {
+            g.beginPath();
+            g.moveTo(x0, y);
+            g.lineTo(x0 + (x0 ? -1 : 1) * w * 0.08, y + 2);
+            g.stroke();
+          }
+        }
+      },
+      0.55,
+    ),
+  );
+}
+
 export const ANDI: MemberSpec = {
   name: "andi",
   height: 1.69,
-  body: { ...HERU, shoulder: [0.176, 1.232, 0] },
-  skin: P.skin,
-  face: {
-    skin: P.skin,
-    blush: "rgba(214,112,92,0.2)",
-    brow: { y: 1.612, x: 0.076, w: 0.072, thick: 0.017, tilt: -0.06, arch: 0.006, color: P.brow },
-    mouth: { y: 1.452, w: 0.09, color: P.lip, lip: "#c07a64" },
-  },
+  body: ANDI_BODY,
+  skin: ANDI_COLORS.skin,
+  face: andiFace(),
   extraJoints: [
     ...HERU_HAIR_JOINTS,
     { name: "lanyard", parent: "chest", at: [0, 1.2, 0.14] },
@@ -340,33 +433,12 @@ export const ANDI: MemberSpec = {
     ...HERU_HAIR_SPRING_SPECS,
     { bone: "lanyard", tip: "lanyardTip", stiffness: 0.9, gravity: 1.0, drag: 0.3, radius: 0.03 },
   ],
-  colliders: [
-    { bone: "head", at: [0, 1.58, -0.015], r: 0.17 },
-    { bone: "chest", at: [-0.17, 1.3, -0.03], to: [0.17, 1.3, -0.03], r: 0.08 },
-    { bone: "chest", at: [0, 1.05, -0.02], r: 0.13 },
-    { bone: "spine", at: [0, 0.8, 0], to: [0, 1.0, 0], r: 0.155 },
-  ],
+  colliders: ANDI_COLLIDERS,
   dress(c) {
     const { fig } = c;
-    const B = HAIR_BOX;
-    c.soft(
-      hairSdf(),
-      [B.x0, B.y0, -0.25],
-      [B.x1, B.y1, 0.23],
-      [26, 20],
-      c.cell(256, 256, (g, w, h) => paintHair(g, w, h, false), 0.5),
-      fig.hem(fig.rigid("head"), HERU_HAIR_SPRINGS, 1.56, 1.42, -0.015),
-    );
-    // (the fringe's grid only spans the front of the head)
-    c.soft(
-      hairSdf(true),
-      [B.x0, B.y0, 0.0],
-      [B.x1, B.y1, 0.23],
-      [28, 18],
-      c.cell(256, 256, (g, w, h) => paintHair(g, w, h, true), 0.5),
-    );
+    andiHair(c);
     // ---------- hoodie over a white tee ----------
-    const hoodie = (g: CanvasRenderingContext2D, w: number, h: number) => weave(g, w, h, P.hoodie, 0.06, 73);
+    const hoodie = (g: CanvasRenderingContext2D, w: number, h: number) => weave(g, w, h, ANDI_COLORS.hoodie, 0.06, 73);
     c.torso(shirtRings(HOOD.y0, { w: 1.04, flare: -0.01 }), c.cell(512, 256, paintHoodie), [HOOD.y0, HOOD.y1]);
     // the tee's neckline inside the hood's V
     fig.add(
@@ -378,7 +450,7 @@ export const ANDI: MemberSpec = {
         16,
         { caps: false },
       ),
-      c.swatch(P.tee, 0.85),
+      c.swatch(ANDI_COLORS.tee, 0.85),
       "chest",
     );
     c.soft(hoodSdf(), [-0.24, 1.08, -0.22], [0.24, 1.5, 0.14], [20, 14], c.cell(128, 128, hoodie, 0.86), "chest");
@@ -414,12 +486,12 @@ export const ANDI: MemberSpec = {
         [0.985, 0.049, 0.048],
       ],
       c.cell(128, 128, hoodie, 0.86),
-      { cuff: c.swatch(P.hoodieDark, 0.85) },
+      { cuff: c.swatch(ANDI_COLORS.hoodieDark, 0.85) },
     );
-    headphones(c);
+    andiHeadphones(c);
     lanyard(
       c,
-      P.lanyard,
+      ANDI_COLORS.lanyard,
       (s) => [
         [s * 0.06, 1.33, -0.02],
         [s * 0.078, 1.3, 0.07],
@@ -429,56 +501,7 @@ export const ANDI: MemberSpec = {
       1.0,
       0.147,
     );
-    // ---------- wide black trousers, chunky sneakers ----------
-    const trousers = c.cell(128, 128, (g, w, h) => weave(g, w, h, P.trousers, 0.05, 74), 0.88);
-    fig.add(
-      loft(
-        [
-          { y: 0.655, rx: 0.105, rz: 0.08 },
-          { y: 0.69, rx: 0.155, rz: 0.105 },
-          { y: 0.74, rx: 0.17, rz: 0.115 },
-        ],
-        20,
-      ),
-      trousers,
-      "hips",
-    );
-    c.legs(
-      [
-        [0, 0.098, 0.1],
-        [0.45, 0.098, 0.1],
-        [1, 0.104, 0.104],
-      ],
-      trousers,
-      { top: 0.74, hem: 0.085 },
-    );
-    c.shoes(
-      0.3,
-      0.175,
-      0.135,
-      c.cell(
-        128,
-        128,
-        (g, w, h) => {
-          g.fillStyle = P.shoe;
-          g.fillRect(0, 0, w, h);
-          g.fillStyle = P.sole;
-          g.fillRect(w * 0.33, 0, w * 0.34, h);
-          g.strokeStyle = "rgba(150,145,160,0.6)";
-          g.lineWidth = 2;
-          for (let k = 0; k < 4; k++) {
-            const y = h * (0.45 + k * 0.07);
-            for (const x0 of [0, w]) {
-              g.beginPath();
-              g.moveTo(x0, y);
-              g.lineTo(x0 + (x0 ? -1 : 1) * w * 0.08, y + 2);
-              g.stroke();
-            }
-          }
-        },
-        0.55,
-      ),
-    );
+    andiLegs(c);
   },
 };
 

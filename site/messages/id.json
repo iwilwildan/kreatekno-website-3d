@@ -460,6 +460,37 @@
       "cta": {
         "title": "Mau coba di usahamu?",
         "body": "Ceritakan pekerjaan yang paling menyita waktu stafmu. Kami bantu petakan solusinya, gratis."
+      },
+      "library": {
+        "ask": "Tanya pustakawan",
+        "shelf": "Lihat rak",
+        "stage": "Perpustakaan Kreatekno",
+        "librarian": "Andi, pustakawan",
+        "sign": "PERPUSTAKAAN",
+        "shelfTitle": "Pilih bacaan sesuai kebutuhan usahamu",
+        "plank": "Semua bacaan",
+        "previous": "Buku sebelumnya",
+        "next": "Buku berikutnya",
+        "eyebrow": "Tanya pustakawan",
+        "title": "Andi bantu carikan bacaan",
+        "body": "Tulis yang ingin kamu pelajari, atau pilih topiknya. Andi mengambilkan buku yang cocok dari rak.",
+        "close": "Kembali ke rak",
+        "cardLibrary": "PERPUSTAKAAN KREATEKNO",
+        "cardLine": "Kartu peminjaman · Pustakawan: {name}",
+        "cardNo": "No. {no}",
+        "term": "Mau belajar apa?",
+        "termPlaceholder": "contoh: balas chat pembeli",
+        "topic": "Topik",
+        "allTopics": "Semua topik",
+        "submit": "Carikan bacaan",
+        "found": "{count, plural, =1 {Andi menemukan 1 buku} other {Andi menemukan # buku}}",
+        "foundBody": "Buku diurutkan seperti di rak.",
+        "empty": "Belum ada buku yang cocok",
+        "emptyBody": "Coba kata lain, atau pilih dari semua buku di rak ini.",
+        "allBooks": "Semua buku di rak",
+        "again": "Tanya lagi",
+        "bookLabel": "Buku {number}",
+        "closeBook": "Tutup ringkasan buku"
       }
     },
     "about": {

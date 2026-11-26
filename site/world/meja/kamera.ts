@@ -1,3 +1,4 @@
+// Shared by the Solutions shop and the Articles library desk (Pustaka): the same counter, lip and cameras.
 import * as THREE from "three";
 
 export const SCENE_Z_SHIFT = 1.9;

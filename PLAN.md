@@ -198,7 +198,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
 | 14 | Halaman lain | Artikel (MDX, 5 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | 🟡 plan disetujui 22 Nov; 14A Kebijakan Privasi, 14B Tentang dan 14C Artikel selesai teknis, menunggu review |
 | 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
-| 16 | Artikel 3D (Pustaka) | Halaman depan `/artikel` jadi meja perpustakaan dengan Andi pustakawan, rak buku artikel dan mode Tanya pustakawan (P0–P5 di `docs/plans/artikel/PLAN-PUSTAKA.md`). Mengubah keputusan lingkup 3D 31 Okt untuk halaman depan Artikel saja | 12 (toko Solusi), 14C | ⬜ plan menunggu persetujuan (24 Nov) |
+| 16 | Artikel 3D (Pustaka) | Halaman depan `/artikel` jadi meja perpustakaan dengan Andi pustakawan, rak buku artikel dan mode Tanya pustakawan (P0–P5 di `docs/plans/artikel/PLAN-PUSTAKA.md`). Mengubah keputusan lingkup 3D 31 Okt untuk halaman depan Artikel saja | 12 (toko Solusi), 14C | 🟡 P0 selesai; P1, P2 (24 Nov) dan P3 (25 Nov) disetujui, belum di-commit; P5 QA selesai teknis (26 Nov), menunggu persetujuan akhir |
 
 Tahap 14 tidak bergantung pada 3D, jadi bisa dikerjakan kapan saja setelah tahap 1 kalau input tim sudah ada.
 
@@ -934,12 +934,12 @@ Cek di tiap bagian:
   - Ruangan di footage tidak menjaga proporsi, jadi solve bebas memberi kamera yang aneh (menembus kepala Heru, FOV 0,05°). Prior dipakai: x dekat garis tengah ruangan, tinggi ±1,5 m, FOV dekat K2, K2.2 dekat K2.1, jarak ≥ 0,5 m dari kepala Heru.
   - Hasil:
 
-    | Kamera | Error rata-rata | Error maks | Tinggi | FOV vertikal |
-    |---|---|---|---|---|
-    | K2.1 pc | 2,08% | 3,26% | 1,34 m | 38° |
-    | K2.2 pc | 1,54% | 2,79% | 1,11 m | 34° |
-    | K2.1 hp | 2,12% | 3,72% | 1,19 m | 72° |
-    | K2.2 hp | 4,21% | 5,82% | 1,03 m | 74° |
+    | Kamera  | Error rata-rata | Error maks | Tinggi | FOV vertikal |
+    | ------- | --------------- | ---------- | ------ | ------------ |
+    | K2.1 pc | 2,08%           | 3,26%      | 1,34 m | 38°          |
+    | K2.2 pc | 1,54%           | 2,79%      | 1,11 m | 34°          |
+    | K2.1 hp | 2,12%           | 3,72%      | 1,19 m | 72°          |
+    | K2.2 hp | 4,21%           | 5,82%      | 1,03 m | 74°          |
 
   - Masuk `data.json` (`cams.{pc,hp}["K2.1"|"K2.2"]`).
 - **Take** (`takes/home/timing.ts`): 5,8 layar dengan segmen K2 jeda 0,3, K2 → K2.1 0,8, K2.1 → K2.2 0,7, K2.2 jeda 0,6. `holdP` memberi posisi sambungan untuk keyframe tanpa jeda (K2.1).
@@ -1284,14 +1284,15 @@ Cek di tiap bagian:
   - `placeHero.ts`: `placeAnchors` memakai satu objek `matchMedia`.
 - **Hasil di build produksi (scroll wheel, pc 1440×810):**
 
-  | | Sebelum | Sesudah |
-  |---|---|---|
-  | Median frame | 27,8 ms | 16,7 ms |
-  | p99 | 100 ms | 28–33 ms |
+  |                  | Sebelum        | Sesudah  |
+  | ---------------- | -------------- | -------- |
+  | Median frame     | 27,8 ms        | 16,7 ms  |
+  | p99              | 100 ms         | 28–33 ms |
   | Frame terpanjang | 1.028–1.455 ms | 55–94 ms |
-  | Frame > 25 ms | 54–68% | 2–8% |
+  | Frame > 25 ms    | 54–68%         | 2–8%     |
 
   Profil tidak lagi menunjukkan kompilasi saat scroll; jumlah shadow pass turun dari 305 menjadi 151 per scroll penuh, dan nol di 0–2,5 layar. HP 375×812 dengan CPU 4× lebih lambat: median 16,6 ms, frame > 25 ms 2,6%.
+
 - **Dicek:** K2, K2.2, K3, K4 pc dan HP tampil sama, tanpa error console; `typecheck`, `lint`, `format:check`, `build` lulus.
 - **Belum:**
   - tes di HP Android sungguhan;
@@ -1515,13 +1516,14 @@ Cek di tiap bagian:
   - panel, pintu lipat dan barang di dalam toko tidak lagi menggambar bayangan.
 - **FPS** (build produksi, scroll rata 1 layar per 1,5 s, Playwright memakai GPU Intel; tangga kualitas menurunkan dpr ke 1). Angka ini lebih tinggi dari tahap 5 karena keadaan mesin dan harness berbeda, jadi yang dipakai adalah perbandingan di sesi yang sama:
 
-  | | beat 1–4 (K1 → K4) | beat 5 (K4 → K5a.6) |
-  |---|---|---|
-  | pc, CPU 1× (median / p95) | 22,1 / 33,4 ms | 22,0 / 27,9 ms |
-  | pc, CPU 4× (median / p95) | 38,9 / 66,7 ms | 38,9 / 72,3 ms |
-  | HP 375×812, CPU 4× (median / p95) | 27,7 / 44,5 ms | 22,2 / 44,4 ms |
+  |                                   | beat 1–4 (K1 → K4) | beat 5 (K4 → K5a.6) |
+  | --------------------------------- | ------------------ | ------------------- |
+  | pc, CPU 1× (median / p95)         | 22,1 / 33,4 ms     | 22,0 / 27,9 ms      |
+  | pc, CPU 4× (median / p95)         | 38,9 / 66,7 ms     | 38,9 / 72,3 ms      |
+  | HP 375×812, CPU 4× (median / p95) | 27,7 / 44,5 ms     | 22,2 / 44,4 ms      |
 
   Beat 5 tidak lebih berat dari beat 1–4. Satu kali halaman crash saat dimuat di tengah rangkaian run berturut-turut, dan tidak terulang di run berikutnya.
+
 - **Render** (hanya di chat):
   - K0–K4 pc dan HP sama dengan still (rata-rata selisih 1,4–2,0; piksel berbeda > 40 paling banyak 0,05%);
   - jeda K4.1–K5a.6 pc berdampingan dengan frame akhir video;
@@ -1640,7 +1642,8 @@ Cek di tiap bagian:
   - tautan `#cara-kerja` mendarat dengan judul "Cara kerja" di tengah di pc, HP dan tablet;
   - frame pc dan HP sepanjang jalan dicek visual (hanya di scratchpad dan chat);
   - typecheck, ESLint, Prettier untuk file yang diubah lulus; `build` lulus; console hanya 404 skrip analytics Vercel lokal.
-- Belum: still fallback tanpa WebGL beat 5 masih framing per panel (jadi crossfade still → live saat halaman dimuat di tengah jalan ruko berpindah framing); tes di HP Android sungguhan; konfirmasi user, commit dan penutupan issue.
+- Belum: still fallback tanpa WebGL beat 5 masih framing per panel (jadi crossfade still → live saat halaman dimuat di tengah jalan ruko berpindah framing); tes di HP Android sungguhan.
+- Setelah konfirmasi user, perbaikan di-commit ke `main` sebagai `698083d` (hanya 4 file `site/world/` dan entri log ini; pekerjaan Solusi tidak ikut) lalu di-push. Issue #2 ditutup (completed) dan dicek lewat API GitHub.
 
 ### 2026-11-09 (issue GitHub #3: awan hujan diganti gelembung pikiran)
 
@@ -1656,6 +1659,28 @@ Cek di tiap bagian:
 - Dicek: render K2, K2.1, K2.2, K3, K4, K5a.1 pc dan HP, dan 10 frame K4 → K5a.1 (dikirim di chat); draw call pass utama pc K2 100 → 108, K2.1 71 → 82, K2.2 73 → 81; HP K2 98 → 106; segitiga maks 159,4 rb (awan 131,7 rb). Typecheck, ESLint, Prettier untuk file yang diubah lulus; `build` lulus; console hanya 404 skrip analytics Vercel lokal.
 - Belum: animasi isi gelembung (chat bertambah, tumpukan goyah); tes FPS di HP Android sungguhan.
 - Setelah konfirmasi user: di-commit ke `main` sebagai `d443b2d` (hanya bagian issue #3 dari `world/index.ts`, `cast/roster.ts` dan `PLAN.md`; pekerjaan issue #2 dan Solusi tidak ikut) lalu di-push. Issue #3 ditutup (completed), dicek lewat API GitHub.
+
+### 2026-11-09 (issue GitHub #2 dibuka lagi: jalan di ruko terlalu cepat)
+
+- Masukan user: jalan tokoh di ruko terlihat terlalu cepat. Penyebab: sejak `698083d` tokoh terikat langsung ke scroll dengan panjang take tetap, ±52 m dalam ±3,95 layar (±13 m per layar), jadi di scroll 2 s per layar ±6,5–7,4 m/s, ±5× jalan normal. Kaki tidak meluncur, tapi ayunannya sangat rapat.
+- Jawaban user: pilihan 3 (jalan ruko diperpanjang secukupnya dan laju dibatasi). Issue #2 dibuka lagi dengan komentar penyebab dan rencana.
+- Diubah:
+  - `takes/home/timing.ts`: gerak K5a.1 → K5a.6 0,5 → 0,8 layar dan jeda K5a.2–K5a.4 0,6 → 0,9 layar. Jalan ruko ±6,05 layar (±8,6 m per layar), take 18,8 → 20,9 layar.
+  - `takes/home/outsideCast.ts`: di jalan ruko jam tokoh paling cepat 2,5/1,3× (jalan cepat ±2,5 m/s, batas tahap 6). Kamera tetap mengikuti tokoh, jadi scroll yang lebih cepat membuat kamera tertinggal dari scroll.
+  - `components/home/HomeTake.tsx` `STILL_FADES` beat 5 dan `tools/render/lib.mjs` `HP_AT` digeser ke timing baru (dipetakan per segmen).
+- Dicek:
+  - laju pasangan (median) 2,50 m/s di 1280×720 pada scroll 1, 2 dan 3,5 s per layar, di 375×812 dan 768×1024 (2 s per layar), dan di 360×640 build produksi; saat Heru mempercepat menjelang Kreatekno ±3,1–3,3 m/s;
+  - tokoh tetap di tengah (di luar keyframe K5a.1 dan framing K5a.6 hanya 2–11 sampel melewati ±0,02 NDC);
+  - jalan dari COMPANY ke Kreatekno ±21 s. Pada scroll 3,5 s per layar kamera selesai bersamaan dengan scroll (21,6 vs 22,7 s); pada 2 s per layar ±10 s sesudahnya, pada 1 s per layar ±16 s sesudahnya;
+  - tautan `#cara-kerja` tetap mendarat dengan judul di tengah (pc dan HP);
+  - typecheck, ESLint, Prettier (file situs yang diubah), `build` lulus; console hanya 404 skrip analytics Vercel lokal.
+- Keputusan user: ketinggalan kamera dikurangi jadi ±3 s. Disetel ulang:
+  - `timing.ts`: tiap gerak dan jeda jalan ruko 1,1 layar. Jalan ruko ±7,85 layar (±6,6 m per layar), take 22,7 layar;
+  - `outsideCast.ts`: batas laju dinaikkan ke ±3 m/s (3/1,3× jam);
+  - `STILL_FADES` dan `HP_AT` dipetakan lagi dari nilai sebelum issue #2 ke timing ini.
+- Dicek ulang: laju median 3,00 m/s di 1280×720 (scroll 1 dan 2 s per layar), 375×812, 768×1024 dan 360×640 build produksi; 2,41 m/s di scroll 3 s per layar. Maksimum rata-rata 3 sampel 3,79 m/s (Heru mempercepat menjelang Kreatekno). Kamera selesai 2,9–3,0 s setelah scroll pada 2 s per layar (pc, HP, tablet, produksi), ±10,8 s pada 1 s per layar, dan bersamaan dengan scroll pada 3 s per layar. Tokoh tetap di tengah. `#cara-kerja` tetap mendarat dengan judul di tengah. Typecheck, ESLint, Prettier, `build` lulus.
+- Belum: still fallback beat 5 belum dirender ulang; tes di HP Android sungguhan; konfirmasi user, commit dan penutupan issue.
+- Keputusan user: penyetelan ini disimpan di branch lokal `issue-2-laju-jalan-ruko` (commit `d0923aa`: `timing.ts`, `outsideCast.ts`, `HomeTake.tsx`, `tools/render/lib.mjs` dan entri log ini; belum di-push, belum di-merge). Di `main` keempat file dikembalikan ke `698083d`: tokoh terikat langsung ke scroll tanpa tambahan panjang take, walaupun jalannya cepat. Dicek di build produksi 375×812: ±7,2 m/s pada scroll 2 s per layar, tokoh berhenti bersamaan dengan scroll dan tetap di tengah. Server 3300 menjalankan versi `main`.
 
 ### 2026-11-09 (investigasi issue GitHub #4: scroll leaflet dan binder)
 
@@ -1710,6 +1735,22 @@ Cek di tiap bagian:
 - Dicek: typecheck, ESLint, Prettier, build lulus. Tes kunci (skrip scratchpad, browser baru tiap profil): pc live 8,0 s, HP CPU 1× 8,9 s, HP CPU 4× 12,2 s, HP CPU 6× stills di 15,9 s; selama boot scroll roda, End/PageDown/Space dan usapan jari tertahan; bar naik monoton; setelah selesai kunci lepas, bar hilang, bisa scroll; reduced motion tidak dikunci; `?k=K3` tetap di K3 selama terkunci; tanpa pageerror. Screenshot loader hp/pc/EN hanya di chat.
 - Regresi: `tools/render/issue4.mjs` 73/73 dan `issue4-loading.mjs` 25/25 lulus pada build ini.
 - Belum: tes HP fisik dan konfirmasi user, komentar tambahan di issue #4 (loading screen), commit, push, tutup issue. Bobot `onProgress` diukur di laptop; di HP bar bisa melompat di tahap tokoh.
+- Dikonfirmasi user setelah tes di HP. Commit `bbaf906` ke `main` (Refs #4; hanya file issue #4, `messages` hanya kunci `loading`, `PLAN.md` hanya entri log issue #4; isi index lolos typecheck, ESLint dan build sendiri), push memicu deploy Vercel. Komentar tambahan loading screen dikirim (issuecomment-6768157696) dan issue #4 ditutup completed, dicek lewat API.
+
+### 2026-11-10 (tes UX Home di desktop dan HP)
+
+- Permintaan user: tes UX dan cari issue di web dan HP, dengan 5 temuan awal (scroll K0 → K1, Heru berbalik dan membuka pintu, keluar COMPANY terlalu cepat, Bu Dewi menembus pintu, kamera ruko terlalu besar). Tanpa perubahan kode.
+- Cara: build produksi working tree (kode Home sama dengan `main`, kecuali refactor rambut Heru untuk Solusi), `site-prod-3300` jalan di port 3301. Skrip Playwright di scratchpad: scroll rata seluruh take 2 s per layar (1280×720 dan 375×812) dengan posisi kamera, pinggul dan kepala Heru dan Bu Dewi, serta sudut kedua daun pintu COMPANY per frame; scroll cepat K1 → K2 (pc 1 s, HP 0,6 s per layar); panel Cara kerja utuh di layar per 0,02 layar (pc, 375×812, 360×640); frame di 30 titik pc dan HP (hanya di chat).
+- Terukur:
+  1. K0 → K1: 1,9 layar sampai hold K1 (pc ±14 notch roda, 1080p ±20).
+  2. Heru: hold K1 berakhir di 2,2, pintu mulai terbuka 3,02 dan terbuka penuh 3,33, jadi ±1,1 layar untuk ±2 s aksi.
+  3. K4.1 → K4.2: kamera 15,8 m/layar (pc) dan 20,3 m/layar (HP), tercepat di take (bagian lain 1–14). Kamera keluar pintu 0,77 s setelah K4.1 pada 2 s/layar, lalu fasad kosong ±1,1 layar sampai Heru keluar.
+  4. Daun kanan COMPANY sudah menutup di 11,89; Bu Dewi melewati bidang pintu di 12,94 pada x 0,37–0,38 (bentang daun kanan) dengan daun kanan 0. Heru memegang daun kiri di x −0,49.
+  5. Truck 12–14 m/layar, Bu Dewi median 7,1 m/s pada 2 s/layar (±5,5× jalan normal), sama dengan temuan issue #2 dibuka lagi (penyetelan masih di branch lokal `issue-2-laju-jalan-ruko`).
+- Temuan tambahan: scroll cepat K1 → K2 membuat kamera menembus pintu yang masih tertutup (daun kanan 0 di HP, −0,35 di pc) dan mendahului Heru, yang masih di trotoar; di HP setiap panel Cara kerja utuh di layar hanya 0,06–0,08 layar dan tidak ada yang utuh di hold K5a.2–K5a.4 (pc 0,72–1,3 layar); frame kosong di tengah K3 → K4 dan copy binder terbalik saat naik ke K4.1 (sudah tercatat 10 Nov, belum dibuat issue); kamera 0,49 m dari kepala Heru saat masuk pintu (punggung Heru mengisi frame HP).
+- Atas permintaan user ("ya buat semua"), 9 issue dibuat di GitHub lewat Chrome dengan login user, teks saja tanpa screenshot: #5 K0 → K1, #6 Heru berbalik dan pintu, #7 keluar COMPANY, #8 Bu Dewi menembus pintu, #9 kamera ruko (CR), #10 scroll cepat K1 → K2, #11 panel Cara kerja di HP, #12 frame kosong K3 → K4 dan binder terbalik, #13 kamera dekat Heru (CR). Dicek lewat API: kesembilannya open.
+- Keputusan user untuk #9: branch lokal `issue-2-laju-jalan-ruko` diabaikan. Usulan user, kamera 3–4 m per layar, dicatat di #9 beserta dampaknya: jalan ruko ±49 m jadi 12,3–16,3 layar (take 17,0 → 25,2–29,3), laju jalan 1,5–2,0 m/s pada 2 detik per layar. Panjang tambahan ini belum diputuskan.
+- Belum: perbaikan issue #5–#13, tes di HP fisik.
 
 ### 2026-11-10 (issue GitHub #5: K0 → K1 dipendekkan)
 
@@ -1749,6 +1790,12 @@ Cek di tiap bagian:
 - Belum: komentar di issue #6 dan #10 (Chrome tidak tersambung; draf di scratchpad sesi), tes HP fisik, konfirmasi user, commit, push, tutup issue. Still tidak dirender ulang (kamera hold sama).
 - Dikonfirmasi user ("Ok, commit dan push"). Di-commit ke `main` (Refs #6, Refs #10; hanya `timing.ts`, `heru.ts`, `takes/home/index.ts`, `world/index.ts`, `HomeTake.tsx`, `tools/render/lib.mjs`, `tools/render/issue4.mjs` dan entri log ini; pekerjaan Solusi dan entri tes UX 10 Nov tidak ikut).
 
+### 2026-11-11 (issue GitHub #14: tangan Bu Dewi di binder, komentar #5)
+
+- Masukan user (tangkapan layar tampak atas K4, hanya di chat): tangan close-up Bu Dewi terlalu jauh dari badannya, jadi lengannya terlihat putus saat discroll. Dibuat issue #14 lewat Chrome dengan login user. Permintaan pertama: tangan kanan Bu Dewi ke sisi lain binder, tangan Heru diganti tangan kiri di sisi berlawanan. Lalu direvisi user, dan revisinya dikomentari di #14: tangan Bu Dewi tidak dipindah ke dekat binder, tangan Heru tetap seperti sekarang. Kode terkait: `HAND_AT` di `sets/counterProps.ts` (`rest` Bu Dewi `tip [-0.25, -0.075]`).
+- Chrome tersambung lagi, jadi komentar Penyebab, Perbaikan, Dicek, Belum dari sesi issue #5 dikirim ke #5 (dicek lewat API: 1 komentar). Issue #5 belum ditutup karena commit `b60c561` belum di-push (ditunda user).
+- Belum: perbaikan #14; push `b60c561` dan penutupan #5.
+
 ### 2026-11-11 (issue GitHub #8: Bu Dewi keluar lewat daun kanan yang terbuka)
 
 - Issue #8: saat keluar dari COMPANY, Bu Dewi menembus daun kanan yang sudah tertutup. Direproduksi di build produksi (skrip scratchpad, Playwright `?hud`, scroll rata 2 s/layar dari 9 sampai 12,5): daun kanan menutup di 10,0–10,2 layar setelah kamera keluar; Bu Dewi melewati bidang pintu di 11,24 pada x 0,37–0,40 dengan daun kanan 0; jarak tubuhnya ke daun 0,00 m. Sama di 1280×720, 768×1024 dan 375×812. Frame PC dan HP (hanya di chat): ia muncul dari balik kaca daun kanan.
@@ -1771,6 +1818,12 @@ Cek di tiap bagian:
 - Keputusan user: "Commit saja". Di-commit ke `main` (Refs #8; hanya `world/index.ts`, `takes/home/outsideCast.ts` dan entri log ini; pekerjaan Solusi dan entri log lain tidak ikut). Belum di-push; issue #8 tetap open sampai push.
 - Belum: still K5a.1 tidak dirender ulang (daun kanan di still masih tertutup); tes di HP Android sungguhan; konfirmasi user, commit, push, tutup issue.
 
+### 2026-11-11 (issue GitHub #11: kartu Cara kerja di 9:16, dibatalkan)
+
+- Issue #11 diukur ulang di build produksi (take 15,3, cek tiap 0,02 layar): panel Cara kerja utuh 0,06–0,08 layar di 375×812 dan 360×640, 0,16–0,2 di 768×1024, 0,72–1,3 di 1280×720. Penyebab: kamera mengikuti tokoh ±14,4 m per layar, panel berjarak 7,05 m dan di 9:16 mengisi 85% lebar. Teks panel HP sudah di batas minimum 16/13 px; panel paling kecil 75% lebar sebelum teks meluap.
+- Pilihan yang ditawarkan: A kartu di 9:16, B lensa lebih lebar + kamera menempel ke panel, C lensa lebih lebar saja, D menunggu #9. User memilih A (potret, panel 3D kosong). Dibangun dan diukur: kartu utuh 0,42–0,48 layar di HP dan tablet, PC tidak berubah. Komentar dikirim di issue #11 (issuecomment-6784027437).
+- Keputusan user: perubahan dibatalkan. `world/index.ts`, `stage.css` dan `Journey.tsx` dikembalikan ke HEAD. Issue #11 tetap open; komentar di issue masih menyebut perbaikan A.
+
 ### 2026-11-11 (issue GitHub #14: tangan Bu Dewi kembali ke badannya di K3 → K4)
 
 - Issue #14 (revisi user di komentar: tangan Bu Dewi tidak ke samping binder, tangan Heru tetap). Direproduksi di build produksi (port 3300, skrip scratchpad, Playwright `?hud`, posisi tiap 0,1 layar): di tampak atas lengan bawah kanan Bu Dewi dilipat dan diganti tangan close-up, yang ujung lengan bajunya berjarak 0,27 m (PC) / 0,17 m (HP) dari sikunya di K3, lalu 0,55 / 0,35 m setelah tangannya pindah ke samping binder di K3 → K4. Di K3 dan jeda K4 celah itu di luar frame; saat kamera naik dan berputar ke K4.1 (8,9–9,02 layar) tangan close-up masih tampil, jadi lengannya terlihat putus (lengan dari atas di kiri binder, badan di kanan atas), di PC dan HP.
@@ -1789,6 +1842,13 @@ Cek di tiap bagian:
 - Komentar Penyebab, Perbaikan, Dicek, Belum dikirim di issue #14 lewat Chrome (issuecomment-6787693135).
 - Keputusan user: "Ok, commit saja". Di-commit ke `main` (Refs #14; hanya `world/index.ts`, `sets/counterProps.ts`, `takes/home/counterCast.ts`, still `pc/k4.webp` dan entri log ini; pekerjaan Solusi dan entri log lain tidak ikut). Belum di-push; issue #14 tetap open sampai push.
 - Belum: tes di HP Android sungguhan, push, tutup issue.
+
+### 2026-11-11 (push perbaikan issue dan penutupan issue)
+
+- Atas permintaan user ("push ke main issue yang sudah ada commitnya, dan close ticket di github"): 4 commit lokal di-push ke `origin main` (`bbaf906..d0b806f`): `b60c561` (#5), `a1fac38` (#6, #10), `5299060` (#8), `d0b806f` (#14). Sebelum push dicek: isinya hanya file perbaikan, entri log, dan still `site/public/stills/pc/k4.webp` yang dirender ulang dari scene sendiri; tidak ada file Solusi atau `refs/`. Push memicu deploy Vercel.
+- Komentar Penyebab, Perbaikan, Dicek, Belum untuk #6 dan #10 (draf dari sesi #6) dikirim lewat Chrome bersama penutupan issue. Bagian "Belum" diperbarui: tes HP sudah dilakukan user dan commit sudah di-push.
+- Ditutup sebagai completed: #5, #6, #8, #10, #14 (dicek lewat API). Masih open dengan label `ditunda`: #7, #9. #11, #12 dan #13 sudah ditutup user sebelumnya.
+- Belum: issue tertunda #7 dan #9; temuan dari sesi #8 (tokoh hilang dalam satu frame saat scroll mundur di pintu COMPANY sekitar 10,3 layar) belum dibuat issue.
 
 ### 2026-11-11 (tahap 7 riset dan plan)
 
@@ -2437,6 +2497,21 @@ Cek di tiap bagian:
   - `typecheck`, `lint` (1 peringatan lama di `opengraph-image.tsx`), `format:check`, `next build` lulus.
 - **Belum:** `issue4*.mjs` di laptop dengan GPU; tes HP fisik; review user. Di-commit ke branch `ccr-fa769dc0-el34x2` dengan PR ke `main` (permintaan user).
 
+### 2026-11-14 (temuan UX beat 9b–16: issue GitHub #22–#25)
+
+- Permintaan user: periksa 4 temuan UX (keluar Kreatekno, Bu Dewi masuk COMPANY, masuk kelas, billboard malam) lalu tulis issue dan rencana perbaikan di GitHub. Tanpa perubahan kode.
+- `main` lokal ditarik ke `origin/main` (fast-forward `a2f0c72` → `03494e6`, termasuk PR #20 tahap 8–10 dan PR #21 ruko elektronik dihapus; atas permintaan user). Perubahan lokal `PLAN.md` disimpan lewat stash dan dikembalikan tanpa konflik.
+- Cara: worktree sementara `origin/main` 03494e6 di scratchpad, build produksi di port 3400; Playwright `?hud` dengan scroll rata 2 detik per layar, posisi dan arah kamera, posisi tokoh, sudut pintu Kreatekno dan pintu kayu per frame, di 1280×720, 768×1024 dan 375×812; frame PC dan HP hanya di chat.
+- Terukur:
+  1. K9.1 → K9b: kamera melewati bidang fasad di 2,29–2,30 s lewat dinding 3,35 m di kiri pintu, saat pintu masih tertutup; Heru 3,71–3,76 s, Bu Dewi 4,19–4,25 s, Wildan 4,57–5,04 s. Yaw 180° → 360° (belok kiri). Satu dari tiga run PC: Wildan melewati pintu 0,27 s setelah daun menutup.
+  2. K11 → K12: titik terdekat ke kamera K2 0,54 m (PC) dan 0,60 m (HP), tinggi 1,72 m (K2 2,25/2,32 m), menunduk 2–5° (K2 10,6°/14,3°), tanpa jeda; bagian dekat pintu dilewati 0,67–0,73 s.
+  3. Masuk kelas: yaw 1° → 46° → 3° memutari konter; daun pintu kayu berputar −1,30 rad ke ruang depan.
+  4. K15 → K16: 2,5 layar naik ke, berhenti di, dan mundur dari billboard (K15.1); di K16 wajah billboard polos.
+- Jawaban user: kamera tetap berakhir di plakat K9b; masuk kelas lurus di atas konter; billboard malam bertulisan hero K0; CTA billboard dihapus, cukup header dan footer.
+- Dibuat lewat Chrome dengan login user (dicek lewat API, keempatnya open): #22 kamera keluar Kreatekno, #23 view K2 saat Bu Dewi masuk (keyframe baru K11.1), #24 pintu kayu dan jalur lurus ke kelas (bergantung #23), #25 billboard malam tanpa fokus.
+- Worktree dan konfigurasi server sementara dihapus.
+- Belum: implementasi #22–#25, konfirmasi rencana dari user.
+
 ### 2026-11-15 (issue GitHub #22: kamera keluar Kreatekno lewat pintu, belok kanan)
 
 - Diambil alih dari pekerjaan Codex yang belum di-commit (atas permintaan user), di branch `codex/issue-22-kamera-keluar-kreatekno` (dari `03494e6`). Branch sempat berada di `codex/issue-25-malam-billboard` dengan perubahan #22 di working tree; dipindah ke branch #22 tanpa mengubah isi.
@@ -2548,6 +2623,14 @@ Cek di tiap bagian:
   - ESLint, Prettier (file yang diubah; peringatan Prettier hanya akhir baris CRLF dari checkout) dan `next build` lulus.
 - Belum: tes HP fisik.
 - Atas perintah user ("Commit dan push"): di-commit ke `main` (hanya `stage.css`, `counterProps.ts`, `world/index.ts`, `lobby.ts`, still `pc/k3.webp` dan entri log ini; `.claude/launch.json` dan file lain yang belum di-commit tidak ikut) lalu di-push ke `origin main` (memicu deploy Vercel).
+
+### 2026-11-15 (permintaan user: 9 CR baru, issue GitHub #30–#38)
+
+- Permintaan user: cek dan buat issue untuk 9 permintaan (copy meja sebelum dan sesudah, meja rapi saat hologram, billboard lebih besar, rak artikel, Trusted by, warna band Solusi, blur kasir etalase, footer desktop, logo kantor Kreatekno). Tanpa perubahan kode.
+- Dicek di kode: kunci `home.desks.before/after.*` ada tapi belum dirender; barang berantakan meja statis di batch `companyFront.ts` dan hologram tampil sejak K11.1; ukuran billboard dari solver K0 (`street.ts`); rak K7 baris bawah hanya "Lihat semua" di kiri, HP membaca kanan ke kiri karena lanjut ke K8; `/tentang` masih placeholder, belum ada logo klien; `.solusi-band` gradien `#101449 → #42116d` vs footer `#0b0f3a`; lapisan `.focus-panel` 0,86–0,9 menutupi kasir (sama dengan #19 no. 5); footer 4 kolom dengan Kantor mini hanya selebar kolom pertama; fasad Kreatekno hanya tulisan, lobi tanpa logo. Etalase Solusi juga dilihat di dev server (PC dan 375×812).
+- Jawaban user: blur kasir = lapisan mode Cari/Kartu; Trusted by di plakat Tentang Home (K9b); billboard = ukuran fisik papan 3D.
+- Dibuat lewat Chrome dengan login user, isi dicek sama dengan draf lewat API (semua open): #30 copy plakat meja, #31 meja rapi, #32 billboard, #33 rak artikel, #34 Trusted by, #35 warna band Solusi, #36 mode Cari/Kartu tanpa lapisan, #37 logo kantor Kreatekno, #38 footer desktop.
+- Belum: jawaban pertanyaan terbuka di tiap issue (ukuran billboard, copy dua artikel, file dan izin logo klien, susunan footer, lokasi logo), implementasi.
 
 ### 2026-11-16 (issue GitHub #35 dan #36: band Solusi warna footer, mode Cari/Kartu tanpa lapisan)
 
@@ -2758,7 +2841,7 @@ Cek di tiap bagian:
 - Baru: `site/components/solusi/detail/Panggung.tsx`, `ceritaFilm.ts`, `tools/solusi/og5-qa.mjs`. Diubah: `CeritaScroll.tsx`, `SolutionDetail.tsx`, `detail.css`, `content/solusi/cerita/{schema,order-grup}.ts` (`stage` ID/EN menggantikan `areas`/`world`), `detail-copy.ts`, `tools/solusi/logic.test.mjs`, `site/package.json`/lock. Dihapus: `site/world/cerita/`.
 - Di luar plan: label adegan aktif di panggung dihapus; panggung sticky HP/tablet tegak 55svh → 62svh agar teks terbaca.
 - Dicek: `og5-qa.mjs` 87/87 di dev dan build produksi (4 viewport, maju/mundur, malam, reduced motion, GSAP diblokir, EN); chunk cerita 75,7 KB (28,8 KB gzip) vs 3D 159 KB; typecheck, ESLint, Prettier, `logic.test.mjs`, `next build` lulus. Build masih menampilkan peringatan kerentanan Next.js yang sudah ada (lulus setelah diulang). Screenshot hanya di chat.
-- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
+- Belum: tes HP Android user, review user. Tidak ada commit/push.
 - Lanjutan 20 Nov: atas permintaan user, `main` ditarik ke `992e2fb` (#38, #33, #42, #43, #44; fast-forward). Hanya `PLAN.md` bentrok (kedua sisi menambah log); entri upstream dan OG5 disimpan semua, tanpa baris lokal yang hilang. Build produksi ulang lulus; server 3300 jalan. `og5-qa.mjs` sekarang menunggu GSAP termuat sebelum cek pertama (dua kali gagal di cek desktop adegan 1 karena mengukur sebelum film siap, halaman sendiri benar); 3 kali berturut-turut 87/87.
 - Lanjutan 20 Nov: user menilai motion graphic OG5 jelek (desktop banyak ruang kosong tapi terlalu banyak teks, kesan mockup UI, gerak terputus). Audit dengan skill `design-taste-frontend`; user memilih arah "satu order berjalan", panggung desktop besar, copy kartu tetap, dan detail Solusi masuk sitemap. Cek SEO: semua copy cerita, FAQ JSON-LD dan canonical ada di HTML server; 12 halaman detail belum ada di `sitemap.xml`. Rencana OG5b di `PLAN-ORDER-GRUP.md` 8.7, belum diimplementasi.
 
@@ -2766,7 +2849,7 @@ Cek di tiap bagian:
 
 - User menyetujui rencana OG5b. Diubah: `Panggung.tsx`, `ceritaFilm.ts`, gaya `og-*` di `detail.css`, `CeritaScroll.tsx` (skala maksimum 1,5, tanpa grid dekorasi), `SolutionDetail.tsx`, `detail-copy.ts`, `content/solusi/cerita/{schema,order-grup}.ts` (teks panggung dipangkas ID/EN), `app/sitemap.ts` + `solutionUrl` di `lib/seo.ts` (24 URL detail dengan hreflang dan `lastModified`), `tools/solusi/{og5-qa,logic.test}.mjs`.
 - Dicek: `og5-qa.mjs` 87/87 di build produksi (4 viewport, maju/mundur, malam, reduced motion, GSAP diblokir, EN); sitemap berisi 24 URL detail; typecheck, ESLint, Prettier, `logic.test.mjs` 13/13, `next build` (lulus setelah diulang, peringatan Next.js yang sama). Cek visual menemukan dan memperbaiki posisi bubble balasan/kurir, kolom barang terpotong dan celah stabilo. Screenshot hanya di chat.
-- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
+- Belum: tes HP Android user, review user. Tidak ada commit/push.
 - Lanjutan 20 Nov: user menilai motion Tonton di artifact Carousel Konten (skill `n8n-portfolio-prototype`) sudah bagus dan bertanya soal SEO. Keputusan: gaya Tonton dipakai untuk Order Grup dulu, panggung pastel terang, tanpa tab, isi kanvas OG5b tetap, intro dipertahankan tanpa kotak putih. Rencana OG5c di `PLAN-ORDER-GRUP.md` 8.8, belum diimplementasi.
 
 ### 2026-11-20 (Solusi detail Order Grup: OG5c bingkai Tonton pastel)
@@ -2786,7 +2869,7 @@ Cek di tiap bagian:
 - Dicek: `bj1-qa.mjs` 106/106 di dev (5 viewport maju/mundur, malam, node dan tombol, reduced motion, GSAP diblokir, EN); frame desktop dan HP dicek visual (screenshot hanya di chat); Baca HP tanpa scroll samping; HTML server berisi 11 `h3`, canonical ID/EN, tanpa nama klien; typecheck, ESLint, Prettier, `logic.test.mjs` 14/14.
 - Build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `bj1-qa.mjs` 106/106 dan `og5-qa.mjs` 106/106 (Order Grup tanpa regresi). Error console hanya dari tes GSAP diblokir dan `/_vercel/insights/script.js` 404 di lokal.
 - Catatan: testimoni Home dan plakat/logo "Trusted by" sudah menyebut nama klien ini (konten lama, tidak diubah).
-- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
+- Belum: tes HP Android user, review user. Tidak ada commit/push.
 
 ### 2026-11-21 (rencana RT1: "Solusi terkait" jadi rak di semua detail Solusi)
 
@@ -2800,7 +2883,7 @@ Cek di tiap bagian:
 - Baru: `components/solusi/RakBox.tsx`, `components/solusi/detail/RakTerkait.tsx`, gaya `.etalase.is-mini` di `detail.css`, `tools/solusi/rt1-qa.mjs`. Diubah: `Etalase.tsx` (pakai `RakBox`, markup sama), `SolutionDetail.tsx`, `detail-copy.ts`.
 - Kemiripan: warna lampu, muka atas, punggung, tepi, panel, papan dan bayangan kontak diukur dari render 3D etalase 1440 px; sampel piksel kotak depan selisih ≤ 2/255, papan sama persis.
 - Dicek di build produksi: `rt1-qa.mjs` 31/31 (12 detail × ID/EN: kotak = `related()`, warna tim, tautan, papan; 4 viewport tanpa scroll samping; klik ke detail dan Back; axe rak), `etalase-qa.mjs` 114/114 (etalase 3D tidak regresi), `bj1-qa.mjs` 106/106, `og5-qa.mjs` 106/106 (error console hanya 404 analytics Vercel lokal dan GSAP yang sengaja diblokir); typecheck, ESLint, Prettier, `logic.test.mjs` 14/14, `next build`. Frame desktop dan HP dicek visual, screenshot hanya di chat.
-- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
+- Belum: tes HP Android user, review user. Tidak ada commit/push.
 
 ### 2026-11-21 (Solusi detail Riset Konten: RK1 cerita Tonton dari rancangan workflow)
 
@@ -2809,7 +2892,15 @@ Cek di tiap bagian:
 - Keputusan user: status `ide` dan klien "(contoh)"; copy ikut workflow; tambah aplikasi `threads`; contoh kanvas topik "Cashflow usaha".
 - Baru: `content/solusi/cerita/riset-konten.ts`, `components/solusi/detail/PanggungRiset.tsx`, `ceritaFilmRiset.ts`, gaya `rk-*` di `detail.css`, `tools/solusi/rk1-qa.mjs`. Diubah: `cerita/{schema,index}.ts`, `ceritaTiming.ts`, `CeritaScroll.tsx`, `SolutionDetail.tsx`, `RakBox.tsx`, `items/riset-konten.ts`, `catalog.ts`, `schema.ts`, `taksonomi.ts`, `tools/solusi/logic.test.mjs` (tes RK1, jumlah "Sudah berjalan" 3), `tools/solusi/etalase-qa.mjs` (9 "Siap dibuat").
 - Dicek di build produksi (`next build` lulus setelah diulang; peringatan kerentanan Next.js yang sama, upgrade tidak dijalankan): `rk1-qa.mjs` 106/106 (5 viewport maju/mundur, malam, urutan post, tanpa tumpang tindih, node dan tombol, reduced motion, GSAP diblokir, EN), `bj1-qa.mjs` 106/106, `og5-qa.mjs` 106/106, `rt1-qa.mjs` 31/31, `etalase-qa.mjs` 114/114 (error console hanya GSAP yang sengaja diblokir dan 404 analytics Vercel lokal); HTML server berisi 11 `h3` dan canonical; typecheck, ESLint, `logic.test.mjs` 15/15; Prettier bersih untuk file yang diubah (peringatan lama di `world/`). Frame desktop/HP, EN, tanpa GSAP, bagian Aplikasi dan kutipan dicek visual, screenshot hanya di chat. Perbaikan dari cek visual: kartu post 108 px.
-- User menyatakan sudah sesuai dan meminta commit: di-commit ke `main` tanpa push. Belum: review tim.
+- Belum: tes HP Android user, review user. Tidak ada commit/push.
+
+### 2026-11-21 (Solusi detail dari workflow klien agen perjalanan: investigasi, belum dibangun)
+
+- Permintaan user: halaman detail Solusi dari workflow klien agen perjalanan di instance `n8n-kreatekno` (skill `n8n-portfolio-prototype`). Workflow hanya dibaca, tidak dijalankan atau diubah.
+- Isi folder klien: workflow utama (335 node, aktif, pemicu Telegram), sub-workflow potong gambar visa (14 node, aktif) dan workflow error.
+- Temuan: workflow utama membuat dokumen pendukung pengajuan visa dari template (tiket pesawat dan booking hotel dengan nomor booking acak, rekening koran bank dengan nomor rekening dan saldo acak atas nama pemohon, surat sponsor). Ini tidak dijadikan halaman portofolio. Sub-workflow potong visa (PDF e-visa jadi PNG, bagian visa dipotong, dikirim balik ke grup) layak dipakai. Temuan keamanan: sub-workflow itu membagikan PDF e-visa di Drive sebagai "siapa saja dengan link, bisa edit" sebelum dihapus.
+- Belum: keputusan user apakah halaman dibuat hanya dari alur potong visa; tidak ada kode yang berubah, tidak ada commit/push.
+- Lanjutan 21 Nov: user membatalkan halaman dari workflow agen perjalanan. Instance `n8n-mcp` dicek (83 workflow, hanya dibaca). Cocok dengan halaman Solusi: `cs-klinik` (agen CS WhatsApp dengan cek dan booking jadwal kalender, cek harga di Sheets, simpan leads; dan agen CS lembaga kursus dengan basis pengetahuan, jadwal kelas, handoff ke manusia), `asisten-sop` (agen SOP: dokumen Drive jadi basis pengetahuan, tanya lewat Telegram, log di Sheets), `followup-prospek` (leads di Sheets yang lewat 3 hari di-follow-up AI lewat WhatsApp), `carousel-konten` (topik jadi gambar + caption, posting carousel Threads di sub-workflow), `order-grup` (logger order WAHA → Sheets + sapu order basi tiap jam, halaman sudah ada). Tanpa workflow: `pengingat-tagihan`, `rekap-penjualan`, `stok-menipis`, `ulasan-pelanggan`. Calon solusi baru di luar katalog: komentar Instagram dibalas DM sesuai kata kunci, absensi dari foto lewat OCR ke Sheets. Belum: pilihan user.
 
 ### 2026-11-21 (Solusi detail CS Klinik: CK1 cerita Tonton dari workflow nyata)
 
@@ -2937,6 +3028,7 @@ Cek di tiap bagian:
 - Baru: `cerita/catat-pengeluaran.ts`, `PanggungNota.tsx`, `ceritaFilmNota.ts`, gaya `cp-*`, `tools/solusi/cp1-qa.mjs`. Diubah: `cerita/schema.ts` (`NotaCeritaSchema` dengan aturan silang angka), `cerita/index.ts`, `ceritaTiming.ts`, `CeritaScroll.tsx`, `logic.test.mjs`.
 - Dicek di build produksi: `cp1-qa.mjs` 107/107, regresi cerita `og5`/`bj1`/`rk1` 106/106, `ck1` 114/114, `fp1` 107/107, `rt1` 41/41, `etalase` 114/114, `s8` 1320/1320; `logic.test.mjs` 20/20, typecheck, ESLint, Prettier. Satu perbaikan dari cek visual (thumbnail nota di chat). Bundle client tanpa zod.
 - Belum: review user, tes HP Android, N3 (`balas-komentar`). Tidak ada commit/push.
+- 24 Nov: atas permintaan user ("push dulu ke main") pekerjaan S8 N0–N2 di-commit ke `main` sebagai `42427ff` dan di-push (memicu deploy Vercel). Push pertama ditolak karena `origin/main` punya `adc4001` (perbaikan boot Home); commit S8 di-rebase di atasnya, konflik PLAN.md (dua entri log di akhir) diselesaikan dengan menyimpan keduanya. PLAN.md di-stage sebagai HEAD + entri S8 saja; perubahan lama yang belum di-commit (`.claude/launch.json`, format tabel dan entri log sesi sebelumnya di PLAN.md, `site/AGENTS.md`, `tools/hash_*.png`) tidak ikut. Nama workflow klien dan rincian temuan keamanan disamarkan di dokumen sebelum commit karena repo publik.
 
 ### 2026-11-24 (rencana: halaman depan Artikel jadi meja perpustakaan 3D dengan Andi)
 
@@ -2963,3 +3055,65 @@ Cek di tiap bagian:
 - `npm audit`: advisory `next` hilang (8 → 7 moderat). Sisa 7 adalah rantai `minimatch` (GHSA-g3hv-75wg-m249) lewat `typescript-eslint` di `eslint-config-next`, dev-only, di luar lingkup.
 - Dicek (build produksi port 3100, worktree): `next build` lulus tanpa peringatan keamanan, tabel route identik dengan 16.4.3 (75 halaman statis/SSG/PPR); typecheck, ESLint lulus; Prettier lulus dengan `--end-of-line auto` (worktree di-checkout CRLF, git menormalkan ke LF). `artikel-qa.mjs` 617/617 (sebelum 617/617); `etalase-qa.mjs` 114/114 (sebelum 114/114; tiga run pertama 113/114 dengan cek hover/fokus jeda 450 ms yang berpindah-pindah, lalu 114/114 dua kali saat CPU turun); `tools/pustaka/solusi-baseline.mjs compare` 16.4.3 vs 16.4.5 di 11 viewport: identik dalam toleransi. Home: load langsung `live`, scroll jalan; Artikel → logo → Home terkunci dengan loader lalu `live` dalam ±2,5 dtk. Error console hanya 404 analytics Vercel lokal. Screenshot hanya di chat.
 - Belum: tes HP fisik. Atas permintaan user ("commit dan push dulu p0 + Next.js upgrade ke main"), di-commit ke `main` setelah P0 Pustaka lalu di-push (memicu deploy Vercel).
+
+### 2026-11-24 (Pustaka P1: halaman Artikel sebagai perpustakaan, HTML tanpa 3D)
+
+- User memulai P1 ("Mulai P1"). Riset: `<search>` Baseline widely available, jumlah hasil lewat `role="status"`. Keputusan user: semua kata cocok urutan bebas, rak digeser di HP, daftar lama diganti rak, dua tombol hero. Rincian di `docs/plans/artikel/PLAN-PUSTAKA.md` bagian 7.
+- Baru: `lib/articles/search.ts`, `components/articles/PustakaPage.tsx`, `components/articles/pustaka.css`, `tools/pustaka/search.test.mjs`, `tools/pustaka/p1-qa.mjs`. Diubah: `components/articles/ArticlesPage.tsx` (rak menggantikan kartu dan grid), `content/articles/schema.ts` + 10 MDX (`meta.keywords`), `messages/{id,en}.json` (`pages.articles.library`), `tools/legal/artikel-qa.mjs` (selector tautan daftar).
+- Dicek di build produksi (port 3200): `p1-qa.mjs` 256/256 tiga kali berturut-turut (360, 375, 768, 1280, 1440 × ID/EN, reduced motion, `#tanya` langsung); `artikel-qa.mjs` 617/617; `search.test.mjs` 8/8; `solusi-baseline.mjs compare` P0 vs sesudah P1 identik (satu rekaman sempat 0,108% piksel di Cari 390×844, rekaman ulang identik, jadi derau); typecheck, ESLint, Prettier (`--end-of-line auto` untuk seluruh `site/`; file yang diubah lulus tanpa opsi), `next build`. Perbaikan dari tes: judul EN panjang terpotong (judul 5 baris, gambar sampul lebih pendek), kontras nomor kartu 4,19 → di atas 4,5, garis kartu yang memotong teks dihapus, fokus judul panel tidak lagi berpindah saat halaman dirender ulang, QA menunggu scroll halus dan hidrasi `#tanya`. Screenshot hanya di chat.
+- Belum: review user (tampilan dan copy draf), tes HP fisik, P2 (Andi pustakawan). Tidak ada commit/push.
+
+### 2026-11-24 (Pustaka P1 disetujui, P2 dimulai)
+
+- User menyetujui P1 dengan instruksi "Mulai P2 di sesi baru". P1 belum di-commit (file di `components/articles/`, `lib/articles/`, `content/articles/`, `messages/`, `tools/pustaka/`, `tools/legal/artikel-qa.mjs`).
+- P2 (Andi pustakawan) dikerjakan di sesi terpisah; hanya menyentuh `world/cast/andi*.ts`, pose pustakawan, `lab.ts`, alat render dan log.
+
+### 2026-11-24 (Pustaka P2: Andi pustakawan)
+
+- Riset awal tahap: tidak ada rilis three r188 yang ditemukan, tetap 0.186.1; kacamata dari tabung ikut satu `SkinnedMesh`/atlas, tanpa library baru. Keputusan user: kardigan leher V dikancing dari dada, ungu hoodie Andi, kacamata di mata berbingkai bulat-kotak tipis, pose tanpa properti di lab. Rincian di `docs/plans/artikel/PLAN-PUSTAKA.md` bagian 8.
+- Diubah: `world/cast/andi.ts` (helper `andiHair`, `andiHeadphones`, `andiLegs`, `andiFace`, `ANDI_BODY`, `ANDI_COLLIDERS`, `ANDI_COLORS`), `world/cast/lab.ts` (tabel pose per tokoh, `andiPustakawan` hanya di lab, `&rot` untuk deretan pose). Baru: `world/cast/andiPustakawan.ts`, `world/cast/pustakawanPose.ts` (idle membaca, ready, lift, offer, wave, shrug, nod, stamp), `tools/pustaka/andi-snap.mjs`, `tools/pustaka/andi-poses.mjs`.
+- Dicek: Andi Home sebelum/sesudah refactor identik byte-for-byte di 6 render (sheet, face, flat, hemat, K8, potret dpr 2), 15.070 segitiga dan `partTris` sama, jadi lobi K8 dan `public/team/andi.webp` tidak berubah. Andi pustakawan 15.646 segitiga (hemat 9.218), 1 `SkinnedMesh`/material, bangun median 109 ms p95 131 ms di build produksi. Typecheck, ESLint, Prettier, `next build` lulus. Render dan pose hanya di chat.
+- Belum: review user, titik tangan ke properti di P3. Solusi dan file P1 tidak disentuh. Tidak ada commit/push.
+
+### 2026-11-24 (Pustaka P2 disetujui, P3 dimulai)
+
+- User menyetujui P2 (Andi pustakawan dan 8 pose) dengan "Setuju, lanjut P3". P1 dan P2 belum di-commit.
+
+### 2026-11-24 (Pustaka P3 langkah 1: modul meja bersama dan greybox perpustakaan)
+
+- Riset awal P3: buku dekor sebagai satu `InstancedMesh`; konteks WebGL bisa hilang kapan saja dan sebaiknya ditangani. Keputusan user: susunan cermin toko, pengendali tokoh dipindah di awal P3, stempel tiap 9–14 detik, tanpa WebGL/konteks hilang kembali ke meja CSS. Rincian di `docs/plans/artikel/PLAN-PUSTAKA.md` bagian 9.
+- Dipindah: `world/solusi/kamera.ts` → `world/meja/kamera.ts`; pengendali tokoh dari `world/solusi/index.ts` → `world/meja/tokoh.ts` (`createTokoh`). Diubah: `world/solusi/index.ts`, `world/sets/toko.ts` (impor), `world/cast/pustakawanPose.ts` (tangan ke tinggi meja). Baru: `world/sets/pustaka.ts`, `world/pustaka/index.ts`, `tools/pustaka/{solusi-tokoh,p3-shots,p3-fallback}.mjs`. `components/articles/PustakaPage.tsx` dan `pustaka.css` memuat dunia 3D (file P1 yang belum di-commit).
+- Dicek di build produksi: Solusi identik (baseline 11 viewport dalam toleransi, urutan pose mode normal sama, `etalase-qa` 114/114); Pustaka bibir 8 px di 11 viewport, 42/36/28 draw call desktop/tablet/HP, tanpa WebGL dan konteks hilang kembali ke CSS tanpa error, `p1-qa` 256/256, `artikel-qa` 617/617, typecheck, ESLint, Prettier, `next build`. Screenshot hanya di chat.
+- Belum: review greybox, langkah 2 (material, cahaya, stempel di tangan, tes HP fisik). Tidak ada commit/push.
+
+### 2026-11-25 (Pustaka P3 greybox disetujui, langkah 2 dimulai)
+
+- User menyetujui greybox P3 dengan "Lanjut langkah 2".
+- Langkah 2: stempel tiap 9–14 detik (pose baru `stampLift`, stempel di kepalan, cap di kartu peminjaman), buku meluncur antara tangan dan meja, fill hangat untuk wajah Andi yang menunduk, kap lampu meja kubah dengan genangan cahaya, latar hero navy saat 3D siap (axe membaca teks putih di atas latar terang). Alat baru `tools/pustaka/p3-stamp.mjs`. Rincian di `docs/plans/artikel/PLAN-PUSTAKA.md` 9.4.
+- Dicek di build produksi: 11 viewport bibir 8 px, 48/41/34 draw call desktop/tablet/HP, reduced motion tanpa stempel, fallback lulus, `p1-qa` 256/256 dan `artikel-qa` 617/617 dua kali, Solusi identik, ESLint, typecheck, Prettier, `next build`. Screenshot hanya di chat.
+- Belum: review user, tes HP fisik lewat `site-prod-3300`. Tidak ada commit/push.
+
+### 2026-11-25 (Pustaka P3 disetujui)
+
+- User menyetujui P3 (set perpustakaan, stempel, buku, cahaya) dengan "Setuju, P3 selesai". P1–P3 belum di-commit. Berikutnya P4 (rak 3D dan Tanya pustakawan 3D), belum dimulai.
+
+### 2026-11-25 (Pustaka P4 dimulai)
+
+- User memulai P4 ("Mulai P4"). Riset: sinkron kanvas-DOM dan pola aksesibilitas hasil 3D, tidak mengubah plan. Keputusan user: Andi berbalik ke rak mengambil buku, buku berdiri sampul ke depan di meja, hasil kosong = angkat bahu lalu kelima buku. Rincian di `docs/plans/artikel/PLAN-PUSTAKA.md` bagian 10.
+- Dipindah ke `world/meja/`: `rak.ts` (opsi `RakOptions`, buku dengan papan dan blok halaman) dan bagian bersama `kotak.ts` (`buildDeskObjects`); kotak bertanda status tetap di `world/solusi/kotak.ts`. Solusi identik (baseline 11 viewport, `etalase-qa` 114/114).
+- Baru: `world/pustaka/buku.ts` (buku di meja dengan sampul kanvas dan gambar `RackArt`), rak 3D dan Tanya 3D di `world/pustaka/index.ts` (kamera fokus, Andi berbalik ke rak, buku melayang ke meja, `offer`; kosong = `shrug` lalu kelima buku; "Tanya lagi" = buku pulang ke rak; meja dibersihkan selama buku tersaji), tag nomor dan kartu ringkasan di `PustakaPage.tsx`, CSS 3D di `pustaka.css`, pesan `closeBook` ID/EN, alat `tools/pustaka/p4-shots.mjs` dan `p4-fetch.mjs`. `p1-qa.mjs` kini berjalan tanpa WebGL (versi HTML), `p3-fallback.mjs` menambah cek Tanya tanpa WebGL.
+- Dicek di build produksi: `p4-shots` 4 viewport, `p4-fetch`, hero 11 viewport, fallback, `p1-qa` 256/256, `artikel-qa` 617/617 dua kali (setelah label papan rak diberi latar karena axe), Solusi identik, ESLint, typecheck, Prettier, `next build`. Rincian di `PLAN-PUSTAKA.md` 10.3–10.4. Screenshot hanya di chat.
+- Belum: review user, tes HP fisik. Tidak ada commit/push.
+
+### 2026-11-26 (Pustaka P4 disetujui, P5 dimulai)
+
+- User menyetujui P4 (rak 3D dan Tanya pustakawan 3D) dengan "Setuju, lanjut P5". P1–P4 belum di-commit.
+- P5: keputusan user LCP lewat Playwright + CDP, `s5-final.mjs` dibiarkan. Baru: `tools/pustaka/p5-qa.mjs` (315 cek, 11 viewport), `tools/pustaka/p5-budget.mjs` (JS gzip, waktu bangun Andi, LCP HP); `window.__pustaka.buildMs`; perbandingan `solusi-tokoh.mjs` dinormalkan.
+- Hasil: JS dunia 3D 171,9 KB gzip (≤ 230), bangun Andi median 91 ms / p95 106 ms (≤ 150), LCP HP lab median 924 ms (Solusi 1.224 ms), `p5-qa` 315/315, fallback, `p1-qa` 256/256, `artikel-qa` 617/617, Solusi identik (baseline, pose, `etalase-qa` 114/114), Home K7 normal, typecheck, ESLint, Prettier, `next build`. Rincian di `PLAN-PUSTAKA.md` bagian 11.
+- Belum: persetujuan akhir dan tes HP fisik. Tidak ada commit/push.
+
+### 2026-11-26 (Pustaka P1–P5 dan skrip regresi s5-final di-commit dan di-push)
+
+- Permintaan user: "commit semua dan push ke main". Ikut: Pustaka P1–P5 (halaman, dunia 3D `world/pustaka`, modul bersama `world/meja`, Andi pustakawan, alat QA `tools/pustaka`), entri log `PLAN.md` yang tertunda sejak 9 Nov, `site/AGENTS.md` (dibuat ulang oleh `next dev`), dan pembaruan `tools/solusi/s5-final.mjs` dari sesi terpisah. Tidak ikut: `tools/hash_*.png` (screenshot render, aturan 3) dan entri `site-copy-v3` di `.claude/launch.json` (path folder salinan lokal).
+- Dicek sebelum commit (checkout utama, build produksi port 3200): `p5-qa.mjs` 315/315, `search.test.mjs` + `logic.test.mjs` 28/28, typecheck, ESLint, Prettier (`--end-of-line auto`), `next build`.
+- Belum: tes HP fisik Pustaka.

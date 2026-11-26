@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { SCENE_Z_SHIFT } from "../solusi/kamera";
+import { SCENE_Z_SHIFT } from "../meja/kamera";
 
 const protoZ = (z: number) => z - SCENE_Z_SHIFT;
 

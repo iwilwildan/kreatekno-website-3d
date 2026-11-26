@@ -460,6 +460,37 @@
       "cta": {
         "title": "Want to try it in your business?",
         "body": "Tell us which task takes up most of your staff's time. We help you map the solution, free of charge."
+      },
+      "library": {
+        "ask": "Ask the librarian",
+        "shelf": "See the shelf",
+        "stage": "Kreatekno library",
+        "librarian": "Andi, the librarian",
+        "sign": "LIBRARY",
+        "shelfTitle": "Pick a read that fits your business",
+        "plank": "All reads",
+        "previous": "Previous book",
+        "next": "Next book",
+        "eyebrow": "Ask the librarian",
+        "title": "Andi helps you find a read",
+        "body": "Write what you want to learn, or pick a topic. Andi brings the matching books from the shelf.",
+        "close": "Back to the shelf",
+        "cardLibrary": "KREATEKNO LIBRARY",
+        "cardLine": "Library card · Librarian: {name}",
+        "cardNo": "No. {no}",
+        "term": "What do you want to learn?",
+        "termPlaceholder": "e.g. reply to customer chats",
+        "topic": "Topic",
+        "allTopics": "All topics",
+        "submit": "Find me a read",
+        "found": "{count, plural, =1 {Andi found 1 book} other {Andi found # books}}",
+        "foundBody": "Books are in shelf order.",
+        "empty": "No matching book yet",
+        "emptyBody": "Try other words, or choose from every book on this shelf.",
+        "allBooks": "Every book on the shelf",
+        "again": "Ask again",
+        "bookLabel": "Book {number}",
+        "closeBook": "Close book summary"
       }
     },
     "about": {

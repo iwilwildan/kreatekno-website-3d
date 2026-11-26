@@ -1,9 +1,10 @@
 import * as THREE from "three";
 import { HERU_KASIR_SPEC } from "../cast/heruKasir";
-import { buildMember, type CastMember } from "../cast/member";
+import { buildMember } from "../cast/member";
 import { type KasirPoseName, KASIR_POSES } from "../cast/kasirPose";
 import { applyPose } from "../cast/poses";
 import { buildToko } from "../sets/toko";
+import { createTokoh } from "../meja/tokoh";
 import { buildFlyingCard } from "./kartu3d";
 import {
   applyCamera,
@@ -13,9 +14,9 @@ import {
   LIP_Y,
   pinHeroLip,
   servedPhoneCameraTarget,
-} from "./kamera";
+} from "../meja/kamera";
 import { buildSearchBoxes, type SearchBoxInput } from "./kotak";
-import { buildRakPass } from "./rak";
+import { buildRakPass } from "../meja/rak";
 
 export type SolusiMode = "shop" | "cari" | "kartu";
 export type SolusiWorld = {
@@ -30,7 +31,6 @@ export type SolusiWorld = {
   dispose: () => void;
 };
 
-type QueuedPose = { name: KasirPoseName; start: number; end: number };
 type CameraTarget = ReturnType<typeof heroCameraTarget>;
 
 const CASHIER_SCALE = 1.77;
@@ -76,9 +76,8 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
   applyPose(cashier, KASIR_POSES.idle);
   scene.add(cashier.mesh);
 
-  const hitMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
-  const hitHead = new THREE.Mesh(new THREE.SphereGeometry(0.31, 8, 6), hitMaterial);
-  const hitChest = new THREE.Mesh(new THREE.SphereGeometry(0.34, 8, 6), hitMaterial);
+  const tokoh = createTokoh<KasirPoseName>(cashier, KASIR_POSES, CASHIER_SCALE, "idle");
+  const { hitHead, hitChest } = tokoh;
   hitHead.name = "kasir-hit-head";
   hitChest.name = "kasir-hit-chest";
   scene.add(hitHead, hitChest);
@@ -93,13 +92,7 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
 
   let mode: SolusiMode = "shop";
   let searchState = { typing: false, focused: false, served: false };
-  let basePose: KasirPoseName = "idle";
-  let shownPose: KasirPoseName = "idle";
-  let queue: QueuedPose[] = [];
-  let hit: { start: number; direction: number; mouth: boolean } | null = null;
   let mouse = { x: 0, y: 0, active: false };
-  let headYaw = 0;
-  let headPitch = 0;
   let focus = false;
   let disposed = false;
   const measuredHeroHeight = stage.getBoundingClientRect().height;
@@ -147,51 +140,13 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
     return layoutCamera;
   };
 
-  const poseAt = (now: number) => {
-    queue = queue.filter((item) => item.end > now);
-    return queue.find((item) => item.start <= now)?.name ?? basePose;
-  };
-
-  const setFace = (name: KasirPoseName) => {
-    const face = KASIR_POSES[name].face;
-    if (face) cashier.express(face);
-  };
-
-  const blendPose = (member: CastMember, name: KasirPoseName, amount: number) => {
-    const bones = member.rig.bones;
-    const positions = bones.map((bone) => bone.position.clone());
-    const rotations = bones.map((bone) => bone.quaternion.clone());
-    const scales = bones.map((bone) => bone.scale.clone());
-    applyPose(member, KASIR_POSES[name], false);
-    const targetPositions = bones.map((bone) => bone.position.clone());
-    const targetRotations = bones.map((bone) => bone.quaternion.clone());
-    const targetScales = bones.map((bone) => bone.scale.clone());
-    bones.forEach((bone, index) => {
-      bone.position.copy(positions[index]).lerp(targetPositions[index], amount);
-      bone.quaternion.copy(rotations[index]).slerp(targetRotations[index], amount);
-      bone.scale.copy(scales[index]).lerp(targetScales[index], amount);
-    });
-    member.rig.root.updateMatrixWorld(true);
-  };
-
   const act = (items: Array<[KasirPoseName, number]>) => {
-    if (reducedQuery.matches) {
-      queue = [];
-      force = true;
-      return;
-    }
-    const now = performance.now() / 1000;
-    let cursor = now;
-    queue = items.map(([name, duration]) => {
-      const item = { name, start: cursor, end: cursor + duration };
-      cursor = item.end;
-      return item;
-    });
+    tokoh.act(items, reducedQuery.matches);
     force = true;
   };
 
   const setBaseFromSearch = () => {
-    basePose = mode === "cari" && searchState.typing && searchState.focused ? "ready" : "idle";
+    tokoh.setBase(mode === "cari" && searchState.typing && searchState.focused ? "ready" : "idle");
     force = true;
   };
 
@@ -225,116 +180,20 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
     shop.register.position.x = THREE.MathUtils.lerp(shop.register.position.x, target, amount);
   };
 
-  const updateHitboxes = () => {
-    cashier.mesh.updateMatrixWorld(true);
-    cashier.rig.bone("head").getWorldPosition(hitHead.position);
-    cashier.rig.bone("chest").getWorldPosition(hitChest.position);
-    hitHead.scale.setScalar(CASHIER_SCALE);
-    hitChest.scale.setScalar(CASHIER_SCALE);
-    hitHead.updateMatrixWorld(true);
-    hitChest.updateMatrixWorld(true);
-  };
-
-  const rayHitsCashier = (x: number, y: number, rect = currentRect()) => {
-    if (rect.width <= 0 || rect.height <= 0 || x < rect.left || x > rect.right || y < rect.top || y > rect.bottom)
-      return false;
-    pointerNdc.set(((x - rect.left) / rect.width) * 2 - 1, -((y - rect.top) / rect.height) * 2 + 1);
-    raycaster.setFromCamera(pointerNdc, camera);
-    return raycaster.intersectObjects([hitHead, hitChest], false).length > 0;
-  };
+  const rayHitsCashier = (x: number, y: number, rect = currentRect()) =>
+    tokoh.hits(x, y, rect, camera, raycaster, pointerNdc);
 
   const updateCharacter = (now: number, dt: number) => {
-    const desired = poseAt(now);
-    if (desired !== shownPose) {
-      shownPose = desired;
-      setFace(desired);
-    }
-    const amount = firstFrame || reducedQuery.matches ? 1 : 1 - Math.exp(-dt * 9);
-    blendPose(cashier, desired, amount);
-    const rig = cashier.rig;
-    const head = rig.bone("head");
-    const eyeL = rig.bone("eyeL");
-    const eyeR = rig.bone("eyeR");
-    const overlayBones = [
-      rig.root,
-      head,
-      eyeL,
-      eyeR,
-      rig.bone("upperArmL"),
-      rig.bone("upperArmR"),
-      rig.bone("lowerArmR"),
-    ];
-    const overlayBase = overlayBones.map((bone) => ({
-      position: bone.position.clone(),
-      quaternion: bone.quaternion.clone(),
-      scale: bone.scale.clone(),
-    }));
-
-    if (!reducedQuery.matches) {
-      rig.root.position.y += Math.sin(now * 1.7) * (0.012 / CASHIER_SCALE);
-      shop.lamp.rotation.z = Math.sin(now * 0.8) * 0.03;
-
-      const rect = currentRect();
-      let targetYaw = 0;
-      let targetPitch = 0;
-      if (mouse.active && finePointerQuery.matches && rect.bottom > 0 && rect.top < innerHeight) {
-        const headPoint = cashier.rig.bone("head").getWorldPosition(new THREE.Vector3()).project(camera);
-        const hx = rect.left + ((headPoint.x + 1) / 2) * rect.width;
-        const hy = rect.top + ((1 - headPoint.y) / 2) * rect.height;
-        targetYaw = THREE.MathUtils.clamp(((mouse.x - hx) / (rect.width * 0.45)) * 0.61, -0.61, 0.61);
-        targetPitch = THREE.MathUtils.clamp(((mouse.y - hy) / (rect.height * 0.5)) * 0.26, -0.26, 0.26);
-      }
-      const follow = 1 - Math.exp(-dt * 7);
-      headYaw = THREE.MathUtils.lerp(headYaw, targetYaw, follow);
-      headPitch = THREE.MathUtils.lerp(headPitch, targetPitch, follow);
-      head.rotation.y += mouse.active ? headYaw : Math.sin(now * 0.45) * 0.14;
-      head.rotation.x += headPitch;
-      eyeL.position.x += headYaw * (0.01 / 0.61) - headPitch * 0.002;
-      eyeR.position.x += headYaw * (0.01 / 0.61) - headPitch * 0.002;
-
-      if (now % 4.2 < 0.12) {
-        eyeL.scale.y *= 0.15;
-        eyeR.scale.y *= 0.15;
-      }
-      const active = queue.find((item) => item.start <= now && item.end > now);
-      if (active?.name === "wave") rig.bone("lowerArmR").rotation.z += Math.sin((now - active.start) / 0.09) * 0.4;
-      if (active?.name === "nod") head.rotation.x += Math.sin((now - active.start) / 0.11) * 0.12;
-    } else {
-      shop.lamp.rotation.z = 0;
-    }
-
-    if (hit && !reducedQuery.matches) {
-      const u = now - hit.start;
-      if (u >= 0.85) hit = null;
-      else {
-        const env = Math.exp(-u * 5.5);
-        const wob = Math.cos(u * 22);
-        rig.root.rotation.z += -hit.direction * 0.22 * env * wob;
-        rig.root.rotation.x -= 0.12 * env;
-        rig.root.position.x += (-hit.direction * 0.06 * env * wob) / CASHIER_SCALE;
-        rig.root.position.y -= (0.04 * env) / CASHIER_SCALE;
-        head.rotation.x -= 0.28 * Math.exp(-u * 7);
-        head.rotation.z += -hit.direction * 0.3 * env * Math.cos(u * 18 + 0.6);
-        rig.bone("upperArmL").rotation.z -= 0.5 * env;
-        rig.bone("upperArmR").rotation.z += 0.5 * env;
-        if (u < 0.45) eyeL.scale.y = eyeR.scale.y = 0.12;
-        if (hit.mouth && u >= 0.6) {
-          hit.mouth = false;
-          setFace(shownPose);
-        }
-      }
-    }
-    rig.root.updateMatrixWorld(true);
-    cashier.springs?.update(dt);
-    updateHitboxes();
-    return () => {
-      overlayBones.forEach((bone, index) => {
-        bone.position.copy(overlayBase[index].position);
-        bone.quaternion.copy(overlayBase[index].quaternion);
-        bone.scale.copy(overlayBase[index].scale);
-      });
-      rig.root.updateMatrixWorld(true);
-    };
+    // the hanging lamp sways a little (held still under reduced motion)
+    shop.lamp.rotation.z = reducedQuery.matches ? 0 : Math.sin(now * 0.8) * 0.03;
+    return tokoh.update(now, dt, {
+      first: firstFrame,
+      reduced: reducedQuery.matches,
+      camera,
+      rect: currentRect(),
+      mouse,
+      finePointer: finePointerQuery.matches,
+    });
   };
 
   const draw = (timestamp = performance.now()) => {
@@ -391,11 +250,7 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
 
     const lip = new THREE.Vector3(camera.position.x, LIP_Y, 0).project(camera);
     const lipY = rect.top + (1 - (lip.y + 1) / 2) * rect.height;
-    const chest = hitChest.position.clone().project(camera);
-    const cashierScreen = {
-      x: rect.left + ((chest.x + 1) / 2) * rect.width,
-      y: rect.top + ((1 - chest.y) / 2) * rect.height,
-    };
+    const cashierScreen = tokoh.chestOnScreen(rect, camera);
     fpsFrames += 1;
     if (timestamp - fpsStarted >= 1000) {
       fps = (fpsFrames * 1000) / (timestamp - fpsStarted);
@@ -417,10 +272,10 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
         triangles: cashier.triangles,
         renderTriangles: renderer.info.render.triangles,
         drawCalls: renderer.info.render.calls,
-        pose: shownPose,
-        hit: Boolean(hit),
+        pose: tokoh.pose,
+        hit: tokoh.hit,
         cashierScreen,
-        head: { yaw: headYaw, pitch: headPitch },
+        head: tokoh.head,
         registerX: shop.register.position.x,
         lampAngle: shop.lamp.rotation.z,
         boxes: {
@@ -447,8 +302,8 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
     if (disposed || document.hidden) return;
     const moving =
       force ||
-      queue.length > 0 ||
-      Boolean(hit) ||
+      tokoh.queued ||
+      tokoh.hit ||
       boxesMoving ||
       flyingCard.active ||
       mouse.active ||
@@ -540,19 +395,12 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
     }
     if (mode === "cari" && searchState.served) selectWorldBox(null);
     if (!cashierClicked) return;
-    const chest = hitChest.position.clone().project(camera);
-    const rect = currentRect();
-    const chestX = rect.left + ((chest.x + 1) / 2) * rect.width;
-    hit = { start: performance.now() / 1000, direction: event.clientX >= chestX ? 1 : -1, mouth: true };
-    cashier.express({ browTilt: 0.16, browLift: 0.012, smile: 0, open: 0.52 });
-    cashier.springs?.poke();
+    tokoh.poke(event.clientX, currentRect(), camera);
     force = true;
   };
   const onMotionChange = () => {
-    queue = [];
-    hit = null;
     mouse.active = false;
-    setFace(basePose);
+    tokoh.reset();
     force = true;
     draw();
   };
@@ -582,7 +430,7 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
       if (value === "cari" && previous !== "cari") act([["wave", 1.3]]);
       if (value === "shop") {
         searchState = { typing: false, focused: false, served: false };
-        queue = [];
+        tokoh.clearQueue();
       }
       if (value !== "cari") {
         hoveredBox = -1;
@@ -599,7 +447,7 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
     },
     search(items) {
       searchState.served = true;
-      basePose = "idle";
+      tokoh.setBase("idle");
       const phone = innerWidth <= 760;
       searchBoxes.setItems(items, prepareLayoutCamera(phone), innerWidth, phone, true, reducedQuery.matches);
       act(
@@ -661,11 +509,8 @@ export function mountSolusiWorld(stage: HTMLElement, onReady: () => void): Solus
       rakPass.dispose();
       searchBoxes.dispose();
       flyingCard.dispose();
-      cashier.dispose();
+      tokoh.dispose();
       shop.dispose();
-      hitHead.geometry.dispose();
-      hitChest.geometry.dispose();
-      hitMaterial.dispose();
       renderer.dispose();
       canvas.remove();
       delete (window as Window & { __solusi?: unknown }).__solusi;

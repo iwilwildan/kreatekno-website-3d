@@ -98,7 +98,8 @@ for (const locale of ["id", "en"]) {
     const info = await page.evaluate(() => ({
       h1: document.querySelectorAll("h1").length,
       overflow: document.documentElement.scrollWidth - window.innerWidth,
-      links: [...document.querySelectorAll(".article-card-link")].map(
+      // Pustaka P1 (24 Nov): the list is the library shelf, one book per article.
+      links: [...document.querySelectorAll(".rak-buku .buku-link")].map(
         (a) => new URL(a.href).pathname,
       ),
       emDash: (document.querySelector("main").innerText.match(/—/g) || [])

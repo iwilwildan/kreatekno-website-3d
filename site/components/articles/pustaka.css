@@ -1,0 +1,1230 @@
+/* Pustaka (/artikel): the Kreatekno library. Same room and shelf as the Solusi shop (components/solusi/toko.css)
+   so both pages read as one world; class names of the shelf follow the etalase so the 3D shelf pass can read them
+   in P4. Until the world exists (P1) everything here is the flat CSS version. */
+.pustaka-page {
+  --card: #fbf4e2;
+  --card-line: #e2d5b4;
+  --night: #101449;
+  --line: rgba(19, 25, 81, 0.18);
+  position: relative;
+  overflow: hidden;
+  color: var(--night);
+  background: #f7f6f0;
+}
+.pustaka-page :where(button, input, select, a) {
+  font: inherit;
+}
+.pustaka-page :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+.pustaka-page button {
+  cursor: pointer;
+}
+
+.pustaka-kicker {
+  margin: 0 0 14px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8214c8;
+}
+
+/* ---------- hero ---------- */
+.pustaka-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.78fr) minmax(520px, 1.22fr);
+  align-items: center;
+  height: clamp(600px, 88svh, 800px);
+  min-height: 600px;
+  overflow: hidden;
+  padding: calc(var(--nav-top) + var(--nav-h) + 48px) max(32px, calc((100vw - 1200px) / 2)) 72px;
+  gap: clamp(32px, 6vw, 96px);
+}
+.pustaka-copy {
+  position: relative;
+  z-index: 3;
+}
+.pustaka-copy h1 {
+  margin: 0;
+  font-family: var(--font-bricolage), sans-serif;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+}
+.pustaka-lead {
+  max-width: 520px;
+  margin: 24px 0 0;
+  color: #555879;
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  line-height: 1.7;
+}
+.pustaka-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.pustaka-button {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .pustaka-button:hover {
+    transform: translateY(-2px);
+  }
+}
+.pustaka-button:focus-visible {
+  outline: 3px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+.pustaka-button svg {
+  width: 19px;
+  height: 19px;
+  flex: none;
+}
+.pustaka-button.is-primary {
+  background: var(--night);
+  color: white;
+  box-shadow: 0 10px 28px rgba(19, 25, 81, 0.2);
+}
+.pustaka-button.is-paper {
+  border-color: var(--line);
+  background: white;
+  color: var(--night);
+}
+
+/* The librarian's desk in CSS: the picture before the 3D world (P3) and without WebGL. */
+.pustaka-stage {
+  position: relative;
+  z-index: 2;
+  min-height: 560px;
+  overflow: hidden;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.9), transparent 30%),
+    linear-gradient(#e7e6f6 0 68%, #c2b8df 68% 72%, #aa9fcd 72%);
+  box-shadow:
+    inset 0 0 0 1px rgba(19, 25, 81, 0.1),
+    0 30px 70px rgba(19, 25, 81, 0.13);
+}
+/* The 3D desk (world/pustaka, P3): a fixed canvas scissored to the hero, faded in over the CSS desk, which stays
+   underneath for the first paint, without WebGL and after a lost context (as .solusi-gl on /solusi). */
+.pustaka-gl {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.pustaka-gl.is-ready {
+  opacity: 1;
+}
+/* the wall's navy under the canvas: the copy keeps its contrast wherever the canvas has not painted (and for axe) */
+.pustaka-world-ready .pustaka-hero {
+  background: #131951;
+}
+.pustaka-world-ready .pustaka-stage {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.pustaka-world-ready .pustaka-copy h1 {
+  color: #fff;
+  text-shadow: 0 2px 22px rgba(5, 7, 31, 0.2);
+}
+.pustaka-world-ready .pustaka-copy .pustaka-kicker {
+  color: #35eafe;
+}
+.pustaka-world-ready .pustaka-copy .pustaka-lead {
+  color: rgba(247, 247, 255, 0.72);
+}
+.pustaka-page.librarian-hit,
+.pustaka-page.librarian-hit .pustaka-hero {
+  cursor: pointer;
+}
+.library-sign {
+  position: absolute;
+  top: 46px;
+  left: 42px;
+  z-index: 2;
+  padding: 15px 18px 12px;
+  background: var(--night);
+  color: white;
+  font-family: var(--font-mono), monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  box-shadow: 7px 7px 0 #35eafe;
+}
+.library-sign span {
+  display: block;
+  margin-top: 4px;
+  color: #35eafe;
+  font-size: 0.56rem;
+}
+.library-shelves {
+  position: absolute;
+  top: 54px;
+  right: 40px;
+  display: grid;
+  width: 42%;
+  gap: 22px;
+}
+.library-shelves > div {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 74px;
+  border-bottom: 9px solid var(--night);
+  padding: 0 10px;
+}
+.library-shelves i {
+  flex: 1;
+  height: 82%;
+  border-radius: 3px 3px 1px 1px;
+  background: #8a5cc8;
+  box-shadow: inset 0 9px 0 rgba(255, 255, 255, 0.18);
+}
+.library-shelves i:nth-child(3n + 2) {
+  height: 94%;
+  background: #23897e;
+}
+.library-shelves i:nth-child(3n) {
+  height: 70%;
+  background: #2f4f8a;
+}
+.library-shelves i:nth-child(5n) {
+  background: #f1e3c2;
+}
+.library-shelves i:nth-child(7n) {
+  height: 88%;
+  background: #e8641f;
+}
+.librarian-css {
+  position: absolute;
+  z-index: 2;
+  right: 30%;
+  bottom: 132px;
+  width: 112px;
+  height: 250px;
+}
+.librarian-css::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 26px;
+  width: 60px;
+  height: 70px;
+  border-radius: 46% 46% 44% 44%;
+  background: linear-gradient(#17151f 0 30%, #e8641f 30% 37%, #c48a5f 37%);
+  box-shadow:
+    -6px 14px 0 -2px #17151f,
+    6px 14px 0 -2px #17151f;
+}
+.librarian-css::after {
+  content: "";
+  position: absolute;
+  top: 66px;
+  left: 4px;
+  width: 104px;
+  height: 160px;
+  border-radius: 48px 48px 16px 16px;
+  background: linear-gradient(90deg, #7b3fd6 0 39%, #f6f4ff 39% 61%, #7b3fd6 61%);
+  box-shadow:
+    inset 0 -14px 0 #6631bd,
+    inset 0 14px 0 -8px #1b1b24;
+}
+.librarian-css b {
+  position: absolute;
+  z-index: 2;
+  top: 38px;
+  left: 33px;
+  width: 18px;
+  height: 13px;
+  border: 2px solid #1d1f3d;
+  border-radius: 5px;
+}
+.librarian-css b::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 22px;
+  width: 18px;
+  height: 13px;
+  border: 2px solid #1d1f3d;
+  border-radius: 5px;
+}
+.librarian-css span {
+  position: absolute;
+  z-index: 2;
+  top: 104px;
+  right: 18px;
+  width: 22px;
+  height: 12px;
+  border-radius: 2px;
+  background: white;
+}
+.library-desk {
+  position: absolute;
+  z-index: 3;
+  right: 7%;
+  bottom: 54px;
+  width: 60%;
+  height: 150px;
+  border-radius: 10px 10px 2px 2px;
+  background: linear-gradient(110deg, #202766, #111549);
+  box-shadow:
+    0 -14px 0 #c9bfe6,
+    0 22px 35px rgba(19, 25, 81, 0.3);
+}
+.library-desk span {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+}
+/* desk lamp */
+.library-desk i {
+  position: absolute;
+  top: -62px;
+  left: 26px;
+  width: 54px;
+  height: 22px;
+  border-radius: 28px 28px 4px 4px;
+  background: #9f0ed6;
+  box-shadow: 0 8px 18px rgba(255, 220, 120, 0.55);
+}
+.library-desk i::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 25px;
+  width: 4px;
+  height: 26px;
+  background: #1d1f3d;
+}
+
+/* ---------- shelf: the etalase counter with one row of books ---------- */
+.rak-buku {
+  --counter: #c2b8df;
+  --plinth: #aa9fcd;
+  --gap: 14px;
+  --gl: max(16px, env(safe-area-inset-left, 0px));
+  --gr: max(16px, env(safe-area-inset-right, 0px));
+  position: relative;
+  overflow: hidden;
+  scroll-margin-top: calc(var(--nav-top) + var(--nav-h));
+  background: linear-gradient(var(--color-navy) 0 calc(100% - 60px), var(--color-navy-3) calc(100% - 60px));
+}
+@media (min-width: 700px) {
+  .rak-buku {
+    --gl: max(32px, env(safe-area-inset-left, 0px));
+    --gr: max(32px, env(safe-area-inset-right, 0px));
+  }
+}
+.rak-buku .room {
+  position: relative;
+  padding: 0 0 60px;
+}
+.rak-buku .counter {
+  position: relative;
+  background: var(--counter);
+  padding: 14px max(var(--gr), calc((100% - 1240px) / 2)) 24px max(var(--gl), calc((100% - 1240px) / 2));
+}
+.rak-buku .counter-h {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 14px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.rak-buku .frame {
+  position: relative;
+  border-radius: 10px;
+  background: #2a2f6b;
+  padding: 2px 0 8px;
+  box-shadow:
+    inset 0 46px 40px -16px rgba(3, 4, 24, 0.96),
+    inset 34px 0 34px -20px rgba(3, 4, 24, 0.9),
+    inset -34px 0 34px -20px rgba(3, 4, 24, 0.9),
+    inset 0 -20px 28px -14px rgba(3, 4, 24, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.3),
+    0 -3px 0 rgba(19, 25, 81, 0.22);
+}
+.rak-buku .plinth {
+  height: 20px;
+  background: var(--plinth);
+}
+.rak-buku .tier {
+  position: relative;
+  padding: 0 10px 28px;
+}
+.rak-buku .plank {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  background: #b4a9d5;
+}
+.rak-buku .plank h3 {
+  margin: 0;
+  font: 700 0.75rem/1 var(--font-body);
+  letter-spacing: 0.02em;
+  color: var(--color-navy);
+}
+.rak-buku .row {
+  position: relative;
+  min-width: 0;
+}
+.rak-buku .track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 216px;
+  /* centred when the five books fit; `safe` keeps the first book reachable when the row overflows */
+  justify-content: start;
+  justify-content: safe center;
+  column-gap: var(--gap);
+  padding: 20px 0 0;
+  margin: 0;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.rak-buku .track::-webkit-scrollbar {
+  display: none;
+}
+.rak-buku .track.drag {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+.rak-buku .track.drag a {
+  pointer-events: none;
+}
+.rak-buku .slot {
+  scroll-snap-align: start;
+  min-width: 0;
+}
+.rak-buku .buku-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.rak-buku .buku-link:focus-visible {
+  outline: none;
+}
+.rak-buku .buku {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 216px;
+  height: 305px;
+  border-radius: 3px 8px 8px 3px;
+  background: var(--c);
+  box-shadow: 0 12px 20px -12px rgba(3, 4, 24, 0.8);
+  transition: transform 200ms var(--ease-out);
+}
+/* spine: a darker band with two binding lines */
+.rak-buku .buku::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 13px;
+  border-radius: 3px 0 0 3px;
+  background:
+    linear-gradient(
+      transparent 12%,
+      rgba(255, 255, 255, 0.28) 12% 13.2%,
+      transparent 13.2% 86.8%,
+      rgba(255, 255, 255, 0.28) 86.8% 88%,
+      transparent 88%
+    ),
+    rgba(5, 7, 31, 0.24);
+}
+@media (hover: hover) {
+  .rak-buku .buku-link:hover .buku {
+    transform: translateY(-6px);
+  }
+}
+.rak-buku .buku-link:focus-visible .buku {
+  transform: translateY(-6px);
+}
+.rak-buku .buku-link:focus-visible .sampul {
+  outline: 3px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+.rak-buku .buku-cat,
+.rak-buku .buku-time {
+  position: absolute;
+  left: 22px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(19, 25, 81, 0.14);
+  font: 700 0.6875rem/1 var(--font-body);
+  letter-spacing: 0.02em;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+.rak-buku .buku-cat {
+  top: 13px;
+}
+.rak-buku .buku-time {
+  bottom: 13px;
+}
+.rak-buku .buku-time svg {
+  width: 12px;
+  height: 12px;
+}
+.rak-buku .sampul {
+  position: absolute;
+  left: 22px;
+  right: 10px;
+  top: 42px;
+  bottom: 44px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 10px;
+  border-radius: 6px;
+  background: #fffdf6;
+  color: var(--color-navy);
+  overflow: hidden;
+}
+.rak-buku .sampul-art {
+  flex: none;
+  height: 58px;
+  margin: 0 -2px 6px;
+}
+.rak-buku .sampul-art .article-cover {
+  height: 100%;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.rak-buku .sampul-art .article-cover-page {
+  height: 100%;
+  aspect-ratio: auto;
+  background: none;
+}
+.rak-buku .sampul-art .article-cover-art {
+  width: auto;
+  height: 100%;
+}
+.rak-buku .sampul .ttl {
+  flex: none;
+  font: 700 1rem/1.14 var(--font-display);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+.rak-buku .sampul .sub {
+  flex: none;
+  margin-top: 6px;
+  font: 600 0.75rem/1.36 var(--font-body);
+  color: rgba(19, 25, 81, 0.74);
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.rak-buku .arr {
+  position: absolute;
+  z-index: 4;
+  top: calc(20px + 152px);
+  margin-top: -20px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: var(--color-navy);
+  box-shadow:
+    0 0 0 1px rgba(19, 25, 81, 0.12),
+    0 10px 20px -12px rgba(0, 0, 0, 0.6);
+  transition: opacity 200ms ease;
+}
+.rak-buku .arr[hidden] {
+  display: none;
+}
+.rak-buku .arr:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.rak-buku .arr .ic {
+  width: 18px;
+  height: 18px;
+}
+.rak-buku .arr.prev {
+  left: -10px;
+}
+.rak-buku .arr.prev .ic {
+  transform: rotate(180deg);
+}
+.rak-buku .arr.next {
+  right: -10px;
+}
+
+/* ---------- Tanya pustakawan (#tanya) ---------- */
+.pustaka-page.focus > :where(.pustaka-hero, .rak-buku, .articles-band) {
+  display: none;
+}
+.tanya-panel {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  padding: calc(var(--nav-top) + var(--nav-h) + 58px) max(24px, calc((100vw - 1120px) / 2)) 100px;
+}
+.tanya-panel .panel-close {
+  position: fixed;
+  z-index: 20;
+  top: calc(var(--nav-top) + var(--nav-h) + 20px);
+  right: max(24px, calc((100vw - 1180px) / 2));
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: white;
+  color: var(--night);
+  box-shadow: 0 8px 20px rgba(19, 25, 81, 0.13);
+}
+.tanya-panel .panel-close svg {
+  width: 20px;
+  height: 20px;
+}
+.tanya-panel .focus-heading {
+  max-width: 700px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+.tanya-panel .focus-heading h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+.tanya-panel .focus-heading h2:focus {
+  outline: none;
+}
+.tanya-panel .focus-heading > p:last-child {
+  max-width: 560px;
+  margin: 18px auto 0;
+  color: #646784;
+  line-height: 1.7;
+}
+
+/* the library card: cream card stock with a red rule under the header */
+.kartu-pinjam {
+  width: min(560px, 100%);
+  margin: 0 auto;
+  border: 1px solid var(--card-line);
+  border-radius: 6px;
+  padding: 24px clamp(18px, 4vw, 36px) 30px;
+  background: var(--card);
+  font-family: var(--font-mono), monospace;
+  color: #252541;
+  box-shadow: 0 18px 55px rgba(19, 25, 81, 0.14);
+  transform: rotate(-0.8deg);
+}
+.kartu-pinjam header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 2px solid #c8463c;
+  padding-bottom: 16px;
+  text-align: center;
+}
+.kartu-pinjam header b {
+  font-size: 1.05rem;
+  letter-spacing: 0.16em;
+}
+.kartu-pinjam header span {
+  margin-top: 6px;
+  font-size: 0.7rem;
+}
+.kartu-pinjam header small {
+  margin-top: 5px;
+  color: #625e4f;
+}
+.kartu-pinjam label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 18px;
+}
+.kartu-pinjam label > span {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.kartu-pinjam input,
+.kartu-pinjam select {
+  min-height: 48px;
+  width: 100%;
+  border: 1px solid #cdbf9c;
+  border-radius: 3px;
+  padding: 10px 12px;
+  outline: 0;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--night);
+  font-size: 1rem;
+}
+.kartu-pinjam label.active :where(input, select),
+.kartu-pinjam :where(input, select):focus {
+  border-color: #9f0ed6;
+  box-shadow: 0 0 0 3px rgba(159, 14, 214, 0.12);
+}
+.kartu-submit {
+  display: flex;
+  width: 100%;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--night);
+  color: white;
+  font-weight: 900;
+}
+.kartu-submit:focus-visible {
+  outline: 3px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+.kartu-submit svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tanya-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.tanya-results {
+  width: min(1050px, 100%);
+  margin: 48px auto 0;
+}
+.tanya-results .result-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: white;
+  scroll-margin-top: calc(var(--nav-top) + var(--nav-h) + 16px);
+}
+.tanya-results .result-bar div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.tanya-results .result-bar span {
+  color: #6e718d;
+  font-size: 0.8rem;
+}
+.tanya-results .result-bar button {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: #7d18ba;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.tanya-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 28px 0 0;
+  font-size: 1.15rem;
+}
+.tanya-all svg {
+  width: 22px;
+  height: 22px;
+  color: #9f0ed6;
+}
+.tanya-results .result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tanya-results .result-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-left: 8px solid var(--c);
+  border-radius: 8px 16px 16px 8px;
+  padding: 20px 22px;
+  background: white;
+  box-shadow: 0 12px 30px rgba(19, 25, 81, 0.08);
+  transition: transform 200ms var(--ease-out);
+}
+@media (hover: hover) {
+  .tanya-results .result-card:hover {
+    transform: translateY(-3px);
+  }
+}
+.tanya-results .result-card:focus-within {
+  outline: 3px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+.tanya-results .result-number {
+  position: absolute;
+  top: 16px;
+  right: 17px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--night);
+  color: white;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+}
+.tanya-results .result-cat {
+  margin: 0;
+  color: #7413ae;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tanya-results .result-card h3 {
+  margin: 12px 36px 8px 0;
+  font-size: 1.2rem;
+  line-height: 1.18;
+}
+.tanya-results .result-link {
+  color: inherit;
+  text-decoration: none;
+}
+.tanya-results .result-link:focus-visible {
+  outline: none;
+}
+.tanya-results .result-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.tanya-results .result-card > p:not([class]) {
+  margin: 0;
+  color: #626681;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.tanya-results .result-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: auto 0 0;
+  padding-top: 16px;
+  color: #6e718d;
+  font-size: 0.8rem;
+}
+.tanya-results .result-meta svg {
+  width: 15px;
+  height: 15px;
+}
+.tanya-results .result-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: #7413ae;
+  font-weight: 850;
+}
+
+/* ---------- smaller screens ---------- */
+@media (max-width: 960px) {
+  .pustaka-hero {
+    grid-template-columns: 1fr;
+    padding-inline: 24px;
+  }
+  .pustaka-stage {
+    min-height: 480px;
+  }
+  .tanya-results .result-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .rak-buku .counter {
+    padding: 12px 10px 18px;
+  }
+  .rak-buku .tier {
+    padding: 0 8px 28px;
+  }
+  .rak-buku .track {
+    justify-content: start;
+    padding-top: 16px;
+    margin-right: -8px;
+    padding-right: 8px;
+  }
+  .rak-buku .arr {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .pustaka-hero {
+    height: max(680px, 100svh);
+    min-height: 680px;
+    padding: calc(var(--nav-top) + var(--nav-h) + 40px) 18px 60px;
+    gap: 34px;
+  }
+  .pustaka-copy h1 {
+    font-size: clamp(3rem, 15vw, 4.7rem);
+  }
+  .pustaka-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .pustaka-actions .pustaka-button {
+    width: 100%;
+  }
+  .pustaka-stage {
+    min-height: 340px;
+    border-radius: 22px;
+  }
+  .library-sign {
+    top: 26px;
+    left: 22px;
+    font-size: 0.77rem;
+  }
+  .library-shelves {
+    top: 30px;
+    right: 18px;
+    width: 40%;
+    gap: 14px;
+  }
+  .library-shelves > div {
+    height: 48px;
+    gap: 2px;
+    padding: 0 4px;
+  }
+  .librarian-css {
+    right: 24%;
+    bottom: 80px;
+    transform: scale(0.72);
+    transform-origin: bottom;
+  }
+  .library-desk {
+    right: 4%;
+    bottom: 30px;
+    width: 70%;
+    height: 105px;
+  }
+  .tanya-panel {
+    padding-inline: 14px;
+  }
+  .tanya-panel .panel-close {
+    top: calc(var(--nav-top) + var(--nav-h) + 10px);
+    right: 14px;
+  }
+  .tanya-panel .focus-heading {
+    padding-top: 42px;
+  }
+  .kartu-pinjam {
+    transform: none;
+  }
+  .tanya-results .result-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tanya-results .result-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pustaka-page *,
+  .pustaka-page *::before,
+  .pustaka-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- 3D (Pustaka P4): the shelf drawn in the canvas, Tanya over the focus view of the desk ---------- */
+/* the books' bodies, page edges, cover pages and planks are drawn by the shelf pass (world/meja/rak.ts) between
+   the room (below the canvas) and the book faces (above it); without 3D the CSS draws them as before */
+.pustaka-world-ready .rak-buku .plank {
+  background: transparent;
+}
+/* the label keeps a chip of the plank's colour, so it stays readable wherever the canvas has not painted */
+.pustaka-world-ready .rak-buku .plank h3 {
+  padding: 3px 6px;
+  margin-left: -6px;
+  border-radius: 3px;
+  background: #b4a9d5;
+}
+.pustaka-world-ready .rak-buku .buku {
+  background: transparent;
+  box-shadow: none;
+}
+.pustaka-world-ready .rak-buku .sampul {
+  background: transparent;
+}
+/* Tanya with the desk: the card on the left of the desk, folded away once Andi serves the books; a result bar
+   at the bottom; numbered tags over the books open a summary card; the list of cards is for no 3D only */
+.pustaka-world-ready .tanya-panel .focus-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pustaka-world-ready .tanya-panel search {
+  display: block;
+}
+.pustaka-world-ready .tanya-panel .kartu-pinjam {
+  position: fixed;
+  z-index: 6;
+  top: calc(var(--nav-top) + var(--nav-h) + 74px);
+  left: max(32px, calc((100vw - 1200px) / 2));
+  width: min(380px, 40vw);
+  max-height: calc(100svh - var(--nav-top) - var(--nav-h) - 100px);
+  margin: 0;
+  overflow-y: auto;
+  transform: rotate(-1.5deg);
+  transform-origin: top center;
+  transition:
+    opacity 180ms ease,
+    transform 260ms ease;
+}
+.pustaka-world-ready.served .tanya-panel .kartu-pinjam {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(24px) rotate(-1.5deg);
+}
+.pustaka-world-ready .tanya-results .result-bar {
+  position: fixed;
+  z-index: 9;
+  bottom: 16px;
+  left: 50%;
+  width: min(460px, calc(100vw - 32px));
+  margin: 0;
+  align-items: center;
+  flex-direction: row;
+  transform: translateX(-50%);
+  box-shadow: 0 22px 40px -22px rgba(11, 15, 58, 0.7);
+}
+.pustaka-world-ready .tanya-results .result-grid,
+.pustaka-world-ready .tanya-all,
+.pustaka-page:not(.pustaka-world-ready) .buku-tags {
+  display: none;
+}
+.tanya-panel .buku-tags {
+  position: fixed;
+  z-index: 12;
+  inset: 0;
+  pointer-events: none;
+}
+.tanya-panel .box-tag {
+  position: fixed;
+  left: var(--box-x, -100px);
+  top: var(--box-y, -100px);
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 2px solid white;
+  border-radius: 50%;
+  padding: 0;
+  background: var(--night);
+  color: white;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 900;
+  box-shadow: 0 7px 18px rgba(19, 25, 81, 0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+.tanya-panel .box-tag[hidden] {
+  display: none;
+}
+.tanya-panel .box-tag.selected,
+.tanya-panel .box-tag:hover,
+.tanya-panel .box-tag:focus-visible {
+  background: #9f0ed6;
+  outline: 3px solid rgba(53, 234, 254, 0.7);
+  outline-offset: 2px;
+}
+.tanya-panel .box-summary {
+  position: fixed;
+  z-index: 14;
+  left: var(--box-x, 50vw);
+  top: var(--box-y, 55vh);
+  width: min(340px, calc(100vw - 32px));
+  border: 1px solid rgba(19, 25, 81, 0.18);
+  border-radius: 16px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--night);
+  box-shadow: 0 24px 65px rgba(19, 25, 81, 0.26);
+  transform: translate(-50%, -100%);
+}
+.tanya-panel .box-summary::after {
+  content: "";
+  position: absolute;
+  left: calc(50% + var(--ax, 0px));
+  bottom: -10px;
+  width: 18px;
+  height: 18px;
+  border-right: 1px solid rgba(19, 25, 81, 0.14);
+  border-bottom: 1px solid rgba(19, 25, 81, 0.14);
+  background: white;
+  transform: translateX(-50%) rotate(45deg);
+}
+.tanya-panel .box-summary-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: none;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #eef0fa;
+  color: var(--night);
+}
+.tanya-panel .box-summary-close svg {
+  width: 16px;
+  height: 16px;
+}
+.tanya-panel .box-summary small {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.tanya-panel .box-summary h3 {
+  margin: 12px 36px 9px 0;
+  font-size: 1.3rem;
+  line-height: 1.12;
+}
+.tanya-panel .box-summary p {
+  margin: 10px 0 0;
+  color: #60647e;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.tanya-panel .box-summary .result-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tanya-panel .box-summary .result-meta svg {
+  width: 14px;
+  height: 14px;
+}
+.tanya-panel .box-summary a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  color: #7a10b0;
+  font-weight: 800;
+}
+.tanya-panel .box-summary a svg {
+  width: 16px;
+  height: 16px;
+}
+@media (max-width: 640px) {
+  .pustaka-world-ready .tanya-panel .kartu-pinjam {
+    top: auto;
+    right: 16px;
+    bottom: 12px;
+    left: 16px;
+    width: auto;
+    max-height: 54svh;
+    transform: none;
+  }
+  .pustaka-world-ready.served .tanya-panel .kartu-pinjam {
+    transform: translateY(24px);
+  }
+  .pustaka-world-ready .tanya-results .result-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .tanya-panel .box-summary {
+    right: 14px;
+    bottom: 158px;
+    left: 14px;
+    top: auto;
+    width: auto;
+    transform: none;
+  }
+  .tanya-panel .box-summary::after {
+    display: none;
+  }
+  .tanya-panel .box-summary-close {
+    display: grid;
+  }
+}

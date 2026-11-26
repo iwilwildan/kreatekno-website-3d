@@ -9,7 +9,10 @@ import { CAST } from "./roster";
 import { K8_POSES, LOBBY_CAST } from "./lobbyCast";
 import { buildMember } from "./member";
 import { applyPose } from "./poses";
-import { KASIR_POSES, type KasirPoseName } from "./kasirPose";
+import { KASIR_POSES } from "./kasirPose";
+import { ANDI_PUSTAKAWAN_SPEC } from "./andiPustakawan";
+import { PUSTAKAWAN_POSES } from "./pustakawanPose";
+import type { Pose } from "./poses";
 import { Walk, walkPose } from "./walk";
 
 export function mountLab(params: URLSearchParams) {
@@ -53,15 +56,24 @@ export function mountLab(params: URLSearchParams) {
   // &flat: no floor shadow, so tools can measure silhouettes
   if (!params.has("flat") && !portrait) scene.add(floor);
 
-  const spec = CAST[name as keyof typeof CAST] ?? LOBBY_CAST[name as keyof typeof LOBBY_CAST] ?? CAST.heru,
+  // (characters of other pages, e.g. the Articles librarian, are known to the lab only)
+  const LAB_ONLY = { andiPustakawan: ANDI_PUSTAKAWAN_SPEC };
+  const spec =
+      CAST[name as keyof typeof CAST] ??
+      LOBBY_CAST[name as keyof typeof LOBBY_CAST] ??
+      LAB_ONLY[name as keyof typeof LAB_ONLY] ??
+      CAST.heru,
     build = (o: { saver: boolean }) => buildMember(spec, o);
   const walking = params.has("walk");
   const poseParam = params.get("pose");
-  const poseNames = poseParam === "all" ? (Object.keys(KASIR_POSES) as KasirPoseName[]) : null;
+  // &pose=NAME or &pose=all: the poses of a character with a pose table (cashier Heru, librarian Andi)
+  const POSES: Record<string, Record<string, Pose>> = { heruKasir: KASIR_POSES, andiPustakawan: PUSTAKAWAN_POSES };
+  const table = POSES[name];
+  const poseNames = poseParam === "all" && table ? Object.keys(table) : null;
   const views = walking
     ? [0]
     : poseNames
-      ? poseNames.map(() => 0)
+      ? poseNames.map(() => Number(params.get("rot") ?? 0))
       : view === "sheet"
         ? [0, -0.5, -Math.PI / 2, Math.PI]
         : [Number(params.get("rot") ?? (portrait ? -0.45 : 0))];
@@ -77,8 +89,8 @@ export function mountLab(params: URLSearchParams) {
     m.mesh.position.x = (i - (views.length - 1) / 2) * gap;
     m.mesh.rotation.y = r;
     scene.add(m.mesh);
-    const poseName = (poseNames?.[i] ?? poseParam) as KasirPoseName | null;
-    if (name === "heruKasir" && poseName && KASIR_POSES[poseName]) applyPose(m, KASIR_POSES[poseName]);
+    const poseName = poseNames?.[i] ?? poseParam;
+    if (table && poseName && table[poseName]) applyPose(m, table[poseName]);
     // &pose=k8: Wildan and Andi seated at their laptops (tahap 7)
     if (poseParam === "k8" && name in K8_POSES) applyPose(m, K8_POSES[name as keyof typeof K8_POSES]);
     triangles = m.triangles;
