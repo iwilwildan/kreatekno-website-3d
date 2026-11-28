@@ -3312,3 +3312,4 @@ Cek di tiap bagian:
 - Dicek di build produksi (port 3200): `bj1-qa.mjs` 140/140, regresi `og5` 106/106, `ck1` 114/114, `rk1` 106/106, `fp1` 107/107. Typecheck, ESLint, Prettier, `logic.test.mjs` 31/31. Satu-satunya galat konsol berasal dari `/_vercel/insights/script.js` yang 404 di lokal. Frame desktop dan HP adegan 7–9 dicek visual (screenshot hanya di chat), lalu `.bj-req` diturunkan 18 px supaya pil keputusan tidak menempel ke bubble AI.
 - Atas permintaan user, semua server Next lokal proyek ini (3000, 3100, 3200, 3300, 3302, 3318–3324) dihentikan. Setelah itu `site-prod-3200` dinyalakan untuk QA.
 - Belum: build ulang dan cek visual setelah `.bj-req` diturunkan, QA S8 dan etalase (masih berjalan saat commit), tes di HP user.
+- Setelah push: QA S8 1.320/1.320 dan etalase 114/114 lulus. Build ulang, `bj1-qa.mjs` 140/140 di `site-prod-3300`, dan adegan 7 desktop dicek: pil "Sudah diputuskan Dina" tidak lagi menempel ke bubble AI. Belum: tes di HP user.
