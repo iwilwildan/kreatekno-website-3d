@@ -3,10 +3,12 @@ import type { Film } from "./ceritaFilm";
 import { BOOKING_JASA } from "./ceritaTiming";
 
 /**
- * Booking Jasa motion graphic (BJ1 "one booking travels"): one paused GSAP timeline over the server-rendered
- * stage (`PanggungBooking.tsx`). The customer's late-night question becomes data chips, the chips land on the
- * day's slots, the accepted slot becomes a numbered booking, the booking becomes a row in the team schedule,
- * and an approved change moves that row. `seek(t, scene)` moves the timeline to the time the page derives
+ * Booking Jasa motion graphic (BJ1 "one booking travels", BJ2 approval and takeover): one paused GSAP timeline
+ * over the server-rendered stage (`PanggungBooking.tsx`). The customer's late-night question becomes data chips,
+ * the chips land on the day's slots, the accepted slot becomes a numbered booking, the booking becomes a row in
+ * the team schedule, an approved change moves that row (the first tap counts), a staff member takes the chat
+ * over while the AI pauses, and the approved summary of that chat updates the row's service.
+ * `seek(t, scene)` moves the timeline to the time the page derives
  * from the scroll. Only transform/opacity move, plus the stage background for the night scene.
  */
 
@@ -71,9 +73,24 @@ export function createFilm(stage: HTMLElement, reduced: boolean): Film {
     const toast = $(".bj-toast");
     const ask2 = $(".bj-ask2");
     const req = $(".bj-req");
-    const yes = $(".bj-yes");
-    const tick = $(".bj-tick");
+    const yes = $(".bj-req .bj-yes");
+    const tick = $(".bj-req .bj-tick");
+    const tap1 = $(".bj-tap.is-first");
+    const tap2 = $(".bj-tap.is-second");
+    const decided = $(".bj-decided");
     const done = $(".bj-done");
+    const tkAsk = $(".bj-tk-ask");
+    const tkStaff = $(".bj-tk-staff");
+    const pause = $(".bj-pause");
+    const pauseBar = $(".bj-pause-bar");
+    const tkPrice = $(".bj-tk-price");
+    const tkAgree = $(".bj-tk-agree");
+    const sum = $(".bj-sum");
+    const sumItems = $$(".bj-sum dl > div");
+    const sumYes = $(".bj-sum .bj-yes");
+    const sumTick = $(".bj-sum .bj-tick");
+    const svcWas = $(".bj-svc-was");
+    const svcNow = $(".bj-svc-now");
     const ms = $$(".og-m");
     const note = $(".og-mx .og-sample");
     const nums = $$(".og-num[data-to]");
@@ -86,6 +103,9 @@ export function createFilm(stage: HTMLElement, reduced: boolean): Film {
       [clock, ask, ring, ...chips, reply, day, rulesBox, offer, loc, card, tbl, now, toast, ask2, req, tick, done],
       { autoAlpha: 0 },
     );
+    gsap.set([tap1, tap2, decided, tkAsk, tkStaff, pause, tkPrice, tkAgree, sum, sumTick, svcNow], {
+      autoAlpha: 0,
+    });
     gsap.set([...ms, note], { autoAlpha: 0 });
     gsap.set(hls, { backgroundSize: "0% 60%" });
     gsap.set(stage, { backgroundColor: DAY });
@@ -188,29 +208,83 @@ export function createFilm(stage: HTMLElement, reduced: boolean): Film {
     t.fromTo(newCells, { autoAlpha: 0, x: -10 }, { autoAlpha: 1, x: 0, duration: 0.25, stagger: 0.06 }, s + 0.6);
     t.fromTo(toast, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4 }, s + 0.75);
 
-    /* 7 · change: the customer asks to move, the team taps Yes, the row moves and the customer is told */
+    const press = (el: HTMLElement, at: number) =>
+      t.fromTo(el, { scale: 1 }, { keyframes: { scale: [1, 0.9, 1] }, duration: 0.3, ease: "none" }, at);
+    const pop = (el: HTMLElement, at: number) =>
+      t.fromTo(el, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: "back.out(2.4)" }, at);
+    const rise = (el: HTMLElement, at: number) =>
+      t.fromTo(el, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.35 }, at);
+    const leave = (el: HTMLElement | HTMLElement[], at: number) =>
+      t.to(el, { autoAlpha: 0, y: -12, duration: 0.25, ease: "power2.in" }, at);
+
+    /* 7 · approval: the request reaches the team with its reason, Dina's tap counts, Rudi's second tap is told
+       it is already decided, the row moves and the customer is told */
     s = START[6];
     t.to(toast, { autoAlpha: 0, y: 16, duration: 0.3, ease: "power2.in" }, s);
-    t.fromTo(ask2, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.35 }, s + 0.15);
+    rise(ask2, s + 0.15);
     t.fromTo(req, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4 }, s + 0.45);
-    t.fromTo(yes, { scale: 1 }, { keyframes: { scale: [1, 0.9, 1] }, duration: 0.3, ease: "none" }, s + 0.95);
-    t.fromTo(tick, { scale: 0 }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: "back.out(2.4)" }, s + 1.05);
-    t.to(was, { autoAlpha: 0, y: -10, duration: 0.2 }, s + 1.15);
-    t.fromTo(now, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.2 }, s + 1.2);
-    t.to(ask2, { autoAlpha: 0, y: -10, duration: 0.25, ease: "power2.in" }, s + 1.3);
-    t.fromTo(done, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.35 }, s + 1.45);
+    pop(tap1, s + 0.9);
+    press(yes, s + 1.05);
+    pop(tick, s + 1.15);
+    leave(tap1, s + 1.3);
+    t.to(was, { autoAlpha: 0, y: -10, duration: 0.2 }, s + 1.3);
+    t.fromTo(now, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.2 }, s + 1.35);
+    pop(tap2, s + 1.5);
+    press(yes, s + 1.65);
+    t.fromTo(decided, { autoAlpha: 0, y: 8, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3 }, s + 1.75);
+    leave(tap2, s + 1.95);
+    leave(ask2, s + 1.95);
+    rise(done, s + 2.05);
 
-    /* 8 · results: the schedule gives way to three sample figures */
+    /* 8 · takeover: the customer asks for more, a staff member replies from their phone, the AI pauses (its
+       30-minute bar starts running down) while the staff member and the customer agree on a price */
     s = START[7];
-    t.to([tbl, req, done], { autoAlpha: 0, y: 30, scale: 0.94, duration: 0.4, stagger: 0.04, ease: "power2.in" }, s);
+    t.to([tbl, req, done], { autoAlpha: 0, y: 24, duration: 0.35, stagger: 0.04, ease: "power2.in" }, s);
+    rise(tkAsk, s + 0.3);
+    t.fromTo(tkStaff, { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.4 }, s + 0.7);
+    t.fromTo(
+      pause,
+      { autoAlpha: 0, scale: 0.8 },
+      { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2)" },
+      s + 1.0,
+    );
+    t.fromTo(pauseBar, { scaleX: 1 }, { scaleX: 0.7, duration: 1.0, ease: "none" }, s + 1.1);
+    rise(tkPrice, s + 1.35);
+    rise(tkAgree, s + 1.7);
+
+    /* 9 · summary: the chat clears, the AI's summary of what was agreed arrives with Yes/No, the team taps Yes
+       and the booked row's service becomes the merged one */
+    s = START[8];
+    t.to(
+      [tkAsk, tkStaff, pause, tkPrice, tkAgree],
+      {
+        autoAlpha: 0,
+        y: -16,
+        duration: 0.3,
+        stagger: 0.03,
+        ease: "power2.in",
+      },
+      s,
+    );
+    t.fromTo(tbl, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4 }, s + 0.25);
+    t.fromTo(sum, { autoAlpha: 0, y: 30, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.45 }, s + 0.45);
+    t.fromTo(sumItems, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.22, stagger: 0.08 }, s + 0.65);
+    press(sumYes, s + 1.1);
+    pop(sumTick, s + 1.2);
+    t.to(svcWas, { autoAlpha: 0, y: -10, duration: 0.2 }, s + 1.35);
+    t.fromTo(svcNow, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.2 }, s + 1.4);
+
+    /* 10 · results: the schedule gives way to three sample figures */
+    s = START[9];
+    t.to([tbl, sum], { autoAlpha: 0, y: 30, scale: 0.94, duration: 0.4, stagger: 0.04, ease: "power2.in" }, s);
     t.fromTo(ms, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.12 }, s + 0.3);
     t.fromTo(note, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, s + 0.75);
     nums.forEach((el, k) => countUp(el, Number(el.dataset.to), s + 0.35 + k * 0.12, 0.6));
 
-    /* 9 · for you: the figures stay, dimmed; the CTA lives in the caption */
-    t.to(ms, { opacity: 0.45, duration: 0.4 }, START[8]);
+    /* 11 · for you: the figures stay, dimmed; the CTA lives in the caption */
+    t.to(ms, { opacity: 0.45, duration: 0.4 }, START[10]);
 
-    t.set({}, {}, END[8]);
+    t.set({}, {}, END[10]);
   }, stage);
 
   let current = -1;

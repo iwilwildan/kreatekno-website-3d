@@ -60,18 +60,23 @@ export const SC = [
 export const ORDER_GRUP = makeTiming(SC);
 export const { START, END, TOTAL, sceneAt, restTime, packetAt } = ORDER_GRUP;
 
-/** Booking Jasa (BJ1 "one booking travels"). */
-export const BOOKING_JASA = makeTiming([
-  { in: 1.6, hold: 0.6 },
-  { in: 1.0, hold: 0.6 },
-  { in: 1.6, hold: 0.7 },
-  { in: 1.6, hold: 0.7 },
-  { in: 1.2, hold: 0.6 },
-  { in: 1.2, hold: 0.6 },
-  { in: 1.8, hold: 0.7 },
-  { in: 1.0, hold: 0.6 },
-  { in: 0.6, hold: 0.9 },
-]);
+/** Booking Jasa (BJ1 "one booking travels", BJ2 approval and takeover): eleven scenes, eight rail nodes. */
+export const BOOKING_JASA = makeTiming(
+  [
+    { in: 1.6, hold: 0.6 },
+    { in: 1.0, hold: 0.6 },
+    { in: 1.6, hold: 0.7 },
+    { in: 1.6, hold: 0.7 },
+    { in: 1.2, hold: 0.6 },
+    { in: 1.2, hold: 0.6 },
+    { in: 2.4, hold: 0.7 },
+    { in: 2.0, hold: 0.7 },
+    { in: 1.8, hold: 0.7 },
+    { in: 1.0, hold: 0.6 },
+    { in: 0.6, hold: 0.9 },
+  ],
+  8,
+);
 
 /** Riset Konten (RK1 "one topic travels"). */
 export const RISET_KONTEN = makeTiming([

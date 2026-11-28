@@ -1,28 +1,58 @@
-import { CalendarBlank, Check, Clock, MapPin, Moon, Sparkle, Wrench } from "@phosphor-icons/react/ssr";
+import {
+  CalendarBlank,
+  Check,
+  Clock,
+  DeviceMobile,
+  HandPalm,
+  MapPin,
+  Moon,
+  Sparkle,
+  Wrench,
+} from "@phosphor-icons/react/ssr";
 import type { BookingField, BookingPanggung } from "@/content/solusi/cerita/schema";
 
 const FIELD_ICON = { service: Wrench, day: CalendarBlank, time: Clock } as const;
 
 type Metric = { value: string; unit: string; label: string };
 
-function Who({ name, assistant }: { name: string; assistant?: boolean }) {
+function Who({ name, assistant, staff }: { name: string; assistant?: boolean; staff?: boolean }) {
   return (
     <span className="og-who">
       {assistant && <Sparkle aria-hidden weight="fill" />}
+      {staff && <DeviceMobile aria-hidden weight="bold" />}
       {name}
     </span>
   );
 }
 
+/** Yes/No pair with a tick that pops on Yes once it counts. */
+function Buttons({ yes, no, children }: { yes: string; no: string; children?: React.ReactNode }) {
+  return (
+    <div className="bj-btns">
+      <span className="bj-yes">
+        {yes}
+        <i className="bj-tick">
+          <Check aria-hidden weight="bold" />
+        </i>
+        {children}
+      </span>
+      <span className="bj-no">{no}</span>
+    </div>
+  );
+}
+
 /**
- * Motion-graphic stage for the Booking Jasa story (BJ1 "one booking travels"): one customer chat becomes a
- * priced answer, a schedule check, a numbered booking, a row in the team schedule and an approved change.
- * Server-rendered so every word is in the HTML; `ceritaFilmBooking.ts` animates it. Without the film, CSS
- * shows each scene's end pose from `data-scene`. Shared visuals reuse the Order Grup `og-*` classes.
+ * Motion-graphic stage for the Booking Jasa story (BJ1 "one booking travels", BJ2 approval and takeover): one
+ * customer chat becomes a priced answer, a schedule check, a numbered booking and a row in the team schedule.
+ * The team approves a reschedule (the first tap counts), a staff member takes the chat over while the AI pauses,
+ * and the AI's summary of that chat updates the same row once approved. Server-rendered so every word is in the
+ * HTML; `ceritaFilmBooking.ts` animates it. Without the film, CSS shows each scene's end pose from `data-scene`.
+ * Shared visuals reuse the Order Grup `og-*` classes.
  */
 export function PanggungBooking({ copy, metrics, scene }: { copy: BookingPanggung; metrics: Metric[]; scene: number }) {
   const highlight = (field: BookingField) => ({ "--h": `var(--bj-${field})` }) as React.CSSProperties;
   const { added } = copy.table;
+  const { change, takeover, summary } = copy;
   return (
     <div className="bj-cv" data-scene={scene}>
       {/* 1 · before: chats wait for an admin */}
@@ -134,7 +164,7 @@ export function PanggungBooking({ copy, metrics, scene }: { copy: BookingPanggun
         </dl>
       </div>
 
-      {/* 6-7 · the team schedule, its report and an approved change */}
+      {/* 6-7, 9 · the team schedule, its report, an approved change and the approved summary */}
       <div className="bj-tbl">
         {copy.table.rows.map((row) => (
           <div key={row.time} className="bj-tr">
@@ -151,7 +181,10 @@ export function PanggungBooking({ copy, metrics, scene }: { copy: BookingPanggun
           </span>
           <span className="bj-t">{added.time}</span>
           <span>{added.customer}</span>
-          <span className="bj-svc">{added.service}</span>
+          <span className="bj-svc og-swap">
+            <span className="bj-svc-was">{added.service}</span>
+            <span className="bj-svc-now">{added.merged}</span>
+          </span>
         </div>
       </div>
       <div className="bj-toast">
@@ -163,32 +196,76 @@ export function PanggungBooking({ copy, metrics, scene }: { copy: BookingPanggun
         </div>
       </div>
       <div className="og-bub bj-ask2">
-        <Who name={copy.change.ask.who} />
-        {copy.change.ask.text}
+        <Who name={change.ask.who} />
+        {change.ask.text}
       </div>
       <div className="bj-req">
-        <b>{copy.change.title}</b>
+        <b>{change.title}</b>
         <p>
-          <span>{copy.change.from}</span>
+          <span>{change.from}</span>
           <span aria-hidden>→</span>
-          <strong>{copy.change.to}</strong>
+          <strong>{change.to}</strong>
         </p>
-        <div className="bj-btns">
-          <span className="bj-yes">
-            {copy.change.yes}
-            <i className="bj-tick">
-              <Check aria-hidden weight="bold" />
-            </i>
-          </span>
-          <span className="bj-no">{copy.change.no}</span>
-        </div>
+        <small className="bj-why">{change.reason}</small>
+        <Buttons yes={change.yes} no={change.no}>
+          <em className="bj-tap is-first">{change.first}</em>
+          <em className="bj-tap is-second">{change.second}</em>
+        </Buttons>
+        <span className="bj-decided">
+          <Clock aria-hidden weight="bold" />
+          {change.decided}
+        </span>
       </div>
       <div className="og-bub is-asisten bj-done">
-        <Who name={copy.change.done.who} assistant />
-        {copy.change.done.text}
+        <Who name={change.done.who} assistant />
+        {change.done.text}
       </div>
 
-      {/* 8-9 · results */}
+      {/* 8 · a staff member takes the chat over from their phone; the AI pauses */}
+      <div className="og-bub bj-tk-ask">
+        <Who name={takeover.ask.who} />
+        {takeover.ask.text}
+      </div>
+      <div className="og-bub is-staf bj-tk-staff">
+        <Who name={takeover.staff.who} staff />
+        {takeover.staff.text}
+      </div>
+      <div className="bj-pause">
+        <HandPalm aria-hidden weight="fill" />
+        <span>{takeover.pause}</span>
+        <i className="bj-pause-bar" />
+      </div>
+      <div className="og-bub is-staf bj-tk-price">
+        <Who name={takeover.price.who} staff />
+        {takeover.price.text}
+      </div>
+      <div className="og-bub bj-tk-agree">
+        <Who name={takeover.agree.who} />
+        {takeover.agree.text}
+      </div>
+
+      {/* 9 · the AI's summary of that chat, approved with the same buttons */}
+      <div className="bj-sum">
+        <b className="bj-sum-h">
+          <Sparkle aria-hidden weight="fill" />
+          {summary.title}
+        </b>
+        <dl>
+          <div>
+            <dt>{summary.agreedLabel}</dt>
+            <dd>{summary.agreed}</dd>
+          </div>
+          <div>
+            <dt>{summary.proposalLabel}</dt>
+            <dd>
+              {summary.proposal} · <strong>{summary.price}</strong>
+            </dd>
+          </div>
+        </dl>
+        <Buttons yes={change.yes} no={change.no} />
+      </div>
+
+      {/* 10-11 · results */}
       <div className="og-mx">
         {metrics.map((metric) => (
           <div key={metric.label} className="og-m">

@@ -1,5 +1,7 @@
 // BJ1 (21 Nov 2026): scenes follow the real booking workflow of a home-cleaning client. The client, its
 // assistant name, services, prices and team channels stay off the page; names and figures here are samples.
+// BJ2 (28 Nov 2026): approval (first tap counts), staff takeover from the phone and the AI summary of that chat
+// get their own scenes, as in the client's workflow.
 import type { BookingCerita } from "./schema";
 
 const ids = [
@@ -9,7 +11,9 @@ const ids = [
   "cek-jadwal",
   "tercatat",
   "tim-menerima",
-  "perubahan",
+  "persetujuan",
+  "ambil-alih",
+  "rangkuman",
   "hasil",
   "untuk-anda",
 ] as const;
@@ -17,7 +21,8 @@ const ids = [
 export const bookingJasaStory: BookingCerita = {
   slug: "booking-jasa",
   id: {
-    intro: "Ikuti perjalanan satu booking, dari chat pelanggan di malam hari sampai jadwal petugas yang rapi.",
+    intro:
+      "Ikuti perjalanan satu booking, dari chat pelanggan di malam hari sampai staf memutuskan perubahannya dengan satu tombol.",
     scenes: [
       {
         id: ids[0],
@@ -63,20 +68,34 @@ export const bookingJasaStory: BookingCerita = {
       },
       {
         id: ids[6],
-        rail: "Perubahan",
-        eyebrow: "Langkah 6 · Perubahan",
-        title: "Pindah jadwal atau batal diputuskan staf dengan satu tombol.",
-        body: "Staf menekan Ya atau Tidak. Jadwal diperbarui, dan pelanggan dikabari otomatis.",
+        rail: "Persetujuan",
+        eyebrow: "Langkah 6 · Persetujuan",
+        title: "Pindah jadwal dan batal diputuskan staf, bukan AI.",
+        body: "Permintaan masuk ke grup staf lengkap dengan jadwal lama, jadwal baru, dan alasannya. Tombol yang pertama ditekan yang berlaku, lalu pelanggan dikabari otomatis.",
       },
       {
         id: ids[7],
+        rail: "Ambil alih",
+        eyebrow: "Langkah 7 · Ambil alih",
+        title: "Staf bisa membalas sendiri kapan saja, dan AI langsung diam.",
+        body: "Begitu staf mengetik dari HP, AI berhenti membalas pelanggan itu selama 30 menit. Kalau pelanggan menunggu terlalu lama, grup staf diingatkan.",
+      },
+      {
+        id: ids[8],
+        rail: "Rangkuman",
+        eyebrow: "Langkah 8 · Rangkuman",
+        title: "AI merangkum chat staf, lalu jadwal ikut diperbarui.",
+        body: "Setelah chat selesai, kesepakatannya diringkas jadi satu usulan bertombol. Staf tidak perlu mengetik ulang ke tabel jadwal.",
+      },
+      {
+        id: ids[9],
         rail: "Hasil",
         eyebrow: "Hasil · angka contoh",
         title: "Pelanggan mendapat jawaban saat itu, dan staf fokus ke permintaan khusus.",
         body: "Angka yang tampil adalah contoh sampai data klien boleh ditampilkan.",
       },
       {
-        id: ids[8],
+        id: ids[10],
         rail: "Untukmu",
         eyebrow: "Untuk usahamu",
         title: "Mau booking dari chat tercatat seperti ini?",
@@ -142,7 +161,14 @@ export const bookingJasaStory: BookingCerita = {
           { day: "Sab", time: "08.00", customer: "Pak Hadi", service: "Cuci kasur" },
           { day: "Sab", time: "10.00", customer: "Bu Lia", service: "Bersih rumah" },
         ],
-        added: { day: "Sab", moved: "Sen", time: "13.00", customer: "Bu Maya", service: "Cuci sofa" },
+        added: {
+          day: "Sab",
+          moved: "Sen",
+          time: "13.00",
+          customer: "Bu Maya",
+          service: "Cuci sofa",
+          merged: "Sofa + karpet",
+        },
       },
       toast: { title: "Booking baru", text: "#0918 · Sabtu 13.00" },
       change: {
@@ -150,15 +176,34 @@ export const bookingJasaStory: BookingCerita = {
         title: "Pindah jadwal #0918",
         from: "Sabtu 13.00",
         to: "Senin 13.00",
+        reason: "Alasan: ada acara keluarga",
         yes: "Ya",
         no: "Tidak",
+        first: "Dina",
+        second: "Rudi",
+        decided: "Sudah diputuskan Dina",
         done: { who: "AI", text: "Jadwal diubah ke Senin" },
+      },
+      takeover: {
+        ask: { who: "Bu Maya", text: "bisa tambah cuci karpet?" },
+        staff: { who: "Dina · dari HP", text: "Bisa Bu, saya bantu langsung" },
+        pause: "AI diam 30 menit",
+        price: { who: "Dina · dari HP", text: "Karpet 2×3 m, Rp150.000" },
+        agree: { who: "Bu Maya", text: "Oke, sekalian ya kak" },
+      },
+      summary: {
+        title: "Rangkuman chat staf",
+        agreedLabel: "Disepakati",
+        agreed: "Tambah cuci karpet 2×3 m",
+        proposalLabel: "Usulan",
+        proposal: "Cuci sofa + karpet",
+        price: "Rp400.000",
       },
       sample: "Contoh",
     },
   },
   en: {
-    intro: "Follow one booking, from a customer’s late-night chat to a tidy team schedule.",
+    intro: "Follow one booking, from a customer’s late-night chat to the team deciding a change with one tap.",
     scenes: [
       {
         id: ids[0],
@@ -204,20 +249,34 @@ export const bookingJasaStory: BookingCerita = {
       },
       {
         id: ids[6],
-        rail: "Changes",
-        eyebrow: "Step 6 · Changes",
-        title: "The team decides reschedules and cancellations with one button.",
-        body: "The team taps Yes or No. The schedule updates, and the customer is told automatically.",
+        rail: "Approval",
+        eyebrow: "Step 6 · Approval",
+        title: "Reschedules and cancellations are decided by the team, not the AI.",
+        body: "The request reaches the team group with the old time, the new time and the reason. The first tap counts, and the customer is told automatically.",
       },
       {
         id: ids[7],
-        rail: "Result",
-        eyebrow: "Result · sample figures",
-        title: "Customers get answers right away, and admins focus on special requests.",
-        body: "The figures remain examples until client data is approved for display.",
+        rail: "Takeover",
+        eyebrow: "Step 7 · Takeover",
+        title: "The team can reply in person at any time, and the AI steps back.",
+        body: "As soon as a team member types from their phone, the AI stops replying to that customer for 30 minutes. If the customer waits too long, the team group gets a reminder.",
       },
       {
         id: ids[8],
+        rail: "Summary",
+        eyebrow: "Step 8 · Summary",
+        title: "The AI sums up the team’s chat, and the schedule follows.",
+        body: "Once the chat is done, what was agreed becomes one proposal with buttons. Nobody retypes it into the schedule.",
+      },
+      {
+        id: ids[9],
+        rail: "Result",
+        eyebrow: "Result · sample figures",
+        title: "Customers get answers right away, and the team focuses on special requests.",
+        body: "The figures remain examples until client data is approved for display.",
+      },
+      {
+        id: ids[10],
         rail: "For you",
         eyebrow: "For your business",
         title: "Would automatic booking like this help your business?",
@@ -283,7 +342,14 @@ export const bookingJasaStory: BookingCerita = {
           { day: "Sat", time: "08:00", customer: "Mr Hadi", service: "Mattress wash" },
           { day: "Sat", time: "10:00", customer: "Mrs Lia", service: "House cleaning" },
         ],
-        added: { day: "Sat", moved: "Mon", time: "13:00", customer: "Mrs Maya", service: "Sofa wash" },
+        added: {
+          day: "Sat",
+          moved: "Mon",
+          time: "13:00",
+          customer: "Mrs Maya",
+          service: "Sofa wash",
+          merged: "Sofa + rug",
+        },
       },
       toast: { title: "New booking", text: "#0918 · Saturday 13:00" },
       change: {
@@ -291,9 +357,28 @@ export const bookingJasaStory: BookingCerita = {
         title: "Reschedule #0918",
         from: "Saturday 13:00",
         to: "Monday 13:00",
+        reason: "Reason: a family event",
         yes: "Yes",
         no: "No",
+        first: "Dina",
+        second: "Rudi",
+        decided: "Already decided by Dina",
         done: { who: "Assistant", text: "Moved to Monday" },
+      },
+      takeover: {
+        ask: { who: "Mrs Maya", text: "can you add a rug?" },
+        staff: { who: "Dina · on phone", text: "Sure, I'll handle it" },
+        pause: "AI paused for 30 min",
+        price: { who: "Dina · on phone", text: "2×3 m rug, Rp150,000" },
+        agree: { who: "Mrs Maya", text: "Great, add it please" },
+      },
+      summary: {
+        title: "Summary of the team chat",
+        agreedLabel: "Agreed",
+        agreed: "Add a 2×3 m rug wash",
+        proposalLabel: "Proposal",
+        proposal: "Sofa wash + rug",
+        price: "Rp400,000",
       },
       sample: "Sample",
     },

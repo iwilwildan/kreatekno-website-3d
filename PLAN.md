@@ -3299,3 +3299,16 @@ Cek di tiap bagian:
 - Revisi: user memberi foto asli 1600×900 (`D:\Danslab\kreatekno\WhatsApp Image 2026-11-25 at 05.39.04.jpeg`), dipakai sebagai `tim-kreatekno.webp` (50 KB). Foto kini selebar kontainer (1200 px di desktop tanpa upscale) dengan 3 kartu di bawahnya mulai 768 px; di bawah 640 px foto dipotong 4:3 di tengah. Dicek ulang di build produksi: `tentang-qa.mjs` 168/168, 1440 dan 375 dilihat visual, tanpa scroll samping. Typecheck, ESLint, Prettier lulus.
 - Revisi 2 (dari user setelah link HP): link peta ("Buka di Maps"/"Link peta menyusul") dan baris sumber di kotak "Mengapa kami ada" dibuang dari halaman Tentang, kunci `office.maps`, `office.mapsPending`, `story.why.source` dihapus dari ID/EN, CSS `.about-source` dihapus. `MAPS_URL` di `lib/site.ts` dibiarkan. Dicek: `tentang-qa.mjs` 168/168, HTML ID/EN lewat Wi-Fi tanpa teks peta dan sumber. Server HP sekarang di port 3302 (3300 dan 3301 dipakai proses lain).
 - Belum: review user, tes HP fisik, commit.
+
+### 2026-11-28 (BJ2 Booking Jasa: storyboard approval dan ambil alih)
+
+- User meminta approval dan takeover ditonjolkan di `/solusi/booking-jasa`, lalu memilih opsi B (Tonton 11 adegan). Sebelumnya 16 workflow RHC yang aktif dibaca ulang lewat MCP `n8n-kreatekno` (hanya dibaca). Ada 6 temuan workflow yang dilaporkan di chat dan tidak diubah.
+- Riset serah terima ke manusia dan tombol persetujuan. Draf adegan 7 Persetujuan, 8 Ambil alih, 9 Rangkuman, beserta usulan Baca, ada di [BJ2](docs/plans/solusi/PLAN-BOOKING-JASA.md#8-bj2-approval-dan-ambil-alih-ditonjolkan-draf-28-nov-2026-menunggu-persetujuan).
+- Keputusan user: urutan Persetujuan → Ambil alih → Rangkuman, klik pertama ditampilkan, skenario tambah cuci karpet, Baca memakai field yang ada.
+
+### 2026-11-28 (BJ2 Booking Jasa: implementasi, commit dan push atas permintaan user)
+
+- Tonton booking-jasa jadi 11 adegan (rel 8 node, 13 layar): Persetujuan (alasan, tekanan Dina berlaku, Rudi mendapat "Sudah diputuskan Dina"), Ambil alih (bubble staf dari HP, "AI diam 30 menit"), Rangkuman (usulan bertombol, baris jadi "Sofa + karpet"). Baca ID/EN diperbarui, termasuk koreksi FAQ booking hari yang sama. Rel `--nw` dibatasi lebar kotak supaya 8 node muat di tablet. Rincian di [BJ2 8.7](docs/plans/solusi/PLAN-BOOKING-JASA.md#87-hasil-implementasi-28-nov-2026).
+- Dicek di build produksi (port 3200): `bj1-qa.mjs` 140/140, regresi `og5` 106/106, `ck1` 114/114, `rk1` 106/106, `fp1` 107/107. Typecheck, ESLint, Prettier, `logic.test.mjs` 31/31. Satu-satunya galat konsol berasal dari `/_vercel/insights/script.js` yang 404 di lokal. Frame desktop dan HP adegan 7–9 dicek visual (screenshot hanya di chat), lalu `.bj-req` diturunkan 18 px supaya pil keputusan tidak menempel ke bubble AI.
+- Atas permintaan user, semua server Next lokal proyek ini (3000, 3100, 3200, 3300, 3302, 3318–3324) dihentikan. Setelah itu `site-prod-3200` dinyalakan untuk QA.
+- Belum: build ulang dan cek visual setelah `.bj-req` diturunkan, QA S8 dan etalase (masih berjalan saat commit), tes di HP user.

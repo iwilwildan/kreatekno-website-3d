@@ -122,7 +122,8 @@ test("Booking Jasa story has stable bilingual scenes, stage copy and one final C
   assert.equal(BookingCeritaSchema.safeParse(story).success, true);
   for (const locale of ["id", "en"]) {
     const copy = story[locale];
-    assert.equal(copy.scenes.length, 9);
+    // BJ2 (28 Nov 2026): approval, takeover and summary scenes make eleven.
+    assert.equal(copy.scenes.length, 11);
     assert.deepEqual(
       copy.scenes.map((scene) => scene.id),
       story.id.scenes.map((scene) => scene.id),
@@ -131,6 +132,7 @@ test("Booking Jasa story has stable bilingual scenes, stage copy and one final C
     assert.equal(copy.scenes.at(-1).cta, true);
     assert.equal(copy.stage.chips.length, 3);
     assert.equal(copy.stage.day.slots.length, 4);
+    assert.ok(copy.stage.change.decided.includes(copy.stage.change.first));
   }
   // The client stays anonymous: no client name, assistant name or region on the page.
   const text = JSON.stringify([

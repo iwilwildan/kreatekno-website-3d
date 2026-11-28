@@ -1,12 +1,13 @@
 // Source: Solusi v1 COPY 19, rewritten 21 Nov 2026 (BJ1) to match the real booking workflow of a home-cleaning
 // client: bookings are kept in a schedule table and reported to the team group (no calendar app), and every
 // reschedule or cancellation is approved by the team. The client stays anonymous; metrics remain examples.
+// BJ2 (28 Nov 2026): approval, staff takeover and the AI summary of the takeover chat are spelled out.
 import type { Solusi } from "../schema";
 
 export const bookingJasa: Solusi = {
   slug: "booking-jasa",
   status: "jalan",
-  updated: "2026-11-21",
+  updated: "2026-11-28",
   industri: ["jasa"],
   tim: ["cs", "operasional"],
   apps: ["whatsapp", "sheets"],
@@ -15,12 +16,12 @@ export const bookingJasa: Solusi = {
     title: "Pelanggan booking jasa lewat chat, jadwal tercatat sendiri",
     seoTitle: "Chatbot WhatsApp untuk Booking Jasa dan Jadwal Otomatis | Kreatekno",
     seoDescription:
-      "Pelanggan bertanya harga dan memilih jam kosong lewat WhatsApp, lalu booking tercatat di jadwal. Pindah jadwal dan batal diputuskan staf dengan satu tombol.",
+      "Pelanggan bertanya harga dan memilih jam kosong lewat WhatsApp, lalu booking tercatat di jadwal. Perubahan diputuskan staf, dan staf bisa ambil alih chat.",
     question: "Bagaimana usaha jasa menerima booking dari chat tanpa staf berjaga terus?",
     result: "Booking terkonfirmasi tanpa menunggu staf",
     summary: "Pelanggan memilih jam yang masih kosong di chat, lalu booking tercatat otomatis di jadwal stafmu.",
     answer:
-      "AI menjawab pelanggan di chat, menyebut harga dari daftar layanan, dan menawarkan jam yang masih kosong. Jadwal dicek dengan aturan tetap: minimal sehari sebelumnya, selesai dalam jam kerja, dan tidak bentrok. Booking yang lengkap dicatat ke jadwal staf. Pindah jadwal dan permintaan khusus diteruskan ke staf beserta ringkasan chat, jadi pelanggan tidak perlu mengulang ceritanya.",
+      "AI menjawab pelanggan di chat, menyebut harga dari daftar layanan, dan menawarkan jam yang masih kosong. Jadwal dicek dengan aturan tetap: minimal sehari sebelumnya, selesai dalam jam kerja, dan tidak bentrok. Booking yang lengkap dicatat ke jadwal staf. Pindah jadwal, pembatalan, dan booking di luar jam biasa diputuskan staf dengan tombol Ya atau Tidak. Staf juga bisa membalas sendiri kapan saja, dan AI langsung diam.",
     client: "Usaha jasa kebersihan rumah",
     painsLead:
       "Hampir semua pelanggan menghubungi lewat chat untuk bertanya harga dan jam kosong. Staf harus membalas satu per satu sambil mengatur jadwal petugas lapangan.",
@@ -36,8 +37,9 @@ export const bookingJasa: Solusi = {
         "Menyebut harga dan ketentuan hanya dari daftar layanan usahamu, tanpa menebak.",
         "Mengecek jadwal dengan aturan tetap: minimal sehari sebelumnya, selesai dalam jam kerja, dan tidak bentrok.",
         "Mencatat booking setelah pelanggan mengirim lokasi, lalu melaporkannya ke grup staf dengan ringkasan chat.",
-        "Meneruskan pindah jadwal dan pembatalan ke staf. Staf cukup menekan Ya atau Tidak, dan pelanggan dikabari otomatis.",
-        "Berhenti membalas saat staf mengambil alih chat dari HP, supaya pelanggan tidak menerima dua jawaban.",
+        "Meneruskan pindah jadwal, pembatalan, dan booking di luar jam biasa ke grup staf beserta alasannya. Tombol Ya atau Tidak yang pertama ditekan yang berlaku, dan pelanggan dikabari otomatis.",
+        "Berhenti membalas selama 30 menit begitu staf mengambil alih chat dari HP, supaya pelanggan tidak menerima dua jawaban. Grup staf diingatkan kalau pelanggan menunggu terlalu lama.",
+        "Merangkum chat yang ditangani staf menjadi satu usulan bertombol, jadi jadwal ikut diperbarui tanpa diketik ulang.",
       ],
     },
     quote: {
@@ -58,8 +60,12 @@ export const bookingJasa: Solusi = {
         body: "Staf melihat booking baru di tabel jadwal dan menerima laporannya di grup staf.",
       },
       {
-        title: "Staf memutuskan yang khusus",
-        body: "Perubahan jadwal dan permintaan di luar kebiasaan diteruskan ke staf dengan ringkasannya.",
+        title: "Staf memutuskan dengan satu tombol",
+        body: "Pindah jadwal, pembatalan, dan permintaan di luar kebiasaan masuk ke grup staf dengan ringkasannya.",
+      },
+      {
+        title: "Staf bisa mengambil alih chat",
+        body: "Staf membalas langsung dari HP dan AI diam. Hasil chatnya dirangkum menjadi usulan yang tinggal disetujui.",
       },
     ],
     compare: [
@@ -77,6 +83,11 @@ export const bookingJasa: Solusi = {
         aspect: "Chat malam hari",
         before: "Dibalas besok pagi",
         after: "Dilayani malam itu juga",
+      },
+      {
+        aspect: "Perubahan jadwal",
+        before: "Dicatat ulang satu per satu",
+        after: "Satu tombol, jadwal ikut berubah",
       },
     ],
     fit: [
@@ -117,7 +128,11 @@ export const bookingJasa: Solusi = {
       },
       {
         q: "Bisakah booking untuk hari yang sama?",
-        a: "Tidak lewat AI. Booking minimal sehari sebelumnya, supaya ada waktu menyiapkan petugas. Aturan ini bisa disesuaikan dengan usahamu.",
+        a: "Bisa, dengan persetujuan staf. Jadwal hari yang sama, hari Minggu, atau di luar jam kerja diajukan AI ke grup staf, lalu staf memutuskannya dengan satu tombol. Aturan ini bisa disesuaikan dengan usahamu.",
+      },
+      {
+        q: "Bagaimana kalau staf ingin membalas sendiri?",
+        a: "Staf cukup membalas dari HP seperti biasa. AI berhenti membalas pelanggan itu selama 30 menit, lalu hasil chatnya dirangkum menjadi usulan yang tinggal disetujui.",
       },
     ],
   },
@@ -127,7 +142,7 @@ export const bookingJasa: Solusi = {
     result: "Bookings confirmed without waiting for an admin",
     summary: "Customers pick a free time in the chat, and the booking lands in your team schedule automatically.",
     answer:
-      "A booking assistant answers customers on WhatsApp, quotes prices from your service list, checks which times are still free, and records the booking in the team schedule. Special requests and schedule changes go to the team with a chat summary, so customers never have to repeat themselves.",
+      "A booking assistant answers customers on WhatsApp, quotes prices from your service list, checks which times are still free, and records the booking in the team schedule. Reschedules, cancellations and bookings outside normal hours are decided by the team with a Yes or No button. The team can also reply in person at any time, and the assistant steps back.",
     client: "Home-cleaning service business",
     painsLead:
       "Almost every customer gets in touch by chat to ask about prices and free times. The admin replied one by one while also juggling the field team's schedule.",
@@ -143,8 +158,9 @@ export const bookingJasa: Solusi = {
         "Quotes prices and terms only from your own service list, never guesses.",
         "Checks the schedule with fixed rules: a day's notice, finished within working hours, and no clashes.",
         "Records the booking once the customer shares a location, then reports it to the team group with a chat summary.",
-        "Passes reschedules and cancellations to the team. The team taps Yes or No, and the customer is told automatically.",
-        "Stops replying when an admin takes over the chat from their phone, so customers never get two answers.",
+        "Passes reschedules, cancellations and bookings outside normal hours to the team group with the reason. The first Yes or No tap counts, and the customer is told automatically.",
+        "Stops replying for 30 minutes as soon as a team member takes over the chat from their phone, so customers never get two answers. The team group is reminded if the customer waits too long.",
+        "Sums up the chat the team handled as one proposal with buttons, so the schedule updates without retyping.",
       ],
     },
     quote: {
@@ -165,8 +181,12 @@ export const bookingJasa: Solusi = {
         body: "The team sees the new booking in the schedule table and gets a report in the team group.",
       },
       {
-        title: "The team decides special cases",
-        body: "Schedule changes and unusual requests go to the team with a summary.",
+        title: "The team decides with one tap",
+        body: "Reschedules, cancellations and unusual requests reach the team group with a summary.",
+      },
+      {
+        title: "The team can take over the chat",
+        body: "A team member replies from their phone and the assistant steps back. The chat is then summed up as a proposal to approve.",
       },
     ],
     compare: [
@@ -184,6 +204,11 @@ export const bookingJasa: Solusi = {
         aspect: "Late-night chats",
         before: "Answered the next morning",
         after: "Handled that same night",
+      },
+      {
+        aspect: "Schedule changes",
+        before: "Re-entered one by one",
+        after: "One tap, the schedule follows",
       },
     ],
     fit: [
@@ -224,7 +249,11 @@ export const bookingJasa: Solusi = {
       },
       {
         q: "Can customers book for the same day?",
-        a: "Not through the assistant. Bookings need a day's notice so the team can prepare staff. This rule can be adjusted for your business.",
+        a: "Yes, with the team's approval. Same-day, Sunday or after-hours requests are sent to the team group, and the team decides with one tap. This rule can be adjusted for your business.",
+      },
+      {
+        q: "What if the team wants to reply in person?",
+        a: "The team simply replies from their phone as usual. The assistant stops replying to that customer for 30 minutes, then sums up the chat as a proposal to approve.",
       },
     ],
   },

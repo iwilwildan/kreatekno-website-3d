@@ -1,5 +1,5 @@
 // BJ1 QA: Booking Jasa motion graphic (same checks as og5-qa.mjs). Scene poses, scroll back, night, reduced motion,
-// GSAP failure, EN, overflow.
+// GSAP failure, EN, overflow. BJ2 (28 Nov 2026): eleven scenes (approval, takeover, summary), eight rail nodes.
 // Usage: node --import ./tools/solusi/register.mjs tools/solusi/bj1-qa.mjs <output directory>
 // (screenshots stay in that directory, never in the repo)
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -36,7 +36,22 @@ const EXPECT = [
   [".bj-day", ".bj-slot.is-pick", ".bj-rules li", ".bj-offer"],
   [".bj-loc", ".bj-card", ".bj-ok"],
   [".bj-tbl", ".bj-tr.is-new", ".bj-toast"],
-  [".bj-tbl", ".bj-req", ".bj-tick", ".bj-done", ".bj-tr.is-new .og-now"],
+  [
+    ".bj-tbl",
+    ".bj-req",
+    ".bj-req .bj-tick",
+    ".bj-decided",
+    ".bj-done",
+    ".bj-tr.is-new .og-now",
+  ],
+  [".bj-tk-ask", ".bj-tk-staff", ".bj-pause", ".bj-tk-price", ".bj-tk-agree"],
+  [
+    ".bj-tbl",
+    ".bj-sum",
+    ".bj-sum .bj-tick",
+    ".bj-svc-now",
+    ".bj-tr.is-new .og-now",
+  ],
   [".og-mx", ".og-m"],
   [".og-mx"],
 ];
@@ -47,9 +62,18 @@ const HIDDEN = [
   [".bj-ask", ".bj-reply", ".bj-chips .og-chip", ".bj-card"],
   [".bj-day", ".bj-offer", ".bj-tbl"],
   [".bj-card", ".bj-loc", ".bj-req", ".bj-tr.is-new .og-now"],
-  [".bj-toast", ".bj-ask2", ".bj-tr.is-new .og-was"],
-  [".bj-tbl", ".bj-req"],
-  [".bj-tbl"],
+  [
+    ".bj-toast",
+    ".bj-ask2",
+    ".bj-tr.is-new .og-was",
+    ".bj-tap",
+    ".bj-pause",
+    ".bj-sum",
+  ],
+  [".bj-tbl", ".bj-req", ".bj-done", ".bj-sum"],
+  [".bj-tk-staff", ".bj-pause", ".bj-req", ".bj-svc-was"],
+  [".bj-tbl", ".bj-req", ".bj-sum"],
+  [".bj-tbl", ".bj-sum"],
 ];
 
 // Scroll the Tonton reel to a timeline time: "rest" = mid reading hold, "start" = just after the scene starts.
@@ -98,7 +122,7 @@ async function pose(page) {
       );
       const missing = EXPECT[scene].filter((sel) => !shown(sel));
       if (live !== scene) missing.push(`caption ${live}`);
-      if (scene >= 1 && scene <= 6 && node !== scene - 1)
+      if (scene >= 1 && scene <= 8 && node !== scene - 1)
         missing.push(`rail node ${node}`);
       const extra = HIDDEN[scene].filter((sel) => shown(sel));
       return {
@@ -162,7 +186,7 @@ async function page(
 // 1. Scene poses on every viewport, forward then back.
 for (const [name, viewport] of Object.entries(VIEWPORTS)) {
   const { context, page: pg } = await page(viewport);
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 11; i++) {
     await goScene(pg, i);
     const r = await pose(pg);
     check(
@@ -177,7 +201,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     if (name === "desktop" || name === "phone")
       await pg.screenshot({ path: join(out, `${name}-${i + 1}.png`) });
   }
-  for (const i of [7, 3, 0, 6, 1]) {
+  for (const i of [9, 7, 3, 0, 8, 6, 1]) {
     await goScene(pg, i);
     const r = await pose(pg);
     check(
@@ -186,6 +210,27 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       JSON.stringify(r),
     );
   }
+  const rail = await pg.evaluate(() => {
+    const flow = document.querySelector(".story-flow").getBoundingClientRect();
+    const nodes = [...document.querySelectorAll(".story-node")].map((n) =>
+      n.getBoundingClientRect(),
+    );
+    const overlap = nodes.some(
+      (n, i) => i > 0 && n.left < nodes[i - 1].right - 0.5,
+    );
+    return {
+      count: nodes.length,
+      inside: nodes.every(
+        (n) => n.left >= flow.left - 0.5 && n.right <= flow.right + 0.5,
+      ),
+      overlap,
+    };
+  });
+  check(
+    `${name} rail has 8 nodes inside the flow`,
+    rail.count === 8 && rail.inside && !rail.overlap,
+    JSON.stringify(rail),
+  );
   await goScene(pg, 1);
   const night = await pose(pg);
   check(
@@ -233,7 +278,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 // 2. Reduced motion: jumps straight to each scene's end pose.
 {
   const { context, page: pg } = await page(VIEWPORTS.phone, { reduced: true });
-  for (const i of [0, 4, 8, 2]) {
+  for (const i of [0, 4, 6, 7, 8, 10, 2]) {
     await goScene(pg, i, "start");
     const r = await pose(pg);
     check(
@@ -251,7 +296,7 @@ for (const [name, viewport] of [
   ["phone", VIEWPORTS.phone],
 ]) {
   const { context, page: pg } = await page(viewport, { blockGsap: true });
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 11; i++) {
     await goScene(pg, i);
     const r = await pose(pg);
     check(
@@ -277,6 +322,13 @@ for (const [name, viewport] of [
     text.slice(0, 120),
   );
   await pg.screenshot({ path: join(out, "en-3.png") });
+  await goScene(pg, 7);
+  const pauseText = await pg.locator(".bj-pause").innerText();
+  check("EN takeover pause copy", /paused/.test(pauseText), pauseText);
+  await goScene(pg, 8);
+  const sumText = await pg.locator(".bj-sum").innerText();
+  check("EN summary copy", /Rp400,000/.test(sumText), sumText.slice(0, 120));
+  await pg.screenshot({ path: join(out, "en-9.png") });
   await context.close();
 }
 

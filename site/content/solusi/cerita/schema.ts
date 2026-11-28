@@ -62,9 +62,11 @@ export const BookingFieldSchema = z.enum(["service", "day", "time"]);
 const say = z.strictObject({ who: text, text: short });
 
 /**
- * Every word visible on the Booking Jasa stage (BJ1 "one booking travels"): a customer chat becomes a priced
- * answer, a schedule check, a numbered booking, a row in the team schedule, then a change the team approves.
- * Only booking data: no chat chrome, timestamps on bubbles or table headers.
+ * Every word visible on the Booking Jasa stage (BJ1 "one booking travels", BJ2 approval and takeover): a customer
+ * chat becomes a priced answer, a schedule check, a numbered booking and a row in the team schedule. The team
+ * approves a reschedule (the first tap counts), a staff member takes the chat over from their phone while the AI
+ * pauses, and the AI sums that chat up as a proposal the team approves. Only booking data: no chat chrome,
+ * timestamps on bubbles or table headers.
  */
 export const BookingPanggungSchema = z.strictObject({
   messages: z.array(z.strictObject({ who: text, text: short, tag: text.optional() })).length(6),
@@ -92,7 +94,7 @@ export const BookingPanggungSchema = z.strictObject({
   }),
   table: z.strictObject({
     rows: z.array(z.strictObject({ day: text, time: text, customer: text, service: text })).length(2),
-    added: z.strictObject({ day: text, moved: text, time: text, customer: text, service: text }),
+    added: z.strictObject({ day: text, moved: text, time: text, customer: text, service: text, merged: text }),
   }),
   toast: z.strictObject({ title: text, text }),
   change: z.strictObject({
@@ -100,16 +102,36 @@ export const BookingPanggungSchema = z.strictObject({
     title: text,
     from: text,
     to: text,
+    reason: text,
     yes: text,
     no: text,
+    /** Who taps first (their tap counts) and who taps second (told it is already decided). */
+    first: text,
+    second: text,
+    decided: text,
     done: say,
+  }),
+  takeover: z.strictObject({
+    ask: say,
+    staff: say,
+    pause: text,
+    price: say,
+    agree: say,
+  }),
+  summary: z.strictObject({
+    title: text,
+    agreedLabel: text,
+    agreed: text,
+    proposalLabel: text,
+    proposal: text,
+    price: text,
   }),
   sample: text,
 });
 
 export const BookingCeritaLocaleSchema = z.strictObject({
   intro: text,
-  scenes: z.array(CeritaSceneSchema).length(9),
+  scenes: z.array(CeritaSceneSchema).length(11),
   stage: BookingPanggungSchema,
 });
 
@@ -134,6 +156,15 @@ export const BookingCeritaSchema = z
       const states = copy.stage.day.slots.map((slot) => slot.state);
       if (states.filter((v) => v === "asked").length !== 1 || states.filter((v) => v === "pick").length !== 1)
         ctx.addIssue({ code: "custom", message: `${locale}: the day needs one asked (taken) and one picked slot` });
+      const { change, takeover, summary, card } = copy.stage;
+      if (change.first === change.second || !change.decided.includes(change.first))
+        ctx.addIssue({ code: "custom", message: `${locale}: the second tap is told the first person decided` });
+      // BJ2: the summary price is the booked price plus the price the staff member agreed in the chat.
+      const digits = (v: string) => Number(v.replace(/\D/g, "") || NaN);
+      const booked = digits(card.lines.find((line) => /Rp/.test(line.value))?.value ?? "");
+      const extra = digits(takeover.price.text.match(/Rp[\d.,]+/)?.[0] ?? "");
+      if (booked + extra !== digits(summary.price))
+        ctx.addIssue({ code: "custom", message: `${locale}: the summary price adds the staff price to the booking` });
     }
   });
 

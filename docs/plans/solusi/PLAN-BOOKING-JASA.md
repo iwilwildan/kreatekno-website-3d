@@ -150,3 +150,57 @@ Sama dengan OG5c: 9 adegan maju/mundur di 1440×900, 1024×1366, 390×844, 360×
 - Diubah: `ceritaTiming.ts` (`makeTiming` per cerita; ekspor Order Grup tetap), `CeritaScroll.tsx` (konfigurasi per slug: ikon rel, adegan malam, film lazy), `cerita/schema.ts` (`BookingCeritaSchema`), `cerita/index.ts` (`storyFor` mengembalikan `{ slug, copy }`), `SolutionDetail.tsx`, `items/booking-jasa.ts`, `catalog.ts` (EN tanpa calendar), `tools/solusi/logic.test.mjs` (booking-jasa dikecualikan dari tes kesamaan dengan sumber v1, tes cerita booking dan anonimitas baru, filter aplikasi `sheets`).
 - Panggung memakai ulang kelas visual Order Grup (`og-bub`, `og-chip`, `og-mx`) dengan objek sendiri: bubble menumpuk, jam malam, stabilo → chip, slot hari Sabtu (10.00 terisi, 13.00 ditawarkan), tiga aturan, lokasi, kartu booking #0918, tabel jadwal + laporan, permintaan pindah jadwal dengan Ya/Tidak, tiga angka contoh.
 - Temuan di luar halaman ini: testimoni Home (`messages/*.json`) dan plakat "Trusted by" (`Plaque.tsx`) sudah menyebut nama klien ini. Halaman booking-jasa tidak menautkannya.
+
+## 8. BJ2: approval dan ambil alih ditonjolkan (disetujui 28 Nov 2026, selesai teknis, menunggu review user)
+
+Permintaan user 28 Nov: approval dan takeover ditonjolkan di `/solusi/booking-jasa`. User memilih opsi B (Tonton 11 adegan). Sumbernya 16 workflow aktif yang dibaca ulang 28 Nov (hanya dibaca). Sejak BJ1 ada tambahan: booking di luar jadwal normal (hari yang sama, Minggu atau libur, di luar jam kerja) sekarang diajukan ke staf (`BOOKING_BARU`), klik tombol pertama yang berlaku, permintaan kedaluwarsa saat jam jadwal lewat, dan chat yang diambil alih staf dirangkum AI menjadi usulan bertombol.
+
+### 8.1 Riset
+
+- Serah terima ke manusia: konteks harus ikut pindah, jangan sampai pelanggan mengulang cerita, dan jalur ke manusia harus jelas ([TechTarget](https://www.techtarget.com/enterprise-software/tip/Best-practices-for-initiating-chatbot-to-human-handoff), [Freshworks](https://www.freshworks.com/theworks/ai-assisted-service/ai-human-handoff/)).
+- Tombol persetujuan: tampilkan bukti di samping tombol, klik pertama yang berlaku, siapkan jalur tolak dan habis waktu, dan tegakkan di workflow, bukan hanya di prompt ([Elastic](https://www.elastic.co/observability-labs/blog/incident-response-automation-human-approval-gate), [DEV](https://dev.to/traviticus/how-i-built-human-approval-into-automated-workflows-answer-in-slack-or-in-the-app-dde), [n8n](https://blog.n8n.io/production-ai-playbook-human-oversight)).
+- Ketiganya sudah ada di workflow klien, jadi halaman cukup memperlihatkannya. Tidak ada library baru.
+
+### 8.2 Adegan (draf)
+
+| # | Rel | Caption (draf) | Kanvas |
+|---|---|---|---|
+| 1–6 | Sebelum s.d. Staf menerima | Tetap seperti BJ1 | Tetap |
+| 7 | Langkah 6 · Persetujuan | Perubahan jadwal diputuskan staf, bukan AI. Permintaan sampai ke grup staf dengan jadwal lama, jadwal baru dan alasannya. Tombol yang pertama ditekan yang berlaku, lalu pelanggan dikabari otomatis. | Bubble "bisa diundur ke Senin?"; kartu permintaan (Sabtu 13.00 → Senin 13.00, alasan) dengan Ya/Tidak; Dina menekan Ya; tekanan kedua dari Rudi mendapat pil "Sudah diputuskan Dina"; baris Sab → Sen; bubble AI "Jadwal diubah ke Senin" |
+| 8 | Langkah 7 · Ambil alih | Staf bisa membalas sendiri kapan saja, dan AI langsung diam. Begitu staf mengetik dari HP, AI berhenti membalas pelanggan itu selama 30 menit. Kalau pelanggan menunggu terlalu lama, grup staf diingatkan. | Bubble "bisa tambah cuci karpet?"; bubble Staf "Bisa Bu, saya bantu langsung"; penanda AI berubah jadi "AI diam 30 menit" dengan cincin hitung mundur; pelanggan dan staf sepakat (karpet 2×3 m, Rp150.000) |
+| 9 | Langkah 8 · Rangkuman | AI merangkum chat staf, lalu jadwal ikut diperbarui. Setelah chat selesai, kesepakatannya diringkas jadi satu usulan bertombol, jadi staf tidak perlu mengetik ulang. | Chat meredup; kartu "Rangkuman chat staf" (disepakati, usulan "Cuci sofa + karpet, Rp400.000") dengan Ya/Tidak; Ya ditekan; baris tabel berubah jadi "Sofa + karpet" |
+| 10 | Hasil · angka contoh | Tetap | Tetap |
+| 11 | Untukmu | Tetap | Tetap |
+
+Rel menjadi 8 node (adegan 2–9 dan adegan 1 tetap di luar rel seperti sekarang; dicek ulang terhadap `nodes` di `makeTiming`). Panjang scroll naik dari 11 ke 13 layar.
+
+### 8.3 Baca (draf)
+
+- `built.points`: poin 4 dan 5 ditulis ulang, ditambah poin 6 soal rangkuman bertombol (batas skema 6 poin).
+- `steps`: langkah 4 menjadi "Staf memutuskan dengan satu tombol", ditambah langkah 5 "Staf bisa mengambil alih chat".
+- `compare`: baris baru "Perubahan jadwal": dicatat ulang manual → satu tombol, jadwal ikut berubah.
+- `faq`: FAQ hari yang sama dikoreksi (bisa, dengan persetujuan staf). FAQ baru: "Bagaimana kalau staf ingin membalas sendiri?"
+- `answer` dan `seoDescription` disesuaikan supaya menyebut persetujuan staf dan ambil alih.
+
+### 8.4 Perubahan file (rencana)
+
+`cerita/schema.ts` (`BookingPanggungSchema`: `takeover`, `summary`, `change.second`; adegan 11), `cerita/booking-jasa.ts` (ID/EN), `PanggungBooking.tsx`, `ceritaFilmBooking.ts`, `ceritaTiming.ts` (11 adegan), `CeritaScroll.tsx` (ikon rel, `screens`), gaya `bj-*` di `detail.css`, `items/booking-jasa.ts`, `tools/solusi/bj1-qa.mjs` dan `logic.test.mjs`.
+
+### 8.5 Cek
+
+Sama dengan 7.5 untuk 11 adegan, ditambah lebar rel 8 node di 360 px, mode gerak dikurangi, EN, regresi cerita lain dan etalase. Screenshot hanya di chat.
+
+### 8.6 Keputusan user (28 Nov 2026)
+
+- Urutan adegan baru: Persetujuan → Ambil alih → Rangkuman.
+- Adegan Persetujuan memperlihatkan klik pertama yang berlaku (staf kedua mendapat pil "Sudah diputuskan Dina").
+- Skenario ambil alih: pelanggan minta tambah cuci karpet, staf menyebut harganya Rp150.000, rangkuman mengusulkan "Cuci sofa + karpet, Rp400.000".
+- Baca memakai field yang sudah ada. Template bersama tidak diubah.
+
+### 8.7 Hasil implementasi (28 Nov 2026)
+
+- Tonton 11 adegan, rel 8 node, panjang scroll 13 layar. Adegan 7: kartu permintaan dengan alasan, label Dina dan Rudi di tombol Ya, pil "Sudah diputuskan Dina", baris Sab → Sen. Adegan 8: bubble staf "Dina · dari HP" berwarna cyan, pil "AI diam 30 menit" dengan bar yang menyusut. Adegan 9: kartu "Rangkuman chat staf" bertombol, baris tabel berubah jadi "Sofa + karpet". Copy panggung ID/EN.
+- Skema: `change` mendapat `reason`, `first`, `second`, `decided`; objek baru `takeover` dan `summary`; `table.added.merged`. Pengecekan baru: pil keputusan menyebut orang yang menekan pertama, dan harga rangkuman = harga booking + harga dari staf.
+- Rel: `--nw` di `.story-track` menjadi `min(120px, 100% / jumlah node)`. Di tablet 1024 px, rel 8 node sempat keluar 22 px dari kotaknya. Cerita lain tidak berubah selama 120 px masih muat.
+- Baca ID/EN: jawaban pembuka, meta description (154 karakter), poin built (6), langkah (5), baris perbandingan "Perubahan jadwal", FAQ hari yang sama dikoreksi, FAQ baru soal staf membalas sendiri. `updated` jadi 2026-11-28.
+- QA `bj1-qa.mjs` diperluas untuk 11 adegan, rel 8 node di semua viewport, dan copy EN adegan 8 dan 9. `logic.test.mjs` memakai 11 adegan.

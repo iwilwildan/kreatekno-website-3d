@@ -19,6 +19,7 @@ import {
   FolderOpen,
   FrameCorners,
   Funnel,
+  HandPalm,
   Gauge,
   Headset,
   Heart,
@@ -77,9 +78,9 @@ const KIND = {
     film: () => import("./ceritaFilm"),
   },
   "booking-jasa": {
-    icons: [ChatCircleDots, Sparkle, CalendarCheck, MapPin, UsersThree, ArrowsClockwise],
+    icons: [ChatCircleDots, Sparkle, CalendarCheck, MapPin, UsersThree, ArrowsClockwise, HandPalm, ListChecks],
     night: 1,
-    screens: 11,
+    screens: 13,
     film: () => import("./ceritaFilmBooking"),
   },
   "riset-konten": {
