@@ -7,7 +7,7 @@ import type { Solusi } from "../schema";
 export const fakturPemasok: Solusi = {
   slug: "faktur-pemasok",
   status: "ide",
-  updated: "2026-11-23",
+  updated: "2026-11-27",
   industri: ["retail", "logistik"],
   tim: ["keuangan", "operasional"],
   apps: ["gmail", "drive", "sheets", "whatsapp"],

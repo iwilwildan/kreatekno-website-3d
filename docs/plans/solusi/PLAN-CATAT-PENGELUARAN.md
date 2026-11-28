@@ -1,6 +1,6 @@
 # Detail Solusi: Nota belanja tercatat cukup dengan satu foto
 
-Tanggal: 23 Nov 2026. Status: **N0 disetujui; N1a (copy Baca ID/EN lengkap) selesai teknis, menunggu review, cerita Tonton di N2**.
+Status 27 Nov 2026: **N0 dan N1a disetujui. Cerita Tonton N2 selesai teknis dan sudah direview user. Tes HP Android belum tercatat.**
 
 Induk: [PLAN-KATALOG-N8N](PLAN-KATALOG-N8N.md) bagian 4.1 (sumber, rel draf, temuan, keputusan). Kontrak template, route, mesin dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya mencatat status dan keputusan khusus `catat-pengeluaran`.
 
@@ -23,15 +23,16 @@ Induk: [PLAN-KATALOG-N8N](PLAN-KATALOG-N8N.md) bagian 4.1 (sumber, rel draf, tem
 | Tahap | Isi | Status |
 |---|---|---|
 | N0 | Slug, copy katalog ID (pertanyaan, jawaban, masalah, langkah, perbandingan, kecocokan, persiapan, FAQ), ringkasan EN, kartu masalah, kotak etalase | Disetujui 23 Nov |
-| N1a | Copy ID/EN lengkap seperti FP1: `painsLead`, `built`, kutipan contoh, angka contoh, klien "(contoh)", `en` | Selesai teknis 23 Nov, menunggu review |
-| N2 | Storyboard → review → cerita Tonton → QA → review | Selesai teknis 24 Nov (bagian 4.5), menunggu review |
+| N1a | Copy ID/EN lengkap seperti FP1: `painsLead`, `built`, kutipan contoh, angka contoh, klien "(contoh)", `en` | Disetujui 24 Nov |
+| N2 | Storyboard → review → cerita Tonton → QA → review | Selesai teknis 24 Nov (bagian 4.5), direview 27 Nov |
 
 ## 3. Log
 
 - 23 Nov 2026 (N0): item dan subplan dibuat. Copy katalog ditulis dari alur template, tanpa menyalin teks atau prompt template.
 - 23 Nov 2026 (N1a): copy ID/EN lengkap dengan klien set A; rincian di PLAN-KATALOG-N8N bagian 10.
+- 27 Nov 2026 (N2): user menyatakan review sudah dilakukan dan meminta lanjut ke N3.
 
-## 4. N2: cerita Tonton "satu nota berjalan" (storyboard disetujui 24 Nov 2026, selesai teknis, menunggu review)
+## 4. N2: cerita Tonton "satu nota berjalan" (selesai teknis 24 Nov 2026, direview 27 Nov)
 
 Permintaan user 24 Nov: "Sesuai, mulai N2". Pola sama dengan FP1/CK1: panggung pastel HTML/CSS, film GSAP yang dimuat belakangan, caption `h3` + `p`, rel workflow di atas panggung, studi kasus Baca di bawahnya. Tidak ada library baru. Sumber alur: template n8n.io 5201, 4136, 4020 (lihat PLAN-KATALOG-N8N 4.1); data contoh, bukan klien nyata.
 

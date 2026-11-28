@@ -20,22 +20,22 @@ export const ulasanPelanggan: Solusi = {
     summary:
       "Ulasan dan keluhan dari berbagai tempat terkumpul di satu tabel, dengan ringkasan topik teratas setiap minggu.",
     answer:
-      "Setiap hari ulasan dari peta online dan aplikasi pesan-antar, serta keluhan dari chat dan formulir, dikumpulkan ke satu tabel dengan format yang sama: bintang, isi, tanggal, dan sumber. Ulasan yang sama tidak dicatat dua kali. Setiap minggu AI mengelompokkan isinya per topik, dan pemilik menerima ringkasan keluhan dan pujian yang paling sering muncul, dibandingkan dengan minggu lalu.",
+      "Setiap hari masukan dari formulir saran, chat layanan, dan email usaha dikumpulkan ke satu tabel. Isinya mencakup tanggal, sumber, cabang, dan rating bila tersedia. Catatan dengan sumber dan ID kiriman yang sama dihitung sekali. Setiap minggu pemilik menerima ringkasan keluhan dan pujian dari kanal yang tercakup, dibandingkan dengan minggu lalu. Staf menindaklanjuti ulasan yang ditandai.",
     client: "Restoran keluarga dua cabang (contoh)",
     painsLead:
-      "Restoran keluarga dengan dua cabang menerima ulasan di peta online, aplikasi pesan-antar, dan chat. Setiap tempat dibaca orang yang berbeda, kadang tidak dibaca sama sekali. Pemilik baru tahu ada keluhan soal waktu tunggu setelah bintang ulasannya turun.",
+      "Restoran keluarga dengan dua cabang menerima masukan lewat formulir, chat layanan, dan email. Setiap kanal dibaca orang yang berbeda. Pemilik kesulitan melihat ketika pelanggan di satu cabang berulang kali mengeluhkan waktu tunggu.",
     pains: [
-      "Keluhan tercecer di chat, email, dan media sosial.",
+      "Keluhan tercecer di chat, email, dan formulir.",
       "Pemilik tidak tahu masalah mana yang paling sering terjadi.",
       "Ulasan yang belum dibalas mudah terlewat.",
     ],
     built: {
-      h: "Semua ulasan di satu tabel, satu ringkasan setiap minggu",
-      lead: "Ulasan dan keluhan dari setiap tempat dikumpulkan setiap hari. Setiap minggu pemilik menerima ringkasan topik yang paling sering muncul, bukan tumpukan ulasan untuk dibaca satu per satu.",
+      h: "Satu tabel ulasan dan satu ringkasan setiap minggu",
+      lead: "Masukan dari kanal yang tercakup dikumpulkan setiap hari. Setiap minggu pemilik menerima ringkasan topik yang paling sering muncul.",
       points: [
-        "Mengumpulkan ulasan dan keluhan dari beberapa tempat setiap hari pukul 10.00.",
-        "Menyeragamkan formatnya: bintang, isi, tanggal, sumber, dan cabang.",
-        "Membuang ulasan ganda supaya setiap ulasan hanya dicatat sekali.",
+        "Mengumpulkan masukan dari kanal yang tercakup setiap hari pukul 10.00 WIB.",
+        "Menyeragamkan isi, tanggal, sumber, cabang, dan rating bila tersedia.",
+        "Melewati kiriman yang sumber dan ID-nya sudah tercatat.",
         "Mengelompokkan keluhan dan pujian per topik, misalnya waktu tunggu, rasa, dan kebersihan.",
         "Mengirim ringkasan mingguan ke pemilik, dibandingkan dengan minggu lalu.",
         "Menandai ulasan yang belum dibalas supaya staf bisa membalasnya.",
@@ -67,7 +67,7 @@ export const ulasanPelanggan: Solusi = {
       "Siapa yang menerima ringkasan mingguan",
     ],
     metrics: [
-      { value: "1", unit: "tabel", label: "untuk ulasan dari semua tempat" },
+      { value: "1", unit: "tabel", label: "untuk masukan dari kanal yang tercakup" },
       { value: "1", unit: "ringkasan", label: "topik keluhan dan pujian setiap minggu" },
       { value: "10.00", unit: "WIB", label: "ulasan baru dikumpulkan setiap hari" },
     ],
@@ -78,7 +78,7 @@ export const ulasanPelanggan: Solusi = {
       },
       {
         q: "Dari mana saja ulasan bisa dikumpulkan?",
-        a: "Dari tempat yang menyediakan akses data, seperti Google Maps, serta chat dan formulir milik Anda. Sumbernya disesuaikan saat konsultasi.",
+        a: "Mulai dari formulir saran, chat layanan, dan email milik usaha Anda. Sumber eksternal dapat ditambahkan bila tersedia akses dan ketentuan sumber mengizinkan data diolah serta diringkas.",
       },
       {
         q: "Apakah ringkasan bisa dipisah per cabang?",
@@ -93,22 +93,22 @@ export const ulasanPelanggan: Solusi = {
     summary:
       "Reviews and complaints from many places are gathered in one table, with the top topics summarised weekly.",
     answer:
-      "Every day, reviews from online maps and delivery apps, plus complaints from chat and forms, are gathered in one table in the same format: stars, text, date and source. The same review is never recorded twice. Every week AI groups the content by topic, and the owner receives a summary of the most frequent complaints and praise, compared with the previous week.",
+      "Feedback from your business's forms, support chat and email is gathered in one table each day. Each record includes the date, source, branch and a rating when available. Records with the same source and submission ID are counted once. Each week the owner gets the top complaints and praise from the covered channels, compared with the previous week. Staff follow up on flagged reviews.",
     client: "Family restaurant with two branches (sample)",
     painsLead:
-      "A family restaurant with two branches receives reviews on online maps, delivery apps and in chat. Each place is read by a different person, and sometimes not at all. The owner only learns about complaints over waiting time after the star rating drops.",
+      "A family restaurant with two branches receives feedback through forms, support chat and email. Different staff read each channel. The owner has trouble spotting repeated complaints about waiting time at one branch.",
     pains: [
-      "Complaints are scattered across chat, email and social media.",
+      "Complaints are scattered across chat, email and forms.",
       "The owner does not know which problems happen most often.",
       "Unanswered reviews are easily missed.",
     ],
     built: {
-      h: "Every review in one table, one summary each week",
-      lead: "Reviews and complaints from every place are gathered daily. Each week the owner gets a summary of the most frequent topics instead of a pile of reviews to read one by one.",
+      h: "One review table and one summary each week",
+      lead: "Feedback from the covered channels is gathered daily. Each week the owner gets a summary of the most frequent topics.",
       points: [
-        "Gathers reviews and complaints from several places every day at 10 am.",
-        "Puts them in one format: stars, text, date, source and branch.",
-        "Removes duplicates so each review is recorded only once.",
+        "Gathers feedback from the covered channels every day at 10 am WIB.",
+        "Uses one format for text, date, source, branch and rating when available.",
+        "Skips submissions whose source and ID are already recorded.",
         "Groups complaints and praise by topic, such as waiting time, taste and cleanliness.",
         "Sends the owner a weekly summary compared with the previous week.",
         "Flags reviews that have not been answered so staff can reply.",
@@ -140,7 +140,7 @@ export const ulasanPelanggan: Solusi = {
       "Who receives the weekly summary",
     ],
     metrics: [
-      { value: "1", unit: "table", label: "for reviews from every place" },
+      { value: "1", unit: "table", label: "for feedback from the covered channels" },
       { value: "1", unit: "summary", label: "of complaint and praise topics each week" },
       { value: "10", unit: "am", label: "new reviews are gathered every day" },
     ],
@@ -151,7 +151,7 @@ export const ulasanPelanggan: Solusi = {
       },
       {
         q: "Where can reviews be gathered from?",
-        a: "From places that offer data access, such as Google Maps, plus your own chat and forms. Sources are agreed during the consultation.",
+        a: "Start with your business's feedback forms, support chat and email. External sources can be added when access is available and the source allows processing and summarising its data.",
       },
       {
         q: "Can the summary be split by branch?",

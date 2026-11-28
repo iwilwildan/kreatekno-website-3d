@@ -194,7 +194,7 @@ Setiap tahap dimulai dengan riset dan pertanyaan, dan diakhiri dengan review use
 | 9 | Beat 12–14 | Ruang kelas dengan copy praktik di TV, ruang depan senja dengan hologram (revisi 13 Nov dari video) | 8 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review dan tes HP fisik |
 | 10 | Beat 15–16 | Mundur lewat pintu, malam, naik ke billboard (CTA, framing K0), mundur ke jalan malam, footer di jalan gelap (revisi 13–14 Nov) | 9 | 🟡 langkah 1–3 selesai (14 Nov), menunggu review; `issue4*.mjs` dan tes HP fisik di laptop |
 | 11 | Pengerasan HP dan fallback | Still semua beat, tingkat kualitas, versi tumpuk, aksesibilitas, tes seluruh take di HP | 10 | ⬜ |
-| 12  | Solusi v1 dan detail          | Etalase/Cari/Kartu/hasil (S0–S7 di `PLAN-SOLUSI.md`); S6 merujuk fondasi dan 12 subplan detail; S8 (23 Nov) 5 slug baru dari template n8n.io di `docs/plans/solusi/PLAN-KATALOG-N8N.md`                                                                                               | fondasi 1–3; halaman depan dimajukan 7 Nov | 🟡 S5 disetujui; D0–D3 dan Order Grup OG0–OG4 selesai teknis 8 Nov, menunggu review final pilot |
+| 12  | Solusi v1 dan detail          | Etalase, Cari, Kartu, hasil, dan detail di [PLAN-SOLUSI](PLAN-SOLUSI.md). S8 mencakup Baca dan Tonton untuk 12 halaman di [subplan S8](docs/plans/solusi/PLAN-KATALOG-N8N.md). | fondasi 1–3; halaman depan dimajukan 7 Nov | 🟡 S5 disetujui. D0–D3 dan OG0–OG4 selesai teknis, menunggu review final pilot. Implementasi S8 tersedia, dengan review N6 dan N13 terbuka. |
 | 13 | Solusi: Tonton lama | Rencana overlay pilot `order-grup` dan tiga take lain; hubungan dengan cerita inline diputuskan sebelum T1 | 12 | ⬜ belum mulai; keputusan integrasi terbuka |
 | 14 | Halaman lain | Artikel (MDX, 5 artikel awal), Tentang, Kebijakan Privasi | 1, input tim | 🟡 plan disetujui 22 Nov; 14A Kebijakan Privasi, 14B Tentang dan 14C Artikel selesai teknis, menunggu review |
 | 15 | QA dan tayang | Tes otomatis, audit, analytics, Vercel, domain | semua | ⬜ |
@@ -3126,3 +3126,132 @@ Cek di tiap bagian:
 - Temuan saat run pertama: `__solusi.fps` dihitung per jendela ≥ 1 detik, dan tepat setelah navigasi jendela itu masih berisi pemanasan shader dan AO (8,9 fps, padahal halaman yang sudah tenang ±100 fps di Intel UHD). Placeholder kartu yang hidup 1080 ms juga terlewat karena frame pertama terlambat. Cek fps sajian dan kartu kini dimulai setelah `fps ≥ 20`.
 - Dicek di build produksi worktree (`next build`, port 3201): **122/122 tiga kali berturut-turut** (sajian 52–60 fps, 32 draw call, 15.646 segitiga; tag 1–6 di 11 viewport menyimpang maks 0,063 px dari v1; console bersih). Prettier lulus.
 - Belum: review user; skrip dijalankan dengan GPU (Intel UHD lewat ANGLE D3D11) seperti sebelumnya, belum dicoba di SwiftShader. Atas permintaan user ("commit semua dan push ke main") di-commit dan di-push 26 Nov setelah Pustaka P1–P5.
+
+### 2026-11-27 (S8 N2 direview, storyboard Tonton N3 Balas Komentar)
+
+- User menyatakan N2 sudah direview dan meminta riset serta kelanjutan N3. Status N2 dan S8 diperbarui di plan Solusi.
+- Dokumentasi Meta mengonfirmasi satu pesan pribadi per komentar dalam tujuh hari, lalu pesan lanjutan lewat API dalam 24 jam setelah penerima membalas. Template publik dipakai untuk membandingkan pengecekan terjadwal, catatan komentar dan alur balasan. Workflow internal “Instagram Comment → DM” belum dapat dibaca dari sesi ini. [Dokumentasi Meta](https://developers.facebook.com/documentation/instagram-platform/private-replies) · [Riset N3](docs/plans/solusi/PLAN-BALAS-KOMENTAR.md#41-riset-27-nov-2026)
+- Draf sembilan adegan mengikuti satu komentar “Harga, Kak?” pada postingan pashmina. Rel enam node memisahkan cek riwayat, saring kata kunci, balasan publik, pesan pribadi, pencatatan dan pengambilalihan staf. Review storyboard adalah tahap berikutnya sebelum implementasi Tonton dan QA browser. [Storyboard N3](docs/plans/solusi/PLAN-BALAS-KOMENTAR.md#43-rel-dan-adegan)
+
+### 2026-11-27 (S8 N3 Tonton Balas Komentar selesai secara teknis)
+
+- User meminta N3 dikerjakan sampai selesai. Tonton ID/EN menelusuri satu komentar melalui sembilan adegan dan enam node rel. Panggung memakai timeline GSAP yang dimuat saat diperlukan serta pose CSS untuk reduced motion dan kegagalan pemuatan.
+- Build produksi, TypeScript, ESLint, format berkas N3, logika 21/21, QA N3 130/130, regresi enam cerita 48/48, Baca S8 1.320/1.320, rak Solusi Terkait 41/41, dan etalase 114/114 lulus. `format:check` seluruh situs melaporkan 65 berkas lama di luar perubahan N3.
+- Review hasil oleh user dan tes HP fisik masih terbuka. [Hasil N3](docs/plans/solusi/PLAN-BALAS-KOMENTAR.md#45-hasil-implementasi-27-nov-2026)
+
+### 2026-11-27 (S8 N3 direview, storyboard Tonton N4 Faktur Pemasok)
+
+- Setelah membuka preview Balas Komentar, user mengatakan “oke lanjutkan”. N3 dicatat direview dan N4 dimulai.
+- Riset memeriksa template pencocokan barang dan persetujuan pemilik, serta pembanding pemeriksaan duplikat berdasarkan isi faktur. Storyboard mengikuti satu faktur toko bangunan dan salinannya. Contoh memuat selisih semen Rp30.000 yang dilihat pemilik sebelum memilih Tolak.
+- Hitungan subtotal, total, dan selisih contoh diperiksa. Storyboard menunggu review sebelum implementasi. [Storyboard N4](docs/plans/solusi/PLAN-FAKTUR-PEMASOK.md#43-rel-dan-adegan)
+
+### 2026-11-27 (S8 N4 Tonton Faktur Pemasok selesai secara teknis)
+
+- User meminta lanjut setelah menerima storyboard. Tonton ID/EN mengikuti FP-028 dalam sembilan adegan dan enam node rel, dari lampiran email sampai keputusan Tolak. Selisih harga dan pemeriksaan duplikat ditampilkan di panggung.
+- Build produksi, TypeScript, ESLint, format berkas N4, logika 22/22, QA N4 121/121, regresi tujuh cerita 56/56, dan etalase 114/114 lulus. Cek visual dilakukan di desktop dan viewport HP. Kode pemasok dirapikan agar terbaca dalam satu baris.
+- Review hasil oleh user dan tes HP fisik masih terbuka. [Hasil N4](docs/plans/solusi/PLAN-FAKTUR-PEMASOK.md#45-hasil-implementasi-27-nov-2026)
+
+### 2026-11-27 (S8 N4 direview, storyboard Tonton N5 Layanan SDM)
+
+- User mengatakan “lanjutkan” saat preview Faktur Pemasok terbuka. N4 dicatat direview dan N5 dimulai.
+- Riset memeriksa pemilahan pesan, keputusan atasan, dan kebijakan pemberitahuan. Storyboard mengikuti cuti sehari dari Dina, Cabang Melati. Saldo berkurang dari lima menjadi empat setelah kepala toko menyetujui. Cabang pertanyaan tukar shift menampilkan sumber jawaban dan pengalihan ke SDM ketika jawabannya belum ada.
+- Tanggal Kamis, 3 Des 2026 dan hitungan saldo diperiksa. Storyboard menunggu review sebelum implementasi. [Storyboard N5](docs/plans/solusi/PLAN-LAYANAN-SDM.md#43-rel-dan-adegan)
+
+### 2026-11-27 (S8 N5 Tonton Layanan SDM selesai secara teknis)
+
+- User memilih “Setuju, implementasikan N5”. Tonton ID/EN mengikuti cuti Dina dari chat hingga keputusan dan perubahan saldo 5 → 4. Cabang aturan tukar shift menampilkan sumber dan eskalasi ke SDM.
+- Build produksi, TypeScript, ESLint, format berkas N5, logika 23/23, QA N5 121/121, regresi delapan cerita 64/64, dan etalase 114/114 lulus. Frame desktop dan HP diperiksa secara visual.
+- Review hasil oleh user dan tes HP fisik masih terbuka. [Hasil N5](docs/plans/solusi/PLAN-LAYANAN-SDM.md#45-hasil-implementasi-27-nov-2026)
+
+### 2026-11-27 (S8 N5 direview, storyboard Tonton N6 Onboarding Klien)
+
+- User meminta lanjut dari hasil N5. Review N5 dicatat selesai dan N6 dimulai.
+- Riset memeriksa sumber checklist dan sambutan, perbedaan antara memeriksa slot, mengirim undangan, dan menerima respons. Storyboard mengikuti deal Rani pada Jumat, draf yang dicek Nadia, dan undangan untuk Senin pukul 10.00 WITA.
+- Hari dan tanggal contoh diperiksa. Usulan copy hasil Baca memperjelas bahwa undangan dikirim di hari deal. Storyboard menunggu review sebelum implementasi. [Storyboard N6](docs/plans/solusi/PLAN-ONBOARDING-KLIEN.md#43-rel-dan-adegan)
+
+### 2026-11-27 (S8 N6 Tonton Onboarding Klien selesai secara teknis)
+
+- User memilih “Setuju, implementasikan N6”. Tonton ID/EN mengikuti OB-024 dari deal sampai undangan dan status Menunggu respons klien. Copy hasil Baca ID/EN di detail dan etalase menyebut undangan pada hari deal.
+- Build produksi, TypeScript, ESLint, format berkas N6, logika 24/24, QA N6 126/126, regresi sembilan cerita 72/72, dan etalase 114/114 lulus. Frame desktop dan HP diperiksa secara visual.
+- Review hasil oleh user dan tes HP fisik masih terbuka. [Hasil N6](docs/plans/solusi/PLAN-ONBOARDING-KLIEN.md#45-hasil-implementasi-27-nov-2026)
+
+### 2026-11-27 (S8 storyboard Tonton N7 Asisten SOP)
+
+- User meminta lanjut. Riset N7 memakai audit workflow N1b, dokumentasi n8n, dan dua template. Storyboard mengikuti pertanyaan staf baru di klinik gigi contoh, menampilkan judul dan bagian SOP, lalu mengarahkan pertanyaan di luar SOP ke kepala cabang.
+- Rancangan catatan di Sheets dilabeli eksplisit. Usulan penyesuaian Baca ID/EN menyamakan jawaban pembuka, langkah terakhir, dan FAQ pertama dengan batas tersebut. Storyboard menunggu persetujuan sebelum implementasi. [Storyboard N7](docs/plans/solusi/PLAN-ASISTEN-SOP.md#73-rel-dan-adegan)
+
+### 2026-11-27 (S8 N7 Tonton Asisten SOP selesai secara teknis)
+
+- User memilih “Setuju, implementasikan N7”. Tonton ID/EN menampilkan jawaban dengan judul dan bagian SOP, arahan untuk menghubungi kepala cabang, dan contoh catatan berlabel Rancangan. Copy Baca ID/EN memakai ketentuan yang sama.
+- Build produksi, TypeScript, ESLint, format berkas N7, logika 25/25, QA N7 128/128, regresi sepuluh cerita 80/80, dan etalase 114/114 lulus. Frame desktop dan viewport HP diperiksa secara visual.
+- Review hasil N6 dan N7 masih terbuka. [Hasil N7](docs/plans/solusi/PLAN-ASISTEN-SOP.md#75-hasil-implementasi-27-nov-2026)
+
+### 2026-11-27 (S8 N7 diteruskan, storyboard Tonton N8 Carousel Konten)
+
+- User meminta lanjut setelah preview N7 tersedia. Review N7 ditutup untuk melanjutkan N8. Review N6 masih terbuka.
+- Riset N8 memakai audit workflow carousel N1b, dua template pembanding, serta dokumentasi Telegram dan Drive. Storyboard mengikuti satu topik edukasi kopi menjadi lima slide dengan satu bingkai, caption, folder, dan pratinjau di grup marketing. Alur berakhir pada status Menunggu dicek. Storyboard menunggu persetujuan. [Storyboard N8](docs/plans/solusi/PLAN-CAROUSEL-KONTEN.md#73-rel-dan-adegan)
+
+### 2026-11-27 (S8 N8 Tonton Carousel Konten selesai secara teknis)
+
+- User meminta lanjut setelah storyboard siap. Tonton ID/EN memperlihatkan satu topik edukasi di baris CR-028 menjadi lima slide dengan satu bingkai dan satu caption. Tim menerima draf di Drive dan Telegram dengan status Menunggu dicek.
+- Build produksi, TypeScript, ESLint, format berkas N8, logika 26/26, QA N8 130/130, regresi sebelas cerita 88/88, dan etalase 114/114 lulus. Ukuran kartu disamakan setelah cek visual di desktop dan viewport HP.
+- Review N6 dan N8 masih terbuka. [Hasil N8](docs/plans/solusi/PLAN-CAROUSEL-KONTEN.md#75-hasil-implementasi-27-nov-2026)
+
+### 2026-11-28 (S8 N8 diteruskan, storyboard Tonton N9 Berkas Dokumen)
+
+- User meminta lanjut setelah preview N8 tersedia. Review N8 ditutup untuk melanjutkan N9. Review N6 masih terbuka.
+- Riset N9 memakai template 4827, 4868 dan 20432 serta dokumentasi pembaruan baris Sheets. Storyboard mengikuti BD-031 ketika foto KTP perlu dikirim ulang dan KK belum masuk. Kiriman baru memperbarui daftar yang sama, lalu Sari memeriksa data sebelum menandai lengkap. Storyboard menunggu persetujuan. [Storyboard N9](docs/plans/solusi/PLAN-BERKAS-DOKUMEN.md#73-rel-dan-adegan)
+
+### 2026-11-28 (S8 N9 Tonton Berkas Dokumen selesai secara teknis)
+
+- User memilih “Setuju, implementasikan N9”. Tonton ID/EN memperlihatkan foto pengganti dan dokumen yang masih kurang masuk ke folder BD-031. Daftar yang sama naik dari 1 ke 3 dokumen terbaca dan Sari memeriksa data sebelum menandai lengkap.
+- Build produksi, TypeScript, ESLint, format berkas N9, logika 27/27, QA N9 135/135, regresi dua belas cerita 96/96, dan etalase 114/114 lulus. Frame desktop dan viewport HP diperiksa secara visual.
+- Review N6 dan N9 masih terbuka. [Hasil N9](docs/plans/solusi/PLAN-BERKAS-DOKUMEN.md#75-hasil-implementasi-28-nov-2026)
+
+### 2026-11-28 (S8 N9 diteruskan, storyboard Tonton N10 Stok Menipis)
+
+- User meminta lanjut setelah preview N9 tersedia. Review N9 ditutup untuk melanjutkan N10. Review N6 masih terbuka.
+- Riset N10 memakai template 3979, 11055, dan 18067 serta dokumentasi WhatsApp. Storyboard mengikuti stok minyak goreng 24 → 16, batas minimum 20, peringatan WhatsApp, pemesanan oleh staf, dan pencatatan penerimaan menjadi 56.
+- Usulan menyamakan pemicu di Baca dan etalase, menyederhanakan copy hasil, serta menampilkan estimasi dua hari sebagai kartu Rancangan. Storyboard menunggu persetujuan. [Storyboard N10](docs/plans/solusi/PLAN-STOK-MENIPIS.md#73-rel-dan-adegan)
+
+### 2026-11-28 (S8 N10 Tonton Stok Menipis selesai secara teknis)
+
+- User meminta lanjut setelah menerima storyboard dan usulan copy Baca. Tonton ID/EN menampilkan stok 24 → 16 → 56, minimum 20, kartu Rancangan, serta pemesanan ulang oleh Rina. Baca dan etalase memakai pemicu di bawah minimum.
+- Build produksi, TypeScript, ESLint, format berkas N10, logika 28/28, QA N10 137/137, regresi tiga belas cerita 104/104, dan etalase 114/114 lulus. Frame desktop dan viewport HP diperiksa secara visual.
+- Review N6 dan N10 masih terbuka. [Hasil N10](docs/plans/solusi/PLAN-STOK-MENIPIS.md#76-hasil-implementasi-28-nov-2026)
+
+### 2026-11-28 (S8 N10 diteruskan, storyboard Tonton N11 Pengingat Tagihan)
+
+- User meminta lanjut setelah preview N10 tersedia. Review N10 ditutup untuk melanjutkan N11. Review N6 masih terbuka.
+- Riset N11 memeriksa jadwal, riwayat kirim per tahap, dan syarat izin pelanggan serta template WhatsApp. Storyboard mengikuti AC-028 sampai pembayaran dicatat, lalu memperlihatkan AC-029 yang masih terbuka pada H+30 diteruskan ke pemilik.
+- Usulan menyamakan penyerahan H+30 di Baca ID/EN dan memperjelas FAQ WhatsApp. Storyboard menunggu persetujuan. [Storyboard N11](docs/plans/solusi/PLAN-PENGINGAT-TAGIHAN.md#73-rel-dan-adegan)
+
+### 2026-11-28 (S8 N11 Tonton Pengingat Tagihan selesai secara teknis)
+
+- User meminta lanjut setelah menerima storyboard dan usulan copy Baca. Tonton ID/EN menampilkan tiga pengingat AC-028, pencatatan Lunas oleh Lia, dan serah terima AC-029 ke Arif pada H+30. Baca memperjelas H+30 dan syarat pesan WhatsApp.
+- Build produksi, TypeScript, ESLint, format berkas N11, logika 29/29, QA N11 135/135, regresi empat belas cerita 112/112, dan etalase 114/114 lulus. Frame desktop dan viewport HP diperiksa secara visual.
+- Review N6 dan N11 masih terbuka. [Hasil N11](docs/plans/solusi/PLAN-PENGINGAT-TAGIHAN.md#76-hasil-implementasi-28-nov-2026)
+
+### 2026-11-28 (S8 N11 diteruskan, storyboard Tonton N12 Ulasan Pelanggan)
+
+- User meminta lanjut setelah preview N11 tersedia. Review N11 ditutup untuk melanjutkan N12. Review N6 masih terbuka.
+- Riset N12 memeriksa template pengumpulan, pengelompokan dan ringkasan mingguan serta kebijakan Google Business Profile. Storyboard memakai formulir, chat layanan dan email yang dikelola restoran contoh. Tujuh kiriman menjadi enam catatan unik. Keluhan waktu tunggu Cabang 2 naik dari satu ke tiga.
+- Usulan Baca memperjelas izin penggunaan sumber eksternal, rating bila tersedia, dan tindak lanjut staf. Storyboard menunggu persetujuan. [Storyboard N12](docs/plans/solusi/PLAN-ULASAN-PELANGGAN.md#73-rel-dan-adegan)
+
+### 2026-11-28 (S8 N12 Tonton Ulasan Pelanggan selesai secara teknis)
+
+- User meminta lanjut setelah menerima storyboard dan usulan copy Baca. Tonton ID/EN memperlihatkan tujuh kiriman menjadi enam catatan unik, satu catatan belum dibalas, dan perbandingan mingguan yang mendorong Fajar menambah satu staf di Cabang 2. Baca memperjelas rating dan cakupan sumber.
+- Build produksi, TypeScript, ESLint, format berkas N12, logika 30/30, QA N12 134/134, regresi lima belas cerita 120/120, dan etalase 114/114 lulus. Frame desktop dan viewport HP diperiksa secara visual.
+- Review N6 dan N12 masih terbuka. [Hasil N12](docs/plans/solusi/PLAN-ULASAN-PELANGGAN.md#76-hasil-implementasi-28-nov-2026)
+
+### 2026-11-28 (S8 N12 diteruskan, storyboard Tonton N13 Rekap Penjualan)
+
+- User meminta lanjut setelah preview N12 tersedia. Review N12 ditutup untuk melanjutkan N13. Review N6 masih terbuka.
+- Riset N13 memeriksa rekap dari Sheets, perbandingan periode dan ketentuan pesan WhatsApp. Storyboard menghitung Rp12 juta dari empat baris, membandingkan dengan kemarin dan Kamis sebelumnya, lalu menelusuri pertanyaan Nita tentang penjualan Teh melati Oktober.
+- Usulan Baca memperjelas sumber hitungan, periode yang tersedia, dan syarat WhatsApp. Storyboard menunggu persetujuan. [Storyboard N13](docs/plans/solusi/PLAN-REKAP-PENJUALAN.md#73-rel-dan-adegan)
+
+### 2026-11-28 (S8 N13 Tonton Rekap Penjualan selesai secara teknis)
+
+- User memilih “Setuju, implementasikan N13”. Tonton ID/EN memperlihatkan total Rp12 juta, perubahan +20% dan −20% dengan dua tanggal pembanding, serta jawaban Oktober sebanyak 240 karton dari tabel. Baca memperjelas hitungan dan ketentuan WhatsApp.
+- Build produksi, TypeScript, ESLint, format berkas N13, logika 31/31, QA N13 134/134, regresi enam belas cerita 128/128, QA 12 detail S8 1.320/1.320, dan etalase 114/114 lulus. Frame desktop dan viewport HP diperiksa secara visual.
+- Seluruh 12 cerita S8 tersedia. Review hasil N6 dan N13 masih terbuka. [Hasil N13](docs/plans/solusi/PLAN-REKAP-PENJUALAN.md#76-hasil-implementasi-28-nov-2026)

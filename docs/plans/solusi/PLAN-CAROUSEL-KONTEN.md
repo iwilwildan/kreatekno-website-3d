@@ -1,8 +1,10 @@
-# Detail Solusi: Carousel Instagram dari satu topik
+# Detail Solusi: Carousel konten dari satu topik
 
-Tanggal: 7 Nov 2026. Status: **rencana awal HTML dari katalog; belum diimplementasikan; storyboard 3D belum tersedia**.
+Per 28 Nov 2026, **Baca dan Tonton ID/EN tersedia. N8 lulus QA browser 130/130. Review ditutup saat user meminta lanjut.**
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md). Kontrak template, route, mesin, dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya menjabarkan kebutuhan khusus `carousel-konten`.
+
+Bagian 1–6 menyimpan rencana katalog awal 7 Nov. Alur yang berlaku untuk Tonton ada di bagian 7.
 
 ## 1. Identitas dan sumber
 
@@ -73,3 +75,48 @@ Hasil P2 menjadi masukan D4 (regresi lintas solusi); P2 tidak menunggu D4 selesa
 7 Nov 2026: subplan awal dibuat dari konten katalog atas permintaan pemisahan plan. Belum ada implementasi atau persetujuan storyboard baru.
 
 24 Nov 2026 (S8 N1b): copy ID/EN ditulis ulang dari workflow nyata atau template n8n.io, status `ide`, klien contoh. Sumber, keputusan dan hasil di [PLAN-KATALOG-N8N](PLAN-KATALOG-N8N.md) bagian 11; cerita Tonton direncanakan di tahap S8 berikutnya.
+
+## 7. N8 Carousel Konten
+
+### 7.1 Riset 27 Nov 2026
+
+- Audit N1b mencatat bahwa jadwal mengambil satu baris topik, menyiapkan folder dan bingkai yang memuat logo, warna serta footer, lalu membuat gambar per slide dan caption. Hasil dikirim ke folder dan grup Telegram sebelum baris diberi status `Pending Review`. N8 memakai catatan audit workflow privat tersebut dan menutup contoh pada status **Menunggu dicek**, sesuai Baca. [Audit N1b](PLAN-KATALOG-N8N.md#11-n1b-copy-baca-iden-7-halaman-lama-selesai-teknis-24-nov-menunggu-review)
+- Halaman template 4028 tidak dapat dibuka ulang. Catatan audit dan unggahan penulisnya memberi konteks awal alur carousel. Template 22250 memperlihatkan satu bingkai sebagai acuan semua slide, dengan kerangka yang berisi pembuka, satu poin per slide, penutup, serta caption. Template 22321 memperlihatkan cara menyiapkan paket gambar berurutan dan caption untuk pemeriksaan tim. Untuk N8, kerangka ditampilkan terpisah dari hasil desain, lalu tim menerima satu paket draf. [Unggahan penulis template 4028](https://community.n8n.io/t/automated-ai-image-carousel-creation-instant-social-media-publishing/116830) · [Template 22250](https://n8n.io/workflows/22250-turn-articles-into-instagram-and-linkedin-carousels-with-genmagic-google-drive-and-google-sheets/) · [Template 22321](https://n8n.io/workflows/22321-create-reviewed-instagram-carousel-pngs-with-openai-and-bannerbear-v5/)
+- Telegram dapat mengirim beberapa gambar sebagai satu kelompok dan Drive menyediakan operasi unggah file. Rancangan layar memperlihatkan pratinjau di grup marketing bersama caption serta rujukan ke folder yang memuat kelima slide. Copy Baca N1b sudah mencakup alur ini. [Dokumentasi Telegram n8n](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.telegram/) · [Dokumentasi Drive n8n](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/file-operations)
+
+### 7.2 Data contoh
+
+- **Kopi Contoh**, brand kopi kemasan fiktif. Mira dari tim marketing mengisi baris **CR-028** dengan judul **3 cara seduh kopi di rumah**, jenis **Edukasi**, dan jumlah **5 slide**. Isi singkatnya meminta pengenalan cara seduh dari alat yang berbeda.
+- Urutan isi adalah **3 cara seduh kopi di rumah** → **Kopi tubruk** (seduh langsung di gelas) → **French press** (seduh lalu tekan plunger) → **Pour-over** (tuang air lewat saringan kertas) → **Simpan untuk seduhan berikutnya**. Cerita memberi pengenalan singkat tanpa takaran atau waktu seduh. [Kopi tubruk](https://ottencoffee.co.id/majalah/es-kopi-tubruk-segar-cara-membuat-dan-tips-penyajian) · [French press](https://sca.coffee/s/best-practices-three-cup-french-press.pdf) · [Pour-over](https://www.hario-usa.com/blogs/recipes-and-more-from-friends/james-hoffmann-uitimate-v60-technique)
+- Kelima kartu memakai logo teks Kopi Contoh, warna krem dan cokelat kopi, serta footer di posisi yang sama. Visual alat seduh dan judul berubah per kartu. Contoh caption, “Tubruk, french press, atau pour-over? Simpan panduan ini, lalu pilih cara seduhmu. #KopiRumah #SeduhKopi”
+- Folder draf **CR-028** memuat lima slide berurutan dan caption. Grup marketing menerima pratinjau. Baris CR-028 berakhir pada status **Menunggu dicek**.
+
+### 7.3 Rel dan adegan
+
+Rel: isi topik → susun kerangka → pakai bingkai brand → buat lima slide → tulis caption → kirim draf untuk dicek.
+
+| Adegan | Isi layar | Yang dipahami pengunjung |
+|---|---|---|
+| Sebelum | Mira membuka catatan isi, contoh desain, dan draf caption yang terpisah. | Satu carousel perlu menyatukan beberapa bahan. |
+| Isi topik | Baris CR-028 memuat brief, jenis Edukasi, dan lima slide. | Tim cukup mengisi satu baris yang bisa diambil saat jadwal berjalan. |
+| Susun kerangka | Lima judul muncul berurutan, dari pembuka sampai ajakan simpan. | Isi ditentukan sebelum hasil desain diperlihatkan. |
+| Pakai bingkai brand | Bingkai krem dan cokelat memuat logo teks dan footer tetap. | Elemen brand diulang pada kelima slide. |
+| Buat lima slide | Slide desain muncul berurutan dan terlihat sebagai satu rangkaian. | Setiap judul dan ilustrasi berubah dalam bingkai yang sama. |
+| Tulis caption | Caption dan dua tagar tampil bersama topik yang sama. | Tim menerima teks posting bersama gambar. |
+| Kirim draf untuk dicek | Drive berisi lima slide dan caption, Telegram menampilkan pratinjau, lalu tabel mencatat Menunggu dicek. | Tim tahu lokasi paket dan bahwa pemeriksaan masih perlu dilakukan. |
+| Ringkasan | Tampilkan tiga kartu metrik contoh Baca, satu baris, tiga jenis konten, dan satu bingkai brand. | Pengunjung punya gambaran input dan bagian yang bisa dipakai ulang. |
+| Konsultasi | Ajak pengunjung membawa topik, logo, dan contoh konten brand. | Pengunjung tahu apa yang bisa dibawa saat konsultasi. |
+
+### 7.4 Implementasi dan QA setelah persetujuan
+
+- Gunakan panggung HTML/CSS bersama dan GSAP yang dimuat saat mendekati viewport. Siapkan kartu visual contoh dengan bingkai lokal yang dapat dipakai ulang. Judul, isi slide, dan caption tersedia dalam ID/EN sebagai teks, termasuk ketika animasi dinonaktifkan.
+- Uji lima viewport, urutan kelima slide, konsistensi bingkai, keterbacaan di HP, caption dan status akhir, keyboard, CTA, reduced motion, GSAP diblokir, regresi cerita dan etalase. Periksa juga ukuran modul animasi episode.
+- 27 Nov 2026. Storyboard siap direview.
+- User meminta “lanjutkan” setelah menerima storyboard. Implementasi N8 mengikuti alur yang diajukan.
+
+### 7.5 Hasil implementasi (27 Nov 2026)
+
+- Tonton ID/EN mengikuti CR-028 dari baris topik edukasi sampai menjadi paket lima slide dan satu caption. Kelima kartu memakai ukuran, logo, warna dan footer yang sama. Contoh Drive dan Telegram memperlihatkan penyerahan paket sebelum status berubah menjadi Menunggu dicek.
+- Build produksi, TypeScript, ESLint, Prettier untuk berkas N8, dan tes logika 26/26 lulus. QA N8 lulus 130/130 tanpa error halaman. Uji mencakup lima viewport, gulir maju/mundur, urutan dan ukuran kartu, urutan penyerahan, keyboard, CTA, ID/EN, reduced motion, serta GSAP diblokir.
+- Regresi sebelas cerita sebelumnya lulus 88/88 dan etalase lulus 114/114. Frame desktop dan viewport HP diperiksa secara visual. Modul animasi N8 berukuran 696 byte gzip dan dimuat saat cerita mendekati viewport. Bundle UI bersama berukuran 42.891 byte gzip.
+- Pada 28 Nov user meminta lanjut setelah preview N8 tersedia. Review ditutup untuk melanjutkan N9. Tes HP fisik masih terbuka. [Preview ID](http://localhost:3319/solusi/carousel-konten#story-title) · [Preview EN](http://localhost:3319/en/solutions/carousel-konten#story-title)

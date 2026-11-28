@@ -7,7 +7,7 @@ import type { Solusi } from "../schema";
 export const layananSdm: Solusi = {
   slug: "layanan-sdm",
   status: "ide",
-  updated: "2026-11-23",
+  updated: "2026-11-27",
   industri: ["retail", "jasa", "logistik"],
   tim: ["sdm", "manajemen"],
   apps: ["whatsapp", "sheets", "drive"],

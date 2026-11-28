@@ -20,7 +20,7 @@ export const rekapPenjualan: Solusi = {
     summary:
       "Setiap malam pemilik menerima rekap penjualan: total, produk terlaris, dan perbandingan dengan hari dan minggu sebelumnya.",
     answer:
-      "Setiap malam data penjualan dari tabel yang sudah dipakai staf dijumlahkan per hari, produk, dan wilayah. Angkanya dibandingkan dengan hari sebelumnya dan hari yang sama minggu lalu, lalu AI menulis ringkasan pendek berisi total, produk terlaris, dan perubahan yang perlu diperhatikan. Pemilik menerima ringkasan itu di HP dan bisa bertanya balik, misalnya penjualan bulan lalu untuk produk tertentu.",
+      "Setiap malam angka dari tabel penjualan staf dijumlahkan per hari, produk, dan wilayah. Totalnya dibandingkan dengan kemarin dan hari yang sama minggu lalu sebelum AI menulis ringkasan. Pemilik menerima total, produk terlaris, dan perbandingannya di HP. Pertanyaan lanjutan dijawab dari periode yang tersedia di tabel.",
     client: "Distributor minuman (contoh)",
     painsLead:
       "Distributor minuman mencatat pengiriman ke puluhan toko setiap hari dalam satu tabel. Pemilik baru tahu angka penjualan setelah admin selesai menghitung keesokan harinya, dan laporan mingguan sering terlambat karena admin sibuk dengan pesanan.",
@@ -33,12 +33,12 @@ export const rekapPenjualan: Solusi = {
       h: "Satu ringkasan setiap malam, dengan angka pembanding",
       lead: "Staf tetap mencatat penjualan di tabel yang sama. Setiap malam angkanya dirangkum dan dibandingkan, lalu pemilik menerima ringkasan pendek yang bisa ditanya balik.",
       points: [
-        "Membaca tabel penjualan setiap malam pukul 21.00.",
+        "Membaca tabel penjualan setiap malam pukul 21.00 WIB.",
         "Menjumlahkan penjualan per hari, produk, dan wilayah.",
         "Membandingkan angka hari ini dengan kemarin dan dengan hari yang sama minggu lalu.",
-        "Menulis ringkasan pendek: total, produk terlaris, dan perubahan yang perlu diperhatikan.",
+        "Menyusun ringkasan pendek dengan AI dari total, produk terlaris, dan perubahan yang sudah dihitung.",
         "Mengirim ringkasan ke pemilik setiap malam.",
-        "Menjawab pertanyaan pemilik tentang periode lain, misalnya bulan lalu atau tahun lalu.",
+        "Menjawab pertanyaan pemilik dari periode yang tersedia di tabel.",
       ],
     },
     quote: {
@@ -78,7 +78,7 @@ export const rekapPenjualan: Solusi = {
       },
       {
         q: "Apakah rekap malam boleh dikirim lewat WhatsApp?",
-        a: "Boleh, memakai template pesan yang sudah disetujui, karena aturan WhatsApp Business membatasi pesan bebas di luar 24 jam sejak pemilik terakhir membalas. Setelah pemilik membalas, pertanyaan bebas bisa dijawab seperti biasa.",
+        a: "Pemilik menyetujui penerimaan rekap lewat WhatsApp. Pesan terjadwal memakai template yang disetujui. Balasan bebas untuk pertanyaan pemilik mengikuti jendela layanan 24 jam sejak pesan terakhir dari pemilik.",
       },
       {
         q: "Apakah angka yang ditulis AI bisa dipercaya?",
@@ -92,7 +92,7 @@ export const rekapPenjualan: Solusi = {
     result: "Sales figures reach the owner's phone every night",
     summary: "Every night the owner receives a sales recap: total, top products and a comparison with earlier days.",
     answer:
-      "Every night the sales data in the table your staff already use is totalled by day, product and area. The figures are compared with the previous day and the same day last week, then AI writes a short summary with the total, top products and changes worth noticing. The owner receives it on their phone and can ask follow-up questions, such as last month's sales of a certain product.",
+      "Each evening, figures from the staff sales table are totalled by day, product and area. They are compared with yesterday and the same day last week before AI writes the recap. The owner gets the total, top products and comparisons on their phone. Follow-up answers use periods available in the table.",
     client: "Beverage distributor (sample)",
     painsLead:
       "A beverage distributor records deliveries to dozens of shops every day in one table. The owner only learns the sales figures after the admin finishes counting the next day, and the weekly report is often late because the admin is busy with orders.",
@@ -105,12 +105,12 @@ export const rekapPenjualan: Solusi = {
       h: "One summary every night, with figures to compare",
       lead: "Staff keep recording sales in the same table. Every night the figures are summarised and compared, and the owner receives a short summary they can ask about.",
       points: [
-        "Reads the sales table every night at 9 pm.",
+        "Reads the sales table every night at 9 pm WIB.",
         "Totals sales by day, product and area.",
         "Compares today with yesterday and with the same day last week.",
-        "Writes a short summary: total, top products and changes worth noticing.",
+        "Has AI summarise the totals, top products and changes already calculated from the table.",
         "Sends the summary to the owner every night.",
-        "Answers the owner's questions about other periods, such as last month or last year.",
+        "Answers the owner's questions using periods available in the sales table.",
       ],
     },
     quote: {
@@ -139,7 +139,7 @@ export const rekapPenjualan: Solusi = {
       "The time you want the recap",
     ],
     metrics: [
-      { value: "9", unit: "pm", label: "the sales summary is sent every night" },
+      { value: "9", unit: "pm", label: "the sales summary is sent every night (WIB)" },
       { value: "2", unit: "comparisons", label: "yesterday and the same day last week" },
       { value: "1", unit: "message", label: "summary for the owner, open to questions" },
     ],
@@ -150,7 +150,7 @@ export const rekapPenjualan: Solusi = {
       },
       {
         q: "Can the nightly recap be sent on WhatsApp?",
-        a: "Yes, using an approved message template, because WhatsApp Business limits free-form messages outside 24 hours of the owner's last reply. Once the owner replies, free questions can be answered as usual.",
+        a: "The owner agrees to receive recaps on WhatsApp. Scheduled messages use approved templates. Free-form answers to the owner's questions follow the 24-hour customer service window from the owner's latest message.",
       },
       {
         q: "Can the figures written by AI be trusted?",

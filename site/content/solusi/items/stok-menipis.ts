@@ -1,7 +1,7 @@
 // S8 N1b (24 Nov 2026): rewritten from the public n8n.io templates 3979 (goods in and out recorded through forms,
 // stock tables updated, stock under the minimum triggers an alert, issue requests approved by button) and 11055
-// (stock counted by voice message per shelf location). The old promise "estimate when stock runs out" is not in the
-// templates; it stays only as a design step (open question 4, decided in its Tonton stage). Status "ide": the client
+// (stock counted by voice message per shelf location). N10 uses a below-minimum alert and shows the estimated
+// time until stock runs out as a design step. Status "ide": the client
 // (set A, 24 Nov), quote and metrics are samples.
 import type { Solusi } from "../schema";
 
@@ -16,11 +16,11 @@ export const stokMenipis: Solusi = {
   id: {
     title: "Peringatan stok menipis sebelum habis",
     question: "Bagaimana tahu stok akan habis sebelum terlambat memesan ulang?",
-    result: "Pesan ulang tepat waktu, stok tidak kosong",
+    result: "Peringatan stok rendah untuk pesan ulang",
     summary:
-      "Barang masuk dan keluar tercatat, stok diperbarui, dan staf pembelian menerima peringatan saat stok mendekati batas minimum.",
+      "Stok diperbarui saat barang bergerak. Staf pembelian menerima peringatan saat stok turun di bawah batas minimum.",
     answer:
-      "Setiap barang masuk dan keluar dicatat lewat form singkat, lalu tabel stok diperbarui. Sisa stok setiap barang dibandingkan dengan batas minimum yang Anda tentukan. Saat sebuah barang mendekati batas itu, staf pembelian menerima peringatan berisi nama barang, sisa stok, dan batas minimumnya, sehingga pemesanan ulang bisa dilakukan sebelum stok kosong.",
+      "Setiap barang masuk dan keluar dicatat lewat form singkat, lalu tabel stok diperbarui. Saat stok turun di bawah batas minimum yang Anda tentukan, staf pembelian menerima peringatan berisi nama barang, sisa stok, dan batas minimumnya. Staf menentukan jumlah dan waktu pemesanan ulang.",
     client: "Toko grosir sembako (contoh)",
     painsLead:
       "Toko grosir sembako menjual ratusan jenis barang, dari beras dan minyak goreng sampai gula. Stok baru dicek saat ada waktu, sering saat barang sudah kosong di rak. Pelanggan grosir yang datang lalu membeli di toko lain.",
@@ -31,7 +31,7 @@ export const stokMenipis: Solusi = {
     ],
     built: {
       h: "Stok tercatat setiap kali barang bergerak",
-      lead: "Staf mencatat barang masuk dan keluar lewat form singkat. Tabel stok selalu terbaru, dan peringatan dikirim begitu sebuah barang mendekati batas minimum.",
+      lead: "Staf mencatat barang masuk dan keluar lewat form singkat. Tabel stok mengikuti catatan itu, dan peringatan dikirim saat stok turun di bawah batas minimum.",
       points: [
         "Mencatat barang masuk dari pemasok dan barang keluar lewat form singkat.",
         "Memperbarui sisa stok di tabel setiap kali ada barang masuk atau keluar.",
@@ -48,8 +48,8 @@ export const stokMenipis: Solusi = {
     steps: [
       { title: "Barang bergerak tercatat", body: "Barang masuk dan keluar dicatat lewat form singkat." },
       { title: "Stok diperbarui", body: "Sisa stok di tabel selalu terbaru." },
-      { title: "Peringatan dikirim", body: "Staf pembelian menerima pesan saat stok mendekati batas minimum." },
-      { title: "Staf memesan ulang", body: "Pemesanan dilakukan sebelum barang benar-benar habis." },
+      { title: "Peringatan dikirim", body: "Staf pembelian menerima pesan saat stok turun di bawah batas minimum." },
+      { title: "Staf memesan ulang", body: "Staf menentukan jumlah dan waktu pemesanan." },
     ],
     compare: [
       { aspect: "Mengetahui stok menipis", before: "Saat sudah habis", after: "Sebelum habis" },
@@ -85,11 +85,10 @@ export const stokMenipis: Solusi = {
   en: {
     title: "Low-stock alerts before items run out",
     question: "How can a business know stock will run out before it is too late to reorder?",
-    result: "Reorder on time, and shelves stay stocked",
-    summary:
-      "Goods in and out are recorded, stock is updated, and purchasing staff are alerted near the minimum level.",
+    result: "Low-stock alerts for reordering",
+    summary: "Stock updates as goods move. Purchasing staff get an alert when stock falls below the minimum.",
     answer:
-      "Every item coming in and going out is recorded through a short form, and the stock table is updated. Each item's remaining stock is compared with the minimum level you set. When an item gets close to that level, purchasing staff receive an alert with the item name, remaining stock and minimum, so it can be reordered before it runs out.",
+      "Goods in and out are recorded through a short form, and the stock table is updated. When stock falls below the minimum you set, purchasing staff get an alert with the item name, remaining stock and minimum. Staff decide how much to reorder and when.",
     client: "Wholesale grocery store (sample)",
     painsLead:
       "A wholesale grocery store sells hundreds of items, from rice and cooking oil to sugar. Stock is only checked when there is time, often after an item is already gone from the shelf. Wholesale customers who come in then buy elsewhere.",
@@ -100,7 +99,7 @@ export const stokMenipis: Solusi = {
     ],
     built: {
       h: "Stock recorded every time goods move",
-      lead: "Staff record goods in and out through a short form. The stock table stays current, and an alert is sent as soon as an item nears its minimum.",
+      lead: "Staff record goods in and out through a short form. The stock table reflects those records, and an alert is sent when stock falls below the minimum.",
       points: [
         "Records goods in from suppliers and goods out through a short form.",
         "Updates remaining stock in the table whenever goods come in or go out.",
@@ -117,8 +116,8 @@ export const stokMenipis: Solusi = {
     steps: [
       { title: "Movements recorded", body: "Goods in and out are recorded through a short form." },
       { title: "Stock updated", body: "Remaining stock in the table is always current." },
-      { title: "Alert sent", body: "Purchasing staff get a message when stock nears the minimum." },
-      { title: "Staff reorder", body: "Items are reordered before they actually run out." },
+      { title: "Alert sent", body: "Purchasing staff get a message when stock falls below the minimum." },
+      { title: "Staff reorder", body: "Staff decide how much to order and when." },
     ],
     compare: [
       { aspect: "Spotting low stock", before: "Once it has run out", after: "Before it runs out" },

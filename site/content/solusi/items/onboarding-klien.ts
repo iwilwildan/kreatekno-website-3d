@@ -8,7 +8,7 @@ import type { Solusi } from "../schema";
 export const onboardingKlien: Solusi = {
   slug: "onboarding-klien",
   status: "ide",
-  updated: "2026-11-23",
+  updated: "2026-11-27",
   industri: ["jasa", "properti"],
   tim: ["penjualan", "operasional"],
   apps: ["sheets", "gmail", "calendar"],
@@ -16,7 +16,7 @@ export const onboardingKlien: Solusi = {
   id: {
     title: "Klien baru langsung disambut setelah deal",
     question: "Bagaimana memastikan setiap klien baru tahu langkah berikutnya setelah deal?",
-    result: "Sambutan, daftar persiapan, dan rapat awal di hari yang sama",
+    result: "Sambutan, checklist, dan undangan di hari yang sama",
     summary:
       "Setelah deal, email sambutan dan daftar persiapan disiapkan untuk dicek staf, dan rapat awal dijadwalkan di slot kosong.",
     answer:
@@ -90,7 +90,7 @@ export const onboardingKlien: Solusi = {
   en: {
     title: "New clients welcomed right after the deal",
     question: "How can every new client know the next step as soon as the deal is signed?",
-    result: "A welcome, a prep list and a kickoff meeting on the same day",
+    result: "Welcome, checklist, and kickoff invite sent the same day",
     summary:
       "After a deal, a welcome email and prep list are drafted for your staff, and a kickoff meeting is proposed.",
     answer:

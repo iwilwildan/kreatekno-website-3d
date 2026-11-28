@@ -8,7 +8,7 @@ import type { Solusi } from "../schema";
 export const balasKomentar: Solusi = {
   slug: "balas-komentar",
   status: "ide",
-  updated: "2026-11-23",
+  updated: "2026-11-27",
   industri: ["retail", "jasa"],
   tim: ["marketing", "penjualan"],
   apps: ["instagram", "sheets"],

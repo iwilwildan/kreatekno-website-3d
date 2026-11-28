@@ -5,20 +5,34 @@ import {
   ArrowRight,
   ArrowsClockwise,
   Bell,
+  BookOpenText,
   CalendarBlank,
   Camera,
   CalendarCheck,
+  ChartBar,
+  ClipboardText,
   ChatCircleDots,
   CheckCircle,
   Clock,
+  EnvelopeSimple,
+  FilePdf,
+  FolderOpen,
+  FrameCorners,
   Funnel,
+  Gauge,
   Headset,
   Heart,
+  Images,
   ListBullets,
+  ListChecks,
   MagnifyingGlass,
   MapPin,
+  NotePencil,
+  Package,
   PaperPlaneTilt,
+  Phone,
   Scan,
+  ShoppingCart,
   Sparkle,
   Sun,
   Table,
@@ -32,13 +46,24 @@ import type { StoryEntry } from "@/content/solusi/cerita";
 import type { Film } from "./ceritaFilm";
 import { TIMING } from "./ceritaTiming";
 import { Panggung } from "./Panggung";
+import { PanggungAsistenSop } from "./PanggungAsistenSop";
+import { PanggungBerkas } from "./PanggungBerkas";
 import { PanggungBooking } from "./PanggungBooking";
+import { PanggungCarousel } from "./PanggungCarousel";
+import { PanggungFaktur } from "./PanggungFaktur";
 import { PanggungKlinik } from "./PanggungKlinik";
+import { PanggungKomentar } from "./PanggungKomentar";
 import { PanggungNota } from "./PanggungNota";
+import { PanggungOnboarding } from "./PanggungOnboarding";
 import { PanggungProspek } from "./PanggungProspek";
+import { PanggungRekap } from "./PanggungRekap";
 import { PanggungRiset } from "./PanggungRiset";
+import { PanggungSdm } from "./PanggungSdm";
+import { PanggungStok } from "./PanggungStok";
+import { PanggungTagihan } from "./PanggungTagihan";
+import { PanggungUlasan } from "./PanggungUlasan";
 
-/** Canvas design size in px (`.og-cv`, `.bj-cv`, `.rk-cv`, `.ck-cv`, `.fp-cv`, `.cp-cv`), scaled to fit the stage. */
+/** Canvas design size in px, scaled to fit the stage. */
 const DESIGN = { w: 440, h: 520, max: 1.5 };
 /**
  * Per story: rail icons (the workflow steps are scenes 1..icons.length), the scene drawn at night (-1: none), the pinned
@@ -81,10 +106,87 @@ const KIND = {
     screens: 11,
     film: () => import("./ceritaFilmNota"),
   },
+  "balas-komentar": {
+    icons: [ChatCircleDots, ListBullets, Tag, CheckCircle, PaperPlaneTilt, Headset],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmKomentar"),
+  },
+  "faktur-pemasok": {
+    icons: [FilePdf, Scan, Sparkle, MagnifyingGlass, Table, CheckCircle],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmFaktur"),
+  },
+  "layanan-sdm": {
+    icons: [ChatCircleDots, Tag, MagnifyingGlass, PaperPlaneTilt, CheckCircle, Table],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmSdm"),
+  },
+  "onboarding-klien": {
+    icons: [Table, ListChecks, EnvelopeSimple, CalendarCheck, PaperPlaneTilt, UserList],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmOnboarding"),
+  },
+  "asisten-sop": {
+    icons: [FolderOpen, Scan, ChatCircleDots, BookOpenText, UserList, Table],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmAsistenSop"),
+  },
+  "carousel-konten": {
+    icons: [Table, ListBullets, FrameCorners, Images, ChatCircleDots, PaperPlaneTilt],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmCarousel"),
+  },
+  "berkas-dokumen": {
+    icons: [ChatCircleDots, FolderOpen, Scan, PaperPlaneTilt, Table, CheckCircle],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmBerkas"),
+  },
+  "stok-menipis": {
+    icons: [ClipboardText, Table, Gauge, ChatCircleDots, ShoppingCart, Package],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmStok"),
+  },
+  "pengingat-tagihan": {
+    icons: [Clock, CalendarBlank, CalendarCheck, ChatCircleDots, CheckCircle, Phone],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmTagihan"),
+  },
+  "ulasan-pelanggan": {
+    icons: [NotePencil, Table, Scan, ListBullets, ChatCircleDots, EnvelopeSimple],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmUlasan"),
+  },
+  "rekap-penjualan": {
+    icons: [Table, ChartBar, CalendarCheck, PaperPlaneTilt, ChatCircleDots, BookOpenText],
+    night: -1,
+    screens: 11,
+    staticReduced: true,
+    film: () => import("./ceritaFilmRekap"),
+  },
 } as const;
 
 /**
- * A solution story in the Tonton layout (OG5c; Order Grup, Booking Jasa, Riset Konten, CS Klinik, Follow-up Prospek and Catat Pengeluaran): a sticky pastel stage with the
+ * A solution story in the Tonton layout (OG5c): a sticky pastel stage with the
  * scene caption on the left, the motion-graphic canvas on the right and the workflow rail below. Scrolling
  * through the reel maps linearly to the story's timeline. Captions and rail follow React state, so they work
  * without GSAP; the canvas film is lazy.
@@ -174,6 +276,9 @@ export function CeritaScroll({
   useEffect(() => {
     const target = reel.current;
     if (!target || !stage.current) return;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const staticReduced = "staticReduced" in kind && kind.staticReduced;
+    if (staticReduced && reducedMotion.matches) return;
     let cancelled = false;
     let fontTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -190,8 +295,8 @@ export function CeritaScroll({
       try {
         const { createFilm } = await kind.film();
         if (cancelled || !stage.current) return;
-        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-        film.current = createFilm(stage.current, reduced);
+        if (staticReduced && reducedMotion.matches) return;
+        film.current = createFilm(stage.current, reducedMotion.matches);
         film.current.seek(position.current.time, position.current.scene);
       } catch {
         // Static CSS poses stay in place.
@@ -294,6 +399,28 @@ export function CeritaScroll({
                 <PanggungProspek copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "catat-pengeluaran" ? (
                 <PanggungNota copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "balas-komentar" ? (
+                <PanggungKomentar copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "faktur-pemasok" ? (
+                <PanggungFaktur copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "layanan-sdm" ? (
+                <PanggungSdm copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "onboarding-klien" ? (
+                <PanggungOnboarding copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "asisten-sop" ? (
+                <PanggungAsistenSop copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "carousel-konten" ? (
+                <PanggungCarousel copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "berkas-dokumen" ? (
+                <PanggungBerkas copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "stok-menipis" ? (
+                <PanggungStok copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "pengingat-tagihan" ? (
+                <PanggungTagihan copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "ulasan-pelanggan" ? (
+                <PanggungUlasan copy={story.copy.stage} metrics={metrics} scene={active} />
+              ) : story.slug === "rekap-penjualan" ? (
+                <PanggungRekap copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : story.slug === "riset-konten" ? (
                 <PanggungRiset copy={story.copy.stage} metrics={metrics} scene={active} />
               ) : (

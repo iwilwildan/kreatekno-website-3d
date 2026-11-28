@@ -68,8 +68,8 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "stok-menipis": {
     title: "Low-stock alert assistant",
-    result: "Reorder on time, and shelves stay stocked.",
-    summary: "Goods in and out are recorded, and purchasing staff are alerted when stock nears its minimum.",
+    result: "Low-stock alerts for reordering",
+    summary: "Stock updates as goods move. Purchasing staff get an alert when stock falls below the minimum.",
     keywords: "stock inventory reorder warehouse retail grocery logistics operations minimum alert",
   },
   "ulasan-pelanggan": {
@@ -106,7 +106,7 @@ const EN: Record<SolusiSlug, CatalogCopy> = {
   },
   "onboarding-klien": {
     title: "Client onboarding assistant",
-    result: "A welcome, a prep list and a kickoff meeting on the same day.",
+    result: "Welcome, checklist, and kickoff invite sent the same day",
     summary:
       "After a deal, a welcome email and prep list are drafted for your staff, and a kickoff meeting is proposed.",
     keywords: "client onboarding welcome email checklist kickoff meeting calendar services sales",

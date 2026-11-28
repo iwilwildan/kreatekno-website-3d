@@ -1,6 +1,6 @@
 # Solusi dari template n8n.io: 5 halaman baru + 7 cerita Tonton
 
-Tanggal: 23 Nov 2026. Status: **plan disetujui user 23 Nov ("Setuju, mulai N0"); N0 disetujui user 23 Nov ("Sesuai, mulai N1a"); N1a disetujui 24 Nov ("Sesuai, mulai N1b"); N1b selesai teknis, menunggu review**.
+Per 28 Nov 2026, **seluruh implementasi S8 tersedia. Review N2–N5 dan N7–N12 selesai. N6 dan N13 lulus QA browser dan menunggu review.**
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md) (tahap S8). Kontrak template detail, mesin cerita dan QA bersama: [PLAN-DETAIL](PLAN-DETAIL.md). Pola kerja per cerita mengikuti FP1 ([PLAN-FOLLOWUP-PROSPEK](PLAN-FOLLOWUP-PROSPEK.md) bagian 7).
 
@@ -88,45 +88,38 @@ Rel = langkah workflow yang nanti jadi node rel di Tonton. Jumlah dan isi adegan
 
 ### 4.6 `asisten-sop` (lama, workflow nyata)
 
-- Sumber utama: workflow agen SOP di instance `n8n-mcp` (dokumen Drive jadi basis pengetahuan, tanya lewat Telegram, log di Sheets; dicatat di log 21 Nov). Dibaca ulang di awal tahap Tonton-nya.
-- Pelengkap: [4966](https://n8n.io/workflows/4966) (dokumen dibaca langsung tiap pertanyaan, jadi cukup edit dokumennya; cek jendela 24 jam), [4551](https://n8n.io/workflows/4551) (dokumen baru di folder otomatis diproses jadi potongan berkonteks).
-- Rel draf: dokumen SOP diperbarui → diproses jadi basis pengetahuan → staf bertanya → jawaban + nama SOP sumbernya → tidak ketemu: ke supervisor → pertanyaan tercatat (untuk melihat SOP yang kurang jelas).
-- Keputusan saat tahapnya: kanal Telegram (workflow nyata) atau WhatsApp (copy sekarang). Kalau Telegram, `AppSchema` perlu `telegram`.
+- Sumber utama: catatan audit workflow agen SOP di bagian 11. Dokumen Drive diproses manual, jawaban Telegram menyebut sumber, dan bot memberi arahan untuk menghubungi penanggung jawab saat perlu. Catatan Sheets masih berupa rancangan.
+- Riset dan storyboard N7 memakai Telegram sesuai keputusan N1b. Pertanyaan pertama dijawab dengan sumber. Pada pertanyaan kedua, staf diarahkan ke kepala cabang. [Storyboard Asisten SOP](PLAN-ASISTEN-SOP.md#7-n7-cerita-tonton-asisten-sop)
 
 ### 4.7 `carousel-konten` (lama, workflow nyata)
 
-- Sumber utama: workflow carousel di `n8n-mcp` (topik → gambar + caption → posting carousel Threads lewat sub-workflow).
-- Pelengkap: [4028](https://n8n.io/workflows/4028) (5 prompt berurutan; gambar 2–5 dibuat dengan mengedit gambar sebelumnya supaya gaya konsisten; caption AI; posting ke dua platform).
-- Rel draf: brief atau topik → kerangka 5 slide → gambar slide 1 → slide berikutnya mengikuti gaya slide sebelumnya → caption → draf dikirim ke tim untuk disetujui sebelum posting.
-- Catatan: langkah persetujuan tim dipertahankan (copy sekarang menjanjikan "draf siap diperhalus", bukan posting otomatis).
+- Sumber utama adalah catatan audit N1b untuk workflow generator carousel yang menyimpan slide dan caption, mengirim pratinjau ke tim, lalu menandai baris `Pending Review`.
+- Storyboard N8 mempertahankan satu bingkai brand untuk lima slide dan berakhir ketika tim menerima draf dengan status Menunggu dicek. [Storyboard Carousel Konten](PLAN-CAROUSEL-KONTEN.md#7-n8-carousel-konten)
 
-### 4.8 `berkas-dokumen` (lama, status `jalan`, workflow nyata)
+### 4.8 `berkas-dokumen` (lama, status `ide`, bersumber dari template)
 
-- Sumber utama: workflow berkas di instance `n8n-kreatekno` (dicocokkan 21 Nov). Dibaca ulang, nama klien disembunyikan.
-- Pelengkap: [4868](https://n8n.io/workflows/4868) (kolom yang diambil mengikuti baris judul tabel; file yang sudah diproses dilewati), [4827](https://n8n.io/workflows/4827) (menangani foto, PDF dan file lain dari chat).
-- Status tetap `jalan`; klien tanpa nama seperti BJ1.
+- Keputusan N1b memakai template 4868 dan 4827 dengan kantor notaris dan PPAT contoh. Status layanan Siap dibuat.
+- Storyboard N9 mengikuti foto buram dan satu dokumen yang masih kurang sampai kiriman baru terbaca dan staf menandai berkas lengkap. [Storyboard Berkas Dokumen](PLAN-BERKAS-DOKUMEN.md#7-n9-berkas-dokumen)
 
 ### 4.9 `stok-menipis` (lama)
 
-- Sumber: [3979](https://n8n.io/workflows/3979) (stok masuk dan keluar lewat form, permintaan barang disetujui lewat tombol, stok di bawah minimum memicu peringatan), [11055](https://n8n.io/workflows/11055) (hitung stok gudang lewat pesan suara per lokasi rak).
-- Rel draf: barang masuk/keluar dicatat → tabel stok diperbarui → dibandingkan dengan batas minimum → peringatan ke tim pembelian (barang, sisa, batas) → tim memesan ulang → (opsional) hitung stok berkala lewat pesan suara.
-- Temuan: copy sekarang menjanjikan "perkiraan kapan habis"; tidak ada di template. Dipertahankan sebagai langkah rancangan (rata-rata keluar 7 hari) atau dihapus, diputuskan saat tahapnya.
+- Storyboard N10 memakai pencatatan pergerakan barang dan ambang di bawah minimum dari template 3979. Tim menerima peringatan, memesan ulang, dan mencatat barang saat diterima. Template 11055 menjadi rujukan hitung fisik berkala di Baca.
+- N10 mempertahankan perkiraan sebagai Rancangan dan menyamakan copy ambang di Baca serta etalase. [Storyboard Stok Menipis](PLAN-STOK-MENIPIS.md#7-n10-stok-menipis)
 
 ### 4.10 `pengingat-tagihan` (lama)
 
-- Sumber: [14313](https://n8n.io/workflows/14313) (tiap pagi 07.00; tagihan belum lunas dipilah: sebelum/jatuh tempo, lewat tempo, sangat terlambat; pesan bertahap; status kirim dicatat), [9879](https://n8n.io/workflows/9879) (tagihan dikirim ke WhatsApp setelah order; nomor dirapikan dan dicek dulu; hasil dicatat di dua tab).
-- Rel draf: tabel tagihan dibaca tiap pagi → hanya yang belum lunas → tahap dipilih (H-3, hari H, lewat 7 hari) → pesan sesuai tahap (template disetujui) → tanggal pengingat tercatat → lewat 30 hari: diserahkan ke pemilik.
-- Catatan: tahap "surat hukum" template tidak dipakai; nada sopan sesuai copy sekarang.
+- Storyboard N11 memakai jadwal pagi dan riwayat per tahap dari template 14313, serta keputusan N1b untuk H-3, H, H+7, dan serah terima internal pada H+30.
+- Contoh mengikuti satu tagihan yang ditandai Lunas setelah pembayaran dicatat dan satu tagihan terbuka yang diteruskan ke pemilik pada H+30. [Storyboard Pengingat Tagihan](PLAN-PENGINGAT-TAGIHAN.md#7-n11-pengingat-tagihan)
 
 ### 4.11 `ulasan-pelanggan` (lama)
 
 - Sumber: [6112](https://n8n.io/workflows/6112) (tiap hari 10.00 ulasan dari beberapa sumber diseragamkan, duplikat dibuang, disimpan), [4032](https://n8n.io/workflows/4032) (AI merangkum keluhan dan pujian yang berulang), [9290](https://n8n.io/workflows/9290) (laporan mingguan: dibanding minggu lalu dan rata-rata 12 minggu, tingkat balasan, ringkasan satu kalimat).
 - Rel draf: ulasan dikumpulkan tiap hari → diseragamkan (bintang, teks, tanggal, sumber) → disimpan tanpa duplikat → mingguan AI mengelompokkan tema → laporan ke manajemen + daftar ulasan yang belum dibalas.
+- N12 memakai formulir, chat layanan dan email yang dikelola restoran. Baca memperjelas izin penggunaan sumber eksternal dan rating yang tersedia. [Storyboard Ulasan Pelanggan](PLAN-ULASAN-PELANGGAN.md#7-n12-ulasan-pelanggan)
 
 ### 4.12 `rekap-penjualan` (lama)
 
-- Sumber: [6679](https://n8n.io/workflows/6679) (pendapatan dan biaya dari Sheets dibandingkan periode ini, bulan lalu, tahun lalu; AI menulis ringkasan; bisa ditanya lewat chat).
-- Rel draf: tabel penjualan dibaca tiap malam → dijumlahkan per hari dan produk → dibandingkan kemarin dan minggu lalu → AI menulis ringkasan pendek → dikirim ke pemilik → pemilik bisa bertanya balik ("bulan lalu berapa?").
+- N13 memakai pola perbandingan periode dari template 6679 dan pengiriman rekap harian dari template 13486. Storyboard membandingkan kemarin dan hari yang sama minggu lalu, lalu menelusuri penjualan produk bulan sebelumnya dari Sheets. [Storyboard Rekap Penjualan](PLAN-REKAP-PENJUALAN.md#7-n13-rekap-penjualan)
 
 ## 5. Tahapan
 
@@ -155,9 +148,9 @@ Cek di setiap tahap: typecheck, ESLint, Prettier, `logic.test.mjs`, `next build`
 
 1. N0: kartu masalah baru untuk 5 slug baru (perlu mengubah batas `k1`–`k24` dan layout Kartu 3D) atau cukup dipetakan ke kartu yang ada? Usulan: cukup kartu yang ada.
 2. N1a: nama klien contoh dan contoh data per slug baru.
-3. N1b / tahap `asisten-sop`: kanal Telegram (workflow nyata) atau WhatsApp.
-4. Tahap `stok-menipis`: "perkiraan kapan habis" dipertahankan sebagai rancangan atau dihapus.
-5. Tahap `pengingat-tagihan`: tahap pengingat (H-3, H, +7, +30) dan siapa yang menerima eskalasi.
+3. N1b / tahap `asisten-sop`: Telegram disetujui 24 Nov. Review N7 ditutup saat user meminta lanjut ke tahap berikutnya pada 27 Nov.
+4. Tahap `stok-menipis`: kartu perkiraan ditampilkan dengan label Rancangan sesuai storyboard yang dilanjutkan user.
+5. Tahap `pengingat-tagihan`: H-3, H, H+7, serta serah terima ke pemilik pada H+30 diputuskan di N1b dan ditampilkan di N11.
 6. Tahap `balas-komentar`: daftar kata kunci contoh dan isi DM contoh.
 7. Tahap `onboarding-klien`: email sambutan dikirim otomatis atau sebagai draf ke tim.
 
@@ -165,6 +158,28 @@ Cek di setiap tahap: typecheck, ESLint, Prettier, `logic.test.mjs`, `next build`
 
 - 23 Nov 2026: plan ditulis setelah 30 template dibaca dan riset aturan Meta, WhatsApp dan UU PDP; keputusan user di bagian 1. Belum ada kode, commit atau push.
 - 23 Nov 2026 (N0): lihat bagian 9.
+- 27 Nov 2026: user menyatakan N2 sudah direview. Riset dan storyboard N3 dicatat di [Balas Komentar](PLAN-BALAS-KOMENTAR.md#4-n3-cerita-tonton-balas-komentar).
+- 27 Nov 2026: Tonton N3 Balas Komentar selesai secara teknis dan lulus QA 130/130. [Hasil N3](PLAN-BALAS-KOMENTAR.md#45-hasil-implementasi-27-nov-2026)
+- 27 Nov 2026: user meminta lanjut setelah membuka preview N3. Riset dan storyboard N4 dicatat di [Faktur Pemasok](PLAN-FAKTUR-PEMASOK.md#4-n4-cerita-tonton-faktur-pemasok).
+- 27 Nov 2026: Tonton N4 Faktur Pemasok selesai secara teknis dan lulus QA 121/121. [Hasil N4](PLAN-FAKTUR-PEMASOK.md#45-hasil-implementasi-27-nov-2026)
+- 27 Nov 2026: user meminta lanjut saat preview N4 terbuka. Riset dan storyboard N5 dicatat di [Layanan SDM](PLAN-LAYANAN-SDM.md#4-n5-cerita-tonton-layanan-sdm).
+- 27 Nov 2026: Tonton N5 Layanan SDM selesai secara teknis dan lulus QA 121/121. [Hasil N5](PLAN-LAYANAN-SDM.md#45-hasil-implementasi-27-nov-2026)
+- 27 Nov 2026: user meminta lanjut dari hasil N5. Riset dan storyboard N6 dicatat di [Onboarding Klien](PLAN-ONBOARDING-KLIEN.md#4-n6-cerita-tonton-onboarding-klien).
+- 27 Nov 2026: Tonton N6 Onboarding Klien selesai secara teknis dan lulus QA 126/126. [Hasil N6](PLAN-ONBOARDING-KLIEN.md#45-hasil-implementasi-27-nov-2026)
+- 27 Nov 2026: etalase N6 lulus 114/114 dan review N6 masih terbuka. Riset dan storyboard N7 Asisten SOP siap direview. [Storyboard N7](PLAN-ASISTEN-SOP.md#73-rel-dan-adegan)
+- 27 Nov 2026: user menyetujui storyboard dan penyesuaian Baca N7. Tonton Asisten SOP lulus QA 128/128. [Hasil N7](PLAN-ASISTEN-SOP.md#75-hasil-implementasi-27-nov-2026)
+- 27 Nov 2026: user meminta lanjut setelah preview N7 tersedia. Review N7 ditutup. Riset dan storyboard N8 siap direview. [Storyboard N8](PLAN-CAROUSEL-KONTEN.md#73-rel-dan-adegan)
+- 27 Nov 2026: user meminta lanjut setelah storyboard N8 siap. Tonton Carousel Konten tersedia untuk ID/EN dan lulus QA 130/130. [Hasil N8](PLAN-CAROUSEL-KONTEN.md#75-hasil-implementasi-27-nov-2026)
+- 28 Nov 2026: user meminta lanjut setelah preview N8 tersedia. Review N8 ditutup. Riset dan storyboard N9 siap direview. [Storyboard N9](PLAN-BERKAS-DOKUMEN.md#73-rel-dan-adegan)
+- 28 Nov 2026: user menyetujui storyboard N9. Tonton Berkas Dokumen tersedia untuk ID/EN dan lulus QA 135/135. [Hasil N9](PLAN-BERKAS-DOKUMEN.md#75-hasil-implementasi-28-nov-2026)
+- 28 Nov 2026: user meminta lanjut setelah preview N9 tersedia. Review N9 ditutup. Riset, storyboard, dan usulan penyesuaian Baca N10 siap direview. [Storyboard N10](PLAN-STOK-MENIPIS.md#73-rel-dan-adegan)
+- 28 Nov 2026: user meminta lanjut setelah storyboard N10 siap. Tonton Stok Menipis serta penyesuaian Baca dan etalase tersedia untuk ID/EN dan lulus QA 137/137. [Hasil N10](PLAN-STOK-MENIPIS.md#76-hasil-implementasi-28-nov-2026)
+- 28 Nov 2026: user meminta lanjut setelah preview N10 tersedia. Review N10 ditutup. Riset, storyboard, dan usulan penyesuaian Baca N11 siap direview. [Storyboard N11](PLAN-PENGINGAT-TAGIHAN.md#73-rel-dan-adegan)
+- 28 Nov 2026: user meminta lanjut setelah storyboard N11 siap. Tonton Pengingat Tagihan dan penyesuaian Baca tersedia untuk ID/EN dan lulus QA 135/135. [Hasil N11](PLAN-PENGINGAT-TAGIHAN.md#76-hasil-implementasi-28-nov-2026)
+- 28 Nov 2026: user meminta lanjut setelah preview N11 tersedia. Review N11 ditutup. Riset, storyboard dan usulan copy Baca N12 siap direview. [Storyboard N12](PLAN-ULASAN-PELANGGAN.md#73-rel-dan-adegan)
+- 28 Nov 2026: user meminta lanjut setelah storyboard N12 siap. Tonton Ulasan Pelanggan dan penyesuaian Baca tersedia untuk ID/EN dan lulus QA 134/134. [Hasil N12](PLAN-ULASAN-PELANGGAN.md#76-hasil-implementasi-28-nov-2026)
+- 28 Nov 2026: user meminta lanjut setelah preview N12 tersedia. Review N12 ditutup. Riset, storyboard, dan usulan copy Baca N13 siap direview. [Storyboard N13](PLAN-REKAP-PENJUALAN.md#73-rel-dan-adegan)
+- 28 Nov 2026: user menyetujui storyboard N13 dan penyesuaian Baca. Tonton Rekap Penjualan tersedia untuk ID/EN dan lulus QA 134/134. [Hasil N13](PLAN-REKAP-PENJUALAN.md#76-hasil-implementasi-28-nov-2026)
 
 ## 9. N0: data dan etalase (selesai teknis 23 Nov, menunggu review)
 
@@ -210,3 +225,9 @@ Hasil:
 - Temuan sampingan untuk N3: `n8n-mcp` punya workflow aktif "Instagram Comment → DM" (34 node). Dibaca di awal tahap Tonton `balas-komentar`.
 - Dicek di build produksi (charger terpasang, CPU 5–27%): `s8-qa.mjs` 1320/1320 (12 slug × ID/EN × 5 viewport), `rt1-qa.mjs` 41/41, `etalase-qa.mjs` 114/114, cerita `og5` 106/106, `bj1` 106/106, `rk1` 106/106, `ck1` 114/114, `fp1` 107/107 (error console hanya GSAP yang sengaja diblokir dan 404 analytics lokal); `logic.test.mjs` 19/19; typecheck, ESLint, Prettier. Ikon Telegram di detail `asisten-sop` dicek visual (screenshot hanya di chat).
 - Belum: review user, rencana tahap Tonton N2 (`catat-pengeluaran`). Tidak ada commit/push.
+
+## 12. Verifikasi seluruh S8 pada build N13 (28 Nov 2026)
+
+- Dua belas halaman S8 menyediakan Baca dan Tonton ID/EN di build yang sama. Enam belas cerita sebelumnya tetap dapat dibuka dalam kedua bahasa. QA N13 lulus 134/134 tanpa error halaman, regresi cerita sebelumnya 128/128, QA 12 detail S8 1.320/1.320, dan etalase 114/114.
+- Build produksi, TypeScript, ESLint, format berkas yang berubah di N13, dan tes logika 31/31 lulus. Tes HP fisik masih terbuka.
+- Review user yang masih terbuka adalah N6 dan N13. [Preview N6](http://localhost:3324/solusi/onboarding-klien#story-title) · [Preview N13](http://localhost:3324/solusi/rekap-penjualan#story-title)

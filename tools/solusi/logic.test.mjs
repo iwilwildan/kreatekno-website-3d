@@ -3,16 +3,28 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { SOLUSI } from "../../site/content/solusi/index.ts";
+import { catalogCopy } from "../../site/content/solusi/catalog.ts";
 import { KARTU } from "../../site/content/solusi/kartu.ts";
 import { SolusiSchema, KartuSchema } from "../../site/content/solusi/schema.ts";
 import { CERITA } from "../../site/content/solusi/cerita/index.ts";
 import {
+  AsistenSopCeritaSchema,
+  BerkasCeritaSchema,
   BookingCeritaSchema,
+  CarouselCeritaSchema,
   CeritaSchema,
+  FakturCeritaSchema,
   KlinikCeritaSchema,
+  KomentarCeritaSchema,
   NotaCeritaSchema,
+  OnboardingCeritaSchema,
   ProspekCeritaSchema,
+  RekapCeritaSchema,
   RisetCeritaSchema,
+  SdmCeritaSchema,
+  StokCeritaSchema,
+  TagihanCeritaSchema,
+  UlasanCeritaSchema,
   rupiah,
 } from "../../site/content/solusi/cerita/schema.ts";
 import { buildTiers, fitIndustries } from "../../site/lib/solusi/tiers.ts";
@@ -259,6 +271,341 @@ test("Catat Pengeluaran story (CP1): bilingual scenes, one CTA, figures that add
     JSON.stringify(story),
     /WhatsApp|Google|Sheets|Telegram|n8n|template|Postgres/i,
   );
+});
+
+test("Balas Komentar (BK1): bilingual scenes track a fresh comment and skip a handled ID", () => {
+  const story = CERITA["balas-komentar"];
+  assert.equal(KomentarCeritaSchema.safeParse(story).success, true);
+  for (const locale of ["id", "en"]) {
+    const { scenes, stage } = story[locale];
+    assert.deepEqual(
+      scenes.slice(4, 7).map(({ id }) => id),
+      ["balas-publik", "kirim-pesan", "catat-dan-teruskan"],
+    );
+    assert.ok(
+      stage.filter.keywords.includes(stage.question.keyword.toLowerCase()),
+    );
+    assert.notEqual(stage.history.duplicateId, stage.question.id);
+  }
+  const broken = structuredClone(story);
+  broken.id.stage.history.duplicateId = broken.id.stage.question.id;
+  assert.equal(KomentarCeritaSchema.safeParse(broken).success, false);
+  assert.doesNotMatch(JSON.stringify(story), /Instagram|Google Sheets|n8n|—/i);
+});
+
+test("Faktur Pemasok (FK1): six fields and one consistent invoice variance across locales", () => {
+  const story = CERITA["faktur-pemasok"];
+  assert.equal(FakturCeritaSchema.safeParse(story).success, true);
+  const { invoice } = story.id.stage;
+  assert.equal(invoice.total - invoice.agreedTotal, 30_000);
+  assert.equal(story.en.stage.invoice.number, invoice.number);
+  assert.deepEqual(
+    story.en.stage.invoice.lines.map(({ quantity, billed, agreed }) => ({
+      quantity,
+      billed,
+      agreed,
+    })),
+    invoice.lines.map(({ quantity, billed, agreed }) => ({
+      quantity,
+      billed,
+      agreed,
+    })),
+  );
+  const broken = structuredClone(story);
+  broken.id.stage.invoice.lines[0].billed = 63_000;
+  assert.equal(FakturCeritaSchema.safeParse(broken).success, false);
+  assert.doesNotMatch(
+    JSON.stringify(story),
+    /Gmail|Google Sheets|WhatsApp|n8n|—/i,
+  );
+});
+
+test("Layanan SDM (SD1): the same leave request and valid balance in both languages", () => {
+  const story = CERITA["layanan-sdm"];
+  assert.equal(SdmCeritaSchema.safeParse(story).success, true);
+  const { request, policy } = story.id.stage;
+  assert.equal(request.date, "2026-12-03");
+  assert.equal(request.after, request.before - request.days);
+  assert.match(policy.source, /Bagian 3\.2/);
+  assert.match(story.en.stage.policy.source, /Section 3\.2/);
+  const wrongBalance = structuredClone(story);
+  wrongBalance.id.stage.request.after = 5;
+  assert.equal(SdmCeritaSchema.safeParse(wrongBalance).success, false);
+  const wrongRequest = structuredClone(story);
+  wrongRequest.en.stage.request.number = "CT-027";
+  assert.equal(SdmCeritaSchema.safeParse(wrongRequest).success, false);
+  assert.doesNotMatch(
+    JSON.stringify(story),
+    /WhatsApp|Google Sheets|Google Drive|n8n|—/i,
+  );
+});
+
+test("Onboarding Klien (OK1): shared free slot and separate invite and kickoff dates", () => {
+  const story = CERITA["onboarding-klien"];
+  assert.equal(OnboardingCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.stage.slots.find(({ state }) => state === "free"),
+    { start: "10:00", end: "10:30", state: "free" },
+  );
+  assert.equal(story.id.stage.deal.signed, "2026-11-27");
+  assert.equal(story.id.stage.deal.kickoff, "2026-11-30");
+  const sameDay = structuredClone(story);
+  sameDay.id.stage.deal.kickoff = sameDay.id.stage.deal.signed;
+  assert.equal(OnboardingCeritaSchema.safeParse(sameDay).success, false);
+  const noFreeSlot = structuredClone(story);
+  noFreeSlot.id.stage.slots[1].state = "busy";
+  assert.equal(OnboardingCeritaSchema.safeParse(noFreeSlot).success, false);
+  const solution = SOLUSI.find(({ slug }) => slug === "onboarding-klien");
+  assert.equal(catalogCopy(solution, "id").result, solution.id.result);
+  assert.equal(catalogCopy(solution, "en").result, solution.en.result);
+  assert.doesNotMatch(
+    JSON.stringify(story),
+    /Gmail|Google Calendar|HubSpot|n8n|—/i,
+  );
+});
+
+test("Asisten SOP (AS1): both locales cite the same version and label the proposed log", () => {
+  const story = CERITA["asisten-sop"];
+  assert.equal(AsistenSopCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  const solution = SOLUSI.find(({ slug }) => slug === story.slug);
+  for (const [locale, label, qualifier] of [
+    ["id", "Rancangan", /dalam rancangan/i],
+    ["en", "Design step", /the proposed workflow/i],
+  ]) {
+    const { scenes, stage } = story[locale];
+    assert.equal(new Set(scenes.map(({ id }) => id)).size, scenes.length);
+    assert.deepEqual(
+      scenes.filter(({ cta }) => cta),
+      [scenes.at(-1)],
+    );
+    assert.equal(stage.document.version, story.id.stage.document.version);
+    assert.equal(stage.document.section, story.id.stage.document.section);
+    assert.ok(scenes[4].body.includes(stage.document.title));
+    assert.ok(scenes[4].body.includes(stage.document.section));
+    assert.equal(stage.labels.design, label);
+    assert.notEqual(stage.question, stage.followUp);
+    for (const copy of [
+      solution[locale].answer,
+      solution[locale].steps.at(-1).body,
+      solution[locale].faq[0].a,
+    ]) {
+      assert.match(copy, qualifier);
+    }
+  }
+});
+
+test("Carousel Konten (CR1): locales keep the same five slides and end at draft review", () => {
+  const story = CERITA["carousel-konten"];
+  assert.equal(CarouselCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  for (const { scenes, stage } of [story.id, story.en]) {
+    assert.equal(new Set(scenes.map(({ id }) => id)).size, scenes.length);
+    assert.deepEqual(
+      scenes.filter(({ cta }) => cta),
+      [scenes.at(-1)],
+    );
+    assert.equal(stage.number, "CR-028");
+    assert.deepEqual(
+      stage.slides.map(({ kind }) => kind),
+      ["cover", "tubruk", "press", "pour", "save"],
+    );
+    assert.match(scenes[5].body, /#[^\s]+ #[^\s]+$/);
+    assert.equal(scenes[6].id, "kirim-draf");
+    assert.ok(scenes[6].body.includes(stage.labels.review));
+  }
+});
+
+test("Berkas Dokumen (BD1): versions and review stages agree in both locales", () => {
+  const story = CERITA["berkas-dokumen"];
+  assert.equal(BerkasCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  for (const { stage, scenes } of [story.id, story.en]) {
+    const { identity, family, certificate } = stage.documents;
+    assert.equal(stage.reference, "BD-031");
+    assert.deepEqual(
+      [identity.first, identity.replacement, family.file, certificate.file],
+      ["KTP-foto-01.jpg", "KTP-foto-02.jpg", "KK-01.pdf", "Sertifikat-01.pdf"],
+    );
+    assert.equal(scenes[4].body, stage.request);
+    assert.match(scenes[5].body, new RegExp(stage.labels.ready));
+    assert.ok(!scenes[5].body.includes(stage.labels.complete));
+    assert.ok(scenes[6].body.includes(stage.labels.complete));
+    assert.deepEqual(
+      scenes.filter(({ cta }) => cta),
+      [scenes.at(-1)],
+    );
+  }
+});
+
+test("Stok Menipis (SM1): stock movements, threshold and design estimate are consistent", () => {
+  const story = CERITA["stok-menipis"];
+  const solution = SOLUSI.find(({ slug }) => slug === story.slug);
+  assert.equal(StokCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(story.id.stage.stock, story.en.stage.stock);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  for (const [locale, threshold] of [
+    ["id", /turun di bawah batas minimum/],
+    ["en", /falls below the minimum/],
+  ]) {
+    const { stock, labels } = story[locale].stage;
+    assert.equal(stock.opening - stock.outbound, stock.remaining);
+    assert.equal(stock.remaining + stock.ordered, stock.closing);
+    assert.ok(stock.opening > stock.minimum && stock.remaining < stock.minimum);
+    assert.equal(stock.weeklyOutflow / stock.observedDays, stock.dailyOutflow);
+    assert.equal(stock.remaining / stock.dailyOutflow, stock.coverDays);
+    assert.ok(labels.estimate.includes(String(stock.coverDays)));
+    const copy = solution[locale];
+    assert.equal(catalogCopy(solution, locale).result, copy.result);
+    assert.equal(catalogCopy(solution, locale).summary, copy.summary);
+    for (const line of [
+      copy.summary,
+      copy.answer,
+      copy.built.lead,
+      copy.steps[2].body,
+    ]) {
+      assert.match(line, threshold);
+    }
+  }
+});
+
+test("Pengingat Tagihan (PT1): dates agree with the reminder stages and owner handoff", () => {
+  const story = CERITA["pengingat-tagihan"];
+  const solution = SOLUSI.find(({ slug }) => slug === story.slug);
+  assert.equal(TagihanCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  for (const [locale, handoff, consent] of [
+    ["id", /hari ke-30 setelah jatuh tempo/, /izin pelanggan/],
+    ["en", /30 days after the due date/, /customer's permission/],
+  ]) {
+    const { stage, scenes } = story[locale];
+    const dayOffset = ({ iso }) =>
+      (Date.parse(iso) - Date.parse(stage.due.iso)) / 86_400_000;
+    assert.deepEqual(
+      stage.messages.map(({ stage }) => stage),
+      ["H-3", "H", "H+7"],
+    );
+    assert.deepEqual(
+      stage.messages.map(({ date }) => dayOffset(date)),
+      [-3, 0, 7],
+    );
+    assert.equal(dayOffset(stage.paidOn), 8);
+    assert.equal(dayOffset(stage.handedOffOn), 30);
+    assert.notEqual(stage.primary.code, stage.overdue.code);
+    assert.ok(scenes[5].body.includes(stage.primary.code));
+    assert.ok(
+      scenes[6].body.includes(stage.overdue.code) &&
+        scenes[6].body.includes(stage.owner),
+    );
+    assert.match(solution[locale].answer, handoff);
+    assert.match(solution[locale].steps.at(-1).body, handoff);
+    assert.match(solution[locale].faq[0].a, consent);
+  }
+});
+
+test("Ulasan Pelanggan (UP1): six distinct records support the topic counts and follow-up", () => {
+  const story = CERITA["ulasan-pelanggan"];
+  const solution = SOLUSI.find(({ slug }) => slug === story.slug);
+  assert.equal(UlasanCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  for (const [locale, permission] of [
+    ["id", /ketentuan sumber mengizinkan/],
+    ["en", /source allows processing/],
+  ]) {
+    const { stage } = story[locale];
+    const { reviews, previousCounts } = stage;
+    assert.equal(
+      new Set(reviews.map(({ source, id }) => `${source}:${id}`)).size,
+      6,
+    );
+    assert.deepEqual(
+      reviews.filter(({ replied }) => !replied).map(({ id }) => id),
+      ["UP-031"],
+    );
+    assert.equal(reviews[0].rating, 2);
+    assert.equal(reviews[1].rating, null);
+    assert.deepEqual(
+      ["wait", "taste", "clean"].map(
+        (topic) => reviews.filter((review) => review.topic === topic).length,
+      ),
+      [3, 2, 1],
+    );
+    assert.ok(
+      reviews
+        .filter(({ topic }) => topic === "wait")
+        .every(({ branch }) => branch === 2),
+    );
+    assert.deepEqual(Object.values(previousCounts), [1, 2, 1]);
+    assert.match(solution[locale].faq[1].a, permission);
+  }
+});
+
+test("Rekap Penjualan (RP1): totals, ranking, comparison dates, and follow-up agree with the source", () => {
+  const story = CERITA["rekap-penjualan"];
+  const solution = SOLUSI.find(({ slug }) => slug === story.slug);
+  assert.equal(RekapCeritaSchema.safeParse(story).success, true);
+  assert.deepEqual(
+    story.id.scenes.map(({ id }) => id),
+    story.en.scenes.map(({ id }) => id),
+  );
+  for (const locale of ["id", "en"]) {
+    const { stage } = story[locale];
+    const { rows, date, total, areaTotals, top, periods, history } = stage;
+    assert.equal(
+      rows.reduce((sum, row) => sum + row.amount, 0),
+      total,
+    );
+    assert.equal(total, 12_000_000);
+    for (const area of ["north", "south"]) {
+      assert.equal(
+        rows
+          .filter((row) => row.area === area)
+          .reduce((sum, row) => sum + row.amount, 0),
+        areaTotals[area],
+      );
+    }
+    assert.deepEqual(top, { product: "tea", cartons: 50 });
+    for (const product of Object.keys(stage.products)) {
+      const cartons = rows
+        .filter((row) => row.product === product)
+        .reduce((sum, row) => sum + row.cartons, 0);
+      assert.ok(top.cartons >= cartons);
+    }
+    assert.deepEqual(
+      periods.map(
+        (period) => (Date.parse(date) - Date.parse(period.date)) / 86_400_000,
+      ),
+      [1, 7],
+    );
+    assert.deepEqual(
+      periods.map(({ change, amount }) => {
+        assert.equal(change, ((total - amount) / amount) * 100);
+        return change;
+      }),
+      [20, -20],
+    );
+    assert.equal(history.cartons, history.north + history.south);
+    assert.equal(history.product, top.product);
+    assert.match(solution[locale].faq[1].a, /24/);
+  }
 });
 
 test("S8 template-based solutions: status ide, no template or platform names in the headline copy", () => {

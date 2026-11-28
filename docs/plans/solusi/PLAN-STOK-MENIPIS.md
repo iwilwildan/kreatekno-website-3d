@@ -1,8 +1,10 @@
 # Detail Solusi: Peringatan stok menipis sebelum habis
 
-Tanggal: 7 Nov 2026. Status: **rencana awal HTML dari katalog; belum diimplementasikan; storyboard 3D belum tersedia**.
+Per 28 Nov 2026, **Baca dan Tonton ID/EN tersedia. N10 lulus QA browser 137/137. Review ditutup saat user meminta lanjut.**
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md). Kontrak template, route, mesin, dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya menjabarkan kebutuhan khusus `stok-menipis`.
+
+Bagian 1–6 menyimpan rencana katalog awal 7 Nov. Alur yang diusulkan untuk Tonton ada di bagian 7.
 
 ## 1. Identitas dan sumber
 
@@ -73,3 +75,54 @@ Hasil P2 menjadi masukan D4 (regresi lintas solusi); P2 tidak menunggu D4 selesa
 7 Nov 2026: subplan awal dibuat dari konten katalog atas permintaan pemisahan plan. Belum ada implementasi atau persetujuan storyboard baru.
 
 24 Nov 2026 (S8 N1b): copy ID/EN ditulis ulang dari workflow nyata atau template n8n.io, status `ide`, klien contoh. Sumber, keputusan dan hasil di [PLAN-KATALOG-N8N](PLAN-KATALOG-N8N.md) bagian 11; cerita Tonton direncanakan di tahap S8 berikutnya.
+
+## 7. N10 Stok Menipis
+
+### 7.1 Riset 28 Nov 2026
+
+- Template 3979 mencatat pergerakan melalui form dan memeriksa jumlah yang sudah diperbarui. Pemeriksaan memicu peringatan saat jumlah **di bawah minimum**. Template memakai email. N10 memakai WhatsApp sesuai Baca dan memperlihatkan tiga isi pesan yang sudah disepakati: nama barang, stok tersisa, dan batas minimum. [Template 3979](https://n8n.io/workflows/3979-raw-materials-inventory-management-with-google-sheets-supabase-and-approvals/) · [Dokumentasi WhatsApp n8n](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.whatsapp)
+- Template 11055 memakai pesan suara untuk hitung fisik per lokasi rak. Itu mendukung opsi hitung berkala di Baca. Contoh N10 mengikuti satu transaksi barang keluar, pemesanan oleh staf pembelian, dan pencatatan barang masuk saat diterima. [Template 11055](https://n8n.io/workflows/11055-ai-warehouse-inventory-cycle-count-bot-using-gpt-telegram-and-google-sheets/)
+- Template 18067 memberi pembanding untuk menghitung lama stok bertahan dari jumlah tersedia dan laju penjualan. N10 mengusulkan kartu **Rancangan** terpisah dari pesan WhatsApp. Kartu memakai rata-rata barang keluar selama tujuh hari terakhir dan mencantumkan asumsi laju yang sama. [Template 18067](https://n8n.io/workflows/18067-forecast-stockouts-and-draft-purchase-orders-with-gemini-sheets-slack-and-gmail/)
+
+### 7.2 Data contoh
+
+- **Bimo** mencatat pergerakan barang di toko grosir sembako contoh. **Rina** menangani pembelian. Produk **Minyak goreng 1 L**, kode **MG-01**, memiliki stok awal **24 karton** dan minimum **20 karton**.
+- Bimo mencatat **8 karton keluar**. Tabel berubah dari **24 menjadi 16 karton**. Karena **16 < 20**, WhatsApp mengirim peringatan kepada Rina berisi **Minyak goreng 1 L**, **Sisa 16 karton**, dan **Minimum 20 karton**.
+- Kartu **Rancangan** memakai contoh **56 karton keluar selama 7 hari**, rata-rata **8 karton per hari**. Dengan sisa **16 karton**, stok diperkirakan bertahan **sekitar 2 hari jika laju keluar tetap**. Kartu ditampilkan di adegan perbandingan stok dan minimum.
+- Rina memilih jumlah lalu memesan **40 karton** ke pemasok. Tabel masih menunjukkan **16 karton** saat pesanan dibuat. Ketika 40 karton diterima, Bimo mencatat penerimaan. Tanpa mutasi lain dalam contoh, stok menjadi **56 karton**.
+
+### 7.3 Rel dan adegan
+
+Rel: catat barang keluar → perbarui stok → bandingkan minimum → peringatkan pembelian → staf memesan ulang → catat barang masuk.
+
+| Adegan | Isi layar | Yang dipahami pengunjung |
+|---|---|---|
+| Sebelum | Bimo melihat catatan pengeluaran di samping tabel stok yang masih menyebut 24 karton. | Angka gudang perlu diperbarui saat barang bergerak. |
+| Catat barang keluar | Form MG-01 menerima 8 karton keluar. | Staf mencatat barang dan jumlah dalam satu form. |
+| Perbarui stok | Baris MG-01 berubah dari 24 menjadi 16 karton. | Tabel memakai jumlah yang tersisa setelah pengeluaran. |
+| Bandingkan minimum | Tampilkan 16 karton di bawah garis minimum 20. Kartu Rancangan menunjukkan perkiraan 2 hari beserta rata-rata 7 hari. | Tim melihat alasan peringatan dan bisa membaca asumsi perkiraannya. |
+| Peringatkan pembelian | WhatsApp untuk Rina menampilkan barang, sisa 16 karton, dan minimum 20. | Staf pembelian mendapat angka yang diperlukan untuk tindak lanjut. |
+| Pesan ulang | Rina memilih 40 karton dan memesan. Tabel menunjukkan 16 karton dengan pesanan menunggu datang. | Jumlah dipesan dicatat terpisah dari stok yang tersedia. |
+| Catat barang masuk | Setelah 40 karton diterima, Bimo mencatat barang masuk dan tabel menampilkan 56 karton. | Stok tersedia naik setelah penerimaan tercatat. |
+| Ringkasan | Tiga kartu Baca menunjukkan satu batas per barang, tiga isi pesan, dan satu form pergerakan. | Tim melihat data yang diperlukan untuk menjalankan alur ini. |
+| Konsultasi | Ajak pengunjung membawa tabel stok, batas minimum, dan nama penerima peringatan. | Pengunjung tahu bahan untuk memulai. |
+
+### 7.4 Usulan penyesuaian Baca dan etalase
+
+- Samakan pemicu di ID/EN. Ringkasan, jawaban pembuka, penjelasan Cara dibangun, dan langkah peringatan memakai “turun di bawah batas minimum” / “falls below the minimum”. Ringkasan etalase memakai aturan yang sama.
+- Ganti copy hasil di detail dan etalase menjadi “Peringatan stok rendah untuk pesan ulang” / “Low-stock alerts for reordering”. Keputusan pembelian tetap dilakukan staf. Perkiraan dua hari tetap berlabel Rancangan.
+
+### 7.5 Implementasi dan QA setelah persetujuan
+
+- Gunakan panggung HTML/CSS dan GSAP yang dimuat saat diperlukan. Siapkan form pergerakan, tabel Sheets, penanda ambang, kartu Rancangan, peringatan WhatsApp, dan catatan pemesanan serta penerimaan.
+- Uji aritmetika 24 − 8 = 16 dan 16 + 40 = 56, batas 20, perhitungan perkiraan, urutan pesan dan pesanan, serta stok yang masih 16 sebelum penerimaan. Jalankan QA ID/EN di lima viewport, cek keyboard, CTA, reduced motion, GSAP diblokir, regresi cerita dan etalase, serta ukuran modul animasi.
+- 28 Nov 2026. Storyboard dan penyesuaian Baca siap direview.
+- User meminta “lanjut” setelah menerima storyboard dan usulan copy Baca.
+
+### 7.6 Hasil implementasi (28 Nov 2026)
+
+- Tonton ID/EN mengikuti MG-01 dari 24 karton ke 16. Peringatan WhatsApp muncul saat stok di bawah minimum 20. Kartu Rancangan menampilkan sekitar dua hari berdasarkan laju keluar tujuh hari. Rina memesan 40 karton dan tabel naik ke 56 setelah Bimo mencatat barang diterima.
+- Baca dan etalase ID/EN memakai pemicu di bawah minimum serta copy hasil yang berfokus pada peringatan untuk pemesanan ulang.
+- Build produksi, TypeScript, ESLint, Prettier untuk berkas N10, dan tes logika 28/28 lulus. QA N10 lulus 137/137 tanpa error halaman pada lima viewport. Uji mencakup perhitungan stok, urutan peringatan dan penerimaan, copy detail dan etalase, gulir maju/mundur, keyboard, CTA, ID/EN, reduced motion, serta GSAP diblokir.
+- Regresi tiga belas cerita sebelumnya lulus 104/104 dan etalase lulus 114/114. Frame desktop dan viewport HP diperiksa secara visual. Modul animasi N10 berukuran 749 byte gzip dan dimuat saat cerita mendekati viewport. Bundle UI bersama berukuran 47.491 byte gzip.
+- User meminta lanjut setelah preview N10 tersedia. Review ditutup untuk melanjutkan N11. Tes HP fisik masih terbuka. [Preview ID](http://localhost:3321/solusi/stok-menipis#story-title) · [Preview EN](http://localhost:3321/en/solutions/stok-menipis#story-title)

@@ -1,8 +1,10 @@
 # Detail Solusi: Staf baru menemukan jawaban SOP sendiri
 
-Tanggal: 7 Nov 2026. Status: **rencana awal HTML dari katalog; belum diimplementasikan; storyboard 3D belum tersedia**.
+Per 27 Nov 2026, **Tonton N7 tersedia dalam ID/EN dan lulus QA browser 128/128. Review ditutup saat user meminta lanjut.**
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md). Kontrak template, route, mesin, dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya menjabarkan kebutuhan khusus `asisten-sop`.
+
+Bagian 1–6 menyimpan rencana katalog awal 7 Nov. Keputusan N1b dan storyboard yang berlaku ada di bagian 7.
 
 ## 1. Identitas dan sumber
 
@@ -73,3 +75,47 @@ Hasil P2 menjadi masukan D4 (regresi lintas solusi); P2 tidak menunggu D4 selesa
 7 Nov 2026: subplan awal dibuat dari konten katalog atas permintaan pemisahan plan. Belum ada implementasi atau persetujuan storyboard baru.
 
 24 Nov 2026 (S8 N1b): copy ID/EN ditulis ulang dari workflow nyata atau template n8n.io, status `ide`, klien contoh. Sumber, keputusan dan hasil di [PLAN-KATALOG-N8N](PLAN-KATALOG-N8N.md) bagian 11; cerita Tonton direncanakan di tahap S8 berikutnya.
+
+## 7. N7: cerita Tonton Asisten SOP
+
+### 7.1 Riset 27 Nov 2026
+
+- Audit N1b mencatat SOP dari Drive dimasukkan manual ke basis pengetahuan. Bot Telegram menjawab dengan judul dan bagian sumber. Bila materi tidak tercakup, bot memberi tahu staf siapa yang bisa dihubungi. Pencatatan di Sheets masih berupa rancangan. Riset N7 memakai catatan audit 24 Nov untuk workflow privat tersebut. [Audit N1b](PLAN-KATALOG-N8N.md#11-n1b-copy-baca-iden-7-halaman-lama-selesai-teknis-24-nov-menunggu-review)
+- Template 4551 menunjukkan tahap mengambil dokumen dari Drive, menyiapkan potongan berkonteks, lalu mengambil bagian yang relevan untuk menjawab. Dokumentasi n8n menjelaskan cara menyertakan metadata seperti judul dan bagian saat mengambil sumber. Template 4966 memberi pembanding berupa Google Docs yang dibaca setiap kali ada pertanyaan. Untuk mengikuti workflow N1b, N7 memperlihatkan versi baru siap dipakai setelah diproses ulang. [Template 4551](https://n8n.io/workflows/4551-ai-powered-rag-document-processing-and-chatbot-with-google-drive-supabase-openai/) · [Dokumentasi basis pengetahuan n8n](https://docs.n8n.io/build/integrate-ai/understand-ai-components/retrieve-relevant-context) · [Template 4966](https://n8n.io/workflows/4966-customer-support-whatsapp-bot-with-google-docs-knowledge-base-and-gemini-ai/)
+- Usulan penyesuaian Baca ID/EN mencakup jawaban pembuka, langkah terakhir, dan FAQ pertama. Ketiganya menjelaskan bahwa staf dapat menghubungi penanggung jawab. Pertanyaan yang belum terjawab dapat dicatat sebagai **Rancangan** untuk membantu tim melengkapi SOP.
+
+### 7.2 Data dan dialog contoh
+
+- **Wulan** adalah staf baru di klinik gigi tiga cabang (contoh). Adegan memakai pertanyaan administrasi pendaftaran. Kartu dokumen berjudul **SOP Pendaftaran Pasien**, versi **1.2**. Sumber jawaban adalah **Bagian 2.1 · Kedatangan terjadwal**. Layar hanya menampilkan data contoh alur kerja.
+- Wulan bertanya di Telegram, “Kalau pasien datang sesuai jadwal, saya tandai di mana?” Bot membalas, “Buka daftar janji, cocokkan nama dan jadwal, lalu tandai Hadir pada baris yang sesuai.” Judul dokumen dan bagian tercantum tepat di bawah langkah tersebut.
+- Wulan bertanya lagi, “Kalau pasien datang ke cabang lain dari jadwal?” Bot menjawab, “Belum tercakup di SOP. Hubungi kepala cabang.” Wulan yang menghubungi kepala cabang. Contoh catatan Sheets hanya memuat topik **Kedatangan di cabang lain** dan label **Rancangan**.
+
+### 7.3 Rel dan adegan
+
+Rel: pilih SOP → proses dokumen → staf bertanya → jawaban dan sumber → arahan ke penanggung jawab → rancangan catatan.
+
+| Adegan | Isi layar | Yang dipahami pengunjung |
+|---|---|---|
+| Sebelum | Wulan membuka folder SOP dan belum tahu bagian yang harus dibaca. | Staf perlu menemukan aturan saat bekerja. |
+| Pilih SOP | Folder Drive memperlihatkan SOP Pendaftaran Pasien v1.2. | Tim memilih dokumen yang akan dipakai. |
+| Proses dokumen | SOP v1.2 ditandai siap setelah diproses. Bagian kedatangan terjadwal terlihat. | Asisten memakai dokumen yang sudah diproses. |
+| Staf bertanya | Pertanyaan pertama Wulan muncul di Telegram. | Staf bisa bertanya dengan bahasa sehari-hari. |
+| Jawaban dan sumber | Langkah menandai kehadiran disertai judul dan bagian 2.1. | Staf bisa memeriksa sumber jawaban. |
+| Di luar SOP | Bot menyarankan Wulan menghubungi kepala cabang. | Staf tahu tindakan berikutnya bila SOP belum mencakup kasusnya. |
+| Rancangan catatan | Contoh baris berlabel Rancangan berisi topik yang belum tercakup. | Tim dapat memakai topik itu untuk melengkapi SOP. |
+| Ringkasan | Tiga kartu merangkum folder SOP, sumber jawaban, dan pertanyaan yang diarahkan. | Pengunjung melihat hasil pada contoh ini. |
+| CTA | Tawarkan bantuan menyiapkan asisten dari dokumen SOP yang sudah ada. | Pengunjung tahu apa yang perlu disiapkan. |
+
+### 7.4 Implementasi dan QA setelah persetujuan
+
+- Ikuti panggung HTML/CSS bersama dengan GSAP yang dimuat saat diperlukan. Siapkan cerita ID/EN, rel dan tombol adegan, serta tampilan teks statis untuk reduced motion dan ketika GSAP diblokir.
+- Uji lima viewport untuk baca sumber, urutan pertanyaan dan jawaban, label Rancangan, CTA, serta navigasi keyboard dan gulir maju/mundur. Jalankan pemeriksaan build, logika, regresi cerita, dan etalase sesuai tahap S8.
+- 27 Nov 2026: user menyetujui storyboard dan penyesuaian Baca dengan memilih “Setuju, implementasikan N7”.
+
+### 7.5 Hasil implementasi (27 Nov 2026)
+
+- Tonton ID/EN menampilkan versi SOP 1.2 yang sudah diproses, jawaban Telegram beserta Bagian 2.1, dan pertanyaan kedua yang Wulan teruskan sendiri ke kepala cabang. Contoh catatan topik diberi label Rancangan.
+- Jawaban pembuka, langkah terakhir, dan FAQ pertama di Baca memperjelas arahan ke penanggung jawab dan status rancangan untuk pencatatan. Build produksi, TypeScript, ESLint, dan format berkas yang berubah lulus. Tes logika lulus 25/25.
+- QA N7 lulus 128/128 tanpa error halaman pada lima viewport. Cakupan meliputi gulir maju/mundur, urutan munculnya jawaban dan sumber, keyboard, CTA, ID/EN, reduced motion, dan GSAP diblokir. Regresi sepuluh cerita sebelumnya lulus 80/80 dan etalase 114/114. Frame desktop dan viewport HP diperiksa secara visual.
+- Modul animasi khusus N7 berukuran 705 byte gzip dan dimuat saat cerita mendekati viewport. Bundle UI bersama yang memuat panggung berukuran 39.472 byte gzip. N7 memakai GSAP yang sudah ada.
+- User meminta lanjut setelah preview N7 tersedia. Review ditutup untuk melanjutkan N8. Tes HP fisik masih terbuka. [Preview ID](http://localhost:3318/solusi/asisten-sop#story-title) · [Preview EN](http://localhost:3318/en/solutions/asisten-sop#story-title)

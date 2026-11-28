@@ -21,7 +21,7 @@ export const pengingatTagihan: Solusi = {
     summary:
       "Setiap pagi tagihan yang belum lunas dicek, lalu pelanggan menerima pengingat sopan sesuai tahap jatuh temponya.",
     answer:
-      "Setiap pagi tabel tagihan dibaca, dan hanya tagihan yang belum lunas yang dipilih. Pelanggan menerima pengingat sopan sesuai tahapnya: tiga hari sebelum jatuh tempo, pada hari jatuh tempo, dan tujuh hari setelah lewat. Tanggal setiap pengingat dicatat di tabel. Tagihan yang lewat 30 hari tidak lagi diingatkan otomatis, tetapi diserahkan ke pemilik untuk dihubungi langsung.",
+      "Setiap pagi tabel tagihan dibaca, dan hanya tagihan yang belum lunas yang dipilih. Pelanggan menerima pengingat tiga hari sebelum jatuh tempo, pada hari jatuh tempo, dan tujuh hari setelahnya. Tanggal dan tahap pengingat dicatat di tabel. Jika tagihan masih belum lunas pada hari ke-30 setelah jatuh tempo, catatannya diteruskan ke pemilik untuk ditindaklanjuti langsung.",
     client: "Jasa servis AC kontrak bulanan (contoh)",
     painsLead:
       "Jasa servis AC punya puluhan pelanggan kontrak bulanan, dari kantor sampai ruko, dengan tanggal jatuh tempo yang berbeda-beda. Staf keuangan menagih satu per satu lewat chat dan sering merasa sungkan, sehingga tagihan yang terlambat baru ditanyakan saat kas menipis.",
@@ -39,7 +39,7 @@ export const pengingatTagihan: Solusi = {
         "Mengirim pengingat dengan template pesan yang sudah disetujui, berisi nomor tagihan, jumlah, dan cara bayar.",
         "Mengirim lewat email untuk pelanggan yang tidak memakai chat.",
         "Mencatat tanggal dan tahap setiap pengingat di tabel tagihan.",
-        "Menyerahkan tagihan yang lewat 30 hari ke pemilik untuk dihubungi langsung.",
+        "Menyerahkan tagihan yang masih belum lunas pada hari ke-30 setelah jatuh tempo ke pemilik.",
       ],
     },
     quote: {
@@ -50,12 +50,19 @@ export const pengingatTagihan: Solusi = {
       { title: "Tagihan dicek setiap pagi", body: "Hanya tagihan yang belum lunas yang dipilih." },
       { title: "Tahap ditentukan", body: "Tiga hari sebelum, hari jatuh tempo, atau lewat tujuh hari." },
       { title: "Pengingat dikirim", body: "Pesan sopan sesuai tahapnya, dan tanggalnya dicatat." },
-      { title: "Pemilik menindaklanjuti", body: "Tagihan yang lewat 30 hari dihubungi langsung oleh pemilik." },
+      {
+        title: "Pemilik menindaklanjuti",
+        body: "Pada hari ke-30 setelah jatuh tempo, tagihan yang masih belum lunas diteruskan ke pemilik.",
+      },
     ],
     compare: [
       { aspect: "Mengingatkan", before: "Menagih satu per satu", after: "Terkirim sesuai tahap" },
       { aspect: "Riwayat pengingat", before: "Tidak tercatat", after: "Tanggal dan tahap di tabel" },
-      { aspect: "Beban staf", before: "Semua pelanggan", after: "Hanya yang lewat 30 hari" },
+      {
+        aspect: "Tindak lanjut langsung",
+        before: "Staf menghubungi pelanggan satu per satu",
+        after: "Pemilik menerima tagihan yang masih terbuka pada H+30",
+      },
     ],
     fit: [
       "Usaha dengan tagihan rutin bulanan atau termin.",
@@ -70,12 +77,12 @@ export const pengingatTagihan: Solusi = {
     metrics: [
       { value: "3", unit: "tahap", label: "pengingat: H-3, hari jatuh tempo, lewat 7 hari" },
       { value: "07.00", unit: "WIB", label: "tagihan dicek setiap pagi" },
-      { value: "30", unit: "hari", label: "lewat jatuh tempo, tagihan diserahkan ke pemilik" },
+      { value: "30", unit: "hari", label: "setelah jatuh tempo, tagihan yang masih terbuka diteruskan ke pemilik" },
     ],
     faq: [
       {
-        q: "Apakah pengingat boleh dikirim lewat WhatsApp kapan saja?",
-        a: "Boleh, asalkan memakai template pesan yang sudah disetujui. Aturan WhatsApp Business hanya mengizinkan pesan bebas dalam 24 jam setelah pelanggan terakhir membalas, jadi pengingat tagihan memakai template.",
+        q: "Apa syarat mengirim pengingat lewat WhatsApp?",
+        a: "Minta izin pelanggan untuk menerima pesan WhatsApp. Pengingat memakai template pesan yang sudah disetujui, sesuai ketentuan WhatsApp untuk pesan yang dimulai bisnis atau dikirim di luar jendela layanan 24 jam.",
       },
       {
         q: "Bagaimana kalau pelanggan sudah membayar?",
@@ -94,7 +101,7 @@ export const pengingatTagihan: Solusi = {
     summary:
       "Each morning unpaid invoices are checked, and customers get a polite reminder for their stage of the due date.",
     answer:
-      "Each morning the invoice table is read, and only unpaid invoices are picked. Customers receive a polite reminder for their stage: three days before the due date, on the due date, and seven days after. The date of every reminder is recorded in the table. Invoices more than 30 days overdue are no longer reminded automatically; they are handed to the owner to contact directly.",
+      "The invoice table is checked each morning for unpaid invoices. Customers get reminders three days before the due date, on the due date, and seven days after. The date and stage of each reminder are recorded. If an invoice is still unpaid 30 days after the due date, it goes to the owner for direct follow-up.",
     client: "Air-conditioner service on monthly contracts (sample)",
     painsLead:
       "An air-conditioner service has dozens of monthly contract customers, from offices to shophouses, each with a different due date. Finance staff chase each one in chat and often feel awkward, so late invoices only get followed up when cash runs low.",
@@ -112,7 +119,7 @@ export const pengingatTagihan: Solusi = {
         "Sends reminders using approved message templates with the invoice number, amount and how to pay.",
         "Sends by email to customers who do not use chat.",
         "Records the date and stage of every reminder in the invoice table.",
-        "Hands invoices more than 30 days overdue to the owner to contact directly.",
+        "Hands invoices that are still unpaid 30 days after the due date to the owner.",
       ],
     },
     quote: {
@@ -123,12 +130,16 @@ export const pengingatTagihan: Solusi = {
       { title: "Invoices checked each morning", body: "Only unpaid invoices are picked." },
       { title: "Stage decided", body: "Three days before, on the due date, or seven days overdue." },
       { title: "Reminder sent", body: "A polite message for that stage, with the date recorded." },
-      { title: "Owner follows up", body: "Invoices 30 days overdue are contacted by the owner." },
+      { title: "Owner follows up", body: "Invoices still unpaid 30 days after the due date go to the owner." },
     ],
     compare: [
       { aspect: "Reminding", before: "Chasing one by one", after: "Sent by stage" },
       { aspect: "Reminder history", before: "Not recorded", after: "Date and stage in the table" },
-      { aspect: "Staff workload", before: "Every customer", after: "Only those 30 days overdue" },
+      {
+        aspect: "Direct follow-up",
+        before: "Staff contact customers one by one",
+        after: "The owner gets invoices still open 30 days after they were due",
+      },
     ],
     fit: [
       "Businesses with regular monthly or instalment invoices.",
@@ -142,13 +153,13 @@ export const pengingatTagihan: Solusi = {
     ],
     metrics: [
       { value: "3", unit: "stages", label: "of reminders: 3 days before, due date, 7 days overdue" },
-      { value: "7", unit: "am", label: "invoices are checked every morning" },
-      { value: "30", unit: "days", label: "overdue, and the invoice goes to the owner" },
+      { value: "7", unit: "am", label: "invoices are checked every morning (WIB)" },
+      { value: "30", unit: "days", label: "after the due date, invoices still open go to the owner" },
     ],
     faq: [
       {
-        q: "Can reminders be sent on WhatsApp at any time?",
-        a: "Yes, as long as approved message templates are used. WhatsApp Business only allows free-form messages within 24 hours of the customer's last reply, so invoice reminders use templates.",
+        q: "What do I need to send reminders on WhatsApp?",
+        a: "Get the customer's permission to receive WhatsApp messages. Reminders use approved message templates, as required when the business starts a conversation or messages outside the 24-hour customer service window.",
       },
       {
         q: "What if the customer has already paid?",

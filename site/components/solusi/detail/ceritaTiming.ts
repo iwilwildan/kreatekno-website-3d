@@ -129,6 +129,149 @@ export const CATAT_PENGELUARAN = makeTiming([
   { in: 0.6, hold: 0.9 },
 ]);
 
+/** Balas Komentar (BK1): one public comment becomes one private conversation. */
+export const BALAS_KOMENTAR = makeTiming([
+  { in: 1.6, hold: 0.6 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.5, hold: 0.7 },
+  { in: 1.5, hold: 0.7 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.9, hold: 0.8 },
+  { in: 1.0, hold: 0.6 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Faktur Pemasok (FK1): one invoice from intake to the owner's decision. */
+export const FAKTUR_PEMASOK = makeTiming([
+  { in: 1.4, hold: 0.65 },
+  { in: 1.3, hold: 0.7 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.8, hold: 0.9 },
+  { in: 1.5, hold: 0.8 },
+  { in: 2.0, hold: 0.9 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Layanan SDM (SD1): leave request, manager decision, then balance update. */
+export const LAYANAN_SDM = makeTiming([
+  { in: 1.4, hold: 0.6 },
+  { in: 1.4, hold: 0.7 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.9, hold: 0.9 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Onboarding Klien (OK1): one deal from signed package to a sent invitation. */
+export const ONBOARDING_KLIEN = makeTiming([
+  { in: 1.4, hold: 0.6 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.8, hold: 0.9 },
+  { in: 2.0, hold: 0.9 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Asisten SOP (AS1): first a cited answer, then a question for the branch manager. */
+export const ASISTEN_SOP = makeTiming([
+  { in: 1.3, hold: 0.7 },
+  { in: 1.3, hold: 0.7 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.3, hold: 0.8 },
+  { in: 1.9, hold: 1.0 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Carousel Konten (CR1): one content row becomes five slides and a caption for review. */
+export const CAROUSEL_KONTEN = makeTiming([
+  { in: 1.4, hold: 0.7 },
+  { in: 1.3, hold: 0.7 },
+  { in: 1.7, hold: 0.8 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.9, hold: 1.0 },
+  { in: 1.5, hold: 0.8 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Berkas Dokumen (BD1): receive two files, request updates, then check the completed folder. */
+export const BERKAS_DOKUMEN = makeTiming([
+  { in: 1.3, hold: 0.7 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.4, hold: 0.8 },
+  { in: 1.8, hold: 0.9 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.9, hold: 0.9 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Stok Menipis (SM1): alert after an outflow, then update stock when the new order arrives. */
+export const STOK_MENIPIS = makeTiming([
+  { in: 1.3, hold: 0.7 },
+  { in: 1.4, hold: 0.7 },
+  { in: 1.5, hold: 0.8 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.7, hold: 0.9 },
+  { in: 2.0, hold: 0.9 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Pengingat Tagihan (PT1): three reminders, one paid invoice, and one owner follow-up. */
+export const PENGINGAT_TAGIHAN = makeTiming([
+  { in: 1.3, hold: 0.7 },
+  { in: 1.4, hold: 0.8 },
+  { in: 1.6, hold: 0.9 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.6, hold: 0.9 },
+  { in: 1.8, hold: 0.9 },
+  { in: 1.9, hold: 1.0 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Ulasan Pelanggan (UP1): daily feedback becomes a weekly comparison and a staff action. */
+export const ULASAN_PELANGGAN = makeTiming([
+  { in: 1.3, hold: 0.7 },
+  { in: 1.5, hold: 0.8 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.8, hold: 0.9 },
+  { in: 1.6, hold: 0.8 },
+  { in: 1.6, hold: 0.9 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
+/** Rekap Penjualan (RP1): sales rows lead to two comparisons and a sourced follow-up. */
+export const REKAP_PENJUALAN = makeTiming([
+  { in: 1.3, hold: 0.7 },
+  { in: 1.7, hold: 0.9 },
+  { in: 1.7, hold: 0.9 },
+  { in: 1.7, hold: 0.9 },
+  { in: 1.6, hold: 0.9 },
+  { in: 1.5, hold: 0.8 },
+  { in: 2.0, hold: 1.0 },
+  { in: 1.0, hold: 0.7 },
+  { in: 0.6, hold: 0.9 },
+]);
+
 export const TIMING = {
   "order-grup": ORDER_GRUP,
   "booking-jasa": BOOKING_JASA,
@@ -136,4 +279,15 @@ export const TIMING = {
   "cs-klinik": CS_KLINIK,
   "followup-prospek": FOLLOWUP_PROSPEK,
   "catat-pengeluaran": CATAT_PENGELUARAN,
+  "balas-komentar": BALAS_KOMENTAR,
+  "faktur-pemasok": FAKTUR_PEMASOK,
+  "layanan-sdm": LAYANAN_SDM,
+  "onboarding-klien": ONBOARDING_KLIEN,
+  "asisten-sop": ASISTEN_SOP,
+  "carousel-konten": CAROUSEL_KONTEN,
+  "berkas-dokumen": BERKAS_DOKUMEN,
+  "stok-menipis": STOK_MENIPIS,
+  "pengingat-tagihan": PENGINGAT_TAGIHAN,
+  "ulasan-pelanggan": ULASAN_PELANGGAN,
+  "rekap-penjualan": REKAP_PENJUALAN,
 } as const;

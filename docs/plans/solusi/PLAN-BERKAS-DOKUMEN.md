@@ -1,8 +1,10 @@
 # Detail Solusi: Berkas dokumen pelanggan dirapikan otomatis
 
-Tanggal: 7 Nov 2026. Status: **rencana awal HTML dari katalog; belum diimplementasikan; storyboard 3D belum tersedia**.
+Per 28 Nov 2026, **Baca dan Tonton ID/EN tersedia. N9 lulus QA browser 135/135. Review ditutup saat user meminta lanjut.**
 
 Induk: [PLAN-SOLUSI](../../../PLAN-SOLUSI.md). Kontrak template, route, mesin, dan QA: [PLAN-DETAIL](PLAN-DETAIL.md). Dokumen ini hanya menjabarkan kebutuhan khusus `berkas-dokumen`.
+
+Bagian 1–6 menyimpan rencana katalog awal 7 Nov. Status layanan dan alur yang berlaku untuk Tonton ada di bagian 7.
 
 ## 1. Identitas dan sumber
 
@@ -73,3 +75,48 @@ Hasil P2 menjadi masukan D4 (regresi lintas solusi); P2 tidak menunggu D4 selesa
 7 Nov 2026: subplan awal dibuat dari konten katalog atas permintaan pemisahan plan. Belum ada implementasi atau persetujuan storyboard baru.
 
 24 Nov 2026 (S8 N1b): copy ID/EN ditulis ulang dari workflow nyata atau template n8n.io, status `ide`, klien contoh. Sumber, keputusan dan hasil di [PLAN-KATALOG-N8N](PLAN-KATALOG-N8N.md) bagian 11; cerita Tonton direncanakan di tahap S8 berikutnya.
+
+## 7. N9 Berkas Dokumen
+
+### 7.1 Riset 28 Nov 2026
+
+- Keputusan N1b menetapkan kantor notaris dan PPAT sebagai contoh dengan status layanan **Siap dibuat**. Template 4827 memberi contoh menerima foto dan PDF dari WhatsApp. Template 4868 memberi contoh membaca file di Drive dan mengisi kolom yang ditentukan di Sheets. N9 memakai pola penerimaan, penyimpanan, dan pembacaan tersebut untuk contoh berkas pelanggan. [Audit dan keputusan N1b](PLAN-KATALOG-N8N.md#11-n1b-copy-baca-iden-7-halaman-lama-selesai-teknis-24-nov-menunggu-review) · [Template 4827](https://n8n.io/workflows/4827-ai-powered-whatsapp-chatbot-for-text-voice-images-and-pdf-with-rag/) · [Template 4868](https://n8n.io/workflows/4868-extract-invoice-data-from-google-drive-to-sheets-with-mistral-ocr-and-gemini/)
+- Template 20432 memperlihatkan satu folder dan satu daftar kelengkapan per permintaan, serta pemberitahuan tentang berkas yang masih kurang. Dokumentasi Sheets menjelaskan cara memperbarui baris yang cocok. N9 memakai satu kode berkas internal sepanjang cerita. Foto pengganti memperbarui entri KTP yang sama di tabel, sementara PDF KK mengisi entri yang masih kosong. [Template 20432](https://n8n.io/workflows/20432-chase-client-documents-with-whatsapp-gmail-google-sheets-and-gpt-4o-mini/) · [Dokumentasi pembaruan baris Sheets](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/sheet-operations#append-or-update-row)
+- Copy Baca menyebut pemeriksaan data oleh staf dan permintaan kirim ulang sebelum berkas dianggap lengkap. N9 memakai status **Perlu dilengkapi** → **Siap dicek staf** → **Lengkap untuk diproses**. Status terakhir menunjuk pada kelengkapan daftar contoh kantor dan muncul setelah staf mengecek data.
+
+### 7.2 Data contoh
+
+- **Maya** adalah pelanggan fiktif dan **Sari** staf kantor notaris dan PPAT contoh. Daftar untuk berkas internal **BD-031** terdiri dari **KTP**, **Kartu Keluarga (KK)**, dan **sertifikat tanah**. Visual hanya memuat label jenis berkas, nama file, dan status. Data identitas serta isi dokumen tidak ditampilkan.
+- Kiriman awal berisi foto KTP dan PDF sertifikat. Folder **BD-031** menyimpan `KTP-foto-01.jpg` dan `Sertifikat-01.pdf`. Tabel mencatat **KTP · Kirim ulang**, **KK · Belum masuk**, dan **Sertifikat · Terbaca**. Ringkasan menunjukkan **1 dari 3 terbaca** dan **Perlu dilengkapi**.
+- Sari mengirim satu pesan ke Maya, “Mohon kirim ulang foto KTP yang lebih jelas dan lampirkan PDF Kartu Keluarga.” Maya mengirim foto pengganti dan PDF KK. File `KTP-foto-02.jpg` dan `KK-01.pdf` masuk ke folder yang sama.
+- Tabel menampilkan **3 dari 3 terbaca** dan **Siap dicek staf**. Sari mencocokkan data yang tercatat dengan dokumen versi terbaru, lalu menandai **Lengkap untuk diproses**.
+
+### 7.3 Rel dan adegan
+
+Rel: terima berkas → simpan ke folder → baca dan catat → minta dilengkapi → perbarui berkas → periksa kelengkapan.
+
+| Adegan | Isi layar | Yang dipahami pengunjung |
+|---|---|---|
+| Sebelum | Sari mencari lampiran di riwayat chat dan mencocokkannya dengan catatan. | Kiriman bertahap membuat staf sulit melihat berkas yang masih kurang. |
+| Terima berkas | WhatsApp menampilkan foto KTP dan PDF sertifikat dari Maya. | Pelanggan mengirim foto atau PDF lewat chat. |
+| Simpan ke folder | Dua file masuk ke folder Drive BD-031 dengan pola nama yang seragam. | Staf bisa menemukan kiriman di satu folder. |
+| Baca dan catat | Tabel menampilkan sertifikat terbaca, KTP perlu dikirim ulang, dan KK belum masuk. | Berkas yang sudah diterima tampil dengan hasil pembacaan masing-masing. |
+| Minta dilengkapi | Sari mengirim satu pesan untuk meminta foto KTP lebih jelas dan PDF KK. | Maya tahu dua hal yang perlu dikirim. |
+| Perbarui berkas | File baru masuk ke folder yang sama. Tabel naik menjadi 3 dari 3 terbaca, dengan status Siap dicek staf. | Kiriman tambahan mengisi daftar yang sudah ada. |
+| Periksa kelengkapan | Sari mengecek data dengan dokumen terbaru sebelum menandai Lengkap untuk diproses. | Staf menentukan kapan paket siap untuk langkah berikutnya. |
+| Ringkasan | Tiga kartu contoh Baca menampilkan satu folder, satu tabel, dan dua format. | Pengunjung melihat cara tim membuka dan memeriksa berkas. |
+| Konsultasi | Ajak pengunjung membawa daftar dokumen dan aturan penamaan yang dipakai. | Pengunjung tahu bahan yang bisa disiapkan. |
+
+### 7.4 Implementasi dan QA setelah persetujuan
+
+- Gunakan panggung HTML/CSS dengan GSAP yang dimuat saat diperlukan. Adegan ID/EN memakai kartu lampiran fiktif, folder, daftar kelengkapan, dan panel pemeriksaan. Caption dan tampilan statis tetap memuat perbedaan status.
+- Uji lima viewport, dua format lampiran, satu kode folder sepanjang cerita, dan pembaruan daftar yang sama. Pastikan status Lengkap untuk diproses muncul setelah cek staf. Cek juga keyboard, CTA, reduced motion, GSAP diblokir, regresi cerita dan etalase, serta ukuran modul animasi.
+- 28 Nov 2026. Storyboard siap direview.
+- User memilih “Setuju, implementasikan N9”.
+
+### 7.5 Hasil implementasi (28 Nov 2026)
+
+- Tonton ID/EN mengikuti folder BD-031 dari dua kiriman awal sampai permintaan kirim ulang dan pemeriksaan Sari. Daftar menunjukkan 1 dari 3 dokumen terbaca, lalu 3 dari 3 terbaca dengan status Siap dicek staf. Status Lengkap untuk diproses muncul setelah pemeriksaan staf. Visual memakai nama file dan data contoh.
+- Build produksi, TypeScript, ESLint, Prettier untuk berkas N9, dan tes logika 27/27 lulus. QA N9 lulus 135/135 tanpa error halaman pada lima viewport. Uji mencakup gulir maju/mundur, foto dan PDF, pembaruan daftar, urutan pemeriksaan, keyboard, CTA, ID/EN, reduced motion, dan GSAP diblokir.
+- Regresi dua belas cerita sebelumnya lulus 96/96 dan etalase lulus 114/114. Frame desktop dan viewport HP diperiksa secara visual. Modul animasi N9 berukuran 739 byte gzip dan dimuat saat cerita mendekati viewport. Bundle UI bersama berukuran 44.150 byte gzip.
+- User meminta lanjut setelah preview N9 tersedia. Review ditutup untuk melanjutkan N10. Tes HP fisik masih terbuka. [Preview ID](http://localhost:3320/solusi/berkas-dokumen#story-title) · [Preview EN](http://localhost:3320/en/solutions/berkas-dokumen#story-title)

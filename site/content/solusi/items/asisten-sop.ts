@@ -1,7 +1,7 @@
 // S8 N1b (24 Nov 2026): rewritten from the SOP agent workflow on the n8n-mcp instance (read only, inactive): an SOP
 // PDF on Drive is loaded into a knowledge base, staff ask through a Telegram bot, the agent answers only from that
-// base in a polite tone and names the document and section it used, and questions it cannot answer are sent back to
-// the responsible staff. Its usage log nodes are not connected, so logging unanswered questions is a design step.
+// base in a polite tone and names the document and section it used. For uncovered questions the bot tells staff who
+// to contact. Its usage log nodes are not connected, so logging unanswered questions is a design step.
 // Supplemented by the public n8n.io templates 4966 (edit the document, answers follow) and 4551 (new files are
 // processed automatically). The real workflow is for a government office; per the user's decision (24 Nov) the
 // page uses a sample clinic and Telegram as the channel. Status "ide": client, quote and metrics are samples.
@@ -22,7 +22,7 @@ export const asistenSop: Solusi = {
     summary:
       "Staf bertanya lewat chat dengan bahasa sehari-hari dan mendapat jawaban dari SOP Anda, lengkap dengan bagian sumbernya.",
     answer:
-      "Dokumen SOP yang sudah Anda punya dijadikan basis pengetahuan. Staf bertanya lewat chat dengan bahasa sehari-hari, dan asisten menjawab hanya dari SOP itu, lengkap dengan judul dokumen dan bagian yang menjadi sumbernya. Pertanyaan yang tidak ada di SOP tidak ditebak: staf diarahkan ke penanggung jawab, dan pertanyaannya dicatat sebagai bahan perbaikan SOP.",
+      "Dokumen SOP yang sudah Anda punya dijadikan basis pengetahuan. Staf bertanya lewat chat dengan bahasa sehari-hari, dan asisten menjawab dari SOP itu, lengkap dengan judul dokumen dan bagiannya. Jika SOP belum mencakup pertanyaannya, asisten menyarankan staf menghubungi penanggung jawab. Dalam rancangan, topik tersebut bisa dicatat sebagai bahan perbaikan SOP.",
     client: "Klinik gigi tiga cabang (contoh)",
     painsLead:
       "Klinik gigi dengan tiga cabang punya SOP untuk sterilisasi alat, pendaftaran pasien, dan penanganan keluhan. Dokumennya panjang dan tersimpan di folder bersama, jadi staf baru lebih sering bertanya ke kepala cabang. Kepala cabang menjawab hal yang sama setiap kali ada staf baru.",
@@ -51,7 +51,10 @@ export const asistenSop: Solusi = {
       { title: "SOP dikumpulkan", body: "Dokumen SOP yang sudah ada diproses menjadi basis pengetahuan." },
       { title: "Staf bertanya", body: "Lewat bot chat internal, dengan bahasa sehari-hari." },
       { title: "Jawaban dari SOP Anda", body: "Lengkap dengan judul dokumen dan bagian sumbernya." },
-      { title: "SOP diperbarui", body: "Pertanyaan yang belum terjawab menjadi bahan perbaikan SOP." },
+      {
+        title: "Staf diarahkan ke penanggung jawab",
+        body: "Jika belum tercakup, asisten memberi tahu staf siapa yang bisa dihubungi. Dalam rancangan, topiknya bisa dicatat untuk melengkapi SOP.",
+      },
     ],
     compare: [
       { aspect: "Menjawab pertanyaan staf", before: "Atasan, berulang kali", after: "Asisten, dari SOP" },
@@ -76,7 +79,7 @@ export const asistenSop: Solusi = {
     faq: [
       {
         q: "Kalau SOP belum lengkap?",
-        a: "Pertanyaan yang belum terjawab dicatat, jadi Anda tahu bagian mana yang perlu ditulis.",
+        a: "Asisten menyarankan staf menghubungi penanggung jawab. Dalam rancangan, pertanyaan yang belum terjawab bisa dicatat di Sheets untuk membantu tim melengkapi SOP.",
       },
       {
         q: "Bagaimana kalau SOP diperbarui?",
@@ -94,7 +97,7 @@ export const asistenSop: Solusi = {
     result: "Supervisors stop answering the same questions",
     summary: "Staff ask in chat in everyday language and get answers from your SOPs, with the source section named.",
     answer:
-      "The SOP documents you already have become a knowledge base. Staff ask in chat in everyday language, and the assistant answers only from those SOPs, naming the document title and section it used. Questions the SOPs do not cover are not guessed: staff are pointed to the person in charge, and the question is logged so the SOPs can be improved.",
+      "Your existing SOP documents become a knowledge base. Staff ask in chat in everyday language, and the assistant answers from the SOPs, naming the document and section it used. If the SOPs do not cover the question, the assistant tells staff who to contact. The proposed workflow can also log the topic so the team can improve the SOPs.",
     client: "Dental clinic with three branches (sample)",
     painsLead:
       "A dental clinic with three branches has SOPs for instrument sterilisation, patient registration and complaint handling. The documents are long and sit in a shared folder, so new staff ask the branch head instead. The branch head answers the same things every time someone new joins.",
@@ -123,7 +126,10 @@ export const asistenSop: Solusi = {
       { title: "SOPs collected", body: "Your existing SOP documents are processed into a knowledge base." },
       { title: "Staff ask", body: "Through an internal chat bot, in everyday language." },
       { title: "Answers from your SOPs", body: "With the document title and source section." },
-      { title: "SOPs improved", body: "Unanswered questions become material to improve the SOPs." },
+      {
+        title: "Staff are told who to contact",
+        body: "When the SOPs do not cover a question, the assistant tells staff who can help. The proposed workflow can log the topic for an SOP update.",
+      },
     ],
     compare: [
       {
@@ -152,7 +158,7 @@ export const asistenSop: Solusi = {
     faq: [
       {
         q: "What if the SOPs are incomplete?",
-        a: "Unanswered questions are logged, so you know which parts still need writing.",
+        a: "The assistant tells staff who to contact. The proposed workflow can log unanswered questions in Sheets so the team knows what to add to the SOPs.",
       },
       {
         q: "What happens when an SOP is updated?",
