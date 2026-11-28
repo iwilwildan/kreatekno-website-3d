@@ -139,7 +139,11 @@ for (const locale of ["id", "en"])
         measured.tileBackgrounds.every((color) => color === "rgba(0, 0, 0, 0)"),
         `${locale} ${c.name}: logo tiles stay transparent`,
       );
-      assert.equal(measured.trustedLabel, "Trusted By");
+      // Home copy v4 (28 Nov): the label follows the language (was "Trusted By" in both)
+      assert.equal(
+        measured.trustedLabel,
+        locale === "id" ? "Dipercaya oleh" : "Trusted by",
+      );
       assert.equal(measured.trustedAlign, "left");
       // user 17 Nov: one stop on the whole plaque on every format (the phone had three)
       {

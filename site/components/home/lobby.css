@@ -106,6 +106,10 @@
 .polaroid[data-tone="3"] {
   --tone: #d6458f;
 }
+/* the result sentence is for the board only: the stacked version shows the whole quote (Home copy v4) */
+.polaroid-highlight {
+  display: none;
+}
 .polaroid blockquote p {
   font-size: 1rem;
   line-height: 1.4;
@@ -501,6 +505,10 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+  /* on the board a polaroid with a result sentence shows that sentence instead of the quote's first lines */
+  .polaroid blockquote .polaroid-quote {
+    display: none;
   }
   /* 9:16: the polaroid is alone on screen and its paper has room for a third line */
   @media (max-aspect-ratio: 1/1) {

@@ -53,14 +53,14 @@
     "about": "Tentang kami"
   },
   "wa": {
-    "chat": "Halo Kreatekno, saya mau tanya soal asisten AI dan pelatihan staf untuk usaha saya.",
+    "chat": "Halo Kreatekno, saya mau konsultasi gratis soal AI untuk usaha saya.",
     "meet": "Halo Kreatekno, saya mau jadwalkan ketemu langsung di Pekanbaru."
   },
   "home": {
     "hero": {
-      "kicker": "Asisten AI untuk UMKM",
-      "headline": "Asisten AI yang bekerja, keahlian staf semakin berkembang, bisnis menjadi siap ekspansi.",
-      "body": "Kami buatkan asisten AI yang mengikuti cara kerja usahamu, lalu memasangnya di aplikasi yang sudah kamu pakai. Setelah itu, staf yang sudah ada kami latih supaya keahliannya bertambah, omzet meningkat, dan usahamu siap ekspansi."
+      "kicker": "AI khusus untuk UMKM",
+      "headline": "Tugas rutin dikerjakan AI, stafmu fokus menumbuhkan usaha.",
+      "body": "Kami pelajari usahamu dulu, lalu membuat AI yang mengikuti cara kerja usahamu dan memasangnya di aplikasi yang sudah kamu pakai. Setelah itu, kami latih stafmu keahlian baru supaya omzet ikut naik."
     },
     "stage": {
       "k0": "Pagi hari di deret ruko. Billboard berdiri di atap toko COMPANY.",
@@ -108,8 +108,8 @@
     "services": {
       "title": "Empat cara kami membantu usahamu",
       "assistants": {
-        "title": "Asisten AI",
-        "body": "AI yang bekerja di balik komputer untuk membantu manajemen, operasional dan pemasaran, tanpa perlu menambah karyawan."
+        "title": "AI khusus usahamu",
+        "body": "AI yang kami buat khusus untuk usahamu, mengerjakan tugas rutin di manajemen, operasional, dan pemasaran tanpa perlu menambah karyawan."
       },
       "strategy": {
         "title": "Pelatihan AI untuk bisnis",
@@ -117,18 +117,18 @@
       },
       "content": {
         "title": "Foto & video dengan AI",
-        "body": "Kami buatkan foto produk, video iklan, video ulasan gaya kreator, sampai animasi karakter brand, semuanya dengan AI, untuk konten dan promosi usahamu."
+        "body": "Foto produk, video iklan, video ulasan gaya kreator, sampai animasi karakter brand. Semuanya kami buat dengan AI untuk promosi usahamu."
       },
       "training": {
         "title": "Kelas keahlian zaman AI",
-        "body": "Belajar meningkatkan kualitas kerja dengan AI dan mengasah keahlian yang tidak bisa digantikan AI, seperti berkomunikasi dan membuat strategi. Cocok untuk mahasiswa hingga pekerja.",
+        "body": "Belajar bekerja lebih baik dengan AI sambil mengasah keahlian yang tidak bisa digantikan AI, seperti berkomunikasi dan membuat strategi. Cocok untuk mahasiswa sampai yang sudah bekerja.",
         "tag": "Kelas online segera hadir"
       }
     },
     "useCase": {
       "title": "Bagian usaha mana yang bisa dibantu AI?",
-      "intro": "Pekerjaan yang biasanya butuh karyawan tambahan, atau yang menyita waktu stafmu sekarang. Pilih satu bagian.",
-      "note": "Pekerjaanmu belum ada di sini? Ceritakan ke kami.",
+      "intro": "Ini pekerjaan yang biasanya butuh karyawan tambahan atau menyita waktu stafmu. Pilih satu bagian.",
+      "note": "Pekerjaanmu belum ada di sini? Ceritakan ke kami, gratis.",
       "tabs": "Bagian usaha",
       "teams": {
         "promo": {
@@ -165,7 +165,7 @@
             },
             {
               "label": "Jadwal",
-              "text": "Pelanggan memilih jadwal kosong langsung di chat dan dicatat otomatis, tanpa menunggu kamu membalas dan mengecek jadwal."
+              "text": "Pelanggan memilih jadwal kosong lewat chat dan jadwalnya tercatat otomatis, tanpa menunggu kamu membalas."
             },
             {
               "label": "Stok",
@@ -207,7 +207,7 @@
             },
             {
               "label": "Karyawan baru",
-              "text": "Karyawan baru bertanya cara kerja toko, asisten menjawab dari aturan yang kamu tulis."
+              "text": "Karyawan baru bertanya cara kerja toko, AI menjawab dari aturan yang kamu tulis."
             },
             {
               "label": "Ringkasan mingguan",
@@ -219,22 +219,22 @@
     },
     "journey": {
       "kicker": "Cara kerja",
-      "title": "Dari ngobrol sampai stafmu punya keahlian baru",
+      "title": "Kamu cukup cerita, sisanya kami kerjakan.",
       "talk": {
-        "title": "Ngobrol",
+        "title": "Kamu cerita",
         "body": "Gratis, ketemu langsung di Pekanbaru atau lewat video call. Ceritakan pekerjaan yang menyita waktu dan siapa yang mengerjakannya sekarang."
       },
       "map": {
-        "title": "Pelajari dan rancang",
-        "body": "Kami pelajari cara kerja usahamu, pilih pekerjaan yang paling terasa manfaatnya, lalu kamu menerima penawaran yang jelas."
+        "title": "Kami pelajari",
+        "body": "Kami pelajari cara kerja usahamu dan memilih pekerjaan yang paling terasa manfaatnya. Kamu menerima penawaran yang jelas, dan keputusannya tetap di tanganmu."
       },
       "build": {
-        "title": "Pasang dan ajari",
-        "body": "Asisten AI dicoba dulu dengan pesanan dan pertanyaan pembelimu, dipasang di aplikasi yang sudah kamu pakai, lalu cara memakai asistennya kami ajari gratis."
+        "title": "Kami buat dan uji",
+        "body": "AI diuji dulu dengan pesanan dan pertanyaan pembelimu, lalu dipasang di aplikasi yang sudah kamu pakai. Cara memakainya kami ajari gratis."
       },
       "launch": {
-        "title": "Latih dan dampingi",
-        "body": "Staf yang tugas adminnya diambil AI kami latih keahlian baru untuk mendatangkan omzet, dan asistennya tetap kami pantau."
+        "title": "Kami latih dan dampingi",
+        "body": "Stafmu kami latih berpikir strategis, berkomunikasi, dan memasarkan, karena merekalah yang paling paham kondisi lapangan. AI-nya tetap kami pantau."
       }
     },
     "testimonials": {
@@ -245,16 +245,19 @@
       "items": [
         {
           "quote": "Dulu kami kewalahan membalas chat satu per satu, sampai banyak pelanggan mengeluh karena slow respon. Semenjak ada AI agent, beban kerja kami berkurang dan pertanyaan pelanggan bisa dijawab dengan cepat. Responnya seperti manusia asli, bukan chatbot robot, dan kami sudah order lagi yang kedua untuk laporan keuangan.",
+          "highlight": "…beban kerja kami berkurang…",
           "name": "Abdul Aziz Azhari, Owner & Direktur",
           "business": "CV Riau Home Cleaning, Pekanbaru"
         },
         {
           "quote": "Produksi konten carousel sekarang jauh lebih efisien berkat sistem AI buatan Kreatekno. Alurnya sudah disesuaikan dengan branding dan selera kami, jadi sekali dibuat hasilnya langsung rapi dan siap tayang. Salah satu kontennya bahkan masuk FYP dengan 153,7 ribu views dan lebih dari 2.700 likes. Jumlah unggahan naik drastis tanpa mengorbankan kualitas visual maupun isi.",
+          "highlight": "Jumlah unggahan naik drastis…",
           "name": "Wisnu, Creative Director",
           "business": "Nextive Gaming, Jakarta"
         },
         {
           "quote": "Sebelum pakai Kreatekno, bagian paling melelahkan di agensi kami adalah menyiapkan dokumen pendukung untuk puluhan klien setiap hari. Salah sedikit di gelar atau format nama saja harus diedit ulang dari awal. Sekarang kami cukup kirim datanya lewat chat, dan semua dokumen jadi otomatis dengan format yang benar. Kapasitas kerja tim naik drastis tanpa perlu tambah admin.",
+          "highlight": "…semua dokumen jadi otomatis…",
           "name": "Lily Sofrina, Direktur",
           "business": "PT Jafa Indo Corpora, Medan"
         }
@@ -293,31 +296,31 @@
       "items": [
         {
           "q": "Kalau pakai AI, karyawan saya harus diberhentikan?",
-          "a": "Tidak perlu. AI mengambil alih tugas admin, lalu kami latih karyawanmu menjual, bernegosiasi, dan menyusun strategi. Keputusannya tetap di tanganmu."
+          "a": "Tidak perlu. Yang pindah ke AI adalah tugas rutin, bukan orangnya. Stafmu kami latih berpikir strategis, berkomunikasi, dan memasarkan. Keputusannya tetap di tanganmu."
         },
         {
           "q": "Kalau AI-nya salah jawab gimana?",
-          "a": "Asisten hanya menjawab dari informasi yang kamu setujui, misalnya daftar harga dan jam buka. Kalau ragu, chat diteruskan ke kamu atau stafmu. Sebelum dipakai, asisten diuji dengan pertanyaan pembelimu."
+          "a": "AI hanya menjawab dari informasi yang kamu setujui, misalnya daftar harga dan jam buka. Kalau AI tidak yakin, chat diteruskan ke kamu atau stafmu. Sebelum dipakai, AI diuji dengan pertanyaan pembelimu."
         },
         {
           "q": "Saya gaptek, bisa pakai?",
-          "a": "Bisa. Kamu cukup cerita pekerjaannya. Kami yang memasang, mencoba, dan mengajarimu memakai asistennya sampai lancar, gratis."
+          "a": "Bisa. Kamu cukup cerita pekerjaannya. Kami yang memasang, menguji, dan mengajarimu memakai AI-nya sampai lancar, gratis."
         },
         {
           "q": "Saya belum punya karyawan. Bisa langsung pakai AI?",
-          "a": "Bisa. Asisten AI mengerjakan tugas admin yang biasanya jadi alasan merekrut, jadi kamu bisa berkembang tanpa langsung menambah gaji tetap."
+          "a": "Bisa. AI mengambil alih tugas rutin yang biasanya jadi alasan merekrut karyawan, jadi usahamu bisa berkembang tanpa harus menambah gaji tetap dulu."
         },
         {
           "q": "Harus ganti nomor atau aplikasi?",
-          "a": "Tidak. Asisten tersambung ke nomor yang sudah dikenal pembelimu, dan proses verifikasinya kami yang urus."
+          "a": "Tidak. Nomor dan aplikasi yang dikenal pembelimu tetap sama, dan proses verifikasi nomornya kami yang urus."
         },
         {
           "q": "Berapa biayanya?",
-          "a": "Tergantung pekerjaan yang mau dibantu, karena setiap usaha berbeda. Setelah konsultasi gratis, kamu menerima penawaran yang jelas, dan bisa membandingkannya dengan biaya merekrut satu karyawan untuk pekerjaan yang sama."
+          "a": "Tergantung pekerjaan yang mau dibantu, karena setiap usaha berbeda. Setelah konsultasi gratis, kamu menerima penawaran yang jelas dan bisa membandingkannya dengan biaya merekrut satu karyawan. Pembayarannya juga fleksibel."
         },
         {
           "q": "Data usaha saya aman?",
-          "a": "Data hanya dipakai untuk menjalankan asistenmu. Yang bisa mengakses dibatasi, dan datanya tetap milikmu."
+          "a": "Data hanya dipakai untuk menjalankan AI-mu. Yang bisa mengakses dibatasi, dan datanya tetap milikmu."
         },
         {
           "q": "Bisa ketemu langsung?",
@@ -327,19 +330,20 @@
     },
     "about": {
       "title": "Tentang Kreatekno",
-      "body": "Kreatekno membantu usaha memasang asisten AI, membuat konten dengan AI, dan melatih pekerja agar bisnis tumbuh bersama orang-orangnya.",
+      "body": "Kreatekno membuat AI untuk tiap usaha dan melatih staf yang sudah ada, supaya usaha tumbuh bersama orang-orangnya.",
       "registered": "PT Kreatekno Kreatif Teknologi, badan usaha resmi",
       "based": "Berbasis di Pekanbaru, melayani seluruh Indonesia",
       "free": "Konsultasi gratis",
       "payment": "Pembayaran fleksibel",
-      "link": "Kenali kami lebih jauh"
+      "link": "Kenali kami lebih jauh",
+      "trusted": "Dipercaya oleh"
     },
     "practice": {
       "label": "Kelas keahlian baru",
-      "body": "Tugas admin pindah ke AI. Staf pindah ke jualan, negosiasi, dan strategi."
+      "body": "Tugas rutin pindah ke AI. Stafmu belajar keahlian yang menumbuhkan usaha."
     },
     "footer": {
-      "epilogue": "Toko sudah tutup. Asistennya masih merapikan pekerjaan untuk besok."
+      "epilogue": "Toko sudah tutup. AI masih merapikan pekerjaan untuk besok."
     }
   },
   "pages": {
@@ -582,7 +586,7 @@
     "body": "Alamat ini tidak ada atau sudah dipindah."
   },
   "footer": {
-    "tagline": "Asisten AI, konten AI, dan pelatihan untuk usaha dan pekerja.",
+    "tagline": "AI untuk usahamu, pelatihan untuk stafmu.",
     "pages": "Halaman",
     "home": "Beranda",
     "privacy": "Kebijakan Privasi",

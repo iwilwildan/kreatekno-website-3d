@@ -53,14 +53,14 @@
     "about": "About us"
   },
   "wa": {
-    "chat": "Hi Kreatekno, I'd like to ask about AI assistants and staff training for my business.",
+    "chat": "Hi Kreatekno, I'd like a free consultation about AI for my business.",
     "meet": "Hi Kreatekno, I'd like to schedule an in-person meeting in Pekanbaru."
   },
   "home": {
     "hero": {
-      "kicker": "AI assistants for SMEs",
-      "headline": "AI assistants do the work, your staff's skills keep growing, your business gets ready to expand.",
-      "body": "We build an AI assistant that follows the way your business works, then set it up in the apps you already use. After that, we train the staff you already have, so their skills grow, sales go up and your business is ready to expand."
+      "kicker": "Custom AI for SMEs",
+      "headline": "AI does the routine work, your staff focus on growing the business.",
+      "body": "We study your business first, then build AI that follows the way your business works and set it up in the apps you already use. After that, we train your staff in new skills so sales go up too."
     },
     "stage": {
       "k0": "Morning on a row of shophouses. A billboard stands on the roof of the COMPANY shop.",
@@ -108,8 +108,8 @@
     "services": {
       "title": "Four ways we help your business",
       "assistants": {
-        "title": "AI assistants",
-        "body": "AI that works behind the computer to help with management, operations and marketing, without hiring more staff."
+        "title": "AI built for your business",
+        "body": "AI we build just for your business, handling routine tasks in management, operations and marketing without hiring more staff."
       },
       "strategy": {
         "title": "AI training for business",
@@ -117,18 +117,18 @@
       },
       "content": {
         "title": "Photos & videos with AI",
-        "body": "We make product photos, ad videos, creator-style review videos and even brand character animations, all with AI, for your content and promotions."
+        "body": "Product photos, ad videos, creator-style review videos and even brand character animations. We make all of it with AI for your promotions."
       },
       "training": {
         "title": "Skills classes for the AI era",
-        "body": "Learn to raise the quality of your work with AI and sharpen the skills AI can't replace, such as communication and strategy. For students through to working professionals.",
+        "body": "Learn to work better with AI while sharpening the skills AI can't replace, such as communication and strategy. For students through to working professionals.",
         "tag": "Online classes coming soon"
       }
     },
     "useCase": {
       "title": "Which parts of your business can AI help with?",
-      "intro": "Work that usually needs extra staff, or that takes up your staff's time today. Pick a part of the business.",
-      "note": "Don't see your work here? Tell us about it.",
+      "intro": "This is work that usually needs extra hires or takes up your staff's time. Pick a part of the business.",
+      "note": "Don't see your work here? Tell us about it, for free.",
       "tabs": "Part of the business",
       "teams": {
         "promo": {
@@ -165,7 +165,7 @@
             },
             {
               "label": "Bookings",
-              "text": "Customers pick a free slot right in the chat and it's recorded automatically, without waiting for you to reply and check the schedule."
+              "text": "Customers pick a free slot through the chat and the booking is recorded automatically, without waiting for you to reply."
             },
             {
               "label": "Stock",
@@ -207,7 +207,7 @@
             },
             {
               "label": "New staff",
-              "text": "New staff ask how the shop works, and the assistant answers from the rules you wrote."
+              "text": "New staff ask how the shop works, and the AI answers from the rules you wrote."
             },
             {
               "label": "Weekly summary",
@@ -219,22 +219,22 @@
     },
     "journey": {
       "kicker": "How it works",
-      "title": "From the first chat to new skills for your staff",
+      "title": "You just tell us, we do the rest.",
       "talk": {
-        "title": "Talk",
+        "title": "You tell us",
         "body": "Free, in person in Pekanbaru or by video call. Tell us which work takes up your time and who does it now."
       },
       "map": {
-        "title": "Study and design",
-        "body": "We study how your business works, pick the work where the benefit is felt most, then you get a clear quote."
+        "title": "We study",
+        "body": "We study how your business works and pick the work where the benefit is felt most. You get a clear quote, and the decision stays in your hands."
       },
       "build": {
-        "title": "Set up and teach",
-        "body": "The AI assistant is first tested with your orders and your customers' questions, set up in the apps you already use, then we teach you to use it for free."
+        "title": "We build and test",
+        "body": "The AI is tested first with your orders and your customers' questions, then set up in the apps you already use. We teach you to use it for free."
       },
       "launch": {
-        "title": "Train and support",
-        "body": "Staff whose admin tasks are taken over by AI are trained in new skills that bring in sales, and we keep monitoring the assistant."
+        "title": "We train and support",
+        "body": "We train your staff in strategic thinking, communication and marketing, because they know the situation on the ground best. We keep monitoring the AI."
       }
     },
     "testimonials": {
@@ -245,16 +245,19 @@
       "items": [
         {
           "quote": "We used to be overwhelmed replying to chats one by one, to the point that many customers complained about slow responses. Since we got the AI agent, our workload has gone down and customer questions get answered quickly. The replies feel like a real person, not a robotic chatbot, and we've already ordered a second one for our financial reports.",
+          "highlight": "…our workload has gone down…",
           "name": "Abdul Aziz Azhari, Owner & Director",
           "business": "CV Riau Home Cleaning, Pekanbaru"
         },
         {
           "quote": "Producing carousel content is now far more efficient thanks to the AI system Kreatekno built. The workflow is tailored to our branding and taste, so once it's made the result is tidy and ready to post. One of the posts even made the FYP with 153.7 thousand views and more than 2,700 likes. We now post far more often without sacrificing visual quality or substance.",
+          "highlight": "We now post far more often…",
           "name": "Wisnu, Creative Director",
           "business": "Nextive Gaming, Jakarta"
         },
         {
           "quote": "Before Kreatekno, the most exhausting part of our agency was preparing supporting documents for dozens of clients every day. One small mistake in a title or name format meant redoing it from scratch. Now we just send the data by chat, and every document is generated automatically in the right format. Our team's capacity has gone up sharply without hiring more admin staff.",
+          "highlight": "…every document is generated automatically…",
           "name": "Lily Sofrina, Director",
           "business": "PT Jafa Indo Corpora, Medan"
         }
@@ -293,31 +296,31 @@
       "items": [
         {
           "q": "If I use AI, do I have to let my staff go?",
-          "a": "No need. AI takes over the admin tasks, then we train your staff to sell, negotiate and plan strategy. The decision stays in your hands."
+          "a": "No need. What moves to AI is the routine work, not the people. We train your staff in strategic thinking, communication and marketing. The decision stays in your hands."
         },
         {
           "q": "What if the AI gives a wrong answer?",
-          "a": "The assistant only answers from information you approve, such as your price list and opening hours. When it's unsure, the chat is passed on to you or your staff. Before it goes live, the assistant is tested with your customers' questions."
+          "a": "The AI only answers from information you approve, such as your price list and opening hours. When the AI isn't sure, the chat is passed on to you or your staff. Before it goes live, the AI is tested with your customers' questions."
         },
         {
           "q": "I'm not good with technology. Can I still use it?",
-          "a": "Yes. You just tell us about the work. We set it up, test it and teach you to use the assistant until you're comfortable, for free."
+          "a": "Yes. You just tell us about the work. We set it up, test it and teach you to use the AI until you're comfortable, for free."
         },
         {
           "q": "I don't have any staff yet. Can I start with AI right away?",
-          "a": "Yes. The AI assistant does the admin tasks that are usually the reason to hire, so you can grow without taking on a fixed salary straight away."
+          "a": "Yes. AI takes over the routine tasks that are usually the reason to hire, so your business can grow without taking on a fixed salary first."
         },
         {
           "q": "Do I have to change my number or app?",
-          "a": "No. The assistant connects to the number your customers already know, and we take care of the verification."
+          "a": "No. The number and apps your customers know stay the same, and we take care of verifying the number."
         },
         {
           "q": "How much does it cost?",
-          "a": "It depends on the work you want help with, because every business is different. After the free consultation you get a clear quote, and you can compare it with the cost of hiring one person for the same work."
+          "a": "It depends on the work you want help with, because every business is different. After the free consultation you get a clear quote and can compare it with the cost of hiring one person. Payment is flexible too."
         },
         {
           "q": "Is my business data safe?",
-          "a": "Data is only used to run your assistant. Access is restricted, and the data stays yours."
+          "a": "Data is only used to run your AI. Access is restricted, and the data stays yours."
         },
         {
           "q": "Can we meet in person?",
@@ -327,19 +330,20 @@
     },
     "about": {
       "title": "About Kreatekno",
-      "body": "Kreatekno helps businesses set up AI assistants, create content with AI, and train workers so the business and its people grow together.",
+      "body": "Kreatekno builds AI for each business and trains the staff it already has, so the business and its people grow together.",
       "registered": "PT Kreatekno Kreatif Teknologi, a registered company",
       "based": "Based in Pekanbaru, serving all of Indonesia",
       "free": "Free consultation",
       "payment": "Flexible payment",
-      "link": "Get to know us"
+      "link": "Get to know us",
+      "trusted": "Trusted by"
     },
     "practice": {
       "label": "New skills class",
-      "body": "Admin tasks move to AI. Staff move to sales, negotiation and strategy."
+      "body": "Routine tasks move to AI. Your staff learn skills that grow the business."
     },
     "footer": {
-      "epilogue": "The shop is closed. Its assistant is still tidying up tomorrow's work."
+      "epilogue": "The shop is closed. The AI is still tidying up tomorrow's work."
     }
   },
   "pages": {
@@ -582,7 +586,7 @@
     "body": "This address doesn't exist or has moved."
   },
   "footer": {
-    "tagline": "AI assistants, AI content and training for businesses and workers.",
+    "tagline": "AI for your business, training for your staff.",
     "pages": "Pages",
     "home": "Home",
     "privacy": "Privacy Policy",

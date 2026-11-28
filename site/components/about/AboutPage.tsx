@@ -184,9 +184,9 @@ export async function AboutPage() {
         <div className="about-inner">
           <div className="about-trusted-head">
             <div>
-              {/* "Trusted By" stays English in both languages, like the Home plaque (issue #34) */}
-              <h2 id="about-trusted" className="about-h2" lang="en">
-                Trusted By
+              {/* the same label as the Home plaque (`home.about.trusted`, Home copy v4) */}
+              <h2 id="about-trusted" className="about-h2">
+                {tHome("about.trusted")}
               </h2>
               <p className="about-intro">{t("trusted.body")}</p>
             </div>

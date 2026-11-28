@@ -4,6 +4,8 @@ _Draf tim 14 Nov 2026, versi 3. Bahasa Indonesia. Dipasang di situs 14 Nov 2026 
 
 Sumber copy Home yang berlaku. `docs/COPY.md` bagian 3 sampai 8 (copy Home versi footage) tidak dipakai lagi untuk Home.
 
+> **28 Nov 2026: copy Home v4 dipasang.** Hero, layanan, use case, cara kerja, cuplikan testimoni, FAQ, Tentang, label logo klien, papan kapur, epilog, tagline footer, dan pesan WhatsApp diganti menurut [draf Home v4](drafts/website-home-v4-draf.md) (bagian "Sesudah"). Untuk elemen itu, teks di bawah sudah tidak berlaku. Sumber yang benar adalah `site/messages/id.json`.
+
 | Info | Isi |
 |---|---|
 | Sapaan | "kamu" / "-mu" (keputusan user 14 Nov 2026, menggantikan "Anda" di Home). Halaman lain masih "Anda" sampai copy-nya ditulis ulang |

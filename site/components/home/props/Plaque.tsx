@@ -57,7 +57,7 @@ export async function Plaque() {
         suppressHydrationWarning
       >
         <p id="h-trusted" className="plaque-trusted-label">
-          Trusted By
+          {t("trusted")}
         </p>
         <ul aria-labelledby="h-trusted">
           {CLIENTS.map((client) => (

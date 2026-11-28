@@ -2,13 +2,14 @@ import { Camera } from "@phosphor-icons/react/ssr";
 import { getMessages, getTranslations } from "next-intl/server";
 import { TestimonialStory } from "./TestimonialStory";
 
-type Testimonial = { quote: string; name: string; business: string };
+type Testimonial = { quote: string; highlight?: string; name: string; business: string };
 
 /**
  * Beat 6 · Testimoni (tahap 7): the heading on the paper strip of the lobby's corkboard (K6), one testimonial on each
  * of its 3 polaroids (issue #17, was 7): photo, quote, name, business. The quotes are the clients' own (Home copy v3,
  * `home.testimonials.items`); the photo stays a placeholder until the client's photo or logo comes in. On the board
- * a quote shows its first lines; the polaroid is a button ("Baca cerita") that opens the whole story in a dialog
+ * a polaroid shows the quote's result sentence (`highlight`, quoted word for word, Home copy v4), or the quote's first
+ * lines when there is none; the polaroid is a button ("Baca cerita") that opens the whole story in a dialog
  * (TestimonialStory). The stacked version shows the whole quote and no button (lobby.css). Real HTML
  * rendered on the server; in the film the world places each block on its prop (anchors "board-strip", "testi-0..2")
  * at its size on screen where the camera reads it, shows it at the K6 hold and hides it (not tabbable) otherwise.
@@ -48,7 +49,8 @@ export async function Corkboard() {
                 <span>{t("photo")}</span>
               </div>
               <blockquote>
-                <p>“{it.quote}”</p>
+                {it.highlight ? <p className="polaroid-highlight">“{it.highlight}”</p> : null}
+                <p className={it.highlight ? "polaroid-quote" : undefined}>“{it.quote}”</p>
               </blockquote>
               <figcaption>
                 <span className="polaroid-name">{it.name}</span>
