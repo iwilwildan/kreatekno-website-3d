@@ -112,7 +112,7 @@ export function PustakaPage({ books, children }: { books: ShelfBook[]; children:
       <section ref={hero} className="pustaka-hero" aria-labelledby="pustaka-h">
         <div className="pustaka-copy">
           <p className="pustaka-kicker">{t("kicker")}</p>
-          <h1 id="pustaka-h">{t("title")}</h1>
+          <h1 id="pustaka-h">{t("heading")}</h1>
           <p className="pustaka-lead">{t("lead")}</p>
           <div className="pustaka-actions">
             <button type="button" className="pustaka-button is-primary" onClick={openTanya}>

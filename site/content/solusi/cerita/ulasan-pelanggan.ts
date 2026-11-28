@@ -45,8 +45,8 @@ const id: UlasanPanggung = {
   ...sample,
   locale: "id-ID",
   daily: "10.00 WIB",
-  currentWeek: "16–22 Nov",
-  previousWeek: "9–15 Nov",
+  currentWeek: "16 sampai 22 Nov",
+  previousWeek: "9 sampai 15 Nov",
   reviews: reviews([
     "Menunggu lama saat makan siang.",
     "Pesanan makan siang lama keluar.",
@@ -61,7 +61,7 @@ const id: UlasanPanggung = {
     branch: "Cabang",
     before: "Masukan tersebar",
     intake: "Pengumpulan harian",
-    table: "Sheets · Catatan ulasan",
+    table: "Catatan ulasan",
     stars: "bintang",
     unrated: "Tanpa rating",
     duplicates: "Cek kiriman yang sama",
@@ -74,7 +74,7 @@ const id: UlasanPanggung = {
     queue: "Daftar tindak lanjut",
     unanswered: "Belum dibalas",
     followUp: "Dita membuka catatan untuk ditindaklanjuti",
-    report: "Gmail · Ringkasan mingguan",
+    report: "Ringkasan mingguan",
     current: "Minggu ini",
     previous: "Minggu lalu",
     total: "Total catatan",
@@ -165,11 +165,11 @@ export const ulasanPelangganStory: UlasanCerita = {
         [
           "Kirim ringkasan",
           "Fajar melihat kenaikan keluhan pada jam makan siang.",
-          "Ringkasan 16–22 Nov membandingkan minggu sebelumnya. Keluhan waktu tunggu Cabang 2 naik dari satu ke tiga. Fajar menambah satu staf pada jam makan siang.",
+          "Ringkasan 16 sampai 22 Nov membandingkan minggu sebelumnya. Keluhan waktu tunggu Cabang 2 naik dari satu ke tiga. Fajar menambah satu staf pada jam makan siang.",
         ],
         [
           "Ringkasan",
-          "Tim tahu topik yang perlu diperbaiki dan ulasan yang perlu dibalas.",
+          "Staf tahu topik yang perlu diperbaiki dan ulasan yang perlu dibalas.",
           "Satu tabel menyatukan catatan dari kanal yang tercakup. Ringkasan mingguan menunjukkan perubahan per topik.",
         ],
         [

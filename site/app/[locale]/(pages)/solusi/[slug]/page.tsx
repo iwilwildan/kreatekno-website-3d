@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return solutionDetailMetadata({
     locale,
     slug,
-    title: `${copy.title} | Kreatekno Solusi`,
-    description: copy.answer || catalog.summary,
+    title: copy.seoTitle ?? `${copy.title} | Kreatekno Solusi`,
+    description: copy.seoDescription ?? (copy.answer || catalog.summary),
   });
 }
 

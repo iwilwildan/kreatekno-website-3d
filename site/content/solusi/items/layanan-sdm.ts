@@ -14,12 +14,16 @@ export const layananSdm: Solusi = {
   metricsKind: "example",
   id: {
     title: "Cuti dan pertanyaan karyawan terjawab lewat chat",
-    question: "Bagaimana tim SDM melayani cuti dan pertanyaan aturan kerja tanpa menjawab hal yang sama berulang kali?",
+    seoTitle: "Pengajuan Cuti dan Tanya Aturan Kerja lewat WhatsApp | Kreatekno",
+    seoDescription:
+      "Karyawan mengajukan cuti atau bertanya aturan kerja lewat WhatsApp. Sisa cuti dicek, atasan memutuskan lewat tombol, dan aturan dijawab dari dokumen kebijakan.",
+    question:
+      "Bagaimana bagian SDM melayani cuti dan pertanyaan aturan kerja tanpa menjawab hal yang sama berulang kali?",
     result: "Jawaban cepat, cuti disetujui atasan lewat tombol",
     summary:
       "Karyawan mengajukan cuti atau bertanya aturan lewat chat. Sisa cuti dicek, atasan memutuskan, jawaban diambil dari dokumen kebijakan.",
     answer:
-      "Karyawan mengirim pesan ke satu nomor. Pengajuan cuti dikenali, sisa cuti dicek di tabel, lalu ringkasannya dikirim ke atasan, yang menyetujui atau menolak lewat tombol. Tabel cuti diperbarui, dan karyawan menerima kabar keputusannya. Pertanyaan aturan kerja dijawab dari dokumen kebijakan perusahaan, dan pertanyaan yang tidak ada jawabannya diteruskan ke tim SDM.",
+      "Karyawan mengirim pesan ke satu nomor. Pengajuan cuti dikenali, sisa cuti dicek di tabel, lalu ringkasannya dikirim ke atasan, yang menyetujui atau menolak lewat tombol. Tabel cuti diperbarui, dan karyawan menerima kabar keputusannya. Pertanyaan aturan kerja dijawab dari dokumen kebijakan perusahaan, dan pertanyaan yang tidak ada jawabannya diteruskan ke bagian SDM.",
     client: "Jaringan minimarket, 40 karyawan (contoh)",
     painsLead:
       "Di jaringan minimarket dengan beberapa cabang dan shift, karyawan menanyakan hal yang sama ke SDM: sisa cuti, aturan tukar shift, dan tanggal gajian. Pengajuan cuti dikirim ke chat pribadi kepala toko dan sering terlupa, lalu sisa cuti dihitung ulang secara manual.",
@@ -37,7 +41,7 @@ export const layananSdm: Solusi = {
         "Mengirim ringkasan pengajuan ke atasan dengan tombol Setujui dan Tolak.",
         "Memperbarui tabel cuti dan mengabari karyawan setelah atasan memutuskan.",
         "Menjawab pertanyaan aturan kerja dari dokumen kebijakan, dengan menyebut bagian dokumen yang dipakai.",
-        "Meneruskan pertanyaan yang tidak ada di dokumen ke tim SDM.",
+        "Meneruskan pertanyaan yang tidak ada di dokumen ke bagian SDM.",
       ],
     },
     quote: {
@@ -57,7 +61,7 @@ export const layananSdm: Solusi = {
     ],
     fit: [
       "Usaha dengan puluhan karyawan di beberapa lokasi atau shift.",
-      "Tim SDM yang sudah punya aturan cuti dan dokumen kebijakan tertulis.",
+      "Bagian SDM yang sudah punya aturan cuti dan dokumen kebijakan tertulis.",
     ],
     notFit: [
       "Perusahaan yang sudah memakai aplikasi SDM lengkap untuk cuti dan absensi.",
@@ -81,7 +85,7 @@ export const layananSdm: Solusi = {
       },
       {
         q: "Bagaimana kalau pertanyaannya tidak ada di dokumen?",
-        a: "Pertanyaan itu diteruskan ke tim SDM, dan bisa menjadi bahan untuk melengkapi dokumen kebijakan.",
+        a: "Pertanyaan itu diteruskan ke bagian SDM, dan bisa menjadi bahan untuk melengkapi dokumen kebijakan.",
       },
       {
         q: "Apakah karyawan bisa melihat data karyawan lain?",

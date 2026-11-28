@@ -15,6 +15,9 @@ export const balasKomentar: Solusi = {
   metricsKind: "example",
   id: {
     title: 'Komentar "harga?" tidak ada yang terlewat',
+    seoTitle: "Auto Reply Komentar Instagram dan DM Katalog | Kreatekno",
+    seoDescription:
+      'Komentar Instagram berisi kata kunci seperti "harga" dibalas singkat, dan penulisnya menerima satu DM berisi katalog. Komentar lain tetap dibalas staf.',
     question: "Bagaimana membalas setiap komentar calon pembeli di media sosial tanpa ada yang terlewat?",
     result: "Setiap penanya di komentar langsung mendapat info",
     summary:
@@ -23,7 +26,7 @@ export const balasKomentar: Solusi = {
       'Komentar baru di postingan dicek setiap 15 menit. Komentar yang berisi kata kunci seperti "harga", "info", atau "pricelist" dibalas singkat di kolom komentar, dan penulisnya menerima satu pesan pribadi berisi katalog dan link pemesanan. Setiap balasan dicatat supaya tidak ada komentar yang dibalas dua kali. Kalau calon pembeli membalas pesan itu, staf melanjutkan obrolannya.',
     client: "Toko hijab online (contoh)",
     painsLead:
-      'Setiap koleksi baru diunggah, kolom komentar penuh pertanyaan "harga?" dan "ready kak?". Admin membalasnya satu per satu di sela mengemas pesanan, dan komentar yang masuk malam hari baru terbaca besok pagi.',
+      'Setiap koleksi baru diunggah, kolom komentar penuh pertanyaan "harga?" dan "ready kak?". Staf membalasnya satu per satu di sela mengemas pesanan, dan komentar yang masuk malam hari baru terbaca besok pagi.',
     pains: [
       'Komentar "harga?" baru dibalas besok, dan calon pembeli sudah membeli di toko lain.',
       "Staf tidak tahu komentar mana yang sudah dibalas.",
@@ -31,9 +34,9 @@ export const balasKomentar: Solusi = {
     ],
     built: {
       h: "Balasan singkat di komentar, detailnya lewat pesan pribadi",
-      lead: "Anda menentukan kata kunci dan isi pesannya satu kali. Setelah itu setiap komentar yang cocok dibalas dan penulisnya menerima katalog, sementara staf menangani obrolan yang berlanjut.",
+      lead: "Kamu menentukan kata kunci dan isi pesannya satu kali. Setelah itu setiap komentar yang cocok dibalas dan penulisnya menerima katalog, sementara staf menangani obrolan yang berlanjut.",
       points: [
-        "Mengecek komentar baru di postingan yang Anda pilih setiap 15 menit.",
+        "Mengecek komentar baru di postingan yang kamu pilih setiap 15 menit.",
         'Hanya membalas komentar dengan kata kunci, misalnya "harga", "info", atau "pricelist".',
         "Membalas di kolom komentar dengan kalimat singkat yang mengajak membuka pesan pribadi.",
         "Mengirim satu pesan pribadi berisi katalog dan link pemesanan ke penulis komentar.",
@@ -42,12 +45,12 @@ export const balasKomentar: Solusi = {
       ],
     },
     quote: {
-      text: "Waktu peluncuran koleksi, komentar bisa ratusan. Sekarang setiap orang yang bertanya harga sudah menerima katalog, tanpa admin membalas satu per satu.",
-      by: "Admin toko hijab online",
+      text: "Waktu peluncuran koleksi, komentar bisa ratusan. Sekarang setiap orang yang bertanya harga sudah menerima katalog, tanpa staf membalas satu per satu.",
+      by: "Staf toko hijab online",
     },
     steps: [
       { title: "Komentar masuk", body: "Komentar baru di postingan dicek setiap 15 menit." },
-      { title: "Kata kunci dicek", body: "Hanya komentar dengan kata kunci pilihan Anda yang belum pernah dibalas." },
+      { title: "Kata kunci dicek", body: "Hanya komentar dengan kata kunci pilihanmu yang belum pernah dibalas." },
       {
         title: "Dibalas dan dikirimi pesan",
         body: "Balasan singkat di komentar, lalu satu pesan pribadi berisi katalog.",
@@ -55,7 +58,7 @@ export const balasKomentar: Solusi = {
       { title: "Staf melanjutkan", body: "Kalau calon pembeli membalas, staf meneruskan obrolannya." },
     ],
     compare: [
-      { aspect: "Waktu membalas", before: "Menunggu admin sempat", after: "Dicek setiap 15 menit" },
+      { aspect: "Waktu membalas", before: "Menunggu staf sempat", after: "Dicek setiap 15 menit" },
       { aspect: "Komentar terlewat", before: "Sering, saat ramai", after: "Semua dicek dan dicatat" },
       { aspect: "Isi balasan", before: "Diketik ulang", after: "Satu pesan yang sudah disiapkan" },
     ],
@@ -81,11 +84,11 @@ export const balasKomentar: Solusi = {
     faq: [
       {
         q: "Apakah semua komentar dibalas?",
-        a: "Tidak. Hanya komentar yang berisi kata kunci pilihan Anda. Komentar lain dan keluhan tetap dibalas staf.",
+        a: "Tidak. Hanya komentar yang berisi kata kunci pilihanmu. Komentar lain dan keluhan tetap dibalas staf.",
       },
       {
         q: "Berapa pesan pribadi yang bisa dikirim?",
-        a: "Satu pesan untuk setiap komentar, paling lambat tujuh hari setelah komentar dibuat, sesuai aturan Instagram. Kalau calon pembeli membalas, obrolan bisa berlanjut seperti biasa.",
+        a: "Satu pesan untuk setiap komentar, paling lambat tujuh hari setelah komentar dibuat, sesuai aturan media sosialnya. Kalau calon pembeli membalas, obrolan bisa berlanjut seperti biasa.",
       },
       {
         q: "Bagaimana dengan komentar negatif?",

@@ -15,6 +15,9 @@ export const rekapPenjualan: Solusi = {
   metricsKind: "example",
   id: {
     title: "Rekap penjualan harian tanpa hitung manual",
+    seoTitle: "Rekap Penjualan Harian Otomatis ke WhatsApp Pemilik | Kreatekno",
+    seoDescription:
+      "Setiap malam angka di Google Sheets dijumlahkan dan dibandingkan dengan kemarin dan minggu lalu, lalu dikirim ke WhatsApp pemilik. AI hanya menulis kalimatnya.",
     question: "Bagaimana pemilik usaha menerima rekap penjualan setiap hari tanpa menghitung sendiri?",
     result: "Angka penjualan sampai di HP pemilik setiap malam",
     summary:
@@ -23,9 +26,9 @@ export const rekapPenjualan: Solusi = {
       "Setiap malam angka dari tabel penjualan staf dijumlahkan per hari, produk, dan wilayah. Totalnya dibandingkan dengan kemarin dan hari yang sama minggu lalu sebelum AI menulis ringkasan. Pemilik menerima total, produk terlaris, dan perbandingannya di HP. Pertanyaan lanjutan dijawab dari periode yang tersedia di tabel.",
     client: "Distributor minuman (contoh)",
     painsLead:
-      "Distributor minuman mencatat pengiriman ke puluhan toko setiap hari dalam satu tabel. Pemilik baru tahu angka penjualan setelah admin selesai menghitung keesokan harinya, dan laporan mingguan sering terlambat karena admin sibuk dengan pesanan.",
+      "Distributor minuman mencatat pengiriman ke puluhan toko setiap hari dalam satu tabel. Pemilik baru tahu angka penjualan setelah staf selesai menghitung keesokan harinya, dan laporan mingguan sering terlambat karena staf sibuk dengan pesanan.",
     pains: [
-      "Pemilik baru tahu angka penjualan setelah admin selesai menghitung.",
+      "Pemilik baru tahu angka penjualan setelah staf selesai menghitung.",
       "Laporan mingguan sering terlambat atau tidak dibuat.",
       "Penurunan penjualan satu produk baru terlihat setelah beberapa minggu.",
     ],
@@ -52,7 +55,7 @@ export const rekapPenjualan: Solusi = {
       { title: "Pemilik bertanya balik", body: "Angka periode lain bisa ditanyakan lewat chat." },
     ],
     compare: [
-      { aspect: "Melihat angka harian", before: "Menunggu admin", after: "Di HP setiap malam" },
+      { aspect: "Melihat angka harian", before: "Menunggu staf", after: "Di HP setiap malam" },
       { aspect: "Laporan mingguan", before: "Sering terlambat", after: "Terbentuk dari rekap harian" },
       { aspect: "Membandingkan periode", before: "Membuka banyak file", after: "Cukup bertanya" },
     ],
@@ -77,8 +80,8 @@ export const rekapPenjualan: Solusi = {
         a: "Penjualan perlu dicatat di tabel lebih dulu. Kami bisa membantu menyiapkan tabel atau form pencatatan yang sederhana.",
       },
       {
-        q: "Apakah rekap malam boleh dikirim lewat WhatsApp?",
-        a: "Pemilik menyetujui penerimaan rekap lewat WhatsApp. Pesan terjadwal memakai template yang disetujui. Balasan bebas untuk pertanyaan pemilik mengikuti jendela layanan 24 jam sejak pesan terakhir dari pemilik.",
+        q: "Apakah rekap malam boleh dikirim lewat aplikasi chat?",
+        a: "Boleh, asalkan pemilik setuju menerimanya. Rekap terjadwal memakai template pesan yang sudah disetujui. Pertanyaan balik dari pemilik dijawab bebas selama masih dalam 24 jam sejak pesan terakhir pemilik.",
       },
       {
         q: "Apakah angka yang ditulis AI bisa dipercaya?",

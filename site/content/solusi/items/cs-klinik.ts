@@ -16,23 +16,26 @@ export const csKlinik: Solusi = {
   metricsKind: "example",
   id: {
     title: "Pertanyaan pasien terjawab di luar jam kerja",
-    question: "Bagaimana klinik menjawab chat pasien di malam hari tanpa menambah staf?",
+    seoTitle: "Chatbot WhatsApp Klinik untuk Chat Pasien di Luar Jam Kerja | Kreatekno",
+    seoDescription:
+      "AI membalas chat WhatsApp pasien kapan saja. Harga dari tabel layanan, jadwal kosong seminggu ke depan, janji temu ke kalender. Pertanyaan medis diteruskan ke staf.",
+    question: "Bagaimana klinik menjawab chat pasien di malam hari tanpa menambah karyawan?",
     result: "Chat pasien dibalas kapan saja, janji temu tersusun sebelum klinik buka",
     summary:
       "Pertanyaan harga dan jadwal dijawab dari data klinik, janji temu dicatat, dan pertanyaan medis diteruskan ke staf.",
     answer:
-      "Asisten CS membalas chat pasien kapan saja, termasuk setelah klinik tutup. Harga diambil dari tabel layanan klinik dan jadwal dicek sampai seminggu ke depan. Kalau jam yang diminta penuh, pasien mendapat paling banyak tiga pilihan jam lain, lalu janji temu masuk ke kalender klinik. Setiap percakapan diringkas di tabel pasien, dan pertanyaan medis diteruskan ke staf.",
+      "AI membalas chat pasien kapan saja, termasuk setelah klinik tutup. Harga diambil dari tabel layanan klinik, dan jadwal dicek sampai seminggu ke depan. Kalau jam yang diminta penuh, pasien mendapat paling banyak tiga pilihan jam lain, lalu janji temu masuk ke kalender klinik. Setiap percakapan diringkas di tabel pasien. Dalam rancangan kami, AI meneruskan pertanyaan medis ke staf klinik.",
     client: "Klinik gigi (contoh)",
     painsLead:
       "Sebagian besar chat pasien berisi pertanyaan yang sama: harga, jam praktik, dan jadwal kosong. Chat yang masuk setelah klinik tutup baru dibalas keesokan paginya, dan sebagian pasien sudah memilih klinik lain.",
     pains: [
-      "Admin menjawab pertanyaan yang sama puluhan kali sehari.",
+      "Staf menjawab pertanyaan yang sama puluhan kali sehari.",
       "Chat yang masuk malam hari baru dibalas keesokan paginya.",
       "Janji temu dicatat manual dari chat, sehingga jadwal mudah bentrok.",
     ],
     built: {
-      h: "Satu asisten CS yang menjawab dari data klinik sendiri",
-      lead: "Klinik cukup menyiapkan tabel layanan dan jadwal praktik. Asisten membaca setiap chat pasien, menjawab dengan data itu, lalu mencatat janji temu dan ringkasan percakapannya.",
+      h: "AI yang menjawab pasien dari data klinik sendiri",
+      lead: "Klinik cukup menyiapkan tabel layanan dan jadwal praktik. AI membaca setiap chat pasien, menjawab dengan data itu, lalu mencatat janji temu dan ringkasan percakapannya.",
       points: [
         "Membalas chat pasien kapan saja dengan bahasa yang sopan dan singkat.",
         "Mengingat percakapan dengan setiap nomor, sehingga pasien tidak perlu mengulang.",
@@ -43,16 +46,16 @@ export const csKlinik: Solusi = {
       ],
     },
     quote: {
-      text: "Dulu pagi kami habis untuk membalas chat semalam. Sekarang admin tinggal mengecek janji temu yang sudah tercatat.",
-      by: "Admin klinik gigi",
+      text: "Dulu pagi kami habis untuk membalas chat semalam. Sekarang staf tinggal mengecek janji temu yang sudah tercatat.",
+      by: "Staf klinik gigi",
     },
     steps: [
       {
         title: "Pasien bertanya lewat chat",
-        body: "Lewat nomor WhatsApp klinik yang sudah dikenal pasien, kapan saja.",
+        body: "Lewat nomor chat klinik yang sudah dikenal pasien, kapan saja.",
       },
       {
-        title: "Asisten menjawab dari data klinik",
+        title: "AI menjawab dari data klinik",
         body: "Harga dari tabel layanan, jam kosong dari jadwal klinik.",
       },
       {
@@ -61,13 +64,13 @@ export const csKlinik: Solusi = {
       },
       {
         title: "Staf menangani pertanyaan medis",
-        body: "Rancangan untuk klinik: pertanyaan medis tidak dijawab asisten dan diteruskan ke staf.",
+        body: "Rancangan untuk klinik: AI meneruskan pertanyaan medis ke staf.",
       },
     ],
     compare: [
       {
         aspect: "Pertanyaan rutin",
-        before: "Dijawab admin satu per satu",
+        before: "Dijawab staf satu per satu",
         after: "Dijawab saat itu juga",
       },
       {
@@ -82,7 +85,7 @@ export const csKlinik: Solusi = {
       },
     ],
     fit: [
-      "Klinik yang menerima banyak pertanyaan berulang lewat WhatsApp.",
+      "Klinik yang menerima banyak pertanyaan berulang lewat chat.",
       "Klinik dengan jadwal praktik per jam, seperti klinik gigi atau kecantikan.",
     ],
     notFit: ["Layanan yang membutuhkan diagnosis lewat chat."],
@@ -110,16 +113,16 @@ export const csKlinik: Solusi = {
     ],
     faq: [
       {
-        q: "Apakah asisten memberi saran medis?",
-        a: "Tidak. Dalam rancangan untuk klinik, pertanyaan medis tidak dijawab asisten dan selalu diteruskan ke staf klinik.",
+        q: "Apakah AI memberi saran medis?",
+        a: "Tidak. Dalam rancangan untuk klinik, pertanyaan medis tidak dijawab AI dan selalu diteruskan ke staf klinik.",
       },
       {
         q: "Apakah pasien bisa bicara dengan manusia?",
-        a: "Bisa. Staf membalas dari nomor WhatsApp yang sama, dan ringkasan chat pasien tetap tersimpan di tabel.",
+        a: "Bisa. Staf membalas dari nomor chat klinik yang sama, dan ringkasan chat pasien tetap tersimpan di tabel.",
       },
       {
         q: "Bagaimana kalau harga atau jadwal berubah?",
-        a: "Cukup ubah tabel layanan dan jadwal klinik. Asisten selalu membaca data terbaru saat menjawab.",
+        a: "Cukup ubah tabel layanan dan jadwal klinik. AI selalu membaca data terbaru saat menjawab.",
       },
     ],
   },

@@ -24,7 +24,7 @@ export async function OfficeAddress() {
   }
   return (
     <>
-      {OFFICE_ADDRESS}, {city}
+      {OFFICE_ADDRESS}, {city} {COMPANY.address.postalCode}
     </>
   );
 }

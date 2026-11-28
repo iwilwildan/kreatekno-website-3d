@@ -16,6 +16,9 @@ export const pengingatTagihan: Solusi = {
   metricsKind: "example",
   id: {
     title: "Tagihan jatuh tempo diingatkan otomatis",
+    seoTitle: "Pengingat Tagihan Otomatis via WhatsApp dan Email | Kreatekno",
+    seoDescription:
+      "Tagihan belum lunas dicek setiap pagi. Pelanggan diingatkan lewat WhatsApp atau email pada H-3, hari jatuh tempo, dan H+7. Tagihan H+30 diteruskan ke pemilik.",
     question: "Bagaimana mengingatkan pelanggan soal tagihan tanpa terasa sungkan?",
     result: "Pembayaran lebih tepat waktu tanpa menagih manual",
     summary:
@@ -81,8 +84,8 @@ export const pengingatTagihan: Solusi = {
     ],
     faq: [
       {
-        q: "Apa syarat mengirim pengingat lewat WhatsApp?",
-        a: "Minta izin pelanggan untuk menerima pesan WhatsApp. Pengingat memakai template pesan yang sudah disetujui, sesuai ketentuan WhatsApp untuk pesan yang dimulai bisnis atau dikirim di luar jendela layanan 24 jam.",
+        q: "Apa syarat mengirim pengingat lewat aplikasi chat?",
+        a: "Minta izin pelanggan lebih dulu untuk menerima pesan dari usahamu. Pengingat memakai template pesan yang sudah disetujui penyedia aplikasi chat, karena pesan yang dimulai usaha atau dikirim lebih dari 24 jam setelah pesan terakhir pelanggan wajib memakai template.",
       },
       {
         q: "Bagaimana kalau pelanggan sudah membayar?",
@@ -90,7 +93,7 @@ export const pengingatTagihan: Solusi = {
       },
       {
         q: "Apakah tahap dan isi pesan bisa diubah?",
-        a: "Bisa. Jumlah tahap, jaraknya dari jatuh tempo, dan isi pesannya disesuaikan dengan cara kerja usaha Anda.",
+        a: "Bisa. Jumlah tahap, jaraknya dari jatuh tempo, dan isi pesannya disesuaikan dengan cara kerja usahamu.",
       },
     ],
   },

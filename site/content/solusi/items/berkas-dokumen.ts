@@ -16,6 +16,9 @@ export const berkasDokumen: Solusi = {
   metricsKind: "example",
   id: {
     title: "Berkas dokumen pelanggan dirapikan otomatis",
+    seoTitle: "Kumpulkan Dokumen Pelanggan dari WhatsApp ke Google Drive | Kreatekno",
+    seoDescription:
+      "Foto dan PDF dari WhatsApp tersimpan per pelanggan di Google Drive, isinya dibaca, dan kelengkapan tercatat di tabel. Dokumen buram diminta kirim ulang.",
     question: "Bagaimana mengumpulkan dokumen pelanggan dari chat tanpa berantakan?",
     result: "Berkas lengkap dan rapi per pelanggan",
     summary:
@@ -59,7 +62,7 @@ export const berkasDokumen: Solusi = {
     ],
     fit: [
       "Usaha yang mengumpulkan dokumen dari banyak pelanggan sekaligus.",
-      "Tim kecil yang memproses berkas untuk pengajuan ke pihak lain.",
+      "Usaha kecil dengan beberapa staf yang memproses berkas untuk pengajuan ke pihak lain.",
     ],
     notFit: ["Dokumen yang wajib diserahkan dalam bentuk fisik asli."],
     prep: [
@@ -75,7 +78,7 @@ export const berkasDokumen: Solusi = {
     faq: [
       {
         q: "Apakah dokumen pelanggan aman?",
-        a: "Dokumen disimpan di penyimpanan milik usaha Anda dengan akses yang Anda atur sendiri, dan tidak dibagikan lewat link publik.",
+        a: "Dokumen disimpan di penyimpanan milik usahamu dengan akses yang kamu atur sendiri, dan tidak dibagikan lewat link publik.",
       },
       {
         q: "Bagaimana kalau fotonya buram?",

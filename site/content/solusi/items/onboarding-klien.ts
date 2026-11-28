@@ -14,13 +14,16 @@ export const onboardingKlien: Solusi = {
   apps: ["sheets", "gmail", "calendar"],
   metricsKind: "example",
   id: {
-    title: "Klien baru langsung disambut setelah deal",
+    title: "Klien baru disambut di hari yang sama dengan deal",
+    seoTitle: "Onboarding Klien Otomatis: Email Sambutan dan Rapat Awal | Kreatekno",
+    seoDescription:
+      "Setelah deal tercatat, AI menyiapkan email sambutan, checklist sesuai paket, dan usulan rapat awal dari slot kosong kalender. Staf mengecek sebelum mengirim.",
     question: "Bagaimana memastikan setiap klien baru tahu langkah berikutnya setelah deal?",
     result: "Sambutan, checklist, dan undangan di hari yang sama",
     summary:
       "Setelah deal, email sambutan dan daftar persiapan disiapkan untuk dicek staf, dan rapat awal dijadwalkan di slot kosong.",
     answer:
-      "Begitu klien baru tercatat di tabel deal, checklist onboarding disiapkan sesuai paketnya. AI menulis draf email sambutan yang menyebut nama klien, paket, dan hal yang perlu disiapkan, beserta usulan jadwal rapat awal dari slot kosong di kalender tim. Staf mengecek draf itu, lalu mengirim email dan undangan rapat. Penanggung jawab klien tercatat di tabel.",
+      "Begitu klien baru tercatat di tabel deal, checklist onboarding disiapkan sesuai paketnya. AI menulis draf email sambutan yang menyebut nama klien, paket, dan hal yang perlu disiapkan, beserta usulan jadwal rapat awal dari slot kosong di kalender bersama. Staf mengecek draf itu, lalu mengirim email dan undangan rapat. Penanggung jawab klien tercatat di tabel.",
     client: "Agensi pemasaran digital (contoh)",
     painsLead:
       "Setelah klien menandatangani kontrak, agensi butuh akses akun iklan, logo, dan materi produk sebelum kampanye bisa dimulai. Tanpa sambutan yang jelas, klien menunggu kabar, materi diminta berkali-kali, dan jadwal rapat awal diatur lewat chat bolak-balik.",
@@ -36,7 +39,7 @@ export const onboardingKlien: Solusi = {
         "Membaca deal baru dari tabel atau form, lengkap dengan paket yang dipilih klien.",
         "Menyiapkan checklist onboarding sesuai paket, misalnya akses akun iklan, logo, dan materi produk.",
         "Menulis draf email sambutan yang menyebut nama klien, paket, dan daftar persiapan.",
-        "Mencari slot kosong di kalender tim dan mengusulkannya di draf email.",
+        "Mencari slot kosong di kalender bersama dan mengusulkannya di draf email.",
         "Mengirim email dan undangan rapat awal setelah staf menyetujui draf.",
         "Mencatat penanggung jawab dan status onboarding klien di tabel.",
       ],
@@ -58,19 +61,19 @@ export const onboardingKlien: Solusi = {
     ],
     fit: [
       "Usaha jasa dengan proses awal yang sama untuk setiap klien.",
-      "Tim yang sudah mencatat deal di satu tabel atau form.",
+      "Usaha yang sudah mencatat deal di satu tabel atau form.",
     ],
     notFit: ["Usaha yang hanya mendapat beberapa klien baru dalam setahun."],
     prep: [
       "Checklist onboarding per paket",
       "Contoh email sambutan yang biasa dikirim",
-      "Kalender tim yang dipakai",
+      "Kalender bersama yang dipakai staf",
       "Tabel atau form tempat deal dicatat",
     ],
     metrics: [
       { value: "1", unit: "draf", label: "email sambutan untuk dicek staf sebelum dikirim" },
       { value: "1", unit: "checklist", label: "per paket, dipakai ulang untuk setiap klien" },
-      { value: "1", unit: "undangan", label: "rapat awal di slot kosong tim" },
+      { value: "1", unit: "undangan", label: "rapat awal di slot kosong kalender" },
     ],
     faq: [
       {

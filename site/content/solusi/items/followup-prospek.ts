@@ -16,40 +16,43 @@ export const followupProspek: Solusi = {
   metricsKind: "example",
   id: {
     title: "Calon pembeli properti tidak lagi lupa di-follow-up",
-    question: "Bagaimana tim marketing properti menindaklanjuti setiap calon pembeli tepat waktu?",
+    seoTitle: "Follow-up Prospek Properti Otomatis dengan Draf Pesan AI | Kreatekno",
+    seoDescription:
+      "Setiap pagi, prospek properti yang diam lebih dari tiga hari dipilih dari tabel, lalu AI menulis draf pesan dari chat terakhirnya untuk dikirim staf marketing.",
+    question: "Bagaimana staf marketing properti menindaklanjuti setiap calon pembeli tepat waktu?",
     result: "Prospek dihubungi lagi sesuai jadwal, dengan draf pesan yang sudah siap",
     summary:
       "Prospek yang diam lebih dari tiga hari terdeteksi setiap pagi, lengkap dengan draf pesan dari chat terakhirnya.",
     answer:
-      "Setiap pagi, tabel prospek dibaca dan disaring: hanya calon pembeli yang masih menunggu dan sudah diam lebih dari tiga hari. Untuk setiap prospek itu, AI menulis satu pesan pendek yang menyambung chat terakhirnya, misalnya unit yang diminati dan alasan menunda. Tim marketing menerima pengingat beserta drafnya, lalu mengirimnya dari nomor tim sendiri.",
+      "Setiap pagi, tabel prospek dibaca dan disaring: hanya calon pembeli yang masih menunggu dan sudah diam lebih dari tiga hari. Untuk setiap prospek itu, AI menulis satu pesan pendek yang menyambung chat terakhirnya, misalnya unit yang diminati dan alasan menunda. Staf marketing menerima pengingat beserta drafnya, lalu mengirimnya dari nomor kantor yang sudah dikenal prospek.",
     client: "Developer perumahan (contoh)",
     painsLead:
-      "Banyak calon pembeli tidak langsung memutuskan setelah survei lokasi. Mereka minta waktu untuk berdiskusi atau menunggu cicilan, dan tim marketing harus ingat sendiri kapan menghubungi lagi. Di tengah chat baru setiap hari, prospek yang diam mudah terlupa.",
+      "Banyak calon pembeli tidak langsung memutuskan setelah survei lokasi. Mereka minta waktu untuk berdiskusi atau menunggu cicilan, dan staf marketing harus ingat sendiri kapan menghubungi lagi. Di tengah chat baru setiap hari, prospek yang diam mudah terlupa.",
     pains: [
       'Prospek yang bilang "nanti saya kabari" jarang dihubungi lagi.',
-      "Tim tidak tahu prospek mana yang sudah terlalu lama diam.",
+      "Staf tidak tahu prospek mana yang sudah terlalu lama diam.",
       "Pesan follow-up ditulis ulang satu per satu dan sering terdengar sama.",
     ],
     built: {
-      h: "Satu pengecekan pagi yang menyiapkan follow-up untuk tim",
-      lead: "Tim cukup mengisi satu tabel prospek setelah chat atau survei lokasi. Setiap pagi, tabel itu dibaca, prospek yang perlu disapa dipilih, dan tim menerima draf pesan yang siap dikirim.",
+      h: "Satu pengecekan pagi yang menyiapkan follow-up untuk staf",
+      lead: "Staf cukup mengisi satu tabel prospek setelah chat atau survei lokasi. Setiap pagi, tabel itu dibaca, prospek yang perlu disapa dipilih, dan staf menerima draf pesan yang siap dikirim.",
       points: [
         "Membaca tabel prospek setiap pagi pukul 10.00, tanpa perlu diingatkan.",
         "Hanya memilih prospek yang masih menunggu dan sudah diam lebih dari tiga hari.",
         "Menulis satu pesan pendek yang menyebut unit dan alasan prospek menunda.",
         "Nada pesannya santai dan sopan, menanyakan kabar tanpa mendesak.",
-        "Draf dikirim ke tim marketing, yang mengirimnya dari nomor tim sendiri.",
+        "Draf dikirim ke staf marketing, yang mengirimnya dari nomor kantor.",
         "Rancangan: status dan tanggal prospek diperbarui setelah pesan terkirim.",
       ],
     },
     quote: {
       text: "Dulu kami baru ingat prospek setelah mereka membeli di tempat lain. Sekarang setiap pagi daftar dan drafnya sudah siap.",
-      by: "Tim marketing perumahan",
+      by: "Staf marketing perumahan",
     },
     steps: [
       {
         title: "Prospek tercatat",
-        body: "Tim mengisi nama, ringkasan chat, dan status setelah chat atau survei lokasi.",
+        body: "Staf mengisi nama, ringkasan chat, dan status setelah chat atau survei lokasi.",
       },
       {
         title: "Pengecekan pagi",
@@ -60,8 +63,8 @@ export const followupProspek: Solusi = {
         body: "AI menulis satu pesan pendek yang menyambung chat terakhir prospek.",
       },
       {
-        title: "Tim menghubungi",
-        body: "Tim marketing mengirim draf dari nomor tim, dan status prospek diperbarui.",
+        title: "Staf menghubungi",
+        body: "Staf marketing mengirim draf dari nomor kantor, dan status prospek diperbarui.",
       },
     ],
     compare: [
@@ -83,7 +86,7 @@ export const followupProspek: Solusi = {
     ],
     fit: [
       "Developer dan agen properti dengan banyak prospek dari iklan dan survei lokasi.",
-      "Tim marketing yang sudah mencatat prospek, atau siap mulai mencatat di satu tabel.",
+      "Staf marketing yang sudah mencatat prospek, atau siap mulai mencatat di satu tabel.",
     ],
     notFit: ["Penjualan yang seluruhnya lewat agen luar."],
     prep: [
@@ -111,7 +114,7 @@ export const followupProspek: Solusi = {
     faq: [
       {
         q: "Apakah pesan follow-up dikirim otomatis ke calon pembeli?",
-        a: "Dalam rancangan ini tidak. Draf dikirim ke tim marketing, yang mengirimnya dari nomor tim. Pengiriman langsung ke calon pembeli hanya bisa memakai template pesan yang sudah disetujui, karena aturan WhatsApp Business membatasi pesan ke pelanggan yang lebih dari sehari tidak membalas.",
+        a: "Dalam rancangan ini tidak. Draf dikirim ke staf marketing, yang mengirimnya dari nomor kantor. Kalau pesan dikirim otomatis ke calon pembeli, pesannya wajib memakai template yang sudah disetujui, karena aplikasi chat untuk bisnis membatasi pesan ke pelanggan yang lebih dari sehari tidak membalas.",
       },
       {
         q: "Bagaimana kalau prospek sudah deal atau batal?",
@@ -119,7 +122,7 @@ export const followupProspek: Solusi = {
       },
       {
         q: "Apakah batas tiga hari bisa diubah?",
-        a: "Bisa. Batas hari dan jam pengecekan disesuaikan dengan cara kerja tim Anda.",
+        a: "Bisa. Batas hari dan jam pengecekan disesuaikan dengan cara kerja stafmu.",
       },
     ],
   },

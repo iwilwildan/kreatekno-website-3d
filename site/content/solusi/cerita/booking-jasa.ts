@@ -17,13 +17,13 @@ const ids = [
 export const bookingJasaStory: BookingCerita = {
   slug: "booking-jasa",
   id: {
-    intro: "Ikuti perjalanan satu booking, dari chat pelanggan di malam hari sampai jadwal tim yang rapi.",
+    intro: "Ikuti perjalanan satu booking, dari chat pelanggan di malam hari sampai jadwal petugas yang rapi.",
     scenes: [
       {
         id: ids[0],
         rail: "Sebelum",
         eyebrow: "Sebelum",
-        title: "Chat booking menunggu admin. Jadwal tim dicatat di beberapa tempat.",
+        title: "Chat booking menunggu staf. Jadwal petugas dicatat di beberapa tempat.",
         body: "Pelanggan menunggu berjam-jam hanya untuk tahu jam yang kosong, dan kadang dua pelanggan mendapat jam yang sama.",
       },
       {
@@ -38,7 +38,7 @@ export const bookingJasaStory: BookingCerita = {
         rail: "AI menjawab",
         eyebrow: "Langkah 2 · AI menjawab",
         title: "AI memahami kebutuhan pelanggan lalu menyebut harga dari daftar layanan.",
-        body: "Harga dan ketentuan hanya diambil dari daftar layanan usaha Anda. Pertanyaan di luar daftar diteruskan ke tim.",
+        body: "Harga dan ketentuan hanya diambil dari daftar layanan usahamu. Pertanyaan di luar daftar diteruskan ke staf.",
       },
       {
         id: ids[3],
@@ -56,31 +56,31 @@ export const bookingJasaStory: BookingCerita = {
       },
       {
         id: ids[5],
-        rail: "Tim menerima",
-        eyebrow: "Langkah 5 · Tim menerima",
-        title: "Tim melihat booking baru di tabel jadwal dan di grup tim.",
-        body: "Laporannya memuat layanan, harga, lokasi, dan ringkasan chat, jadi tim tidak perlu bertanya ulang.",
+        rail: "Staf menerima",
+        eyebrow: "Langkah 5 · Staf menerima",
+        title: "Staf melihat booking baru di tabel jadwal dan di grup staf.",
+        body: "Laporannya memuat layanan, harga, lokasi, dan ringkasan chat, jadi staf tidak perlu bertanya ulang.",
       },
       {
         id: ids[6],
         rail: "Perubahan",
         eyebrow: "Langkah 6 · Perubahan",
-        title: "Pindah jadwal atau batal diputuskan tim dengan satu tombol.",
-        body: "Tim menekan Ya atau Tidak. Jadwal diperbarui, dan pelanggan dikabari otomatis.",
+        title: "Pindah jadwal atau batal diputuskan staf dengan satu tombol.",
+        body: "Staf menekan Ya atau Tidak. Jadwal diperbarui, dan pelanggan dikabari otomatis.",
       },
       {
         id: ids[7],
         rail: "Hasil",
         eyebrow: "Hasil · angka contoh",
-        title: "Pelanggan mendapat jawaban saat itu, dan admin fokus ke permintaan khusus.",
+        title: "Pelanggan mendapat jawaban saat itu, dan staf fokus ke permintaan khusus.",
         body: "Angka yang tampil adalah contoh sampai data klien boleh ditampilkan.",
       },
       {
         id: ids[8],
-        rail: "Untuk Anda",
-        eyebrow: "Untuk bisnis Anda",
-        title: "Mau booking otomatis seperti ini untuk usaha Anda?",
-        body: "Ceritakan cara Anda menerima booking sekarang. Kami bantu petakan solusinya, gratis.",
+        rail: "Untukmu",
+        eyebrow: "Untuk usahamu",
+        title: "Mau booking dari chat tercatat seperti ini?",
+        body: "Ceritakan cara usahamu menerima booking sekarang. Kami bantu petakan solusinya, gratis.",
         cta: true,
       },
     ],
@@ -93,7 +93,7 @@ export const bookingJasaStory: BookingCerita = {
         { who: "Andre", text: "bisa survey dulu?" },
         { who: "Lia", text: "halo, mau booking" },
       ],
-      counter: { value: 14, label: "chat menunggu balasan admin" },
+      counter: { value: 14, label: "chat menunggu balasan staf" },
       clock: "21.40",
       ask: {
         who: "Bu Maya",
@@ -112,7 +112,7 @@ export const bookingJasaStory: BookingCerita = {
         { field: "day", value: "Sabtu" },
         { field: "time", value: "10.00" },
       ],
-      reply: { who: "Asisten", text: "Bisa kak, Rp250.000" },
+      reply: { who: "AI", text: "Bisa kak, Rp250.000" },
       day: {
         title: "Sabtu",
         slots: [
@@ -125,7 +125,7 @@ export const bookingJasaStory: BookingCerita = {
         free: "Kosong",
       },
       rules: ["Minimal H-1", "Selesai sebelum 18.00", "Tidak bentrok"],
-      offer: { who: "Asisten", text: "Jam 10 penuh, 13.00 bisa" },
+      offer: { who: "AI", text: "Jam 10 penuh, 13.00 bisa" },
       location: { who: "Bu Maya", text: "Lokasi terkirim" },
       card: {
         no: "#0918",
@@ -152,7 +152,7 @@ export const bookingJasaStory: BookingCerita = {
         to: "Senin 13.00",
         yes: "Ya",
         no: "Tidak",
-        done: { who: "Asisten", text: "Jadwal diubah ke Senin" },
+        done: { who: "AI", text: "Jadwal diubah ke Senin" },
       },
       sample: "Contoh",
     },

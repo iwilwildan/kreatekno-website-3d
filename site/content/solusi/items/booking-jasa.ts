@@ -12,30 +12,32 @@ export const bookingJasa: Solusi = {
   apps: ["whatsapp", "sheets"],
   metricsKind: "example",
   id: {
-    title: "Booking jasa langsung dari chat pelanggan",
-    question: "Bagaimana usaha jasa menerima booking dari WhatsApp tanpa admin standby?",
-    result: "Booking terkonfirmasi tanpa menunggu admin",
-    summary:
-      "Pelanggan memilih jam yang masih kosong langsung di chat, lalu booking tercatat otomatis di jadwal tim Anda.",
+    title: "Pelanggan booking jasa lewat chat, jadwal tercatat sendiri",
+    seoTitle: "Chatbot WhatsApp untuk Booking Jasa dan Jadwal Otomatis | Kreatekno",
+    seoDescription:
+      "Pelanggan bertanya harga dan memilih jam kosong lewat WhatsApp, lalu booking tercatat di jadwal. Pindah jadwal dan batal diputuskan staf dengan satu tombol.",
+    question: "Bagaimana usaha jasa menerima booking dari chat tanpa staf berjaga terus?",
+    result: "Booking terkonfirmasi tanpa menunggu staf",
+    summary: "Pelanggan memilih jam yang masih kosong di chat, lalu booking tercatat otomatis di jadwal stafmu.",
     answer:
-      "Asisten booking menjawab pelanggan di WhatsApp, menyebut harga dari daftar layanan, mengecek jam yang masih kosong, lalu mencatat booking ke jadwal tim. Permintaan khusus dan perubahan jadwal diteruskan ke tim lengkap dengan ringkasan chat, sehingga pelanggan tidak perlu mengulang ceritanya.",
+      "AI menjawab pelanggan di chat, menyebut harga dari daftar layanan, dan menawarkan jam yang masih kosong. Jadwal dicek dengan aturan tetap: minimal sehari sebelumnya, selesai dalam jam kerja, dan tidak bentrok. Booking yang lengkap dicatat ke jadwal staf. Pindah jadwal dan permintaan khusus diteruskan ke staf beserta ringkasan chat, jadi pelanggan tidak perlu mengulang ceritanya.",
     client: "Usaha jasa kebersihan rumah",
     painsLead:
-      "Hampir semua pelanggan menghubungi lewat chat untuk bertanya harga dan jam kosong. Admin harus membalas satu per satu sambil mengatur jadwal tim lapangan.",
+      "Hampir semua pelanggan menghubungi lewat chat untuk bertanya harga dan jam kosong. Staf harus membalas satu per satu sambil mengatur jadwal petugas lapangan.",
     pains: [
       "Pelanggan menunggu berjam-jam hanya untuk tahu jadwal yang tersedia.",
-      "Jadwal tim lapangan sering bentrok karena dicatat di beberapa tempat.",
+      "Jadwal petugas lapangan sering bentrok karena dicatat di beberapa tempat.",
       "Chat di malam hari baru dibalas keesokan paginya.",
     ],
     built: {
       h: "Chat tetap sama, jadwalnya tercatat sendiri",
-      lead: "Pelanggan tetap menghubungi nomor usaha seperti biasa. Di belakang nomor itu, asisten menjawab dari daftar layanan, mengecek jadwal dengan aturan yang pasti, lalu mencatat booking yang sudah lengkap ke jadwal tim.",
+      lead: "Pelanggan tetap menghubungi nomor usaha seperti biasa. Di belakang nomor itu, AI menjawab dari daftar layanan, mengecek jadwal dengan aturan yang pasti, lalu mencatat booking yang sudah lengkap ke jadwal staf.",
       points: [
-        "Menyebut harga dan ketentuan hanya dari daftar layanan usaha Anda, tanpa menebak.",
+        "Menyebut harga dan ketentuan hanya dari daftar layanan usahamu, tanpa menebak.",
         "Mengecek jadwal dengan aturan tetap: minimal sehari sebelumnya, selesai dalam jam kerja, dan tidak bentrok.",
-        "Mencatat booking setelah pelanggan mengirim lokasi, lalu melaporkannya ke grup tim dengan ringkasan chat.",
-        "Meneruskan pindah jadwal dan pembatalan ke tim. Tim cukup menekan Ya atau Tidak, dan pelanggan dikabari otomatis.",
-        "Berhenti membalas saat admin mengambil alih chat dari HP, supaya pelanggan tidak menerima dua jawaban.",
+        "Mencatat booking setelah pelanggan mengirim lokasi, lalu melaporkannya ke grup staf dengan ringkasan chat.",
+        "Meneruskan pindah jadwal dan pembatalan ke staf. Staf cukup menekan Ya atau Tidak, dan pelanggan dikabari otomatis.",
+        "Berhenti membalas saat staf mengambil alih chat dari HP, supaya pelanggan tidak menerima dua jawaban.",
       ],
     },
     quote: {
@@ -48,26 +50,26 @@ export const bookingJasa: Solusi = {
         body: "Pelanggan menghubungi nomor usaha seperti biasa, kapan saja.",
       },
       {
-        title: "Asisten menjawab dan menawarkan jadwal",
+        title: "AI menjawab dan menawarkan jadwal",
         body: "Harga diambil dari daftar layanan, dan pelanggan memilih dari jam yang memang masih kosong.",
       },
       {
-        title: "Booking masuk ke jadwal tim",
-        body: "Tim melihat booking baru di tabel jadwal dan menerima laporannya di grup tim.",
+        title: "Booking masuk ke jadwal staf",
+        body: "Staf melihat booking baru di tabel jadwal dan menerima laporannya di grup staf.",
       },
       {
-        title: "Tim memutuskan yang khusus",
-        body: "Perubahan jadwal dan permintaan di luar kebiasaan diteruskan ke tim dengan ringkasannya.",
+        title: "Staf memutuskan yang khusus",
+        body: "Perubahan jadwal dan permintaan di luar kebiasaan diteruskan ke staf dengan ringkasannya.",
       },
     ],
     compare: [
       {
         aspect: "Konfirmasi jadwal",
-        before: "Menunggu admin membalas",
+        before: "Menunggu staf membalas",
         after: "Dijawab saat itu juga",
       },
       {
-        aspect: "Jadwal tim",
+        aspect: "Jadwal petugas",
         before: "Dicatat di beberapa tempat",
         after: "Satu tabel jadwal bersama",
       },
@@ -78,20 +80,20 @@ export const bookingJasa: Solusi = {
       },
     ],
     fit: [
-      "Usaha jasa dengan tim lapangan dan jadwal kunjungan.",
-      "Usaha yang sebagian besar pelanggannya menghubungi lewat WhatsApp.",
+      "Usaha jasa dengan petugas lapangan dan jadwal kunjungan.",
+      "Usaha yang sebagian besar pelanggannya menghubungi lewat chat.",
     ],
     notFit: ["Jasa yang harganya selalu dinegosiasi kasus per kasus."],
     prep: [
       "Daftar layanan, harga, dan perkiraan durasinya",
-      "Jam kerja dan kapasitas tim per hari",
-      "Tabel jadwal tim, atau kami yang buatkan",
+      "Jam kerja dan kapasitas petugas per hari",
+      "Tabel jadwal petugas, atau kami yang buatkan",
     ],
     metrics: [
       {
         value: "24",
         unit: "jam",
-        label: "asisten aktif, pelanggan bisa booking kapan saja",
+        label: "AI aktif, pelanggan bisa booking kapan saja",
       },
       {
         value: "0",
@@ -106,16 +108,16 @@ export const bookingJasa: Solusi = {
     ],
     faq: [
       {
-        q: "Apakah pelanggan tahu sedang dilayani asisten?",
-        a: "Ya. Kalau ditanya, asisten menjawab jujur bahwa ia asisten virtual, dan pelanggan bisa menelepon nomor yang sama untuk bicara dengan admin.",
+        q: "Apakah pelanggan tahu sedang dilayani AI?",
+        a: "Ya. Kalau ditanya, AI menjawab jujur bahwa ia AI, dan pelanggan bisa menelepon nomor yang sama untuk bicara dengan staf.",
       },
       {
         q: "Bagaimana kalau pelanggan membatalkan atau pindah jadwal?",
-        a: "Permintaannya diteruskan ke tim. Setelah tim menekan Ya, jadwal diperbarui, slot lama kembali kosong, dan pelanggan dikabari otomatis.",
+        a: "Permintaannya diteruskan ke staf. Setelah staf menekan Ya, jadwal diperbarui, slot lama kembali kosong, dan pelanggan dikabari otomatis.",
       },
       {
         q: "Bisakah booking untuk hari yang sama?",
-        a: "Tidak lewat asisten. Booking minimal sehari sebelumnya, supaya tim sempat menyiapkan petugas. Aturan ini bisa disesuaikan dengan usaha Anda.",
+        a: "Tidak lewat AI. Booking minimal sehari sebelumnya, supaya ada waktu menyiapkan petugas. Aturan ini bisa disesuaikan dengan usahamu.",
       },
     ],
   },

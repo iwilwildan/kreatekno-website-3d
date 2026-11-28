@@ -371,7 +371,8 @@ try {
         ) &&
         html.includes(
           locale === "id"
-            ? "jendela layanan 24 jam"
+            ? // SEO copy v1 (28 Nov 2026) reworded the 24-hour window without the platform term.
+              "dalam 24 jam sejak pesan terakhir pemilik"
             : "24-hour customer service window",
         ),
     );

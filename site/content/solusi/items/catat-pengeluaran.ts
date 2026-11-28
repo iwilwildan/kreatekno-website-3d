@@ -14,6 +14,9 @@ export const catatPengeluaran: Solusi = {
   metricsKind: "example",
   id: {
     title: "Nota belanja tercatat cukup dengan satu foto",
+    seoTitle: "Catat Pengeluaran dari Foto Nota via WhatsApp | Kreatekno",
+    seoDescription:
+      "Kirim foto nota, ketikan, atau pesan suara ke WhatsApp usaha. AI mencatat toko, tanggal, total, dan kategori ke Google Sheets, lalu rekapnya dikirim tiap pagi.",
     question: "Bagaimana mencatat pengeluaran usaha tanpa mengetik ulang nota satu per satu?",
     result: "Setiap nota tercatat rapi di hari yang sama, lengkap dengan kategorinya",
     summary:
@@ -34,7 +37,7 @@ export const catatPengeluaran: Solusi = {
       points: [
         'Menerima foto nota, ketikan singkat seperti "es batu 2 karung 30rb", atau pesan suara.',
         "Membaca nama toko, tanggal, daftar barang, dan total dari foto nota.",
-        "Mengelompokkan pengeluaran ke kategori yang Anda tentukan, misalnya bahan baku, operasional, dan kemasan.",
+        "Mengelompokkan pengeluaran ke kategori yang kamu tentukan, misalnya bahan baku, operasional, dan kemasan.",
         "Meminta foto ulang kalau total tidak terbaca, supaya tidak ada catatan kosong.",
         "Membalas pengirim dengan ringkasan catatan untuk dicek.",
         "Mengirim rekap pengeluaran kemarin ke pemilik setiap pagi pukul 08.00.",

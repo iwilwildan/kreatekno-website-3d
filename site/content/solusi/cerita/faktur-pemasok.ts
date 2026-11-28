@@ -38,7 +38,7 @@ export const fakturPemasokStory: FakturCerita = {
         [
           "Sebelum",
           "Selisih kecil per sak mudah terlewat.",
-          "Saat admin mengetik ulang banyak faktur, harga semen yang berubah bisa luput sampai faktur dibayar.",
+          "Saat staf mengetik ulang banyak faktur, harga semen yang berubah bisa luput sampai faktur dibayar.",
         ],
         [
           "Faktur masuk",
@@ -53,7 +53,7 @@ export const fakturPemasokStory: FakturCerita = {
         [
           "Kolom terisi",
           "AI mengisi enam kolom dari isi faktur.",
-          "Data FP-028 masuk ke kolom yang sama dengan faktur pemasok lain, sehingga admin bisa memeriksanya di satu tempat.",
+          "Data FP-028 masuk ke kolom yang sama dengan faktur pemasok lain, sehingga staf bisa memeriksanya di satu tempat.",
         ],
         [
           "Harga dicocokkan",
@@ -68,12 +68,12 @@ export const fakturPemasokStory: FakturCerita = {
         [
           "Keputusan pemilik",
           "Pemilik memilih Tolak karena harga semen berbeda.",
-          "Tabel mencatat status Ditolak · perlu koreksi. Admin bisa meminta faktur koreksi, dan bagian keuangan menangani pembayaran setelah ada persetujuan.",
+          "Tabel mencatat status Ditolak · perlu koreksi. Staf bisa meminta faktur koreksi, dan bagian keuangan menangani pembayaran setelah ada persetujuan.",
         ],
         [
           "Ringkasan",
           "Faktur, selisih, dan keputusan ada di satu catatan.",
-          "Admin bisa melihat angka yang diperiksa dan keputusan pemilik tanpa mencari percakapan lama.",
+          "Staf bisa melihat angka yang diperiksa dan keputusan pemilik tanpa mencari percakapan lama.",
         ],
         [
           "Konsultasi",

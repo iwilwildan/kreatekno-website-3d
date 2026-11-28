@@ -36,7 +36,7 @@ const VIEWPORTS = [
   { width: 1280, height: 720 },
   { width: 1440, height: 900 },
 ];
-const SECTIONS = 7; // story, team, belief, process, trusted, office, cta (h2)
+const SECTIONS = 8; // story, team, belief, services, process, trusted, office, cta (h2)
 
 const browser = await launch({ gpu: false });
 
@@ -95,7 +95,7 @@ for (const pg of PAGES) {
         ].map((l) => [l.hreflang, new URL(l.href).pathname]),
         ldTypes: ld.map((d) => d["@type"] || "graph"),
         founders: about?.mainEntity?.founder?.map((f) => f.name) || [],
-        team: imgs(".about-member-photo img"),
+        team: imgs(".about-team-photo img"),
         logos: imgs(".about-logos img"),
         facade: imgs(".about-facade img"),
         wa: [...main.querySelectorAll("a[data-contact]")].map(
@@ -131,12 +131,12 @@ for (const pg of PAGES) {
       `${tag} json-ld`,
       info.ldTypes.includes("AboutPage") &&
         info.ldTypes.includes("BreadcrumbList") &&
-        info.founders.join() === "Heru,Wildan,Andi",
+        info.founders.join() === "Heru Nuraditya",
       `${info.ldTypes.join(", ")} / ${info.founders.join()}`,
     );
     check(
-      `${tag} portraits`,
-      info.team.length === 3 &&
+      `${tag} team photo`,
+      info.team.length === 1 &&
         info.team.every((i) => i.ok && i.alt.length > 10),
       JSON.stringify(info.team),
     );
@@ -202,6 +202,7 @@ for (const pg of PAGES) {
           id: v.id,
           impact: v.impact,
           nodes: v.nodes.length,
+          targets: v.nodes.slice(0, 6).map((n) => n.target.join(" ")),
         }));
       });
       const serious = axe.filter(

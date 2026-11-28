@@ -40,10 +40,10 @@ const id: BerkasPanggung = {
   labels: {
     before: "Riwayat chat Maya",
     searching: "Sari mencari lampiran",
-    chat: "WhatsApp",
+    chat: "Chat",
     firstBatch: "Kiriman pertama",
-    folder: "Drive · Folder pelanggan",
-    checklist: "Sheets · Kelengkapan",
+    folder: "Folder pelanggan",
+    checklist: "Tabel kelengkapan",
     unreadable: "Foto buram",
     missing: "Belum masuk",
     read: "terbaca",
@@ -92,7 +92,7 @@ const en: BerkasPanggung = {
 export const berkasDokumenStory: BerkasCerita = {
   slug: "berkas-dokumen",
   id: {
-    intro: "Ikuti berkas Maya dari kiriman WhatsApp sampai Sari memeriksanya di kantor notaris dan PPAT contoh.",
+    intro: "Ikuti berkas Maya dari kiriman di chat sampai Sari memeriksanya di kantor notaris dan PPAT contoh.",
     scenes: scenes(
       [
         [
@@ -102,7 +102,7 @@ export const berkasDokumenStory: BerkasCerita = {
         ],
         [
           "Terima berkas",
-          "Maya mengirim foto dan PDF lewat WhatsApp.",
+          "Maya mengirim foto dan PDF lewat chat.",
           "Kiriman pertama berisi foto KTP dan PDF sertifikat tanah.",
         ],
         [

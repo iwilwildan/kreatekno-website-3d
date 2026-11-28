@@ -66,7 +66,7 @@ const id: RekapPanggung = {
   labels: {
     before: "Catatan Bayu",
     waiting: "Nita menunggu angka hari ini",
-    sheet: "Sheets · Tabel penjualan",
+    sheet: "Tabel penjualan",
     product: "Produk",
     area: "Wilayah",
     cartons: "karton",
@@ -76,9 +76,9 @@ const id: RekapPanggung = {
     top: "Terlaris menurut karton",
     compare: "Perbandingan penjualan",
     today: "Hari ini",
-    whatsapp: "WhatsApp",
+    whatsapp: "Chat",
     recap: "Rekap penjualan",
-    assistant: "Asisten penjualan",
+    assistant: "AI penjualan",
     source: "Sumber",
     sample: "Contoh alur",
   },
@@ -143,14 +143,14 @@ export const rekapPenjualanStory: RekapCerita = {
         ],
         [
           "Kirim rekap",
-          "Nita menerima satu rekap di WhatsApp.",
+          "Nita menerima satu rekap di chat.",
           "Pesan malam berisi Rp12 juta, Teh melati 50 karton, dan perubahan terhadap kedua tanggal pembanding.",
         ],
         ["Pemilik bertanya", "Nita ingin tahu penjualan teh melati bulan lalu.", id.question],
         [
           "Jawab dari tabel",
           "Jawaban menyebut 240 karton pada Oktober 2026.",
-          "Utara tercatat 140 karton dan Selatan 100. Balasan menyebut tab Sheets Rekap produk Oktober sebagai sumber.",
+          "Utara tercatat 140 karton dan Selatan 100. Balasan menyebut tab Rekap produk Oktober di tabel penjualan sebagai sumber.",
         ],
         [
           "Ringkasan",

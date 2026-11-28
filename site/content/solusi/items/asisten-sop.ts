@@ -17,12 +17,15 @@ export const asistenSop: Solusi = {
   metricsKind: "example",
   id: {
     title: "Staf baru menemukan jawaban SOP sendiri",
+    seoTitle: "Bot SOP untuk Staf, Jawaban dari Dokumen Perusahaan | Kreatekno",
+    seoDescription:
+      "Staf bertanya lewat bot Telegram internal dan dijawab dari SOP perusahaan, lengkap dengan dokumen dan bagiannya. Di luar SOP diarahkan ke penanggung jawab.",
     question: "Bagaimana staf baru bisa memahami SOP tanpa terus bertanya ke atasan?",
     result: "Atasan tidak lagi menjawab pertanyaan yang sama",
     summary:
-      "Staf bertanya lewat chat dengan bahasa sehari-hari dan mendapat jawaban dari SOP Anda, lengkap dengan bagian sumbernya.",
+      "Staf bertanya lewat chat dengan bahasa sehari-hari dan mendapat jawaban dari SOP-mu, lengkap dengan bagian sumbernya.",
     answer:
-      "Dokumen SOP yang sudah Anda punya dijadikan basis pengetahuan. Staf bertanya lewat chat dengan bahasa sehari-hari, dan asisten menjawab dari SOP itu, lengkap dengan judul dokumen dan bagiannya. Jika SOP belum mencakup pertanyaannya, asisten menyarankan staf menghubungi penanggung jawab. Dalam rancangan, topik tersebut bisa dicatat sebagai bahan perbaikan SOP.",
+      "Dokumen SOP yang sudah kamu punya dijadikan basis pengetahuan. Staf bertanya lewat chat dengan bahasa sehari-hari, dan AI menjawab dari SOP itu, lengkap dengan judul dokumen dan bagiannya. Jika SOP belum mencakup pertanyaannya, AI menyarankan staf menghubungi penanggung jawab. Dalam rancangan, topik tersebut bisa dicatat sebagai bahan perbaikan SOP.",
     client: "Klinik gigi tiga cabang (contoh)",
     painsLead:
       "Klinik gigi dengan tiga cabang punya SOP untuk sterilisasi alat, pendaftaran pasien, dan penanganan keluhan. Dokumennya panjang dan tersimpan di folder bersama, jadi staf baru lebih sering bertanya ke kepala cabang. Kepala cabang menjawab hal yang sama setiap kali ada staf baru.",
@@ -33,11 +36,11 @@ export const asistenSop: Solusi = {
     ],
     built: {
       h: "SOP yang bisa ditanya, dengan sumber yang jelas",
-      lead: "Dokumen SOP Anda diproses menjadi basis pengetahuan. Staf bertanya lewat chat, dan setiap jawaban menyebut dokumen dan bagian yang dipakai, sehingga mudah dicek.",
+      lead: "Dokumen SOP-mu diproses menjadi basis pengetahuan. Staf bertanya lewat chat, dan setiap jawaban menyebut dokumen dan bagian yang dipakai, sehingga mudah dicek.",
       points: [
         "Memproses dokumen SOP dari folder bersama menjadi basis pengetahuan.",
         "Menerima pertanyaan staf lewat bot chat internal dengan bahasa sehari-hari.",
-        "Menjawab hanya dari SOP Anda, dengan bahasa sopan dan langkah yang berurutan.",
+        "Menjawab hanya dari SOP-mu, dengan bahasa sopan dan langkah yang berurutan.",
         "Menyebut judul dokumen dan bagian yang menjadi sumber setiap jawaban.",
         "Mengarahkan staf ke penanggung jawab kalau jawabannya tidak ada di SOP.",
         "Rancangan: mencatat pertanyaan yang belum terjawab sebagai bahan perbaikan SOP.",
@@ -50,14 +53,14 @@ export const asistenSop: Solusi = {
     steps: [
       { title: "SOP dikumpulkan", body: "Dokumen SOP yang sudah ada diproses menjadi basis pengetahuan." },
       { title: "Staf bertanya", body: "Lewat bot chat internal, dengan bahasa sehari-hari." },
-      { title: "Jawaban dari SOP Anda", body: "Lengkap dengan judul dokumen dan bagian sumbernya." },
+      { title: "Jawaban dari SOP-mu", body: "Lengkap dengan judul dokumen dan bagian sumbernya." },
       {
         title: "Staf diarahkan ke penanggung jawab",
-        body: "Jika belum tercakup, asisten memberi tahu staf siapa yang bisa dihubungi. Dalam rancangan, topiknya bisa dicatat untuk melengkapi SOP.",
+        body: "Jika belum tercakup, AI memberi tahu staf siapa yang bisa dihubungi. Dalam rancangan, topiknya bisa dicatat untuk melengkapi SOP.",
       },
     ],
     compare: [
-      { aspect: "Menjawab pertanyaan staf", before: "Atasan, berulang kali", after: "Asisten, dari SOP" },
+      { aspect: "Menjawab pertanyaan staf", before: "Atasan, berulang kali", after: "AI, dari SOP" },
       { aspect: "Memakai SOP", before: "Jarang dibuka", after: "Ditanya setiap hari" },
       { aspect: "Sumber jawaban", before: "Ingatan atasan", after: "Bagian SOP yang disebut" },
     ],
@@ -79,15 +82,15 @@ export const asistenSop: Solusi = {
     faq: [
       {
         q: "Kalau SOP belum lengkap?",
-        a: "Asisten menyarankan staf menghubungi penanggung jawab. Dalam rancangan, pertanyaan yang belum terjawab bisa dicatat di Sheets untuk membantu tim melengkapi SOP.",
+        a: "AI menyarankan staf menghubungi penanggung jawab. Dalam rancangan, pertanyaan yang belum terjawab bisa dicatat di tabel untuk membantu melengkapi SOP.",
       },
       {
         q: "Bagaimana kalau SOP diperbarui?",
         a: "Dokumen versi baru diproses ulang, dan jawaban berikutnya memakai isi yang terbaru.",
       },
       {
-        q: "Kenapa lewat Telegram?",
-        a: "Bot Telegram mudah dibuat untuk pemakaian internal dan bisa dibatasi hanya untuk staf. Kanal lain bisa dipakai bila diperlukan.",
+        q: "Kenapa memakai bot chat khusus staf?",
+        a: "Bot di aplikasi chat terpisah mudah dibuat untuk pemakaian internal dan bisa dibatasi hanya untuk staf. Aplikasi chat lain bisa dipakai bila diperlukan.",
       },
     ],
   },

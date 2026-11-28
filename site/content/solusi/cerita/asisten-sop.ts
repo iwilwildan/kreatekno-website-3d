@@ -38,8 +38,8 @@ const id: AsistenSopPanggung = {
     searching: "Bagian mana yang harus saya baca?",
     knowledgeBase: "Basis pengetahuan",
     ready: "Siap dipakai",
-    chat: "Telegram · Chat staf",
-    assistant: "Asisten SOP",
+    chat: "Chat staf",
+    assistant: "AI SOP",
     source: "Bagian",
     outsideSop: "Di luar SOP",
     staffAction: "Wulan menghubungi kepala cabang",
@@ -89,7 +89,7 @@ export const asistenSopStory: AsistenSopCerita = {
         ],
         [
           "Pilih SOP",
-          "Tim memilih SOP Pendaftaran Pasien dari Drive.",
+          "Staf memilih SOP Pendaftaran Pasien dari folder bersama.",
           "Versi 1.2 menjadi sumber yang akan disiapkan untuk pertanyaan staf.",
         ],
         [
@@ -97,21 +97,21 @@ export const asistenSopStory: AsistenSopCerita = {
           "Versi 1.2 siap dipakai setelah diproses.",
           "Bagian 2.1 tentang kedatangan terjadwal tersedia di basis pengetahuan.",
         ],
-        ["Staf bertanya", "Wulan bertanya lewat Telegram.", id.question],
+        ["Staf bertanya", "Wulan bertanya lewat bot chat staf.", id.question],
         [
           "Jawaban dan sumber",
-          "Asisten menjelaskan cara menandai kehadiran.",
+          "AI menjelaskan cara menandai kehadiran.",
           `${id.answer.join(" ")} Sumbernya SOP Pendaftaran Pasien, Bagian 2.1 · Kedatangan terjadwal.`,
         ],
         [
           "Di luar SOP",
           "Pertanyaan kedua perlu kepala cabang.",
-          `${id.followUp} Bagian itu belum tercakup. Asisten memberi arahan, lalu Wulan menghubungi kepala cabang.`,
+          `${id.followUp} Bagian itu belum tercakup. AI memberi arahan, lalu Wulan menghubungi kepala cabang.`,
         ],
         [
           "Rancangan catatan",
           "Topik yang belum tercakup bisa dicatat.",
-          "Dalam rancangan, topik kedatangan di cabang lain masuk ke Sheets sebagai bahan untuk melengkapi SOP.",
+          "Dalam rancangan, topik kedatangan di cabang lain masuk ke tabel sebagai bahan untuk melengkapi SOP.",
         ],
         [
           "Ringkasan",

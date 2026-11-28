@@ -14,6 +14,9 @@ export const fakturPemasok: Solusi = {
   metricsKind: "example",
   id: {
     title: "Faktur pemasok tercatat dan dicek sebelum dibayar",
+    seoTitle: "Cek Faktur Pemasok Otomatis Sebelum Dibayar | Kreatekno",
+    seoDescription:
+      "Faktur dari email atau folder dibaca AI, dicocokkan dengan daftar harga pemasok, dan selisihnya ditandai. Pemilik menyetujui atau menolak bayar lewat tombol.",
     question: "Bagaimana mencatat faktur pemasok tanpa mengetik ulang dan tanpa salah bayar?",
     result: "Faktur tercatat rapi, selisih harga ketahuan sebelum dibayar",
     summary:
@@ -22,7 +25,7 @@ export const fakturPemasok: Solusi = {
       "Faktur pemasok yang masuk lewat email atau folder bersama dibaca otomatis. AI mengisi nomor faktur, pemasok, tanggal, jatuh tempo, daftar barang, dan total, lalu membandingkan harga setiap barang dengan daftar harga yang disepakati. Faktur tercatat di satu tabel, baris yang tidak cocok ditandai, dan pemilik menyetujui atau menolak pembayaran lewat satu tombol.",
     client: "Toko bangunan (contoh)",
     painsLead:
-      "Toko bangunan menerima faktur dari belasan pemasok setiap minggu: semen, besi, cat, dan keramik. Staf admin mengetik ulang setiap faktur ke tabel, dan kenaikan harga beberapa ratus rupiah per sak sering baru ketahuan setelah faktur dibayar.",
+      "Toko bangunan menerima faktur dari belasan pemasok setiap minggu: semen, besi, cat, dan keramik. Staf mengetik ulang setiap faktur ke tabel, dan kenaikan harga beberapa ratus rupiah per sak sering baru ketahuan setelah faktur dibayar.",
     pains: [
       "Faktur diketik ulang ke tabel satu per satu.",
       "Harga yang naik diam-diam baru ketahuan setelah dibayar.",
@@ -57,7 +60,7 @@ export const fakturPemasok: Solusi = {
     ],
     fit: [
       "Usaha dengan banyak pemasok dan faktur setiap minggu.",
-      "Tim keuangan yang sudah punya daftar harga pemasok.",
+      "Bagian keuangan yang sudah punya daftar harga pemasok.",
     ],
     notFit: ["Pengganti faktur pajak atau aplikasi akuntansi.", "Usaha yang hanya punya satu atau dua pemasok tetap."],
     prep: [
@@ -74,7 +77,7 @@ export const fakturPemasok: Solusi = {
     faq: [
       {
         q: "Apakah pembayaran dijalankan otomatis?",
-        a: "Tidak. Faktur hanya dicatat dan dimintakan persetujuan. Pembayaran tetap dilakukan tim keuangan.",
+        a: "Tidak. Faktur hanya dicatat dan dimintakan persetujuan. Pembayaran tetap dilakukan bagian keuangan.",
       },
       {
         q: "Bagaimana dengan faktur hasil foto?",

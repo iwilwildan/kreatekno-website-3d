@@ -61,12 +61,12 @@ export const onboardingKlienStory: OnboardingCerita = {
         [
           "Draf email",
           "AI menyiapkan sambutan untuk Rani.",
-          "Draf menyebut Rani, paket yang dipilih, dan tiga persiapan. Usulan jadwal akan ditambahkan setelah kalender tim diperiksa.",
+          "Draf menyebut Rani, paket yang dipilih, dan tiga persiapan. Usulan jadwal akan ditambahkan setelah kalender bersama diperiksa.",
         ],
         [
           "Slot diusulkan",
-          "Tim punya slot kosong Senin pukul 10.00 WITA.",
-          "Dari tiga pilihan, 10.00–10.30 WITA kosong di kalender tim. Waktu itu masuk ke draf sebagai usulan rapat awal.",
+          "Ada slot kosong Senin pukul 10.00 WITA.",
+          "Dari tiga pilihan, pukul 10.00 sampai 10.30 WITA kosong di kalender bersama. Waktu itu masuk ke draf sebagai usulan rapat awal.",
         ],
         [
           "Staf cek dan kirim",
@@ -96,7 +96,7 @@ export const onboardingKlienStory: OnboardingCerita = {
       deal: { ...deal, package: "Kelola Iklan" },
       slots,
       prep: ["Akses akun iklan lewat undangan", "File logo", "Materi produk"],
-      messages: ["Setelah ini saya perlu siapkan apa?", "File logo bisa dikirim hari ini?", "Kapan tim bisa rapat?"],
+      messages: ["Setelah ini saya perlu siapkan apa?", "File logo bisa dikirim hari ini?", "Kapan bisa rapat?"],
       draft: {
         subject: "Selamat datang di paket Kelola Iklan",
         greeting: "Halo, Rani!",
@@ -109,7 +109,7 @@ export const onboardingKlienStory: OnboardingCerita = {
         checklist: "Checklist persiapan",
         draft: "Draf",
         schedulePending: "Jadwal menyusul",
-        calendar: "Kalender tim",
+        calendar: "Kalender bersama",
         busy: "Terisi",
         free: "Kosong",
         proposed: "Usulan jadwal",

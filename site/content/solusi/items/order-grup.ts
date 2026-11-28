@@ -10,24 +10,27 @@ export const orderGrup: Solusi = {
   apps: ["whatsapp", "sheets"],
   metricsKind: "example",
   id: {
-    title: "Order dari grup WhatsApp tercatat sendiri ke Google Sheets",
-    question: "Bagaimana order dari grup WhatsApp bisa tercatat otomatis?",
+    title: "Order di grup chat sales tercatat sendiri, tanpa diketik ulang",
+    seoTitle: "Catat Order Grup WhatsApp ke Google Sheets Otomatis | Kreatekno",
+    seoDescription:
+      "Order sales di grup WhatsApp tercatat otomatis ke Google Sheets, tanpa format khusus. Data yang kurang ditanyakan dulu, dan pemilik menerima rekap tiap malam.",
+    question: "Bagaimana order dari grup chat bisa tercatat otomatis?",
     result: "Order tercatat tanpa diketik ulang",
     summary:
-      "Order yang ditulis sales di grup WhatsApp otomatis tercatat ke Google Sheets, dan pemilik menerima rekap setiap malam.",
+      "Order yang ditulis sales di grup chat tercatat otomatis ke tabel, dan pemilik menerima rekap setiap malam.",
     answer:
-      "Asisten order dipasang di grup WhatsApp yang sudah dipakai tim. Setiap order yang ditulis sales dicatat ke Google Sheets, tim diberi kabar di grup, dan pemilik menerima rekap setiap malam. Tim tidak perlu mengubah cara mereka mengirim order.",
+      "AI kami pasang di grup chat yang sudah dipakai sales dan kurir. Setiap order yang ditulis sales dicatat ke tabel order, sales mendapat nomor order di grup, dan pemilik menerima rekap setiap malam. Sales tetap menulis order seperti biasa, tanpa format khusus.",
     client: "Distributor air minum, Pekanbaru",
     painsLead:
-      "Setiap hari sekitar 120 order masuk lewat grup chat tim. Sales menulis order dengan gaya masing-masing. Ada yang lengkap, ada yang hanya menulis nama toko dan jumlah.",
+      "Setiap hari sekitar 120 order masuk lewat grup chat sales. Sales menulis order dengan gaya masing-masing. Ada yang lengkap, ada yang hanya menulis nama toko dan jumlah.",
     pains: [
-      "Satu admin membaca seluruh grup lalu mengetik ulang setiap order ke tabel.",
+      "Satu staf membaca seluruh grup lalu mengetik ulang setiap order ke tabel.",
       "Revisi order tertimbun obrolan, sehingga ada order yang terlewat.",
       "Pemilik baru tahu angka penjualan keesokan paginya.",
     ],
     built: {
       h: "Grup tetap sama, pencatatannya otomatis",
-      lead: "Tim tidak perlu belajar aplikasi baru. Mereka tetap mengirim order ke grup yang sama. Di belakang grup itu, asisten membaca setiap pesan, mengenali pesan yang berisi order, lalu mencatatnya ke tabel order.",
+      lead: "Sales dan kurir tidak perlu belajar aplikasi baru. Mereka tetap mengirim order ke grup yang sama. Di belakang grup itu, AI membaca setiap pesan, mengenali pesan yang berisi order, lalu mencatatnya ke tabel order.",
       points: [
         'Membaca bahasa sehari-hari, termasuk singkatan dan revisi seperti "jadi 12 dus ya".',
         "Memberi nomor order dan membalas di grup, supaya sales tahu ordernya sudah tercatat.",
@@ -41,12 +44,12 @@ export const orderGrup: Solusi = {
     },
     steps: [
       {
-        title: "Tim mengirim order seperti biasa",
-        body: "Sales tetap menulis di grup WhatsApp yang sama, tanpa format khusus.",
+        title: "Sales mengirim order seperti biasa",
+        body: "Sales tetap menulis di grup chat yang sama, tanpa format khusus.",
       },
       {
-        title: "Asisten mencatat ordernya",
-        body: "Order tersusun rapi di Google Sheets. Kalau ada yang kurang jelas, tim ditanya dulu.",
+        title: "AI mencatat ordernya",
+        body: "Order tersusun rapi di tabel. Kalau ada yang kurang jelas, sales ditanya dulu.",
       },
       {
         title: "Status selalu terbaru",
@@ -60,12 +63,12 @@ export const orderGrup: Solusi = {
     compare: [
       {
         aspect: "Mencatat order",
-        before: "Admin mengetik ulang dari chat",
+        before: "Staf mengetik ulang dari chat",
         after: "Tercatat dari chat yang sama",
       },
       {
         aspect: "Tahu status pengiriman",
-        before: "Bertanya ke admin atau kurir",
+        before: "Bertanya ke staf atau kurir",
         after: "Terlihat di tabel",
       },
       {
@@ -75,20 +78,20 @@ export const orderGrup: Solusi = {
       },
     ],
     fit: [
-      "Usaha yang menerima puluhan order sehari lewat grup chat tim.",
-      "Tim sales dan kurir yang sudah terbiasa memakai WhatsApp.",
+      "Usaha yang menerima puluhan order sehari lewat grup chat.",
+      "Sales dan kurir yang sudah terbiasa mengirim pesan di grup chat.",
     ],
     notFit: ["Usaha yang sudah memakai aplikasi kasir atau order online untuk semua pesanan."],
     prep: [
-      "Grup WhatsApp yang dipakai untuk order",
+      "Grup chat yang dipakai untuk order",
       "Daftar produk dan harga",
-      "Google Sheets tujuan, atau kami yang buatkan",
+      "Tabel order tujuan, atau kami yang buatkan",
     ],
     metrics: [
       {
         value: "3",
         unit: "jam",
-        label: "waktu admin kembali setiap hari",
+        label: "waktu staf kembali setiap hari",
       },
       {
         value: "120",
@@ -104,15 +107,15 @@ export const orderGrup: Solusi = {
     faq: [
       {
         q: "Apakah sales harus menulis order dengan format tertentu?",
-        a: "Tidak. Asisten membaca order yang ditulis dengan bahasa sehari-hari, termasuk singkatan.",
+        a: 'Tidak. AI membaca order yang ditulis dengan bahasa sehari-hari, termasuk singkatan dan revisi seperti "jadi 12 dus ya".',
       },
       {
         q: "Bagaimana kalau pesan ordernya kurang jelas?",
-        a: "Asisten tidak menebak. Tim ditanya dulu, dan order baru dicatat setelah datanya jelas.",
+        a: "AI tidak menebak. Sales ditanya dulu di grup, dan order baru dicatat setelah datanya jelas.",
       },
       {
         q: "Di mana data order disimpan?",
-        a: "Di Google Sheets milik Anda sendiri, jadi data tetap bisa Anda buka dan bagikan kapan saja.",
+        a: "Di tabel milikmu sendiri, jadi data order tetap bisa kamu buka dan bagikan kapan saja.",
       },
     ],
   },

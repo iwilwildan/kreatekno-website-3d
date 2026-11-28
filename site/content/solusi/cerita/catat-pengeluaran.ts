@@ -48,7 +48,7 @@ export const catatPengeluaranStory: NotaCerita = {
         rail: "AI menyusun",
         eyebrow: "Langkah 3 · AI menyusun",
         title: "AI menyusun catatan yang rapi dan memberi kategori.",
-        body: "Nama toko, tanggal, dan total diambil dari nota. Kategorinya dipilih dari daftar yang Anda tentukan, misalnya bahan baku.",
+        body: "Nama toko, tanggal, dan total diambil dari nota. Kategorinya dipilih dari daftar yang kamu tentukan, misalnya bahan baku.",
       },
       {
         id: ids[4],
@@ -80,10 +80,10 @@ export const catatPengeluaranStory: NotaCerita = {
       },
       {
         id: ids[8],
-        rail: "Untuk Anda",
-        eyebrow: "Untuk bisnis Anda",
+        rail: "Untukmu",
+        eyebrow: "Untuk usahamu",
         title: "Mau nota belanja tidak lagi menumpuk?",
-        body: "Ceritakan cara usaha Anda mencatat pengeluaran sekarang. Kami bantu petakan solusinya, gratis.",
+        body: "Ceritakan cara usahamu mencatat pengeluaran sekarang. Kami bantu petakan solusinya, gratis.",
         cta: true,
       },
     ],
@@ -126,7 +126,7 @@ export const catatPengeluaranStory: NotaCerita = {
         ok: "Total terbaca",
         bad: "Total tidak terbaca",
         blurWho: "Dimas · Cabang Panam",
-        ask: { who: "Asisten", text: "Total tidak terbaca, kirim ulang ya" },
+        ask: { who: "AI", text: "Total tidak terbaca, kirim ulang ya" },
       },
       table: {
         title: "Pengeluaran",
@@ -138,7 +138,7 @@ export const catatPengeluaranStory: NotaCerita = {
         ],
         added: { shop: "Toko Sumber Makmur", meta: "Cabang Sudirman", category: "bahan", total: "Rp186.500" },
       },
-      confirm: { who: "Asisten", text: "Tercatat: Toko Sumber Makmur, Rp186.500, Bahan baku" },
+      confirm: { who: "AI", text: "Tercatat: Toko Sumber Makmur, Rp186.500, Bahan baku" },
       recap: {
         time: "08.00",
         to: "Pemilik",

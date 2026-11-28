@@ -14,39 +14,42 @@ export const risetKonten: Solusi = {
   metricsKind: "example",
   id: {
     title: "Riset konten otomatis dari tren media sosial",
-    question: "Bagaimana tim marketing tahu apa yang sedang dibicarakan audiens tanpa riset manual?",
+    seoTitle: "Riset Ide Konten Otomatis dari Tren Threads dengan AI | Kreatekno",
+    seoDescription:
+      "Setiap pagi dan malam, AI meriset satu topik dari tren dan post Threads yang ramai, lalu merangkum keluhan audiens dan sudut konten untuk staf marketing.",
+    question: "Bagaimana staf marketing tahu apa yang sedang dibicarakan audiens tanpa riset manual?",
     result: "Riset konten siap dipakai setiap pagi dan malam",
     summary:
-      "Setiap pagi dan malam, satu topik usaha Anda diriset dari tren dan post yang ramai, lalu dirangkum untuk tim.",
+      "Setiap pagi dan malam, satu topik usahamu diriset dari tren dan post yang ramai, lalu dirangkum untuk staf.",
     answer:
-      "Setiap pagi dan malam, satu topik dari daftar topik usaha Anda diriset secara bergiliran. AI merangkum tren terbaru seputar topik itu, post yang paling banyak disukai dikumpulkan, lalu AI membaca keluhan audiens dan sudut konten yang bisa dipakai. Hasilnya tersimpan sebagai satu baris di tabel riset dan dikirim ke grup tim, lalu tim memilih Setuju atau Lewati.",
+      "Setiap pagi dan malam, satu topik dari daftar topik usahamu diriset bergiliran. AI merangkum tren terbaru seputar topik itu, mengumpulkan post yang paling banyak disukai, lalu mencatat keluhan audiens dan sudut konten yang bisa dipakai. Hasilnya tersimpan sebagai satu baris di tabel riset dan dikirim ke grup staf marketing, yang memilih Setuju atau Lewati.",
     client: "Brand edukasi bisnis (contoh)",
     painsLead:
-      "Tim marketing tahu harus posting rutin, tetapi ide konten dicari dari nol setiap minggu. Riset dilakukan sambil membuka puluhan post satu per satu, dan hasilnya jarang tercatat.",
+      "Staf marketing tahu harus posting rutin, tetapi ide konten dicari dari nol setiap minggu. Riset dilakukan sambil membuka puluhan post satu per satu, dan hasilnya jarang tercatat.",
     pains: [
-      "Tim marketing menghabiskan berjam-jam mencari ide sebelum mulai menulis.",
+      "Staf marketing menghabiskan berjam-jam mencari ide sebelum mulai menulis.",
       "Konten dibuat berdasarkan tebakan, bukan yang sedang dibicarakan audiens.",
-      "Hasil riset tersimpan di catatan pribadi, sehingga tim sulit memakainya lagi.",
+      "Hasil riset tersimpan di catatan pribadi, sehingga sulit dipakai lagi oleh staf lain.",
     ],
     built: {
-      h: "Satu topik diriset dua kali sehari, tim tinggal memilih",
-      lead: "Anda menentukan daftar topik yang dekat dengan usaha dan audiens Anda. Di setiap sesi, satu topik diriset dari tren terbaru dan post yang paling ramai, lalu hasilnya dirangkum menjadi bahan yang siap ditulis tim.",
+      h: "Satu topik diriset dua kali sehari, staf tinggal memilih",
+      lead: "Kamu menentukan daftar topik yang dekat dengan usaha dan audiensmu. Di setiap sesi, satu topik diriset dari tren terbaru dan post yang paling ramai, lalu hasilnya dirangkum menjadi bahan yang siap ditulis staf.",
       points: [
-        "Menggilir topik setiap pagi dan malam, sehingga semua topik Anda diriset secara rutin.",
+        "Menggilir topik setiap pagi dan malam, sehingga semua topikmu diriset secara rutin.",
         "Merangkum tren terbaru, isu yang ramai, dan perubahan cara pandang seputar topik itu.",
         "Mengumpulkan post dengan suka terbanyak dari akun yang paling aktif membahas topik itu.",
         "Membaca keluhan audiens, sudut konten yang bisa dipakai, dan skor seberapa ramai topiknya.",
-        "Menyimpan setiap riset di satu tabel dan mengirim ringkasannya ke grup tim untuk disetujui atau dilewati.",
+        "Menyimpan setiap riset di satu tabel dan mengirim ringkasannya ke grup staf untuk disetujui atau dilewati.",
       ],
     },
     quote: {
       text: "Dulu rapat konten dimulai dengan pertanyaan mau membahas apa. Sekarang kami mulai dari keluhan audiens yang sudah dirangkum.",
-      by: "Tim marketing brand edukasi bisnis",
+      by: "Staf marketing brand edukasi bisnis",
     },
     steps: [
       {
         title: "Topik dipilih bergiliran",
-        body: "Daftar topik usaha Anda diriset bergantian, satu topik setiap pagi dan malam.",
+        body: "Daftar topik usahamu diriset bergantian, satu topik setiap pagi dan malam.",
       },
       {
         title: "Tren dirangkum",
@@ -57,8 +60,8 @@ export const risetKonten: Solusi = {
         body: "AI mencatat keluhan audiens, sudut konten, dan skor seberapa ramai topiknya.",
       },
       {
-        title: "Tim memilih",
-        body: "Ringkasan riset masuk ke grup tim. Riset yang disetujui siap ditulis.",
+        title: "Staf memilih",
+        body: "Ringkasan riset masuk ke grup staf. Riset yang disetujui siap ditulis.",
       },
     ],
     compare: [
@@ -75,19 +78,19 @@ export const risetKonten: Solusi = {
       {
         aspect: "Hasil riset",
         before: "Tersimpan di catatan pribadi",
-        after: "Satu tabel riset untuk seluruh tim",
+        after: "Satu tabel riset untuk semua staf",
       },
     ],
     fit: [
       "Usaha yang ingin posting rutin tapi kehabisan ide.",
-      "Tim marketing kecil tanpa waktu riset.",
+      "Bagian marketing kecil tanpa waktu riset.",
       "Brand yang kontennya menjawab masalah audiens, seperti edukasi atau jasa.",
     ],
     notFit: ["Brand yang kontennya sepenuhnya mengikuti kampanye dari kantor pusat."],
     prep: [
-      "Daftar topik yang dekat dengan usaha dan audiens Anda",
+      "Daftar topik yang dekat dengan usaha dan audiensmu",
       "Kata kunci atau akun referensi, kalau sudah ada",
-      "Grup tim untuk menerima ringkasan riset",
+      "Grup staf untuk menerima ringkasan riset",
     ],
     metrics: [
       {
@@ -109,15 +112,15 @@ export const risetKonten: Solusi = {
     faq: [
       {
         q: "Apakah kontennya ditulis otomatis?",
-        a: "Tidak. Yang disiapkan adalah riset: keluhan audiens, sudut konten, dan kata kuncinya. Tim Anda yang menulis dengan gaya brand.",
+        a: "Tidak. Yang disiapkan adalah riset: keluhan audiens, sudut konten, dan kata kuncinya. Stafmu yang menulis dengan gaya brand.",
       },
       {
         q: "Media sosial apa yang dibaca?",
-        a: "Post yang dibaca saat ini berasal dari Threads. Hasil risetnya bisa dipakai untuk konten di platform mana pun yang Anda gunakan.",
+        a: "Saat ini post dibaca dari satu media sosial berbasis teks. Hasil risetnya bisa dipakai untuk konten di media sosial mana pun yang kamu gunakan.",
       },
       {
         q: "Bagaimana kalau topik yang diriset tidak cocok?",
-        a: "Tim cukup memilih Lewati. Daftar topik dan jam sesinya juga bisa diubah sesuai kebutuhan usaha Anda.",
+        a: "Staf cukup memilih Lewati. Daftar topik dan jam sesinya juga bisa diubah sesuai kebutuhan usahamu.",
       },
     ],
   },

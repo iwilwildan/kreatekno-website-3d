@@ -8,8 +8,10 @@ export const WA_NUMBER = (process.env.NEXT_PUBLIC_WA_NUMBER || "").replace(/\D/g
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "";
 export const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "";
 
-/** Street address of the office (street, number, district). Empty until Kreatekno sends it. */
-export const OFFICE_ADDRESS = process.env.NEXT_PUBLIC_OFFICE_ADDRESS || "";
+/** Street address of the office (street, village, district), from the Company Profile 2026 legal appendix. */
+export const OFFICE_ADDRESS =
+  process.env.NEXT_PUBLIC_OFFICE_ADDRESS ||
+  "Jl. Tengku Bey Gang Hidayah RT 001 RW 003, Kel. Simpang Tiga, Kec. Bukit Raya";
 /** Google Maps link of the office (a link, never an embed: an embed would set third-party cookies). */
 export const MAPS_URL = process.env.NEXT_PUBLIC_MAPS_URL || "";
 /** Inbox for privacy requests (access, correction, deletion). Falls back to the general contact inbox. */
@@ -24,6 +26,7 @@ export const COMPANY = {
     streetAddress: OFFICE_ADDRESS,
     addressLocality: "Pekanbaru",
     addressRegion: "Riau",
+    postalCode: "28284",
     addressCountry: "ID",
   },
   social: {

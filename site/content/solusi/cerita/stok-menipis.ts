@@ -55,7 +55,7 @@ const id: StokPanggung = {
     movement: "Form pergerakan barang",
     outbound: "Barang keluar",
     received: "Barang diterima",
-    inventory: "Sheets · Tabel stok",
+    inventory: "Tabel stok",
     recorded: "Stok tercatat",
     remaining: "Sisa stok",
     minimum: "Minimum",
@@ -65,7 +65,7 @@ const id: StokPanggung = {
     design: "Rancangan",
     estimateBasis: `${weeklyOutflow} karton keluar ÷ ${observedDays} hari = ${dailyOutflow} karton per hari`,
     estimateCondition: "Jika laju keluar tetap.",
-    chat: "WhatsApp · Pembelian",
+    chat: "Chat pembelian",
     alert: "Peringatan stok menipis",
     order: "Pesanan ke pemasok",
     waiting: "Menunggu barang datang",
@@ -128,7 +128,7 @@ export const stokMenipisStory: StokCerita = {
         ],
         [
           "Peringatkan pembelian",
-          "Rina menerima peringatan di WhatsApp.",
+          "Rina menerima peringatan di chat.",
           `Pesan mencantumkan Minyak goreng 1 L, sisa ${remaining} karton, dan minimum ${minimum} karton.`,
         ],
         [
@@ -143,12 +143,12 @@ export const stokMenipisStory: StokCerita = {
         ],
         [
           "Ringkasan",
-          "Tim bisa melihat perubahan stok dan menindaklanjuti peringatan.",
+          "Staf bisa melihat perubahan stok dan menindaklanjuti peringatan.",
           "Satu form mencatat barang masuk dan keluar. Batas per barang memicu peringatan dengan tiga informasi untuk pembelian.",
         ],
         [
           "Konsultasi",
-          "Mau tim tahu saat stok turun di bawah minimum?",
+          "Mau stafmu tahu saat stok turun di bawah minimum?",
           "Bawa tabel stok, batas minimum per barang, dan nama penerima peringatan.",
         ],
       ],

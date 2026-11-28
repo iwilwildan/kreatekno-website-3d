@@ -18,7 +18,7 @@ export const KARTU: Kartu[] = [
   {
     id: "k2",
     text: {
-      id: "Admin mengetik ulang pesanan ke Excel setiap hari?",
+      id: "Staf mengetik ulang pesanan ke tabel setiap hari?",
       en: "Does your admin retype orders into a spreadsheet every day?",
     },
     industri: ["logistik", "retail", "jasa"],
@@ -33,7 +33,7 @@ export const KARTU: Kartu[] = [
   {
     id: "k3",
     text: {
-      id: "Angka penjualan baru Anda ketahui keesokan harinya?",
+      id: "Angka penjualan baru ketahuan keesokan harinya?",
       en: "Do you only learn yesterday's sales numbers the next day?",
     },
     industri: ["retail", "logistik"],
@@ -86,7 +86,7 @@ export const KARTU: Kartu[] = [
   {
     id: "k7",
     text: {
-      id: "Jadwal tim lapangan sering bentrok?",
+      id: "Jadwal petugas lapangan sering bentrok?",
       en: "Do your field team's schedules often clash?",
     },
     industri: ["jasa"],
@@ -298,7 +298,7 @@ export const KARTU: Kartu[] = [
   {
     id: "k24",
     text: {
-      id: "Anda sendiri masih ikut membalas chat setiap hari?",
+      id: "Pemilik usaha masih ikut membalas chat setiap hari?",
       en: "Are you still personally replying to chats every day?",
     },
     industri: [],

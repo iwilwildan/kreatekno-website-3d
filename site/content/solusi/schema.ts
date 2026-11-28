@@ -38,6 +38,9 @@ const text = z.string().min(1);
 const strings = z.array(text).min(1);
 export const SolusiCopySchema = z.strictObject({
   title: text,
+  // SEO copy v1 (28 Nov 2026): search-result title and snippet. Platform names are allowed here only.
+  seoTitle: text.optional(),
+  seoDescription: text.optional(),
   question: text,
   result: text,
   summary: text.refine((v) => v.trim().split(/\s+/).length <= 20, "Summary exceeds 20 words"),

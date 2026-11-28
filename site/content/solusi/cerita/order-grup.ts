@@ -15,20 +15,20 @@ const ids = [
 export const orderGrupStory: Cerita = {
   slug: "order-grup",
   id: {
-    intro: "Ikuti perjalanan satu order, dari pesan di grup tim sampai rekap malam untuk pemilik.",
+    intro: "Ikuti perjalanan satu order, dari pesan di grup sales sampai rekap malam untuk pemilik.",
     scenes: [
       {
         id: ids[0],
         rail: "Sebelum",
         eyebrow: "Sebelum",
-        title: "Order masuk acak di grup. Admin mengetik ulang satu per satu.",
+        title: "Order masuk acak di grup. Staf mengetik ulang satu per satu.",
         body: "Sekitar 120 order sehari. Revisi tertimbun obrolan, dan beberapa order terlewat.",
       },
       {
         id: ids[1],
         rail: "Pesan masuk",
         eyebrow: "Langkah 1 · Pesan masuk",
-        title: "Tim tetap mengirim order seperti biasa.",
+        title: "Sales tetap mengirim order seperti biasa.",
         body: "Tidak ada format khusus dan tidak ada aplikasi baru untuk dipelajari.",
       },
       {
@@ -49,8 +49,8 @@ export const orderGrupStory: Cerita = {
         id: ids[4],
         rail: "Konfirmasi",
         eyebrow: "Langkah 4 · Konfirmasi",
-        title: "Sistem membalas di grup dengan nomor order.",
-        body: "Sales tahu ordernya sudah tercatat tanpa bertanya ke admin.",
+        title: "AI membalas di grup dengan nomor order.",
+        body: "Sales tahu ordernya sudah tercatat tanpa bertanya ke staf.",
       },
       {
         id: ids[5],
@@ -70,15 +70,15 @@ export const orderGrupStory: Cerita = {
         id: ids[7],
         rail: "Hasil",
         eyebrow: "Hasil · angka contoh",
-        title: "Admin berhenti mengetik ulang dan punya waktu untuk pelanggan.",
+        title: "Staf berhenti mengetik ulang dan punya waktu untuk pelanggan.",
         body: "Angka yang tampil adalah contoh sampai data klien boleh ditampilkan.",
       },
       {
         id: ids[8],
-        rail: "Untuk Anda",
-        eyebrow: "Untuk bisnis Anda",
-        title: "Mau sistem seperti ini untuk bisnis Anda?",
-        body: "Ceritakan alur order Anda. Kami bantu petakan solusinya, gratis.",
+        rail: "Untukmu",
+        eyebrow: "Untuk usahamu",
+        title: "Mau order di grup chat tercatat seperti ini?",
+        body: "Ceritakan alur order di usahamu. Kami bantu petakan solusinya, gratis.",
         cta: true,
       },
     ],
@@ -129,7 +129,7 @@ export const orderGrupStory: Cerita = {
         revision: "revisi",
       },
       status: { new: "Baru", sent: "Dikirim", done: "Selesai" },
-      reply: { who: "Asisten Order", role: "asisten", text: "Order #0412 tercatat." },
+      reply: { who: "AI Order", role: "asisten", text: "Order #0412 tercatat." },
       courier: [
         { who: "Bayu · kurir", role: "kurir", text: "kirim 0412" },
         { who: "Bayu · kurir", role: "kurir", text: "selesai 0412" },

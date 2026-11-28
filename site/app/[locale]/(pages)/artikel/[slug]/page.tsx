@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return articleMetadata({
     locale,
     key,
-    title: meta.title,
-    description: meta.summary,
+    title: meta.seoTitle ?? meta.title,
+    description: meta.seoDescription ?? meta.summary,
     published: meta.published,
     updated: meta.updated,
   });

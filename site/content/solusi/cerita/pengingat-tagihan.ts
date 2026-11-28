@@ -67,10 +67,10 @@ const id: TagihanPanggung = {
   labels: {
     before: "Catatan Lia",
     history: "Riwayat pesan",
-    ledger: "Sheets · Tabel tagihan",
+    ledger: "Tabel tagihan",
     open: "Belum lunas",
     due: "Jatuh tempo",
-    chat: "WhatsApp",
+    chat: "Chat",
     paymentInstructions: "Lihat petunjuk bayar di invoice.",
     logged: "Riwayat pengingat",
     sent: "Terkirim",
@@ -162,12 +162,12 @@ export const pengingatTagihanStory: TagihanCerita = {
         ],
         [
           "Ringkasan",
-          "Tim tahu tagihan mana yang perlu ditindaklanjuti.",
+          "Staf tahu tagihan mana yang perlu ditindaklanjuti.",
           "Tiga pengingat tercatat per tahap. Tagihan terbuka diteruskan ke pemilik pada H+30.",
         ],
         [
           "Konsultasi",
-          "Mau pengingat tagihan mengikuti jadwal usaha Anda?",
+          "Mau pengingat tagihan mengikuti jadwal usahamu?",
           "Bawa daftar tagihan, tanggal jatuh tempo, dan contoh bahasa pengingat yang biasa dipakai.",
         ],
       ],

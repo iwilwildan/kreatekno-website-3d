@@ -1,11 +1,14 @@
 import {
   ArrowUpRight,
+  Certificate,
+  ChalkboardTeacher,
   Check,
-  Handshake,
   Lifebuoy,
   MapPin,
-  PuzzlePiece,
-  Quotes,
+  Plant,
+  Receipt,
+  SealCheck,
+  ShieldCheck,
   UsersThree,
 } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
@@ -15,28 +18,39 @@ import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { Link } from "@/i18n/navigation";
 import { CLIENTS } from "@/lib/clients";
 import { aboutPageJsonLd, absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
-import { COMPANY, MAPS_URL, OFFICE_ADDRESS } from "@/lib/site";
+import { COMPANY, OFFICE_ADDRESS } from "@/lib/site";
 import "./about.css";
 
 const FACTS = ["registered", "based", "free", "payment"] as const;
-const VALUES = [
-  { key: "fit", Icon: PuzzlePiece },
-  { key: "partner", Icon: Handshake },
-  { key: "meet", Icon: UsersThree },
-  { key: "support", Icon: Lifebuoy },
+/** Company Profile Kreatekno 2026 (Sekilas, Visi Misi & Nilai, Layanan, Tim, Lampiran Legalitas). */
+const FACT_ROWS = ["entity", "brand", "legal", "seat", "area", "field"] as const;
+const LEGAL = [
+  { key: "pt", Icon: Certificate },
+  { key: "oss", Icon: ShieldCheck },
+  { key: "tax", Icon: Receipt },
 ] as const;
+const VALUES = [
+  { key: "honest", Icon: SealCheck },
+  { key: "guide", Icon: Lifebuoy },
+  { key: "grow", Icon: Plant },
+  { key: "near", Icon: UsersThree },
+  { key: "share", Icon: ChalkboardTeacher },
+] as const;
+const SERVICES = ["agent", "strategy", "build", "training"] as const;
 const STEPS = ["talk", "map", "build", "launch"] as const;
-/** Portraits rendered from the Home world's own cast (tools/render/team.mjs), 1280×1600 WebP with alpha. */
+/** Group photo from the Company Profile (page 9), left to right as seated: Wildan, Riandi (standing), Heru. */
+const TEAM_PHOTO = { src: "/team/tim-kreatekno.webp", width: 1600, height: 900 };
 const TEAM = [
-  { key: "heru", name: "Heru", role: "founder" },
-  { key: "wildan", name: "Wildan", role: "cofounder" },
-  { key: "andi", name: "Andi", role: "cofounder" },
+  { key: "wildan", name: "Wildan Adli" },
+  { key: "riandi", name: "Riandi Darman" },
+  { key: "heru", name: "Heru Nuraditya", founder: true },
 ] as const;
 const PARTNER = { src: "/brand/partners/odoo-logo.png", alt: "Odoo", width: 625, height: 200 };
 
 /**
- * Tentang / About (tahap 14B), plain HTML: hero with the Kreatekno facade still (K5a.6), story, team portraits,
- * beliefs and values on navy, how we work (Home's Cara kerja copy), Trusted By, then the office and the final CTA.
+ * Tentang / About (tahap 14B, isi dari Company Profile 2026), plain HTML: hero with the Kreatekno facade still
+ * (K5a.6), Sekilas (facts, why we exist, legal), team group photo, vision, mission and values on navy, services, how
+ * we work (Home's Cara kerja copy), Trusted By, then the office and the final CTA.
  */
 export async function AboutPage() {
   const locale = await getLocale();
@@ -45,7 +59,7 @@ export async function AboutPage() {
   const tFooter = await getTranslations("footer");
   const tLegal = await getTranslations("legal");
   const tCta = await getTranslations("cta");
-  const city = `${COMPANY.address.addressLocality}, ${COMPANY.address.addressRegion}`;
+  const city = `${COMPANY.address.addressLocality}, ${COMPANY.address.addressRegion} ${COMPANY.address.postalCode}`;
 
   return (
     <div className="about">
@@ -85,21 +99,51 @@ export async function AboutPage() {
       </header>
 
       <section className="about-section about-story" aria-labelledby="about-story">
-        <div className="about-inner about-split">
-          <h2 id="about-story" className="about-h2">
-            {t("story.title")}
-          </h2>
-          <div className="about-story-text">
-            <p>{t("story.p1")}</p>
-            <p>{t("story.p2")}</p>
-            <figure className="about-quote about-reveal">
-              <Quotes aria-hidden weight="fill" className="about-quote-mark" />
-              <blockquote>
-                <p>{t("story.quote")}</p>
-              </blockquote>
-              <figcaption>{t("story.quoteBody")}</figcaption>
-            </figure>
+        <div className="about-inner">
+          <div className="about-split">
+            <div>
+              <p className="about-kicker">{t("story.kicker")}</p>
+              <h2 id="about-story" className="about-h2">
+                {t("story.title")}
+              </h2>
+            </div>
+            <div className="about-story-text">
+              <p>{t("story.p1")}</p>
+              <p>{t("story.p2")}</p>
+              <dl className="about-profile">
+                {FACT_ROWS.map((row) => (
+                  <div key={row}>
+                    <dt>{t(`story.facts.${row}.label`)}</dt>
+                    <dd>{t(`story.facts.${row}.value`)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </div>
+
+          <div className="about-why about-reveal">
+            <div className="about-why-stat">
+              <h3 className="about-why-title">{t("story.why.title")}</h3>
+              <p className="about-why-num">{t("story.why.stat")}</p>
+              <p>{t("story.why.statBody")}</p>
+            </div>
+            <div className="about-why-body">
+              <p>{t("story.why.body")}</p>
+            </div>
+          </div>
+
+          <h3 className="about-legal-title">{t("story.legalTitle")}</h3>
+          <ul className="about-legal">
+            {LEGAL.map(({ key, Icon }) => (
+              <li key={key}>
+                <Icon aria-hidden weight="duotone" className="about-legal-icon" />
+                <div>
+                  <p className="about-legal-name">{t(`story.legalItems.${key}.title`)}</p>
+                  <p>{t(`story.legalItems.${key}.body`)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -111,29 +155,27 @@ export async function AboutPage() {
             </h2>
             <p className="about-intro">{t("team.intro")}</p>
           </div>
-          <ul className="about-team-grid">
-            {TEAM.map((member) => (
-              <li key={member.key} className="about-member about-reveal">
-                <div className="about-member-photo">
-                  <Image
-                    src={`/team/${member.key}.webp`}
-                    alt={t(`team.${member.key}.alt`)}
-                    width={1280}
-                    height={1600}
-                    sizes="(min-width: 1024px) 360px, (min-width: 768px) 30vw, 136px"
-                  />
-                </div>
-                <div className="about-member-text">
+          <div className="about-team-body">
+            <figure className="about-team-photo">
+              <Image
+                src={TEAM_PHOTO.src}
+                alt={t("team.photoAlt")}
+                width={TEAM_PHOTO.width}
+                height={TEAM_PHOTO.height}
+                sizes="(min-width: 1280px) 1200px, (min-width: 640px) calc(100vw - 48px), 150vw"
+              />
+            </figure>
+            <ul className="about-team-grid">
+              {TEAM.map((member) => (
+                <li key={member.key} className="about-member about-reveal" data-founder={"founder" in member}>
+                  <p className="about-position">{t(`team.${member.key}.position`)}</p>
                   <h3>{member.name}</h3>
-                  <p className="about-role" data-role={member.role}>
-                    {t(`team.${member.role}`)}
-                  </p>
-                  <p>{t(`team.${member.key}.bio`)}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p className="about-note">{t("team.note")}</p>
+                  <p className="about-role">{t(`team.${member.key}.role`)}</p>
+                  <p className="about-bio">{t(`team.${member.key}.bio`)}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -146,15 +188,72 @@ export async function AboutPage() {
             </h2>
             <p className="about-intro">{t("belief.body")}</p>
           </div>
-          <ul className="about-values">
-            {VALUES.map(({ key, Icon }) => (
+          <div className="about-vm">
+            <div className="about-vm-card about-reveal">
+              <h3>{t("belief.vision.label")}</h3>
+              <p>{t("belief.vision.body")}</p>
+            </div>
+            <div className="about-vm-card about-reveal">
+              <h3>{t("belief.mission.label")}</h3>
+              <p>{t("belief.mission.body")}</p>
+              <ul className="about-vm-points">
+                {(t.raw("belief.mission.points") as string[]).map((point) => (
+                  <li key={point}>
+                    <Check aria-hidden weight="bold" className="about-vm-check" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <h3 className="about-values-title">{t("belief.valuesTitle")}</h3>
+          <ol className="about-values">
+            {VALUES.map(({ key, Icon }, index) => (
               <li key={key} className="about-reveal">
-                <Icon aria-hidden weight="duotone" className="about-value-icon" />
-                <h3>{t(`belief.${key}.title`)}</h3>
+                <div className="about-value-top">
+                  <Icon aria-hidden weight="duotone" className="about-value-icon" />
+                  <span aria-hidden>{String(index + 1).padStart(2, "0")}</span>
+                </div>
+                <h4>{t(`belief.${key}.title`)}</h4>
                 <p>{t(`belief.${key}.body`)}</p>
               </li>
             ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="about-section about-services" aria-labelledby="about-services">
+        <div className="about-inner">
+          <div className="about-head">
+            <p className="about-kicker">{t("services.kicker")}</p>
+            <h2 id="about-services" className="about-h2">
+              {t("services.title")}
+            </h2>
+            <p className="about-intro">{t("services.intro")}</p>
+          </div>
+          <ul className="about-service-grid">
+            {SERVICES.map((key, index) => (
+              <li key={key} className="about-service about-reveal" data-main={index === 0}>
+                {index === 0 && <p className="about-service-tag">{t("services.main")}</p>}
+                <h3>{t(`services.${key}.title`)}</h3>
+                <p>{t(`services.${key}.body`)}</p>
+                <ul>
+                  {(t.raw(`services.${key}.items`) as string[]).map((item) => (
+                    <li key={item}>
+                      <Check aria-hidden weight="bold" className="about-service-check" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
           </ul>
+          <div className="about-actions">
+            <Link href="/solusi" className="btn btn-line text-navy">
+              {tCta("solutions")}
+              <ArrowUpRight aria-hidden weight="bold" className="size-[18px]" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -226,14 +325,6 @@ export async function AboutPage() {
               </dd>
             </dl>
             <div className="about-actions">
-              {MAPS_URL ? (
-                <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn btn-line text-navy">
-                  {t("office.maps")}
-                  <ArrowUpRight aria-hidden weight="bold" className="size-[18px]" />
-                </a>
-              ) : (
-                <p className="about-pending">{t("office.mapsPending")}</p>
-              )}
               <WhatsAppButton section="about-office" intent="meet" variant="line" className="text-navy" />
             </div>
           </div>
@@ -255,7 +346,10 @@ export async function AboutPage() {
           locale,
           name: t("title"),
           description: t("lead"),
-          founders: TEAM.map((m) => ({ name: m.name, jobTitle: t(`team.${m.role}`) })),
+          founders: TEAM.filter((m) => "founder" in m).map((m) => ({
+            name: m.name,
+            jobTitle: t(`team.${m.key}.role`),
+          })),
         })}
       />
       <JsonLd

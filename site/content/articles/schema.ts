@@ -6,6 +6,9 @@ import { z } from "zod";
  */
 export const articleMeta = z.object({
   title: z.string().min(1),
+  // SEO copy v1 (28 Nov 2026): search-result title (" | Kreatekno" is added) and snippet. Platform names are allowed here only.
+  seoTitle: z.string().min(1).optional(),
+  seoDescription: z.string().min(40).max(170).optional(),
   /** One or two sentences under the title; also the meta description (≤ 170 characters). */
   summary: z.string().min(40).max(170),
   /**

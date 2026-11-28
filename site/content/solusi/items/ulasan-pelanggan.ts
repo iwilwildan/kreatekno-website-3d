@@ -15,6 +15,9 @@ export const ulasanPelanggan: Solusi = {
   metricsKind: "example",
   id: {
     title: "Keluhan pelanggan terkumpul di satu tempat",
+    seoTitle: "Rekap Keluhan dan Ulasan Pelanggan Mingguan Otomatis | Kreatekno",
+    seoDescription:
+      "Masukan dari formulir, chat, dan email terkumpul di satu tabel tanpa catatan ganda. Pemilik menerima ringkasan keluhan dan pujian teratas setiap minggu.",
     question: "Bagaimana pemilik usaha tahu keluhan pelanggan yang paling sering muncul?",
     result: "Pemilik melihat pola keluhan setiap minggu",
     summary:
@@ -78,7 +81,7 @@ export const ulasanPelanggan: Solusi = {
       },
       {
         q: "Dari mana saja ulasan bisa dikumpulkan?",
-        a: "Mulai dari formulir saran, chat layanan, dan email milik usaha Anda. Sumber eksternal dapat ditambahkan bila tersedia akses dan ketentuan sumber mengizinkan data diolah serta diringkas.",
+        a: "Mulai dari formulir saran, chat layanan, dan email milik usahamu. Sumber eksternal dapat ditambahkan bila tersedia akses dan ketentuan sumber mengizinkan data diolah serta diringkas.",
       },
       {
         q: "Apakah ringkasan bisa dipisah per cabang?",

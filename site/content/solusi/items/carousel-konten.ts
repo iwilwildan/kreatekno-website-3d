@@ -16,13 +16,16 @@ export const carouselKonten: Solusi = {
   apps: ["instagram", "sheets", "drive", "telegram"],
   metricsKind: "example",
   id: {
-    title: "Carousel konten dari satu topik",
+    title: "Draf carousel lengkap dengan caption dari satu topik",
+    seoTitle: "Buat Carousel Instagram dengan AI dari Satu Topik | Kreatekno",
+    seoDescription:
+      "Tulis satu topik di tabel, lalu AI menyusun slide carousel di atas bingkai brand, lengkap dengan caption. Draf menunggu dicek staf sebelum diposting.",
     question: "Bagaimana membuat carousel media sosial lebih cepat tanpa desainer?",
     result: "Draf carousel lengkap dengan caption, siap dicek",
     summary:
-      "Anda menulis satu topik di tabel. Slide dan caption dibuat dengan bingkai brand Anda, lalu dikirim untuk dicek.",
+      "Kamu menulis satu topik di tabel. Slide dan caption dibuat dengan bingkai brandmu, lalu dikirim untuk dicek.",
     answer:
-      "Anda menulis judul, isi singkat, dan jenis konten di satu tabel: berita, edukasi, atau promosi. AI menyusun isi setiap slide, dari pembuka yang menarik sampai ajakan di slide terakhir, lalu membuat gambarnya di atas bingkai brand yang sama, lengkap dengan logo dan warna Anda. Caption ikut ditulis. Hasilnya disimpan di satu folder, dikirim ke grup tim, dan menunggu dicek sebelum diposting.",
+      "Kamu menulis judul, isi singkat, dan jenis konten di satu tabel: berita, edukasi, atau promosi. AI menyusun isi setiap slide, dari pembuka yang menarik sampai ajakan di slide terakhir, lalu membuat gambarnya di atas bingkai brand yang sama, lengkap dengan logo dan warnamu. Caption ikut ditulis. Hasilnya disimpan di satu folder, dikirim ke grup staf, dan menunggu dicek sebelum diposting.",
     client: "Brand kopi kemasan (contoh)",
     painsLead:
       "Brand kopi kemasan butuh konten edukasi dan promosi beberapa kali seminggu. Satu carousel melewati banyak tangan: menulis isi, mendesain setiap slide, menyamakan logo dan warna, lalu menulis caption. Akibatnya posting tidak rutin dan tampilan antar slide sering berbeda.",
@@ -33,25 +36,25 @@ export const carouselKonten: Solusi = {
     ],
     built: {
       h: "Dari satu baris di tabel sampai draf carousel yang siap dicek",
-      lead: "Tim cukup mengisi topik di tabel. Isi slide, gambar, dan caption disiapkan dengan gaya brand yang sama, lalu dikumpulkan untuk dicek.",
+      lead: "Staf cukup mengisi topik di tabel. Isi slide, gambar, dan caption disiapkan dengan gaya brand yang sama, lalu dikumpulkan untuk dicek.",
       points: [
         "Mengambil topik baru dari tabel konten secara terjadwal.",
         "Menyesuaikan isi dengan jenis konten: berita, edukasi, atau promosi.",
         "Menulis isi setiap slide: pembuka di slide pertama, poin di tengah, ajakan di slide terakhir.",
-        "Membuat gambar setiap slide di atas bingkai brand yang sama, dengan logo dan warna Anda.",
+        "Membuat gambar setiap slide di atas bingkai brand yang sama, dengan logo dan warnamu.",
         "Menulis caption pendek beserta tagar yang relevan.",
-        "Menyimpan hasil ke satu folder, mengirimnya ke grup tim, dan menandai statusnya siap dicek.",
+        "Menyimpan hasil ke satu folder, mengirimnya ke grup staf, dan menandai statusnya siap dicek.",
       ],
     },
     quote: {
       text: "Sekarang kami cukup menulis topik di tabel. Besoknya draf slide dan caption sudah ada di folder, tinggal dicek sebelum diposting.",
-      by: "Tim marketing brand kopi",
+      by: "Staf marketing brand kopi",
     },
     steps: [
-      { title: "Anda menulis topik", body: "Judul, isi singkat, dan jenis konten di satu tabel." },
+      { title: "Kamu menulis topik", body: "Judul, isi singkat, dan jenis konten di satu tabel." },
       { title: "Isi slide ditulis", body: "Pembuka, poin utama, dan ajakan di slide terakhir." },
       { title: "Slide dibuat dengan bingkai brand", body: "Logo, warna, dan tata letak sama di setiap slide." },
-      { title: "Anda mengecek", body: "Draf dan caption menunggu dicek sebelum diposting." },
+      { title: "Kamu mengecek", body: "Draf dan caption menunggu dicek sebelum diposting." },
     ],
     compare: [
       { aspect: "Membuat carousel", before: "Setengah hari", after: "Draf siap dari satu baris tabel" },
@@ -73,7 +76,7 @@ export const carouselKonten: Solusi = {
     faq: [
       {
         q: "Apakah langsung terposting?",
-        a: "Tidak. Setiap carousel menunggu dicek dan disetujui tim sebelum diposting.",
+        a: "Tidak. Setiap carousel menunggu dicek dan disetujui staf sebelum diposting.",
       },
       {
         q: "Bagaimana kalau ada slide yang gagal dibuat?",

@@ -53,8 +53,8 @@ const id: CarouselPanggung = {
     footer: "Panduan seduh",
     slides: "Pratinjau slide",
     caption: "Draf caption",
-    folder: "Drive · Folder draf",
-    group: "Telegram · Grup marketing",
+    folder: "Folder draf",
+    group: "Grup marketing",
     preview: "Pratinjau dikirim",
     review: "Menunggu dicek",
     sample: "Contoh alur",
@@ -96,7 +96,7 @@ const en: CarouselPanggung = {
 export const carouselKontenStory: CarouselCerita = {
   slug: "carousel-konten",
   id: {
-    intro: "Ikuti satu topik dari tabel konten sampai tim Kopi Contoh menerima draf carousel lengkap.",
+    intro: "Ikuti satu topik dari tabel konten sampai staf Kopi Contoh menerima draf carousel lengkap.",
     scenes: scenes(
       [
         [
@@ -131,13 +131,13 @@ export const carouselKontenStory: CarouselCerita = {
         ],
         [
           "Kirim draf",
-          "Draf sampai ke tim dan menunggu dicek.",
+          "Draf sampai ke staf dan menunggu dicek.",
           "Lima slide dan caption tersimpan di folder CR-028. Pratinjau dikirim ke grup marketing, lalu baris ditandai Menunggu dicek.",
         ],
         [
           "Ringkasan",
           "Satu baris jadi paket draf yang siap dicek.",
-          "Tim mendapat slide dengan bingkai yang sama dan caption dalam satu folder.",
+          "Staf mendapat slide dengan bingkai yang sama dan caption dalam satu folder.",
         ],
         [
           "Konsultasi",

@@ -41,6 +41,8 @@ import {
 import { parseAnswers, answersQuery } from "../../site/lib/solusi/url.ts";
 import { readPrototype } from "./source.mjs";
 
+// Problem cards rewritten in the SEO copy v1 (28 Nov 2026): no pronouns, no platform names.
+const CARDS_REWRITTEN = new Set(["k2", "k3", "k7", "k24"]);
 // Solutions whose ID copy was rewritten after the v1 migration, so source parity no longer applies:
 // booking-jasa (BJ1, 21 Nov 2026) now follows the client's real booking workflow (no calendar app);
 // riset-konten (RK1, 21 Nov 2026) follows the content-research workflow design (status "ide", Threads);
@@ -58,6 +60,8 @@ const REWRITTEN = new Set([
   "pengingat-tagihan",
   "ulasan-pelanggan",
   "rekap-penjualan",
+  // SEO copy v1 (28 Nov 2026): the last solution on the v1 source copy (docs/drafts/website-solusi-v1-draf.md).
+  "order-grup",
 ]);
 // S8 N0 (23 Nov 2026): five solutions drawn from public n8n.io templates have no v1 source copy, and their
 // weights on existing cards are additions to the source cards (docs/plans/solusi/PLAN-KATALOG-N8N.md).
@@ -91,7 +95,8 @@ test("17 unique solutions and 24 unique cards satisfy strict schemas", () => {
     false,
   );
   const text = JSON.stringify({ SOLUSI, KARTU });
-  assert.doesNotMatch(text, /—|\bkamu\b|claude\.ai|\bwatch\b/i);
+  // "kamu" is the Solusi voice since the SEO copy v1 (28 Nov 2026), so only the dash and leak checks remain.
+  assert.doesNotMatch(text, /—|claude\.ai|\bwatch\b/i);
 });
 
 test("Order Grup story has stable bilingual scenes, stage copy and one final CTA", () => {
@@ -224,8 +229,8 @@ test("Follow-up Prospek story has stable bilingual scenes, stage copy and one fi
   // Marking the row as contacted is a design step, and the caption says so.
   assert.match(story.id.scenes[6].body, /rancangan/);
   assert.match(story.en.scenes[6].body, /design/);
-  // The draft goes to the marketing team, who send it themselves.
-  assert.match(story.id.scenes[5].title, /tim marketing/i);
+  // The draft goes to the marketing staff, who send it themselves.
+  assert.match(story.id.scenes[5].title, /staf marketing/i);
   const solution = SOLUSI.find((s) => s.slug === "followup-prospek");
   assert.equal(solution.status, "ide");
   assert.deepEqual(solution.apps, ["whatsapp", "sheets"]);
@@ -731,7 +736,7 @@ test("all migrated ID copy and taxonomy equal source literals", () => {
     assert.deepEqual(
       {
         id: c.id,
-        t: c.text.id,
+        t: CARDS_REWRITTEN.has(c.id) ? old.t : c.text.id,
         ind: c.industri,
         tim: c.tim,
         sol: withoutS8(c.solusi),
@@ -768,8 +773,9 @@ test("every copy field in COPY section 19 matches migrated data", () => {
     }
   }
   // 245 fields once booking-jasa, riset-konten, cs-klinik and followup-prospek left the source copy (22 Nov 2026).
-  // 41 fields since S8 N1b (24 Nov 2026): only order-grup still follows the v1 source copy.
-  assert.ok(count >= 41, `Checked ${count} fields`);
+  // 41 fields since S8 N1b (24 Nov 2026): only order-grup still followed the v1 source copy.
+  // 0 fields since the SEO copy v1 (28 Nov 2026): every solution now has rewritten copy.
+  assert.equal(count, 0, `Checked ${count} fields`);
 });
 
 test("seven tiers and source ordering match LOGIKA 6, without decor since 13 Nov", () => {

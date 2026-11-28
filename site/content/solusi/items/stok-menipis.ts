@@ -15,12 +15,15 @@ export const stokMenipis: Solusi = {
   metricsKind: "example",
   id: {
     title: "Peringatan stok menipis sebelum habis",
+    seoTitle: "Notifikasi Stok Menipis Otomatis ke WhatsApp | Kreatekno",
+    seoDescription:
+      "Barang masuk dan keluar dicatat lewat form, stok di Google Sheets diperbarui, dan staf pembelian menerima peringatan WhatsApp saat stok di bawah batas minimum.",
     question: "Bagaimana tahu stok akan habis sebelum terlambat memesan ulang?",
     result: "Peringatan stok rendah untuk pesan ulang",
     summary:
       "Stok diperbarui saat barang bergerak. Staf pembelian menerima peringatan saat stok turun di bawah batas minimum.",
     answer:
-      "Setiap barang masuk dan keluar dicatat lewat form singkat, lalu tabel stok diperbarui. Saat stok turun di bawah batas minimum yang Anda tentukan, staf pembelian menerima peringatan berisi nama barang, sisa stok, dan batas minimumnya. Staf menentukan jumlah dan waktu pemesanan ulang.",
+      "Setiap barang masuk dan keluar dicatat lewat form singkat, lalu tabel stok diperbarui. Saat stok turun di bawah batas minimum yang kamu tentukan, staf pembelian menerima peringatan berisi nama barang, sisa stok, dan batas minimumnya. Staf menentukan jumlah dan waktu pemesanan ulang.",
     client: "Toko grosir sembako (contoh)",
     painsLead:
       "Toko grosir sembako menjual ratusan jenis barang, dari beras dan minyak goreng sampai gula. Stok baru dicek saat ada waktu, sering saat barang sudah kosong di rak. Pelanggan grosir yang datang lalu membeli di toko lain.",
@@ -63,14 +66,14 @@ export const stokMenipis: Solusi = {
     ],
     prep: ["Tabel stok yang sudah dipakai", "Batas minimum per barang", "Siapa yang menerima peringatan"],
     metrics: [
-      { value: "1", unit: "batas", label: "minimum per barang, Anda yang menentukan" },
+      { value: "1", unit: "batas", label: "minimum per barang, kamu yang menentukan" },
       { value: "3", unit: "isi", label: "peringatan: nama barang, sisa stok, batas minimum" },
       { value: "1", unit: "form", label: "untuk barang masuk dan keluar" },
     ],
     faq: [
       {
         q: "Kalau stok dicatat di aplikasi kasir?",
-        a: "Data bisa diambil dari ekspor aplikasi kasir Anda, sehingga staf tidak mencatat dua kali.",
+        a: "Data bisa diambil dari ekspor aplikasi kasirmu, sehingga staf tidak mencatat dua kali.",
       },
       {
         q: "Apakah barang dipesan otomatis ke pemasok?",
